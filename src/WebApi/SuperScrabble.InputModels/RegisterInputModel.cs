@@ -1,13 +1,27 @@
 ﻿namespace SuperScrabble.InputModels
 {
+    using SuperScrabble.LanguageResources;
+    using System.ComponentModel.DataAnnotations;
+
+    using static SuperScrabble.LanguageResources.ResourceNames;
+
     public class RegisterInputModel
     {
-        public string UserName { get; set; }
+        [Display(Name = UserNameDisplayName, ResourceType = typeof(Resource))]
+        [Required(ErrorMessageResourceType = typeof(Resource), ErrorMessageResourceName = UserNameIsRequired)]
+        public string UserName { get; init; }
 
-        public string Email { get; set; }
+        [Display(Name = "EmailAddressDisplayName", ResourceType = typeof(Resource))]
+        [Required(ErrorMessageResourceType = typeof(Resource), ErrorMessageResourceName = "EmailAddressIsRequired")]
+        [EmailAddress(ErrorMessageResourceType = typeof(Resource), ErrorMessageResourceName = "EmailAddressIsInvalid")]
+        public string Email { get; init; }
 
-        public string Password { get; set; }
+        [Display(Name = PasswordDisplayName, ResourceType = typeof(Resource))]
+        [Required(ErrorMessageResourceType = typeof(Resource), ErrorMessageResourceName = PasswordIsRequired)]
+        public string Password { get; init; }
 
-        public string PasswordRepeat { get; set; }
+        [Display(Name = "RepeatedPasswordDisplayName", ResourceType = typeof(Resource))]
+        [Required(ErrorMessageResourceType = typeof(Resource), ErrorMessageResourceName = "RepeatedPasswordIsRequired")]
+        public string RepeatedPassword { get; init; }
     }
 }

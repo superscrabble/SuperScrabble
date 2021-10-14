@@ -17,6 +17,10 @@ namespace SuperScrabble.WebApi
     using Microsoft.Extensions.Hosting;
     using Microsoft.IdentityModel.Tokens;
     using Microsoft.AspNetCore.Identity;
+    using System.Globalization;
+    using Microsoft.AspNetCore.Localization;
+    using Microsoft.AspNetCore.Localization.Routing;
+    using Microsoft.Extensions.Options;
 
     public class Startup
     {
@@ -32,8 +36,14 @@ namespace SuperScrabble.WebApi
             services.AddDbContext<AppDbContext>();
 
             services
-                .AddIdentity<AppUser, AppRole>(options => options.SignIn.RequireConfirmedEmail = false)
+                .AddIdentity<AppUser, AppRole>(options =>
+                {
+                    options.SignIn.RequireConfirmedEmail = false;
+                    options.User.RequireUniqueEmail = true;
+                })
                 .AddEntityFrameworkStores<AppDbContext>();
+
+            AddLocalization(services);
 
             AddJwtBearerAuthentication(services);
 
@@ -56,6 +66,8 @@ namespace SuperScrabble.WebApi
 
             app.UseHttpsRedirection();
 
+            UseLocalization(app);
+
             app.UseRouting();
 
             app.UseAuthentication();
@@ -65,6 +77,31 @@ namespace SuperScrabble.WebApi
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+            });
+        }
+
+        private static void UseLocalization(IApplicationBuilder app)
+        {
+            var localizeOptions = app.ApplicationServices.GetService<IOptions<RequestLocalizationOptions>>();
+            app.UseRequestLocalization(localizeOptions.Value);
+        }
+
+        private static void AddLocalization(IServiceCollection services)
+        {
+            const string English = "en-US";
+            const string Bulgarian = "bg-BG";
+
+            services.Configure<RequestLocalizationOptions>(options =>
+            {
+                var supportedCultures = new[]
+                {
+                    new CultureInfo(English),
+                    new CultureInfo(Bulgarian),
+                };
+
+                options.SupportedCultures = supportedCultures;
+                options.SupportedUICultures = supportedCultures;
+                options.DefaultRequestCulture = new RequestCulture(culture: English, uiCulture: English);
             });
         }
 

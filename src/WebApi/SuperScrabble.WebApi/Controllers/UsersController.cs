@@ -5,7 +5,7 @@
     using SuperScrabble.Models;
     using SuperScrabble.Data;
     using SuperScrabble.WebApi.Utillities;
-
+    using SuperScrabble.WebApi.Extensions;
 
     using System;
     using System.Text;
@@ -54,6 +54,11 @@
         {
             AppUser user = _dbContext.Users.FirstOrDefault(user => user.UserName == input.UserName);
 
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState.Errors());
+            }
+
             if (user == null)
             {
                 return Unauthorized(ApiMessages.InvalidLoginMessage);
@@ -92,9 +97,9 @@
         [HttpPost("register")]
         public async Task<ActionResult> Register([FromBody] RegisterInputModel input)
         {
-            if (input.Password != input.PasswordRepeat)
+            if (!ModelState.IsValid)
             {
-                return BadRequest(ApiMessages.PasswordsDoNotMatch);
+                return BadRequest(ModelState.Errors());
             }
 
             var user = new AppUser
@@ -115,10 +120,10 @@
                     errorsBuilder.AppendLine(error.Description);
                 }
 
-                return BadRequest(errorsBuilder);
+                return BadRequest(errorsBuilder.ToString());
             }
 
-            return Ok(new { Result = ApiMessages.RegisterSucceeded });
+            return Ok(new { Result = ApiMessages.RegistrationSucceeded });
         }
     }
 }

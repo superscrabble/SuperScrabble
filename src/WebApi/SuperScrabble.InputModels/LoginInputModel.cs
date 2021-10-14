@@ -1,9 +1,18 @@
 ﻿namespace SuperScrabble.InputModels
 {
+    using SuperScrabble.LanguageResources;
+    using System.ComponentModel.DataAnnotations;
+
+    using static SuperScrabble.LanguageResources.ResourceNames;
+
     public class LoginInputModel
     {
-        public string UserName { get; set; }
+        [Display(Name = UserNameDisplayName, ResourceType = typeof(Resource))]
+        [Required(ErrorMessageResourceType = typeof(Resource), ErrorMessageResourceName = UserNameIsRequired)]
+        public string UserName { get; init; }
 
-        public string Password { get; set; }
+        [Display(Name = PasswordDisplayName, ResourceType = typeof(Resource))]
+        [Required(ErrorMessageResourceType = typeof(Resource), ErrorMessageResourceName = PasswordIsRequired)]
+        public string Password { get; init; }
     }
 }
