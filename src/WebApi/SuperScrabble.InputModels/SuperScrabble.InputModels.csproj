@@ -5,6 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Common\SuperScrabble.Common\SuperScrabble.Common.csproj" />
+    <ProjectReference Include="..\..\Common\SuperScrabble.CustomValidationAttributes\SuperScrabble.CustomValidationAttributes.csproj" />
     <ProjectReference Include="..\SuperScrabble.LanguageResources\SuperScrabble.LanguageResources.csproj" />
   </ItemGroup>
 
