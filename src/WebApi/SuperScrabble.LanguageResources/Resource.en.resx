@@ -132,6 +132,21 @@
   <data name="PasswordIsRequired" xml:space="preserve">
     <value>Password is required</value>
   </data>
+  <data name="PasswordIsTooShort" xml:space="preserve">
+    <value>Password must be at least {0} characters long</value>
+  </data>
+  <data name="PasswordRequiresDigit" xml:space="preserve">
+    <value>Password requires at least one digit</value>
+  </data>
+  <data name="PasswordRequiresLowercase" xml:space="preserve">
+    <value>Password requires at least one lowercase letter</value>
+  </data>
+  <data name="PasswordRequiresNonAlphanumeric" xml:space="preserve">
+    <value>Password requires at least one non alphanumeric character</value>
+  </data>
+  <data name="PasswordRequiresUppercase" xml:space="preserve">
+    <value>Password requires at least one uppercase letter</value>
+  </data>
   <data name="RepeatedPasswordDisplayName" xml:space="preserve">
     <value>Repeat password</value>
   </data>

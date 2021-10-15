@@ -23,7 +23,7 @@
 
             if (password.Length < MinLength)
             {
-                return new ValidationResult(string.Format(ErrorMessage, MinLength));
+                return new ValidationResult(string.Format(ErrorMessageString, MinLength));
             }
 
             return ValidationResult.Success;
