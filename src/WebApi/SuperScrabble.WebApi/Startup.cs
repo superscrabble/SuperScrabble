@@ -19,8 +19,9 @@ namespace SuperScrabble.WebApi
     using Microsoft.AspNetCore.Identity;
     using System.Globalization;
     using Microsoft.AspNetCore.Localization;
-    using Microsoft.AspNetCore.Localization.Routing;
     using Microsoft.Extensions.Options;
+
+    using static SuperScrabble.Common.ModelValidationConstraints;
 
     public class Startup
     {
@@ -40,6 +41,16 @@ namespace SuperScrabble.WebApi
                 {
                     options.SignIn.RequireConfirmedEmail = false;
                     options.User.RequireUniqueEmail = true;
+
+                    options.Password = new PasswordOptions
+                    {
+                        RequireDigit = Password.RequireDigit,
+                        RequiredLength = Password.MinLength,
+                        RequireLowercase = Password.RequireLowercase,
+                        RequireUppercase = Password.RequireUppercase,
+                        RequireNonAlphanumeric = Password.RequireNonAlphanumeric,
+                        RequiredUniqueChars = Password.RequiredUniqueChars,
+                    };
                 })
                 .AddEntityFrameworkStores<AppDbContext>();
 
