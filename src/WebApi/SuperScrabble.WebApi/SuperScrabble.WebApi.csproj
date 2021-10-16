@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Data\SuperScrabble.Data\SuperScrabble.Data.csproj" />
+    <ProjectReference Include="..\..\Services\SuperScrabble.Services\SuperScrabble.Services.csproj" />
     <ProjectReference Include="..\SuperScrabble.InputModels\SuperScrabble.InputModels.csproj" />
     <ProjectReference Include="..\SuperScrabble.ViewModels\SuperScrabble.ViewModels.csproj" />
   </ItemGroup>

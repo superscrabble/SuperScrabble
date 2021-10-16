@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="EmailAddressAlreadyExists" xml:space="preserve">
+    <value>Email address already exists</value>
+  </data>
   <data name="EmailAddressDisplayName" xml:space="preserve">
     <value>Email address</value>
   </data>
@@ -128,6 +131,9 @@
   </data>
   <data name="PasswordDisplayName" xml:space="preserve">
     <value>Password</value>
+  </data>
+  <data name="PasswordIsInvalid" xml:space="preserve">
+    <value>Invalid password</value>
   </data>
   <data name="PasswordIsRequired" xml:space="preserve">
     <value>Password is required</value>
@@ -153,8 +159,14 @@
   <data name="RepeatedPasswordIsRequired" xml:space="preserve">
     <value>You must repeat the password</value>
   </data>
+  <data name="UserNameAlreadyExists" xml:space="preserve">
+    <value>Username is already taken</value>
+  </data>
   <data name="UserNameDisplayName" xml:space="preserve">
     <value>Username</value>
+  </data>
+  <data name="UserNameDoesNotExist" xml:space="preserve">
+    <value>Username does not exist</value>
   </data>
   <data name="UserNameIsRequired" xml:space="preserve">
     <value>Username is required</value>

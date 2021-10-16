@@ -22,6 +22,7 @@ namespace SuperScrabble.WebApi
     using Microsoft.Extensions.Options;
 
     using static SuperScrabble.Common.ModelValidationConstraints;
+    using SuperScrabble.Services;
 
     public class Startup
     {
@@ -57,6 +58,8 @@ namespace SuperScrabble.WebApi
             AddLocalization(services);
 
             AddJwtBearerAuthentication(services);
+
+            services.AddTransient<IUsersService, UsersService>();
 
             services.AddControllers();
 

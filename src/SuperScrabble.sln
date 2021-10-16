@@ -37,7 +37,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SuperScrabble.Common", "Com
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SuperScrabble.LanguageResources", "WebApi\SuperScrabble.LanguageResources\SuperScrabble.LanguageResources.csproj", "{16C41513-214D-4EB4-9721-4FC81DC09264}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SuperScrabble.CustomValidationAttributes", "Common\SuperScrabble.CustomValidationAttributes\SuperScrabble.CustomValidationAttributes.csproj", "{9F74F8A9-C7BE-457A-B159-60B793CF2548}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SuperScrabble.CustomValidationAttributes", "Common\SuperScrabble.CustomValidationAttributes\SuperScrabble.CustomValidationAttributes.csproj", "{9F74F8A9-C7BE-457A-B159-60B793CF2548}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SuperScrabble.CustomExceptions", "Common\SuperScrabble.CustomExceptions\SuperScrabble.CustomExceptions.csproj", "{2F1DB81C-0305-4D15-A130-FBEFE09CC115}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -93,6 +95,10 @@ Global
 		{9F74F8A9-C7BE-457A-B159-60B793CF2548}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9F74F8A9-C7BE-457A-B159-60B793CF2548}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9F74F8A9-C7BE-457A-B159-60B793CF2548}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2F1DB81C-0305-4D15-A130-FBEFE09CC115}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F1DB81C-0305-4D15-A130-FBEFE09CC115}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F1DB81C-0305-4D15-A130-FBEFE09CC115}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F1DB81C-0305-4D15-A130-FBEFE09CC115}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -110,6 +116,7 @@ Global
 		{F4F60FA4-2408-4BE9-9711-60B609D563E4} = {7CDE07F6-CE61-4B5B-BE93-ABA6E019C498}
 		{16C41513-214D-4EB4-9721-4FC81DC09264} = {A7DB1825-7E2F-4125-BE6A-2905B068FDBB}
 		{9F74F8A9-C7BE-457A-B159-60B793CF2548} = {7CDE07F6-CE61-4B5B-BE93-ABA6E019C498}
+		{2F1DB81C-0305-4D15-A130-FBEFE09CC115} = {7CDE07F6-CE61-4B5B-BE93-ABA6E019C498}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F9BC309A-4B7E-4CE1-B09E-AEC8E61A0750}

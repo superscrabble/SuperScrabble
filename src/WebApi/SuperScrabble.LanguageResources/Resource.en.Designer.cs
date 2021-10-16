@@ -1,7 +1,5 @@
 ﻿namespace SuperScrabble.LanguageResources
 {
-    using System;
-
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
@@ -27,6 +25,7 @@
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("SuperScrabble.LanguageResources.Resource", typeof(Resource).Assembly);
                     resourceMan = temp;
                 }
+
                 return resourceMan;
             }
         }
@@ -34,56 +33,62 @@
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
         public static global::System.Globalization.CultureInfo Culture
         {
-            get
-            {
-                return resourceCulture;
-            }
-            set
-            {
-                resourceCulture = value;
-            }
+            get => resourceCulture;
+            set => resourceCulture = value;
         }
 
         public static string EmailAddressDisplayName
-            => ResourceManager.GetString("EmailAddressDisplayName", resourceCulture);
+            => ResourceManager.GetString(nameof(EmailAddressDisplayName), resourceCulture);
 
         public static string EmailAddressIsInvalid
-            => ResourceManager.GetString("EmailAddressIsInvalid", resourceCulture);
+            => ResourceManager.GetString(nameof(EmailAddressIsInvalid), resourceCulture);
 
         public static string EmailAddressIsRequired
-            => ResourceManager.GetString("EmailAddressIsRequired", resourceCulture);
+            => ResourceManager.GetString(nameof(EmailAddressIsRequired), resourceCulture);
 
         public static string PasswordDisplayName
-            => ResourceManager.GetString("PasswordDisplayName", resourceCulture);
+            => ResourceManager.GetString(nameof(PasswordDisplayName), resourceCulture);
 
         public static string PasswordIsRequired
-            => ResourceManager.GetString("PasswordIsRequired", resourceCulture);
+            => ResourceManager.GetString(nameof(PasswordIsRequired), resourceCulture);
 
         public static string RepeatedPasswordDisplayName
-            => ResourceManager.GetString("RepeatedPasswordDisplayName", resourceCulture);
+            => ResourceManager.GetString(nameof(RepeatedPasswordDisplayName), resourceCulture);
 
         public static string RepeatedPasswordIsRequired
-            => ResourceManager.GetString("RepeatedPasswordIsRequired", resourceCulture);
+            => ResourceManager.GetString(nameof(RepeatedPasswordIsRequired), resourceCulture);
 
         public static string UserNameDisplayName
-            => ResourceManager.GetString("UserNameDisplayName", resourceCulture);
+            => ResourceManager.GetString(nameof(UserNameDisplayName), resourceCulture);
 
         public static string UserNameIsRequired
-            => ResourceManager.GetString("UserNameIsRequired", resourceCulture);
+            => ResourceManager.GetString(nameof(UserNameIsRequired), resourceCulture);
 
         public static string PasswordRequiresDigit
-            => ResourceManager.GetString("PasswordRequiresDigit", resourceCulture);
+            => ResourceManager.GetString(nameof(PasswordRequiresDigit), resourceCulture);
 
         public static string PasswordRequiresUppercase
-            => ResourceManager.GetString("PasswordRequiresUppercase", resourceCulture);
+            => ResourceManager.GetString(nameof(PasswordRequiresUppercase), resourceCulture);
 
         public static string PasswordRequiresLowercase
-            => ResourceManager.GetString("PasswordRequiresLowercase", resourceCulture);
+            => ResourceManager.GetString(nameof(PasswordRequiresLowercase), resourceCulture);
 
         public static string PasswordRequiresNonAlphanumeric
-            => ResourceManager.GetString("PasswordRequiresNonAlphanumeric", resourceCulture);
+            => ResourceManager.GetString(nameof(PasswordRequiresNonAlphanumeric), resourceCulture);
 
         public static string PasswordIsTooShort
-            => ResourceManager.GetString("PasswordIsTooShort", resourceCulture);
+            => ResourceManager.GetString(nameof(PasswordIsTooShort), resourceCulture);
+
+        public static string UserNameDoesNotExist
+            => ResourceManager.GetString(nameof(UserNameDoesNotExist), resourceCulture);
+
+        public static string PasswordIsInvalid
+            => ResourceManager.GetString(nameof(PasswordIsInvalid), resourceCulture);
+
+        public static string EmailAddressAlreadyExists
+            => ResourceManager.GetString(nameof(EmailAddressAlreadyExists), resourceCulture);
+
+        public static string UserNameAlreadyExists
+            => ResourceManager.GetString(nameof(UserNameAlreadyExists), resourceCulture);
     }
 }
