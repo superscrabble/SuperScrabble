@@ -48,7 +48,7 @@
             {
                 return Ok(new
                 { 
-                    Token = await _usersService.LoginAsync(input)
+                    Token = await _usersService.AuthenticateAsync(input)
                 });
             }
             catch (LoginFailedException ex)
@@ -67,7 +67,7 @@
 
             try
             {
-                await _usersService.RegisterAsync(input);
+                await _usersService.CreateAsync(input);
                 return Ok();
             }
             catch (RegisterFailedException ex)

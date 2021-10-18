@@ -1,23 +1,25 @@
-﻿namespace SuperScrabble.CustomValidationAttributes
+﻿namespace SuperScrabble.CustomValidationAttributes.Password
 {
+    using SuperScrabble.LanguageResources;
+
     using System;
     using System.ComponentModel.DataAnnotations;
 
-    public class PasswordMinLengthAttribute : ValidationAttribute
+    using static SuperScrabble.Common.ModelValidationConstraints.Password;
+
+    public class PasswordMinLengthAttribute : BaseResourceValidationAttribute
     {
-        public PasswordMinLengthAttribute(int minLength)
-        {
-            MinLength = minLength;
-        }
-
-        private int MinLength { get; }
-
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
+            base.IsValid(value);
+
             if (value is not string)
             {
                 throw new ArgumentException("Property must be of type string");
             }
+
+            ErrorMessageResourceType = typeof(Resource);
+            ErrorMessageResourceName = nameof(Resource.PasswordIsTooShort);
 
             string password = value as string;
 

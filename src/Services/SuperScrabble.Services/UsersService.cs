@@ -47,7 +47,7 @@
             _userManager = userManager;
         }
 
-        public async Task<string> LoginAsync(LoginInputModel input)
+        public async Task<string> AuthenticateAsync(LoginInputModel input)
         {
             AppUser user = _dbContext.Users.FirstOrDefault(user => user.UserName == input.UserName);
             var errors = new List<ModelStateErrorViewModel>();
@@ -81,7 +81,7 @@
             return GenerateToken(input.UserName);
         }
 
-        public async Task RegisterAsync(RegisterInputModel input)
+        public async Task CreateAsync(RegisterInputModel input)
         {
             var user = new AppUser
             {
@@ -129,6 +129,21 @@
 
             SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
+        }
+
+        public Task<AppUser> GetAsync(string userName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task UpdateAsync(UpdateInputModel input)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task DeleteAsync(string userName)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -7,6 +7,7 @@
 
     using static SuperScrabble.LanguageResources.ResourceNames;
     using static SuperScrabble.Common.ModelValidationConstraints.Password;
+    using SuperScrabble.CustomValidationAttributes.Password;
 
     public class RegisterInputModel
     {
@@ -42,10 +43,7 @@
             ErrorMessageResourceType = typeof(Resource),
             ErrorMessageResourceName = PasswordIsRequired)]
 
-        [PasswordMinLength(
-            MinLength,
-            ErrorMessageResourceType = typeof(Resource),
-            ErrorMessageResourceName = "PasswordIsTooShort")]
+        [PasswordMinLength]
 
         [RequireDigit(
             RequireDigit,
