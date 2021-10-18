@@ -1,79 +1,40 @@
 ﻿namespace SuperScrabble.InputModels
 {
-    using SuperScrabble.CustomValidationAttributes;
     using SuperScrabble.LanguageResources;
+    using SuperScrabble.CustomValidationAttributes.Email;
+    using SuperScrabble.CustomValidationAttributes.Password;
+    using SuperScrabble.CustomValidationAttributes.ResourceAttributes;
 
     using System.ComponentModel.DataAnnotations;
-
-    using static SuperScrabble.LanguageResources.ResourceNames;
-    using static SuperScrabble.Common.ModelValidationConstraints.Password;
-    using SuperScrabble.CustomValidationAttributes.Password;
+    using SuperScrabble.CustomValidationAttributes.SymbolRequiring;
 
     public class RegisterInputModel
     {
-        // UserName
-
-        [Display(Name = UserNameDisplayName, ResourceType = typeof(Resource))]
-
-        [Required(
-            ErrorMessageResourceType = typeof(Resource),
-            ErrorMessageResourceName = UserNameIsRequired)]
+        [Display(Name = nameof(Resource.UserNameDisplayName), ResourceType = typeof(Resource))]
+        [ResourceRequired(nameof(Resource.UserNameIsRequired))]
 
         public string UserName { get; init; }
 
-        // Email Address
 
-        [Display(Name = "EmailAddressDisplayName", ResourceType = typeof(Resource))]
-
-        [Required(
-            ErrorMessageResourceType = typeof(Resource),
-            ErrorMessageResourceName = "EmailAddressIsRequired")]
-
-        [EmailAddress(
-            ErrorMessageResourceType = typeof(Resource),
-            ErrorMessageResourceName = "EmailAddressIsInvalid")]
+        [Display(Name = nameof(Resource.EmailAddressDisplayName), ResourceType = typeof(Resource))]
+        [ResourceRequired(nameof(Resource.EmailAddressIsRequired))]
+        [ValidEmailAddress]
 
         public string Email { get; init; }
 
-        // Password
-
-        [Display(Name = PasswordDisplayName, ResourceType = typeof(Resource))]
-
-        [Required(
-            ErrorMessageResourceType = typeof(Resource),
-            ErrorMessageResourceName = PasswordIsRequired)]
+        [Display(Name = nameof(Resource.PasswordDisplayName), ResourceType = typeof(Resource))]
+        [ResourceRequired(nameof(Resource.PasswordIsRequired))]
 
         [PasswordMinLength]
-
-        [RequireDigit(
-            RequireDigit,
-            ErrorMessageResourceType = typeof(Resource),
-            ErrorMessageResourceName = "PasswordRequiresDigit")]
-
-        [RequireLowercase(
-            RequireLowercase,
-            ErrorMessageResourceType = typeof(Resource),
-            ErrorMessageResourceName = "PasswordRequiresLowercase")]
-
-        [RequireUppercase(
-            RequireUppercase,
-            ErrorMessageResourceType = typeof(Resource),
-            ErrorMessageResourceName = "PasswordRequiresUppercase")]
-
-        [RequireNonAlphanumeric(
-            RequireNonAlphanumeric,
-            ErrorMessageResourceType = typeof(Resource),
-            ErrorMessageResourceName = "PasswordRequiresNonAlphanumeric")]
+        [RequireDigit]
+        [RequireLowercase]
+        [RequireUppercase]
+        [RequireNonAlphanumeric]
 
         public string Password { get; init; }
 
-        // Repeated Password
-
-        [Display(Name = "RepeatedPasswordDisplayName", ResourceType = typeof(Resource))]
-
-        [Required(
-            ErrorMessageResourceType = typeof(Resource),
-            ErrorMessageResourceName = "RepeatedPasswordIsRequired")]
+        [Display(Name = nameof(Resource.RepeatedPasswordDisplayName), ResourceType = typeof(Resource))]
+        [ResourceRequired(nameof(Resource.RepeatedPasswordIsRequired))]
 
         public string RepeatedPassword { get; init; }
     }
