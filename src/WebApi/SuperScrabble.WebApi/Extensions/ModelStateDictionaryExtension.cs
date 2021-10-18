@@ -1,7 +1,7 @@
 ﻿namespace SuperScrabble.WebApi.Extensions
 {
+    using SuperScrabble.Utilities;
     using SuperScrabble.ViewModels;
-    using SuperScrabble.Common;
 
     using System.Linq;
     using System.Collections.Generic;

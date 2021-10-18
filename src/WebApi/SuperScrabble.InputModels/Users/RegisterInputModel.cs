@@ -3,10 +3,10 @@
     using SuperScrabble.LanguageResources;
     using SuperScrabble.CustomValidationAttributes.Email;
     using SuperScrabble.CustomValidationAttributes.Password;
+    using SuperScrabble.CustomValidationAttributes.SymbolRequiring;
     using SuperScrabble.CustomValidationAttributes.ResourceAttributes;
 
     using System.ComponentModel.DataAnnotations;
-    using SuperScrabble.CustomValidationAttributes.SymbolRequiring;
 
     public class RegisterInputModel
     {
@@ -25,10 +25,10 @@
         [Display(Name = nameof(Resource.PasswordDisplayName), ResourceType = typeof(Resource))]
         [ResourceRequired(nameof(Resource.PasswordIsRequired))]
 
-        [PasswordMinLength]
         [RequireDigit]
         [RequireLowercase]
         [RequireUppercase]
+        [PasswordMinLength]
         [RequireNonAlphanumeric]
 
         public string Password { get; init; }

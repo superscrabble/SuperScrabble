@@ -1,7 +1,7 @@
 ﻿namespace SuperScrabble.Services
 {
-    using SuperScrabble.InputModels.Users;
     using SuperScrabble.Models;
+    using SuperScrabble.InputModels.Users;
 
     using System.Threading.Tasks;
 

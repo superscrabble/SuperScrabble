@@ -1,7 +1,7 @@
 ﻿namespace SuperScrabble.InputModels.Users
 {
-    using SuperScrabble.CustomValidationAttributes.ResourceAttributes;
     using SuperScrabble.LanguageResources;
+    using SuperScrabble.CustomValidationAttributes.ResourceAttributes;
 
     using System.ComponentModel.DataAnnotations;
 

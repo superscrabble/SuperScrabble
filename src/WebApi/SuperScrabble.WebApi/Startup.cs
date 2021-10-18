@@ -1,7 +1,7 @@
 namespace SuperScrabble.WebApi
 {
-    using SuperScrabble.Common;
     using SuperScrabble.Data;
+    using SuperScrabble.Common;
     using SuperScrabble.Models;
     using SuperScrabble.Services;
 
@@ -9,21 +9,21 @@ namespace SuperScrabble.WebApi
     using System.Globalization;
     using System.Threading.Tasks;
 
-    using Microsoft.AspNetCore.Authentication.JwtBearer;
+    using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.Identity;
+    using Microsoft.AspNetCore.Localization;
+    using Microsoft.AspNetCore.Authentication.JwtBearer;
 
     using Microsoft.OpenApi.Models;
     using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
-    using Microsoft.IdentityModel.Tokens;
-    using Microsoft.AspNetCore.Identity;
-    using Microsoft.AspNetCore.Localization;
     using Microsoft.Extensions.Options;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.IdentityModel.Tokens;
 
     using static SuperScrabble.Common.ModelValidationConstraints;
-    using Microsoft.AspNetCore.Mvc;
 
     public class Startup
     {

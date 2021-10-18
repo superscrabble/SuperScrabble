@@ -1,7 +1,8 @@
 ﻿namespace SuperScrabble.WebApi.Controllers
 {
-    using SuperScrabble.InputModels.Users;
     using SuperScrabble.Services;
+    using SuperScrabble.WebApi.Extensions;
+    using SuperScrabble.InputModels.Users;
 
     using System;
     using System.Threading.Tasks;
@@ -22,18 +23,33 @@
         [HttpPut("username")]
         public async Task<ActionResult> UpdateUserName([FromBody] UpdateUserNameInputModel input)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState.GetErrors<UpdateUserNameInputModel>());
+            }
+
             throw new NotImplementedException(nameof(UpdateUserName));
         }
 
         [HttpPut("password")]
         public async Task<ActionResult> UpdatePassword([FromBody] UpdatePasswordInputModel input)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState.GetErrors<UpdatePasswordInputModel>());
+            }
+
             throw new NotImplementedException(nameof(UpdatePassword));
         }
 
         [HttpPut("email")]
-        public async Task<AcceptedAtActionResult> UpdateEmail([FromBody] UpdateEmailInputModel input)
+        public async Task<ActionResult> UpdateEmail([FromBody] UpdateEmailInputModel input)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState.GetErrors<UpdateEmailInputModel>());
+            }
+
             throw new NotImplementedException(nameof(UpdateEmail));
         }
     }

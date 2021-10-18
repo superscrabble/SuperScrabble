@@ -1,20 +1,21 @@
 ﻿namespace SuperScrabble.Services
 {
-    using SuperScrabble.Common;
     using SuperScrabble.Data;
+    using SuperScrabble.Common;
+    using SuperScrabble.Models;
+    using SuperScrabble.Utilities;
+    using SuperScrabble.ViewModels;
     using SuperScrabble.InputModels.Users;
     using SuperScrabble.LanguageResources;
-    using SuperScrabble.Models;
-    using SuperScrabble.ViewModels;
     using SuperScrabble.CustomExceptions.Users;
 
     using System;
+    using System.Linq;
+    using System.Text;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
     using System.Collections.Generic;
     using System.IdentityModel.Tokens.Jwt;
-    using System.Linq;
-    using System.Security.Claims;
-    using System.Text;
-    using System.Threading.Tasks;
 
     using Microsoft.AspNetCore.Identity;
     using Microsoft.IdentityModel.Tokens;
@@ -27,12 +28,14 @@
             ["DuplicateUserName"] = () => new()
             {
                 PropertyName = nameof(RegisterInputModel.UserName),
+                DisplayName = Resource.UserNameDisplayName,
                 ErrorMessages = new[] { Resource.UserNameAlreadyExists }
             },
 
             ["DuplicateEmail"] = () => new()
             {
                 PropertyName = nameof(RegisterInputModel.Email),
+                DisplayName = Resource.EmailAddressDisplayName,
                 ErrorMessages = new[] { Resource.EmailAddressAlreadyExists }
             }
         };
@@ -58,6 +61,7 @@
                 var errorViewModel = new ModelStateErrorViewModel
                 {
                     PropertyName = nameof(LoginInputModel.UserName),
+                    DisplayName = AttributesGetter.DisplayName<LoginInputModel>(nameof(LoginInputModel.UserName)),
                     ErrorMessages = new[] { Resource.UserNameDoesNotExist }
                 };
 
@@ -72,6 +76,7 @@
                 var errorViewModel = new ModelStateErrorViewModel
                 {
                     PropertyName = nameof(LoginInputModel.Password),
+                    DisplayName = AttributesGetter.DisplayName<LoginInputModel>(nameof(LoginInputModel.Password)),
                     ErrorMessages = new[] { Resource.PasswordIsInvalid }
                 };
 
@@ -124,9 +129,10 @@
                     new ModelStateErrorViewModel
                     {
                         PropertyName = nameof(LoginInputModel.UserName),
+                        DisplayName = AttributesGetter.DisplayName<LoginInputModel>(nameof(LoginInputModel.UserName)),
                         ErrorMessages = new[] { Resource.UserNameDoesNotExist }
                     }
-                }); 
+                });
             }
 
             return result;
@@ -150,18 +156,19 @@
         public async Task DeleteAsync(string userName)
         {
             IdentityResult result = await _userManager.DeleteAsync(await GetAsync(userName));
-                
-            if(!result.Succeeded)
+
+            if (!result.Succeeded)
             {
                 //TODO: think of a better handling of DeleteAsync errors
 
                 List<ModelStateErrorViewModel> errors = new();
 
-                foreach(var error in result.Errors)
+                foreach (var error in result.Errors)
                 {
                     errors.Add(new ModelStateErrorViewModel
                     {
                         PropertyName = error.Code,
+                        DisplayName = error.Code,
                         ErrorMessages = new[] { error.Description }
                     });
                 }

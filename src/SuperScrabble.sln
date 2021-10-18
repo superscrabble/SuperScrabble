@@ -41,6 +41,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SuperScrabble.CustomValidat
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SuperScrabble.CustomExceptions", "Common\SuperScrabble.CustomExceptions\SuperScrabble.CustomExceptions.csproj", "{2F1DB81C-0305-4D15-A130-FBEFE09CC115}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SuperScrabble.Utilities", "Common\SuperScrabble.Utilities\SuperScrabble.Utilities.csproj", "{FFEC0981-0F2A-419D-B712-BE4A53E9C276}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -99,6 +101,10 @@ Global
 		{2F1DB81C-0305-4D15-A130-FBEFE09CC115}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2F1DB81C-0305-4D15-A130-FBEFE09CC115}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2F1DB81C-0305-4D15-A130-FBEFE09CC115}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FFEC0981-0F2A-419D-B712-BE4A53E9C276}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FFEC0981-0F2A-419D-B712-BE4A53E9C276}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FFEC0981-0F2A-419D-B712-BE4A53E9C276}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FFEC0981-0F2A-419D-B712-BE4A53E9C276}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -117,6 +123,7 @@ Global
 		{16C41513-214D-4EB4-9721-4FC81DC09264} = {A7DB1825-7E2F-4125-BE6A-2905B068FDBB}
 		{9F74F8A9-C7BE-457A-B159-60B793CF2548} = {7CDE07F6-CE61-4B5B-BE93-ABA6E019C498}
 		{2F1DB81C-0305-4D15-A130-FBEFE09CC115} = {7CDE07F6-CE61-4B5B-BE93-ABA6E019C498}
+		{FFEC0981-0F2A-419D-B712-BE4A53E9C276} = {7CDE07F6-CE61-4B5B-BE93-ABA6E019C498}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F9BC309A-4B7E-4CE1-B09E-AEC8E61A0750}
