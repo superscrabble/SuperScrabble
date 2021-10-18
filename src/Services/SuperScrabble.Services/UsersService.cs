@@ -1,7 +1,6 @@
 ﻿namespace SuperScrabble.Services
 {
     using SuperScrabble.Common;
-    using SuperScrabble.CustomExceptions;
     using SuperScrabble.Data;
     using SuperScrabble.InputModels;
     using SuperScrabble.LanguageResources;
@@ -19,6 +18,7 @@
     using Microsoft.AspNetCore.Identity;
     using Microsoft.IdentityModel.Tokens;
     using Microsoft.EntityFrameworkCore;
+    using SuperScrabble.CustomExceptions.Users;
 
     public class UsersService : IUsersService
     {
@@ -62,7 +62,7 @@
                 };
 
                 errors.Add(errorViewModel);
-                throw new LoginFailedException(errors);
+                throw new LoginUserFailedException(errors);
             }
 
             var result = await _signInManager.CheckPasswordSignInAsync(user, input.Password, lockoutOnFailure: false);
@@ -76,7 +76,7 @@
                 };
 
                 errors.Add(errorViewModel);
-                throw new LoginFailedException(errors);
+                throw new LoginUserFailedException(errors);
             }
 
             return GenerateToken(input.UserName);
@@ -109,31 +109,8 @@
                     }
                 }
 
-                throw new RegisterFailedException(errors);
+                throw new RegisterUserFailedException(errors);
             }
-        }
-
-        private static string GenerateToken(string userName)
-        {
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var keyBytes = Encoding.UTF8.GetBytes(GlobalConstants.EncryptionKey);
-
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(new[]
-                {
-                    new Claim(ClaimTypes.Name, userName)
-                }),
-
-                Expires = DateTime.UtcNow.AddDays(1),
-
-                SigningCredentials = new SigningCredentials(
-                                            new SymmetricSecurityKey(keyBytes),
-                                            SecurityAlgorithms.HmacSha256Signature)
-            };
-
-            SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
-            return tokenHandler.WriteToken(token);
         }
 
         public async Task<AppUser> GetAsync(string userName)
@@ -180,6 +157,29 @@
 
                 throw new DeleteUserFailedException(errors);
             }
+        }
+
+        private static string GenerateToken(string userName)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var keyBytes = Encoding.UTF8.GetBytes(GlobalConstants.EncryptionKey);
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new[]
+                {
+                    new Claim(ClaimTypes.Name, userName)
+                }),
+
+                Expires = DateTime.UtcNow.AddDays(1),
+
+                SigningCredentials = new SigningCredentials(
+                                            new SymmetricSecurityKey(keyBytes),
+                                            SecurityAlgorithms.HmacSha256Signature)
+            };
+
+            SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
         }
     }
 }

@@ -2,7 +2,6 @@
 {
     using SuperScrabble.InputModels;
     using SuperScrabble.Services;
-    using SuperScrabble.CustomExceptions;
     using SuperScrabble.WebApi.Extensions;
 
     using System.Threading.Tasks;
@@ -10,6 +9,7 @@
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using SuperScrabble.Models;
+    using SuperScrabble.CustomExceptions.Users;
 
     [ApiController]
     [Route("api/[controller]")]
@@ -67,7 +67,7 @@
                     Token = await _usersService.AuthenticateAsync(input)
                 });
             }
-            catch (LoginFailedException ex)
+            catch (LoginUserFailedException ex)
             {
                 return BadRequest(ex.Errors);
             }
@@ -86,7 +86,7 @@
                 await _usersService.CreateAsync(input);
                 return Ok();
             }
-            catch (RegisterFailedException ex)
+            catch (RegisterUserFailedException ex)
             {
                 return BadRequest(ex.Errors);
             }
@@ -101,7 +101,7 @@
                 await _usersService.DeleteAsync(userName);
                 return Ok();
             }
-            catch(ModelStateFailedException ex)
+            catch(UserOperationFailedException ex)
                 when (ex is GetUserFailedException 
                       || ex is DeleteUserFailedException)
             {
