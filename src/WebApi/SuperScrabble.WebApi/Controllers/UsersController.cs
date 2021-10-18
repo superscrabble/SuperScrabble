@@ -3,6 +3,7 @@
     using SuperScrabble.InputModels;
     using SuperScrabble.Services;
     using SuperScrabble.CustomExceptions;
+    using SuperScrabble.WebApi.Extensions;
 
     using System.Threading.Tasks;
 
@@ -38,6 +39,11 @@
         [HttpPost("login")]
         public async Task<ActionResult> Login([FromBody] LoginInputModel input)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState.Errors());
+            }
+
             try
             {
                 return Ok(new
@@ -47,13 +53,18 @@
             }
             catch (LoginFailedException ex)
             {
-                return Unauthorized(ex.Errors);
+                return BadRequest(ex.Errors);
             }
         }
 
         [HttpPost("register")]
         public async Task<ActionResult> Register([FromBody] RegisterInputModel input)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState.Errors());
+            }
+
             try
             {
                 await _usersService.RegisterAsync(input);
@@ -61,7 +72,7 @@
             }
             catch (RegisterFailedException ex)
             {
-                return Unauthorized(ex.Errors);
+                return BadRequest(ex.Errors);
             }
         }
     }

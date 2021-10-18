@@ -1,7 +1,5 @@
 ﻿namespace SuperScrabble.Services
 {
-    using Microsoft.AspNetCore.Identity;
-    using Microsoft.IdentityModel.Tokens;
     using SuperScrabble.Common;
     using SuperScrabble.CustomExceptions;
     using SuperScrabble.Data;
@@ -9,6 +7,7 @@
     using SuperScrabble.LanguageResources;
     using SuperScrabble.Models;
     using SuperScrabble.ViewModels;
+
     using System;
     using System.Collections.Generic;
     using System.IdentityModel.Tokens.Jwt;
@@ -17,17 +16,20 @@
     using System.Text;
     using System.Threading.Tasks;
 
+    using Microsoft.AspNetCore.Identity;
+    using Microsoft.IdentityModel.Tokens;
+
     public class UsersService : IUsersService
     {
-        private static readonly Dictionary<string, ModelStateErrorViewModel> ErrorCodesAndViewModels = new()
+        private static readonly Dictionary<string, Func<ModelStateErrorViewModel>> ErrorCodesAndViewModels = new()
         {
-            ["DuplicateUserName"] = new()
+            ["DuplicateUserName"] = () => new()
             {
                 PropertyName = nameof(RegisterInputModel.UserName),
                 ErrorMessages = new[] { Resource.UserNameAlreadyExists }
             },
 
-            ["DuplicateEmail"] = new()
+            ["DuplicateEmail"] = () => new()
             {
                 PropertyName = nameof(RegisterInputModel.Email),
                 ErrorMessages = new[] { Resource.EmailAddressAlreadyExists }
@@ -98,7 +100,7 @@
                 {
                     if (ErrorCodesAndViewModels.ContainsKey(error.Code))
                     {
-                        errors.Add(ErrorCodesAndViewModels[error.Code]);
+                        errors.Add(ErrorCodesAndViewModels[error.Code].Invoke());
                     }
                 }
 

@@ -3,8 +3,10 @@ namespace SuperScrabble.WebApi
     using SuperScrabble.Common;
     using SuperScrabble.Data;
     using SuperScrabble.Models;
+    using SuperScrabble.Services;
 
     using System.Text;
+    using System.Globalization;
     using System.Threading.Tasks;
 
     using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -17,12 +19,11 @@ namespace SuperScrabble.WebApi
     using Microsoft.Extensions.Hosting;
     using Microsoft.IdentityModel.Tokens;
     using Microsoft.AspNetCore.Identity;
-    using System.Globalization;
     using Microsoft.AspNetCore.Localization;
     using Microsoft.Extensions.Options;
 
     using static SuperScrabble.Common.ModelValidationConstraints;
-    using SuperScrabble.Services;
+    using Microsoft.AspNetCore.Mvc;
 
     public class Startup
     {
@@ -54,6 +55,11 @@ namespace SuperScrabble.WebApi
                     };
                 })
                 .AddEntityFrameworkStores<AppDbContext>();
+
+            services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.SuppressModelStateInvalidFilter = true;
+            });
 
             AddLocalization(services);
 

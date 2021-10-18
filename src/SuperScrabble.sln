@@ -39,7 +39,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SuperScrabble.LanguageResou
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SuperScrabble.CustomValidationAttributes", "Common\SuperScrabble.CustomValidationAttributes\SuperScrabble.CustomValidationAttributes.csproj", "{9F74F8A9-C7BE-457A-B159-60B793CF2548}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SuperScrabble.CustomExceptions", "Common\SuperScrabble.CustomExceptions\SuperScrabble.CustomExceptions.csproj", "{2F1DB81C-0305-4D15-A130-FBEFE09CC115}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SuperScrabble.CustomExceptions", "Common\SuperScrabble.CustomExceptions\SuperScrabble.CustomExceptions.csproj", "{2F1DB81C-0305-4D15-A130-FBEFE09CC115}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
