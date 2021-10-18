@@ -1,6 +1,7 @@
 ﻿namespace SuperScrabble.WebApi.Extensions
 {
     using SuperScrabble.ViewModels;
+    using SuperScrabble.Common;
 
     using System.Linq;
     using System.Collections.Generic;
@@ -9,11 +10,12 @@
 
     public static class ModelStateDictionaryExtension
     {
-        public static IEnumerable<ModelStateErrorViewModel> Errors(this ModelStateDictionary modelState)
+        public static IEnumerable<ModelStateErrorViewModel> GetErrors<TInputModel>(this ModelStateDictionary modelState)
         {
             return modelState.Keys.Select(key => new ModelStateErrorViewModel
             {
                 PropertyName = key,
+                DisplayName = AttributesGetter.DisplayName<TInputModel>(key),
                 ErrorMessages = modelState[key].Errors.Select(err => err.ErrorMessage)
             });
         }

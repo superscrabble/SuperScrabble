@@ -1,15 +1,15 @@
 ﻿namespace SuperScrabble.WebApi.Controllers
 {
-    using SuperScrabble.InputModels;
+    using SuperScrabble.Models;
     using SuperScrabble.Services;
     using SuperScrabble.WebApi.Extensions;
+    using SuperScrabble.InputModels.Users;
+    using SuperScrabble.CustomExceptions.Users;
 
     using System.Threading.Tasks;
 
-    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
-    using SuperScrabble.Models;
-    using SuperScrabble.CustomExceptions.Users;
+    using Microsoft.AspNetCore.Authorization;
 
     [ApiController]
     [Route("api/[controller]")]
@@ -36,28 +36,12 @@
             }
         }
 
-
-        [HttpGet("all")]
-        public ActionResult GetAll()
-        {
-            var usernames = new[] { "Steven", "John", "Michael", "Martin" };
-            return Ok(usernames);
-        }
-
-        [HttpGet("auth")]
-        [Authorize]
-        public ActionResult GetAllAuthenticated()
-        {
-            var usernames = new[] { "Steven Stevens", "John Doe", "Michael Jordan", "Martin Simons" };
-            return Ok(usernames);
-        }
-
         [HttpPost("login")]
         public async Task<ActionResult> Login([FromBody] LoginInputModel input)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState.Errors());
+                return BadRequest(ModelState.GetErrors<LoginInputModel>());
             }
 
             try
@@ -78,7 +62,7 @@
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState.Errors());
+                return BadRequest(ModelState.GetErrors<RegisterInputModel>());
             }
 
             try

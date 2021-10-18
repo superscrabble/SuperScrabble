@@ -90,5 +90,35 @@
 
         public static string UserNameAlreadyExists
             => ResourceManager.GetString(nameof(UserNameAlreadyExists), resourceCulture);
+
+        public static string OldUserNameIsRequired
+            => ResourceManager.GetString(nameof(OldUserNameIsRequired), resourceCulture);
+
+        public static string NewUserNameIsRequired
+            => ResourceManager.GetString(nameof(NewUserNameIsRequired), resourceCulture);
+
+        public static string NewUserNameDisplayName
+            => ResourceManager.GetString(nameof(NewUserNameDisplayName), resourceCulture);
+
+        public static string OldUserNameDisplayName
+            => ResourceManager.GetString(nameof(OldUserNameDisplayName), resourceCulture);
+
+        public static string OldPasswordIsRequired
+            => ResourceManager.GetString(nameof(OldPasswordIsRequired), resourceCulture);
+
+        public static string NewPasswordIsRequired
+            => ResourceManager.GetString(nameof(NewPasswordIsRequired), resourceCulture);
+
+        public static string OldPasswordDisplayName
+            => ResourceManager.GetString(nameof(OldPasswordDisplayName), resourceCulture);
+
+        public static string NewPasswordDisplayName
+            => ResourceManager.GetString(nameof(NewPasswordDisplayName), resourceCulture);
+
+        public static string OldEmailAddressDisplayName
+            => ResourceManager.GetString(nameof(OldEmailAddressDisplayName), resourceCulture);
+
+        public static string NewEmailAddressDisplayName
+            => ResourceManager.GetString(nameof(NewEmailAddressDisplayName), resourceCulture);
     }
 }

@@ -2,10 +2,11 @@
 {
     using SuperScrabble.Common;
     using SuperScrabble.Data;
-    using SuperScrabble.InputModels;
+    using SuperScrabble.InputModels.Users;
     using SuperScrabble.LanguageResources;
     using SuperScrabble.Models;
     using SuperScrabble.ViewModels;
+    using SuperScrabble.CustomExceptions.Users;
 
     using System;
     using System.Collections.Generic;
@@ -18,7 +19,6 @@
     using Microsoft.AspNetCore.Identity;
     using Microsoft.IdentityModel.Tokens;
     using Microsoft.EntityFrameworkCore;
-    using SuperScrabble.CustomExceptions.Users;
 
     public class UsersService : IUsersService
     {
@@ -123,7 +123,7 @@
                 {
                     new ModelStateErrorViewModel
                     {
-                        PropertyName = "UserName",
+                        PropertyName = nameof(LoginInputModel.UserName),
                         ErrorMessages = new[] { Resource.UserNameDoesNotExist }
                     }
                 }); 
@@ -132,8 +132,19 @@
             return result;
         }
 
-        public async Task UpdateAsync(UpdateInputModel input)
+        public async Task UpdateUserNameAsync(UpdateUserNameInputModel input)
         {
+            throw new NotImplementedException(nameof(UpdateUserNameAsync));
+        }
+
+        public async Task UpdatePasswordAsync(UpdatePasswordInputModel input)
+        {
+            throw new NotImplementedException(nameof(UpdatePasswordAsync));
+        }
+
+        public async Task UpdateEmailAsync(UpdateEmailInputModel input)
+        {
+            throw new NotImplementedException(nameof(UpdateEmailAsync));
         }
 
         public async Task DeleteAsync(string userName)

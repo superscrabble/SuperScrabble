@@ -1,4 +1,4 @@
-﻿namespace SuperScrabble.InputModels
+﻿namespace SuperScrabble.InputModels.Users
 {
     using SuperScrabble.LanguageResources;
     using SuperScrabble.CustomValidationAttributes.Email;

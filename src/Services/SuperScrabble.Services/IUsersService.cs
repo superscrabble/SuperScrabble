@@ -1,7 +1,8 @@
 ﻿namespace SuperScrabble.Services
 {
-    using SuperScrabble.InputModels;
+    using SuperScrabble.InputModels.Users;
     using SuperScrabble.Models;
+
     using System.Threading.Tasks;
 
     public interface IUsersService
@@ -12,7 +13,11 @@
 
         Task<AppUser> GetAsync(string userName);
 
-        Task UpdateAsync(UpdateInputModel input);
+        Task UpdateUserNameAsync(UpdateUserNameInputModel input);
+
+        Task UpdatePasswordAsync(UpdatePasswordInputModel input);
+
+        Task UpdateEmailAsync(UpdateEmailInputModel input);
         
         Task DeleteAsync(string userName);
     }

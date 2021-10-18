@@ -129,6 +129,36 @@
   <data name="EmailAddressIsRequired" xml:space="preserve">
     <value>Имейл адресът е задължителен</value>
   </data>
+  <data name="NewEmailAddressDisplayName" xml:space="preserve">
+    <value>Нов имейл адрес</value>
+  </data>
+  <data name="NewPasswordDisplayName" xml:space="preserve">
+    <value>Нова парола</value>
+  </data>
+  <data name="NewPasswordIsRequired" xml:space="preserve">
+    <value>Трябва да въведете нова парола</value>
+  </data>
+  <data name="NewUserNameDisplayName" xml:space="preserve">
+    <value>Ново потребителско име</value>
+  </data>
+  <data name="NewUserNameIsRequired" xml:space="preserve">
+    <value>Трябва да въведете ново потребителско име</value>
+  </data>
+  <data name="OldEmailAddressDisplayName" xml:space="preserve">
+    <value>Стар имейл адрес</value>
+  </data>
+  <data name="OldPasswordDisplayName" xml:space="preserve">
+    <value>Стара парола</value>
+  </data>
+  <data name="OldPasswordIsRequired" xml:space="preserve">
+    <value>Трябва да въведете старата парола</value>
+  </data>
+  <data name="OldUserNameDisplayName" xml:space="preserve">
+    <value>Старо потребителско име</value>
+  </data>
+  <data name="OldUserNameIsRequired" xml:space="preserve">
+    <value>Старото потребителско име е задължително</value>
+  </data>
   <data name="PasswordDisplayName" xml:space="preserve">
     <value>Парола</value>
   </data>
