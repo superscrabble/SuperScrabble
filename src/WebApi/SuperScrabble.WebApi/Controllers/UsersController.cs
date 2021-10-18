@@ -9,6 +9,7 @@
 
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
+    using SuperScrabble.Models;
 
     [ApiController]
     [Route("api/[controller]")]
@@ -20,6 +21,21 @@
         {
             _usersService = usersService;
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Get(string userName)
+        {
+            try
+            {
+                AppUser result = await _usersService.GetAsync(userName);
+                return Ok(result);
+            }
+            catch(GetUserFailedException ex)
+            {
+                return BadRequest(ex.Errors);
+            }
+        }
+
 
         [HttpGet("all")]
         public ActionResult GetAll()
@@ -47,7 +63,7 @@
             try
             {
                 return Ok(new
-                { 
+                {
                     Token = await _usersService.AuthenticateAsync(input)
                 });
             }
@@ -71,6 +87,23 @@
                 return Ok();
             }
             catch (RegisterFailedException ex)
+            {
+                return BadRequest(ex.Errors);
+            }
+        }
+
+        [HttpDelete]
+        [Authorize]
+        public async Task<IActionResult> Delete(string userName)
+        {
+            try
+            {
+                await _usersService.DeleteAsync(userName);
+                return Ok();
+            }
+            catch(ModelStateFailedException ex)
+                when (ex is GetUserFailedException 
+                      || ex is DeleteUserFailedException)
             {
                 return BadRequest(ex.Errors);
             }

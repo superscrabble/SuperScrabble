@@ -18,6 +18,7 @@
 
     using Microsoft.AspNetCore.Identity;
     using Microsoft.IdentityModel.Tokens;
+    using Microsoft.EntityFrameworkCore;
 
     public class UsersService : IUsersService
     {
@@ -102,6 +103,10 @@
                     {
                         errors.Add(ErrorCodesAndViewModels[error.Code].Invoke());
                     }
+                    else
+                    {
+                        //TODO: log unwritten error codes in a file?
+                    }
                 }
 
                 throw new RegisterFailedException(errors);
@@ -131,19 +136,50 @@
             return tokenHandler.WriteToken(token);
         }
 
-        public Task<AppUser> GetAsync(string userName)
+        public async Task<AppUser> GetAsync(string userName)
         {
-            throw new NotImplementedException();
+            AppUser result = await _dbContext.Users.FirstOrDefaultAsync(x => x.UserName == userName);
+
+            if (result == null)
+            {
+                throw new GetUserFailedException(new List<ModelStateErrorViewModel>()
+                {
+                    new ModelStateErrorViewModel
+                    {
+                        PropertyName = "UserName",
+                        ErrorMessages = new[] { Resource.UserNameDoesNotExist }
+                    }
+                }); 
+            }
+
+            return result;
         }
 
-        public Task UpdateAsync(UpdateInputModel input)
+        public async Task UpdateAsync(UpdateInputModel input)
         {
-            throw new NotImplementedException();
         }
 
-        public Task DeleteAsync(string userName)
+        public async Task DeleteAsync(string userName)
         {
-            throw new NotImplementedException();
+            IdentityResult result = await _userManager.DeleteAsync(await GetAsync(userName));
+                
+            if(!result.Succeeded)
+            {
+                //TODO: think of a better handling of DeleteAsync errors
+
+                List<ModelStateErrorViewModel> errors = new();
+
+                foreach(var error in result.Errors)
+                {
+                    errors.Add(new ModelStateErrorViewModel
+                    {
+                        PropertyName = error.Code,
+                        ErrorMessages = new[] { error.Description }
+                    });
+                }
+
+                throw new DeleteUserFailedException(errors);
+            }
         }
     }
 }
