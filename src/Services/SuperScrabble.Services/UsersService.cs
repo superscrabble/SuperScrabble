@@ -53,35 +53,32 @@
 
         public async Task<string> AuthenticateAsync(LoginInputModel input)
         {
-            AppUser user = _dbContext.Users.FirstOrDefault(user => user.UserName == input.UserName);
-            var errors = new List<ModelStateErrorViewModel>();
+            AppUser user;
 
-            if (user == null)
+            try
             {
-                var errorViewModel = new ModelStateErrorViewModel
-                {
-                    PropertyName = nameof(LoginInputModel.UserName),
-                    DisplayName = AttributesGetter.DisplayName<LoginInputModel>(nameof(LoginInputModel.UserName)),
-                    ErrorMessages = new[] { Resource.UserNameDoesNotExist }
-                };
-
-                errors.Add(errorViewModel);
-                throw new LoginUserFailedException(errors);
+                user = await GetAsync(input.UserName);
+            }
+            catch (GetUserFailedException ex)
+            {
+                throw new LoginUserFailedException() { Errors = ex.Errors };
             }
 
             var result = await _signInManager.CheckPasswordSignInAsync(user, input.Password, lockoutOnFailure: false);
 
             if (!result.Succeeded)
             {
-                var errorViewModel = new ModelStateErrorViewModel
+                var errors = new[]
                 {
-                    PropertyName = nameof(LoginInputModel.Password),
-                    DisplayName = AttributesGetter.DisplayName<LoginInputModel>(nameof(LoginInputModel.Password)),
-                    ErrorMessages = new[] { Resource.PasswordIsInvalid }
+                    new ModelStateErrorViewModel
+                    {
+                        PropertyName = nameof(LoginInputModel.Password),
+                        DisplayName = AttributesGetter.DisplayName<LoginInputModel>(nameof(LoginInputModel.Password)),
+                        ErrorMessages = new[] { Resource.PasswordIsInvalid }
+                    }
                 };
 
-                errors.Add(errorViewModel);
-                throw new LoginUserFailedException(errors);
+                throw new LoginUserFailedException { Errors = errors };
             }
 
             return GenerateToken(input.UserName);
@@ -100,31 +97,17 @@
 
             if (!result.Succeeded)
             {
-                var errors = new List<ModelStateErrorViewModel>();
-
-                foreach (IdentityError error in result.Errors)
-                {
-                    if (ErrorCodesAndViewModels.ContainsKey(error.Code))
-                    {
-                        errors.Add(ErrorCodesAndViewModels[error.Code].Invoke());
-                    }
-                    else
-                    {
-                        //TODO: log unwritten error codes in a file?
-                    }
-                }
-
-                throw new RegisterUserFailedException(errors);
+                HandleErrors<RegisterUserFailedException>(result);
             }
         }
 
         public async Task<AppUser> GetAsync(string userName)
         {
-            AppUser result = await _dbContext.Users.FirstOrDefaultAsync(x => x.UserName == userName);
+            AppUser user = await _dbContext.Users.FirstOrDefaultAsync(x => x.UserName == userName);
 
-            if (result == null)
+            if (user == null)
             {
-                throw new GetUserFailedException(new List<ModelStateErrorViewModel>()
+                var errors = new[]
                 {
                     new ModelStateErrorViewModel
                     {
@@ -132,10 +115,12 @@
                         DisplayName = AttributesGetter.DisplayName<LoginInputModel>(nameof(LoginInputModel.UserName)),
                         ErrorMessages = new[] { Resource.UserNameDoesNotExist }
                     }
-                });
+                };
+
+                throw new GetUserFailedException() { Errors = errors };
             }
 
-            return result;
+            return user;
         }
 
         public async Task UpdateUserNameAsync(UpdateUserNameInputModel input)
@@ -145,21 +130,7 @@
 
             if (!result.Succeeded)
             {
-                var errors = new List<ModelStateErrorViewModel>();
-
-                foreach (var error in result.Errors)
-                {
-                    if (ErrorCodesAndViewModels.ContainsKey(error.Code))
-                    {
-                        errors.Add(ErrorCodesAndViewModels[error.Code].Invoke());
-                    }
-                    else
-                    {
-                        //TODO: log unwritten error codes in a file?
-                    }
-                }
-
-                throw new UpdateUserFailedException(errors);
+                HandleErrors<UpdateUserFailedException>(result);
             }
         }
 
@@ -179,19 +150,7 @@
 
             if (!result.Succeeded)
             {
-                var errors = new List<ModelStateErrorViewModel>();
-
-                foreach (IdentityError error in result.Errors)
-                {
-                    errors.Add(new ModelStateErrorViewModel
-                    {
-                        PropertyName = error.Code,
-                        DisplayName = error.Code,
-                        ErrorMessages = new[] { error.Description }
-                    });
-                }
-
-                throw new DeleteUserFailedException(errors);
+                HandleErrors<DeleteUserFailedException>(result);
             }
         }
 
@@ -216,6 +175,31 @@
 
             SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
+        }
+
+        private void HandleErrors<TException>(IdentityResult identityResult) where TException : UserOperationFailedException, new()
+        {
+            var errors = new List<ModelStateErrorViewModel>();
+
+            foreach (IdentityError error in identityResult.Errors)
+            {
+                if (ErrorCodesAndViewModels.ContainsKey(error.Code))
+                {
+                    ModelStateErrorViewModel errorViewModel = ErrorCodesAndViewModels[error.Code].Invoke();
+                    errors.Add(errorViewModel);
+                }
+                else
+                {
+                    LogError(error);
+                }
+            }
+
+            throw new TException() { Errors = errors };
+        }
+
+        private void LogError(IdentityError error)
+        {
+            throw new NotImplementedException(nameof(LogError));
         }
     }
 }

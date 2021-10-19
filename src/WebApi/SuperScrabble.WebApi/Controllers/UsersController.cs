@@ -2,6 +2,7 @@
 {
     using SuperScrabble.Models;
     using SuperScrabble.Services;
+    using SuperScrabble.ViewModels;
     using SuperScrabble.WebApi.Extensions;
     using SuperScrabble.InputModels.Users;
     using SuperScrabble.CustomExceptions.Users;
@@ -27,12 +28,13 @@
         {
             try
             {
-                AppUser result = await _usersService.GetAsync(userName);
-                return Ok(result);
+                AppUser user = await _usersService.GetAsync(userName);
+                var userViewModel = new UserViewModel { UserName = user.UserName };
+                return Ok(userViewModel);
             }
             catch (GetUserFailedException ex)
             {
-                return BadRequest(ex.Errors);
+                return NotFound(ex.Errors);
             }
         }
 

@@ -7,11 +7,6 @@
 
     public abstract class ModelStateFailedException : Exception
     {
-        protected ModelStateFailedException(IEnumerable<ModelStateErrorViewModel> errors)
-        {
-            Errors = errors;
-        }
-
-        public IEnumerable<ModelStateErrorViewModel> Errors { get; }
+        public IEnumerable<ModelStateErrorViewModel> Errors { get; init; }
     }
 }
