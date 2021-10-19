@@ -25,14 +25,14 @@
     {
         private static readonly Dictionary<string, Func<ModelStateErrorViewModel>> ErrorCodesAndViewModels = new()
         {
-            ["DuplicateUserName"] = () => new()
+            [IdentityErrorCodes.DuplicateUserName] = () => new()
             {
                 PropertyName = nameof(RegisterInputModel.UserName),
                 DisplayName = Resource.UserNameDisplayName,
                 ErrorMessages = new[] { Resource.UserNameAlreadyExists }
             },
 
-            ["DuplicateEmail"] = () => new()
+            [IdentityErrorCodes.DuplicateEmail] = () => new()
             {
                 PropertyName = nameof(RegisterInputModel.Email),
                 DisplayName = Resource.EmailAddressDisplayName,
