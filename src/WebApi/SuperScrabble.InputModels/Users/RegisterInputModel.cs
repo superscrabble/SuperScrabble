@@ -18,7 +18,7 @@
 
         [Display(Name = nameof(Resource.EmailAddressDisplayName), ResourceType = typeof(Resource))]
         [ResourceRequired(nameof(Resource.EmailAddressIsRequired))]
-        [ValidEmailAddress]
+        [ValidEmailAddressAttribute]
 
         public string Email { get; init; }
 

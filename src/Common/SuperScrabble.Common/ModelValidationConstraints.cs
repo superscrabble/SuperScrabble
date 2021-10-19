@@ -11,5 +11,10 @@
             public const bool RequireNonAlphanumeric = true;
             public const int RequiredUniqueChars = 1;
         }
+
+        public static class Email
+        {
+            public const string Pattern = @"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$";
+        }
     }
 }
