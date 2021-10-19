@@ -6,6 +6,6 @@
     public static class AttributesGetter
     {
         public static string DisplayName<T>(string propertyName)
-             => typeof(T).GetProperty(propertyName).GetCustomAttribute<DisplayAttribute>()?.Name;
+             => typeof(T).GetProperty(propertyName).GetCustomAttribute<DisplayAttribute>()?.GetName();
     }
 }

@@ -12,6 +12,7 @@
     <ProjectReference Include="..\..\Common\SuperScrabble.CustomExceptions\SuperScrabble.CustomExceptions.csproj" />
     <ProjectReference Include="..\..\Common\SuperScrabble.Utilities\SuperScrabble.Utilities.csproj" />
     <ProjectReference Include="..\..\Data\SuperScrabble.Data\SuperScrabble.Data.csproj" />
+    <ProjectReference Include="..\..\Tests\SuperScrabble.Tests.WebApi\SuperScrabble.Tests.WebApi.csproj" />
     <ProjectReference Include="..\..\WebApi\SuperScrabble.InputModels\SuperScrabble.InputModels.csproj" />
   </ItemGroup>
 

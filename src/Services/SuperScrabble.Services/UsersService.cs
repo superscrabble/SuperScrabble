@@ -96,13 +96,13 @@
                 EmailConfirmed = false,
             };
 
-            var result = await _userManager.CreateAsync(user, input.Password);
+            IdentityResult result = await _userManager.CreateAsync(user, input.Password);
 
             if (!result.Succeeded)
             {
                 var errors = new List<ModelStateErrorViewModel>();
 
-                foreach (var error in result.Errors)
+                foreach (IdentityError error in result.Errors)
                 {
                     if (ErrorCodesAndViewModels.ContainsKey(error.Code))
                     {
@@ -179,11 +179,9 @@
 
             if (!result.Succeeded)
             {
-                //TODO: think of a better handling of DeleteAsync errors
+                var errors = new List<ModelStateErrorViewModel>();
 
-                List<ModelStateErrorViewModel> errors = new();
-
-                foreach (var error in result.Errors)
+                foreach (IdentityError error in result.Errors)
                 {
                     errors.Add(new ModelStateErrorViewModel
                     {
