@@ -1,19 +1,16 @@
 ﻿namespace SuperScrabble.WebApi.Controllers
 {
+    using SuperScrabble.Common;
     using SuperScrabble.Services;
     using SuperScrabble.WebApi.Extensions;
     using SuperScrabble.InputModels.Users;
+    using SuperScrabble.CustomExceptions.Users;
 
     using System;
     using System.Threading.Tasks;
 
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Authorization;
-    using SuperScrabble.CustomExceptions.Users;
-    using SuperScrabble.ViewModels;
-    using System.Collections.Generic;
-    using SuperScrabble.Utilities;
-    using SuperScrabble.LanguageResources;
 
     [ApiController]
     [Route("api/users/update")]
@@ -35,24 +32,19 @@
                 return BadRequest(ModelState.GetErrors<UpdateUserNameInputModel>());
             }
 
-            if(this.User.Identity.Name.Equals(input.OldUserName)
-                || this.User.IsInRole("Admin")) //TODO: put this into a global variable
-            {
-                try
-                {
-                    await this._usersService.UpdateUserNameAsync(input);
-                    return Ok(); //TODO: decide whether to return the new user
-                }
-                catch (UserOperationFailedException ex)
-                    when (ex is UpdateUserFailedException 
-                          || ex is GetUserFailedException)
-                {
-                    return BadRequest(ex.Errors);
-                }
-            }
-            else
+            if (!User.Identity.Name.Equals(input.OldUserName) && !User.IsInRole(GlobalConstants.Roles.Admin))
             {
                 return Unauthorized();
+            }
+
+            try
+            {
+                await _usersService.UpdateUserNameAsync(input);
+                return Ok();
+            }
+            catch (UserOperationFailedException ex)
+            {
+                return BadRequest(ex.Errors);
             }
         }
 

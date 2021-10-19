@@ -30,7 +30,7 @@
                 AppUser result = await _usersService.GetAsync(userName);
                 return Ok(result);
             }
-            catch(GetUserFailedException ex)
+            catch (GetUserFailedException ex)
             {
                 return BadRequest(ex.Errors);
             }
@@ -46,10 +46,8 @@
 
             try
             {
-                return Ok(new
-                {
-                    Token = await _usersService.AuthenticateAsync(input)
-                });
+                var token = new { Token = await _usersService.AuthenticateAsync(input) };
+                return Ok(token);
             }
             catch (LoginUserFailedException ex)
             {
@@ -85,9 +83,7 @@
                 await _usersService.DeleteAsync(userName);
                 return Ok();
             }
-            catch(UserOperationFailedException ex)
-                when (ex is GetUserFailedException 
-                      || ex is DeleteUserFailedException)
+            catch (UserOperationFailedException ex)
             {
                 return BadRequest(ex.Errors);
             }
