@@ -140,7 +140,27 @@
 
         public async Task UpdateUserNameAsync(UpdateUserNameInputModel input)
         {
-            throw new NotImplementedException(nameof(UpdateUserNameAsync));
+            AppUser user = await this.GetAsync(input.OldUserName);
+            IdentityResult result = await _userManager.SetUserNameAsync(user, input.NewUserName);
+
+            if (!result.Succeeded)
+            {
+                var errors = new List<ModelStateErrorViewModel>();
+
+                foreach (var error in result.Errors)
+                {
+                    if (ErrorCodesAndViewModels.ContainsKey(error.Code))
+                    {
+                        errors.Add(ErrorCodesAndViewModels[error.Code].Invoke());
+                    }
+                    else
+                    {
+                        //TODO: log unwritten error codes in a file?
+                    }
+                }
+
+                throw new UpdateUserFailedException(errors);
+            }
         }
 
         public async Task UpdatePasswordAsync(UpdatePasswordInputModel input)

@@ -8,6 +8,12 @@
     using System.Threading.Tasks;
 
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Authorization;
+    using SuperScrabble.CustomExceptions.Users;
+    using SuperScrabble.ViewModels;
+    using System.Collections.Generic;
+    using SuperScrabble.Utilities;
+    using SuperScrabble.LanguageResources;
 
     [ApiController]
     [Route("api/users/update")]
@@ -21,6 +27,7 @@
         }
 
         [HttpPut("username")]
+        [Authorize]
         public async Task<ActionResult> UpdateUserName([FromBody] UpdateUserNameInputModel input)
         {
             if (!ModelState.IsValid)
@@ -28,7 +35,25 @@
                 return BadRequest(ModelState.GetErrors<UpdateUserNameInputModel>());
             }
 
-            throw new NotImplementedException(nameof(UpdateUserName));
+            if(this.User.Identity.Name.Equals(input.OldUserName)
+                || this.User.IsInRole("Admin")) //TODO: put this into a global variable
+            {
+                try
+                {
+                    await this._usersService.UpdateUserNameAsync(input);
+                    return Ok(); //TODO: decide whether to return the new user
+                }
+                catch (UserOperationFailedException ex)
+                    when (ex is UpdateUserFailedException 
+                          || ex is GetUserFailedException)
+                {
+                    return BadRequest(ex.Errors);
+                }
+            }
+            else
+            {
+                return Unauthorized();
+            }
         }
 
         [HttpPut("password")]
