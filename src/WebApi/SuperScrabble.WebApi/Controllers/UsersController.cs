@@ -78,11 +78,11 @@
 
         [HttpDelete]
         [Authorize]
-        public async Task<IActionResult> Delete(string userName)
+        public async Task<IActionResult> Delete()
         {
             try
             {
-                await _usersService.DeleteAsync(userName);
+                await _usersService.DeleteAsync(User.Identity.Name);
                 return Ok();
             }
             catch (UserOperationFailedException ex)

@@ -10,12 +10,12 @@
     {
         [Display(Name = nameof(Resource.OldEmailAddressDisplayName), ResourceType = typeof(Resource))]
         [ResourceRequired(nameof(Resource.EmailAddressIsRequired))]
-        [ValidEmailAddressAttribute]
+        [ValidEmailAddress]
         public string OldEmail { get; init; }
 
         [Display(Name = nameof(Resource.NewEmailAddressDisplayName), ResourceType = typeof(Resource))]
         [ResourceRequired(nameof(Resource.EmailAddressIsRequired))]
-        [ValidEmailAddressAttribute]
+        [ValidEmailAddress]
         public string NewEmail { get; init; }
     }
 }

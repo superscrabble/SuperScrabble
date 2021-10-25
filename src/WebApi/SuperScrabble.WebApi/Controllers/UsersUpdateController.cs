@@ -1,12 +1,10 @@
 ﻿namespace SuperScrabble.WebApi.Controllers
 {
-    using SuperScrabble.Common;
     using SuperScrabble.Services;
     using SuperScrabble.WebApi.Extensions;
     using SuperScrabble.InputModels.Users;
     using SuperScrabble.CustomExceptions.Users;
 
-    using System;
     using System.Threading.Tasks;
 
     using Microsoft.AspNetCore.Mvc;
@@ -32,15 +30,10 @@
                 return BadRequest(ModelState.GetErrors<UpdateUserNameInputModel>());
             }
 
-            if (!User.Identity.Name.Equals(input.OldUserName) && !User.IsInRole(GlobalConstants.Roles.Admin))
-            {
-                return Unauthorized();
-            }
-
             try
             {
-                await _usersService.UpdateUserNameAsync(input);
-                return Ok();
+                string token = await _usersService.UpdateUserNameAsync(input, User.Identity.Name);
+                return Ok(new { Token = token });
             }
             catch (UserOperationFailedException ex)
             {
@@ -49,6 +42,7 @@
         }
 
         [HttpPut("password")]
+        [Authorize]
         public async Task<ActionResult> UpdatePassword([FromBody] UpdatePasswordInputModel input)
         {
             if (!ModelState.IsValid)
@@ -56,10 +50,19 @@
                 return BadRequest(ModelState.GetErrors<UpdatePasswordInputModel>());
             }
 
-            throw new NotImplementedException(nameof(UpdatePassword));
+            try
+            {
+                await _usersService.UpdatePasswordAsync(input, User.Identity.Name);
+                return Ok();
+            }
+            catch (UpdateUserFailedException ex)
+            {
+                return BadRequest(ex.Errors);
+            }
         }
 
         [HttpPut("email")]
+        [Authorize]
         public async Task<ActionResult> UpdateEmail([FromBody] UpdateEmailInputModel input)
         {
             if (!ModelState.IsValid)
@@ -67,7 +70,15 @@
                 return BadRequest(ModelState.GetErrors<UpdateEmailInputModel>());
             }
 
-            throw new NotImplementedException(nameof(UpdateEmail));
+            try
+            {
+                await _usersService.UpdateEmailAsync(input, User.Identity.Name);
+                return Ok();
+            }
+            catch (UpdateUserFailedException ex)
+            {
+                return BadRequest(ex.Errors);
+            }
         }
     }
 }

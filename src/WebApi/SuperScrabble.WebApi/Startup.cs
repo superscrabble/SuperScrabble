@@ -54,7 +54,8 @@ namespace SuperScrabble.WebApi
                         RequiredUniqueChars = Password.RequiredUniqueChars,
                     };
                 })
-                .AddEntityFrameworkStores<AppDbContext>();
+                .AddEntityFrameworkStores<AppDbContext>()
+                .AddDefaultTokenProviders();
 
             services.Configure<ApiBehaviorOptions>(options =>
             {

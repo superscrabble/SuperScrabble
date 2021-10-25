@@ -10,7 +10,6 @@
     using SuperScrabble.CustomExceptions.Users;
 
     using System;
-    using System.Linq;
     using System.Text;
     using System.Security.Claims;
     using System.Threading.Tasks;
@@ -20,6 +19,7 @@
     using Microsoft.AspNetCore.Identity;
     using Microsoft.IdentityModel.Tokens;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.AspNetCore.WebUtilities;
 
     public class UsersService : IUsersService
     {
@@ -53,16 +53,7 @@
 
         public async Task<string> AuthenticateAsync(LoginInputModel input)
         {
-            AppUser user;
-
-            try
-            {
-                user = await GetAsync(input.UserName);
-            }
-            catch (GetUserFailedException ex)
-            {
-                throw new LoginUserFailedException() { Errors = ex.Errors };
-            }
+            AppUser user = await WrapGetAsync<LoginUserFailedException>(input.UserName);
 
             var result = await _signInManager.CheckPasswordSignInAsync(user, input.Password, lockoutOnFailure: false);
 
@@ -123,10 +114,25 @@
             return user;
         }
 
-        public async Task UpdateUserNameAsync(UpdateUserNameInputModel input)
+        public async Task<string> UpdateUserNameAsync(UpdateUserNameInputModel input, string oldUserName)
         {
-            AppUser user = await this.GetAsync(input.OldUserName);
+            AppUser user = await WrapGetAsync<UpdateUserFailedException>(oldUserName);
+
             IdentityResult result = await _userManager.SetUserNameAsync(user, input.NewUserName);
+
+            if (!result.Succeeded)
+            {
+                HandleErrors<UpdateUserFailedException>(result);
+            }
+
+            return GenerateToken(input.NewUserName);
+        }
+
+        public async Task UpdatePasswordAsync(UpdatePasswordInputModel input, string userName)
+        {
+            AppUser user = await WrapGetAsync<UpdateUserFailedException>(userName);
+
+            IdentityResult result = await _userManager.ChangePasswordAsync(user, input.OldPassword, input.NewPassword);
 
             if (!result.Succeeded)
             {
@@ -134,24 +140,70 @@
             }
         }
 
-        public async Task UpdatePasswordAsync(UpdatePasswordInputModel input)
+        public async Task UpdateEmailAsync(UpdateEmailInputModel input, string userName)
         {
-            throw new NotImplementedException(nameof(UpdatePasswordAsync));
-        }
+            AppUser user = await WrapGetAsync<UpdateUserFailedException>(userName);
 
-        public async Task UpdateEmailAsync(UpdateEmailInputModel input)
-        {
-            throw new NotImplementedException(nameof(UpdateEmailAsync));
+            string encodedToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            string decodedToken = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(encodedToken));
+
+            IdentityResult result = await _userManager.ChangeEmailAsync(user, input.NewEmail, decodedToken);
+
+            if (!result.Succeeded)
+            {
+                HandleErrors<UpdateUserFailedException>(result);
+            }
         }
 
         public async Task DeleteAsync(string userName)
         {
-            IdentityResult result = await _userManager.DeleteAsync(await GetAsync(userName));
+            AppUser user = await WrapGetAsync<DeleteUserFailedException>(userName);
+
+            IdentityResult result = await _userManager.DeleteAsync(user);
 
             if (!result.Succeeded)
             {
                 HandleErrors<DeleteUserFailedException>(result);
             }
+        }
+
+        private async Task<AppUser> WrapGetAsync<TThrownException>(string userName) 
+            where TThrownException : UserOperationFailedException, new()
+        {
+            try
+            {
+                return await GetAsync(userName);
+            }
+            catch (GetUserFailedException ex)
+            {
+                throw new TThrownException() { Errors = ex.Errors };
+            }
+        }
+
+        private void HandleErrors<TException>(IdentityResult identityResult) 
+            where TException : UserOperationFailedException, new()
+        {
+            var errors = new List<ModelStateErrorViewModel>();
+
+            foreach (IdentityError error in identityResult.Errors)
+            {
+                if (ErrorCodesAndViewModels.ContainsKey(error.Code))
+                {
+                    ModelStateErrorViewModel errorViewModel = ErrorCodesAndViewModels[error.Code].Invoke();
+                    errors.Add(errorViewModel);
+                }
+                else
+                {
+                    LogError(error);
+                }
+            }
+
+            throw new TException() { Errors = errors };
+        }
+
+        private void LogError(IdentityError error)
+        {
+            throw new NotImplementedException(nameof(LogError));
         }
 
         private static string GenerateToken(string userName)
@@ -175,31 +227,6 @@
 
             SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
-        }
-
-        private void HandleErrors<TException>(IdentityResult identityResult) where TException : UserOperationFailedException, new()
-        {
-            var errors = new List<ModelStateErrorViewModel>();
-
-            foreach (IdentityError error in identityResult.Errors)
-            {
-                if (ErrorCodesAndViewModels.ContainsKey(error.Code))
-                {
-                    ModelStateErrorViewModel errorViewModel = ErrorCodesAndViewModels[error.Code].Invoke();
-                    errors.Add(errorViewModel);
-                }
-                else
-                {
-                    LogError(error);
-                }
-            }
-
-            throw new TException() { Errors = errors };
-        }
-
-        private void LogError(IdentityError error)
-        {
-            throw new NotImplementedException(nameof(LogError));
         }
     }
 }

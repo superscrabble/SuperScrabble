@@ -13,11 +13,11 @@
 
         Task<AppUser> GetAsync(string userName);
 
-        Task UpdateUserNameAsync(UpdateUserNameInputModel input);
+        Task<string> UpdateUserNameAsync(UpdateUserNameInputModel input, string oldUserName);
 
-        Task UpdatePasswordAsync(UpdatePasswordInputModel input);
+        Task UpdatePasswordAsync(UpdatePasswordInputModel input, string userName);
 
-        Task UpdateEmailAsync(UpdateEmailInputModel input);
+        Task UpdateEmailAsync(UpdateEmailInputModel input, string userName);
         
         Task DeleteAsync(string userName);
     }
