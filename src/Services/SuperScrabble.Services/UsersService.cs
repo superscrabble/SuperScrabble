@@ -19,7 +19,6 @@
     using Microsoft.AspNetCore.Identity;
     using Microsoft.IdentityModel.Tokens;
     using Microsoft.EntityFrameworkCore;
-    using Microsoft.AspNetCore.WebUtilities;
 
     public class UsersService : IUsersService
     {
@@ -142,17 +141,7 @@
 
         public async Task UpdateEmailAsync(UpdateEmailInputModel input, string userName)
         {
-            AppUser user = await WrapGetAsync<UpdateUserFailedException>(userName);
-
-            string encodedToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            string decodedToken = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(encodedToken));
-
-            IdentityResult result = await _userManager.ChangeEmailAsync(user, input.NewEmail, decodedToken);
-
-            if (!result.Succeeded)
-            {
-                HandleErrors<UpdateUserFailedException>(result);
-            }
+            throw new NotImplementedException(nameof(UpdateEmailAsync));
         }
 
         public async Task DeleteAsync(string userName)
