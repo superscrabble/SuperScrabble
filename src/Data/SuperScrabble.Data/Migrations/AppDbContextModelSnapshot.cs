@@ -215,6 +215,243 @@ namespace SuperScrabble.Data.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("SuperScrabble.Models.Dictionary.CommunionType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CommunionTypes");
+                });
+
+            modelBuilder.Entity("SuperScrabble.Models.Dictionary.GrammaticalGender", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("GrammaticalGenders");
+                });
+
+            modelBuilder.Entity("SuperScrabble.Models.Dictionary.LexicalCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("LexicalCategories");
+                });
+
+            modelBuilder.Entity("SuperScrabble.Models.Dictionary.Meaning", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Meanings");
+                });
+
+            modelBuilder.Entity("SuperScrabble.Models.Dictionary.PronounType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PronounTypes");
+                });
+
+            modelBuilder.Entity("SuperScrabble.Models.Dictionary.Tense", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Tenses");
+                });
+
+            modelBuilder.Entity("SuperScrabble.Models.Dictionary.ViewPoint", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ViewPoints");
+                });
+
+            modelBuilder.Entity("SuperScrabble.Models.Dictionary.Word", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("LexicalCategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("MainFormId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MeaningId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LexicalCategoryId");
+
+                    b.HasIndex("MainFormId");
+
+                    b.HasIndex("MeaningId");
+
+                    b.ToTable("Words");
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("Word");
+                });
+
+            modelBuilder.Entity("SuperScrabble.Models.Dictionary.Adjective", b =>
+                {
+                    b.HasBaseType("SuperScrabble.Models.Dictionary.Word");
+
+                    b.Property<int?>("ArticleType")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("GrammaticalGenderId")
+                        .HasColumnType("int");
+
+                    b.Property<bool?>("IsPlural")
+                        .HasColumnType("bit");
+
+                    b.HasIndex("GrammaticalGenderId");
+
+                    b.HasDiscriminator().HasValue("Adjective");
+                });
+
+            modelBuilder.Entity("SuperScrabble.Models.Dictionary.Communion", b =>
+                {
+                    b.HasBaseType("SuperScrabble.Models.Dictionary.Word");
+
+                    b.Property<int?>("ArticleType")
+                        .ValueGeneratedOnUpdateSometimes()
+                        .HasColumnType("int");
+
+                    b.Property<int?>("GrammaticalGenderId")
+                        .ValueGeneratedOnUpdateSometimes()
+                        .HasColumnType("int");
+
+                    b.Property<bool?>("IsPlural")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("TypeId")
+                        .HasColumnType("int");
+
+                    b.HasIndex("GrammaticalGenderId");
+
+                    b.HasIndex("TypeId");
+
+                    b.HasDiscriminator().HasValue("Communion");
+                });
+
+            modelBuilder.Entity("SuperScrabble.Models.Dictionary.Noun", b =>
+                {
+                    b.HasBaseType("SuperScrabble.Models.Dictionary.Word");
+
+                    b.Property<int?>("ArticleType")
+                        .ValueGeneratedOnUpdateSometimes()
+                        .HasColumnType("int");
+
+                    b.Property<int?>("GrammaticalGenderId")
+                        .ValueGeneratedOnUpdateSometimes()
+                        .HasColumnType("int");
+
+                    b.Property<bool?>("IsPlural")
+                        .ValueGeneratedOnUpdateSometimes()
+                        .HasColumnType("bit");
+
+                    b.HasIndex("GrammaticalGenderId");
+
+                    b.HasDiscriminator().HasValue("Noun");
+                });
+
+            modelBuilder.Entity("SuperScrabble.Models.Dictionary.Verb", b =>
+                {
+                    b.HasBaseType("SuperScrabble.Models.Dictionary.Word");
+
+                    b.Property<bool>("IsImperative")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("IsPlural")
+                        .ValueGeneratedOnUpdateSometimes()
+                        .HasColumnType("bit");
+
+                    b.Property<int>("TenseId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ViewPointId")
+                        .HasColumnType("int");
+
+                    b.HasIndex("TenseId");
+
+                    b.HasIndex("ViewPointId");
+
+                    b.HasDiscriminator().HasValue("Verb");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("SuperScrabble.Models.AppRole", null)
@@ -264,6 +501,100 @@ namespace SuperScrabble.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("SuperScrabble.Models.Dictionary.Word", b =>
+                {
+                    b.HasOne("SuperScrabble.Models.Dictionary.LexicalCategory", "LexicalCategory")
+                        .WithMany("Words")
+                        .HasForeignKey("LexicalCategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SuperScrabble.Models.Dictionary.Word", "MainForm")
+                        .WithMany("Subforms")
+                        .HasForeignKey("MainFormId");
+
+                    b.HasOne("SuperScrabble.Models.Dictionary.Meaning", "Meaning")
+                        .WithMany("Words")
+                        .HasForeignKey("MeaningId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("LexicalCategory");
+
+                    b.Navigation("MainForm");
+
+                    b.Navigation("Meaning");
+                });
+
+            modelBuilder.Entity("SuperScrabble.Models.Dictionary.Adjective", b =>
+                {
+                    b.HasOne("SuperScrabble.Models.Dictionary.GrammaticalGender", "GrammaticalGender")
+                        .WithMany()
+                        .HasForeignKey("GrammaticalGenderId");
+
+                    b.Navigation("GrammaticalGender");
+                });
+
+            modelBuilder.Entity("SuperScrabble.Models.Dictionary.Communion", b =>
+                {
+                    b.HasOne("SuperScrabble.Models.Dictionary.GrammaticalGender", "GrammaticalGender")
+                        .WithMany()
+                        .HasForeignKey("GrammaticalGenderId");
+
+                    b.HasOne("SuperScrabble.Models.Dictionary.CommunionType", "Type")
+                        .WithMany()
+                        .HasForeignKey("TypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("GrammaticalGender");
+
+                    b.Navigation("Type");
+                });
+
+            modelBuilder.Entity("SuperScrabble.Models.Dictionary.Noun", b =>
+                {
+                    b.HasOne("SuperScrabble.Models.Dictionary.GrammaticalGender", "GrammaticalGender")
+                        .WithMany()
+                        .HasForeignKey("GrammaticalGenderId");
+
+                    b.Navigation("GrammaticalGender");
+                });
+
+            modelBuilder.Entity("SuperScrabble.Models.Dictionary.Verb", b =>
+                {
+                    b.HasOne("SuperScrabble.Models.Dictionary.Tense", "Tense")
+                        .WithMany()
+                        .HasForeignKey("TenseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SuperScrabble.Models.Dictionary.ViewPoint", "ViewPoint")
+                        .WithMany()
+                        .HasForeignKey("ViewPointId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Tense");
+
+                    b.Navigation("ViewPoint");
+                });
+
+            modelBuilder.Entity("SuperScrabble.Models.Dictionary.LexicalCategory", b =>
+                {
+                    b.Navigation("Words");
+                });
+
+            modelBuilder.Entity("SuperScrabble.Models.Dictionary.Meaning", b =>
+                {
+                    b.Navigation("Words");
+                });
+
+            modelBuilder.Entity("SuperScrabble.Models.Dictionary.Word", b =>
+                {
+                    b.Navigation("Subforms");
                 });
 #pragma warning restore 612, 618
         }
