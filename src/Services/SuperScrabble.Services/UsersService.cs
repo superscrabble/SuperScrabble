@@ -139,7 +139,7 @@
             }
         }
 
-        public async Task UpdateEmailAsync(UpdateEmailInputModel input, string userName)
+        public Task UpdateEmailAsync(UpdateEmailInputModel input, string userName)
         {
             throw new NotImplementedException(nameof(UpdateEmailAsync));
         }
