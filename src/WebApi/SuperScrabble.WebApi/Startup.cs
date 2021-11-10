@@ -38,6 +38,15 @@ namespace SuperScrabble.WebApi
         {
             services.AddDbContext<AppDbContext>();
 
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(builder =>
+                {
+                    //Front-end cors
+                    builder.WithOrigins("https://localhost:4200", "http://localhost:4200").AllowAnyHeader().AllowAnyMethod();
+                });
+            });
+
             services
                 .AddIdentity<AppUser, AppRole>(options =>
                 {
@@ -90,6 +99,8 @@ namespace SuperScrabble.WebApi
             UseLocalization(app);
 
             app.UseRouting();
+
+            app.UseCors();
 
             app.UseAuthentication();
 
