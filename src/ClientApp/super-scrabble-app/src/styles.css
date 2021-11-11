@@ -1,1 +1,13 @@
-/* You can add global styles to this file, and also import other style files */
+@font-face {
+    font-family: Regular;
+    src: url("./assets/fonts/static/ADYS-Regular-V5-4.ttf");
+}
+
+@font-face {
+    font-family: Bold;
+    src: url("./assets/fonts/static/ADYS-Bold-V5-4.ttf");
+}
+
+* {
+    font-family: 'Regular', sans-serif;
+}
