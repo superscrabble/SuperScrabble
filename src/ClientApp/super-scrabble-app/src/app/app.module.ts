@@ -11,22 +11,25 @@ import { AppComponent } from './app.component';
 import { RegisterFormComponent } from './pages/register-form/register-form.component';
 import { LoginFormComponent } from './pages/login-form/login-form.component';
 import { HomeComponent } from './pages/home/home.component';
+import { NavbarComponent } from './pages/navbar/navbar.component';
+import { Utilities } from './common/utilities';
 
 @NgModule({
   declarations: [
     AppComponent,
     RegisterFormComponent,
     LoginFormComponent,
-    HomeComponent
+    HomeComponent,
+    NavbarComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
     FormsModule,
-    NgbModule
+    NgbModule,
   ],
-  providers: [],
+  providers: [ Utilities ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

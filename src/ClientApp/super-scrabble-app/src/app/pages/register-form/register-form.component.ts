@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { HttpClient, HttpResponse } from '@angular/common/http';
+import { HttpResponse } from '@angular/common/http';
 import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorHandler } from 'src/app/services/error-handler';
@@ -14,10 +14,10 @@ export class RegisterFormComponent implements OnInit {
   @ViewChild('form', { static: false }) registerForm!: NgForm;
   
   input = {
-    username: "",
-    email: "",
-    password: "",
-    repeatedPassword: ""
+    username: null,
+    email: null,
+    password: null,
+    repeatedPassword: null
   }
 
   propertyErrorMessages = new Map();
