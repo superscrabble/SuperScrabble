@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
+import { ErrorHandler } from 'src/app/services/error-handler';
 
 @Component({
   selector: 'app-register-form',
@@ -20,7 +21,7 @@ export class RegisterFormComponent implements OnInit {
 
   propertyErrorMessages = new Map();
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router, private errorHandler: ErrorHandler) {}
 
   ngOnInit(): void {}
 
@@ -66,6 +67,9 @@ export class RegisterFormComponent implements OnInit {
           let errorMessages = errors[i].errorMessages;
           this.propertyErrorMessages.set(propertyName, errorMessages);
         }
+      }
+      else {
+        this.errorHandler.handle(error.status);
       }
     });
   }
