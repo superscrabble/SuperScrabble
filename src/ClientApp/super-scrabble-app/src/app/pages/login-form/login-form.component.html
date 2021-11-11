@@ -1,13 +1,13 @@
-<div class="p-4 col-lg-4 col-xs-5 mx-auto rounded" style="background-color: #F2F2F2; font-size: 1.15rem;">
+<div class="identity-form p-4 col-lg-4 col-md-6 col-sm-8 col-10 mx-auto rounded">
     <h1 class="mb-4 text-center">Вход</h1>
     <form (ngSubmit)="onLogin()" #form="ngForm">
-        <div class="mb-5">
-            <label class="mb-3" for="username">Потребителско име</label>
+        <div class="mb-4">
+            <label class="mb-2" for="username">Потребителско име</label>
             <input 
                 ngModel
                 type="text"
                 id="username"
-                class="form-control mb-2"
+                class="form-control mb-1"
                 name="username"/>
             <div 
                 class="text-danger" 
@@ -15,12 +15,12 @@
                 {{errorMessage}}
             </div>
         </div>
-        <div class="mb-5">
-            <label class="mb-3" for="password">Парола</label>
+        <div class="mb-4">
+            <label class="mb-2" for="password">Парола</label>
             <input 
                 ngModel
                 type="password"
-                class="form-control mb-2"
+                class="form-control mb-1"
                 id="password"
                 name="password"/>
             <div 
@@ -31,8 +31,8 @@
         </div>
         <div class="d-flex justify-content-center">
             <button 
-                class="btn btn-primary mt-3 col-lg-4 col-6"
                 type="submit" 
+                class="btn btn-primary col-lg-5 col-md-6 col-sm-8 col-10"
                 [disabled]="!form.valid">Влез</button>
         </div>
     </form>
