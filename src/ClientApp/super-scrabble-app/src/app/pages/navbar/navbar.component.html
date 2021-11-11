@@ -8,6 +8,7 @@
             <a class="nav-item nav-link active" href="/">Начало</a>
             <a class="nav-item nav-link active" *ngIf="!utilities.hasAccessToken()" href="login">Вход</a>
             <a class="nav-item nav-link active" *ngIf="!utilities.hasAccessToken()" href="register">Регистрация</a>
+            <a class="nav-item nav-link active" *ngIf="utilities.hasAccessToken()"  href="/" (click)="logout()">Изход</a>
         </div>
     </div>
 </nav>
