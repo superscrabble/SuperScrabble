@@ -68,9 +68,15 @@
             try
             {
                 await _usersService.CreateAsync(input);
-                return Ok();
+                LoginInputModel loginModel = new()
+                {
+                    UserName = input.UserName,
+                    Password = input.Password
+                };
+                var token = new { Token = await _usersService.AuthenticateAsync(loginModel) };
+                return Ok(token);
             }
-            catch (RegisterUserFailedException ex)
+            catch (UserOperationFailedException ex)
             {
                 return BadRequest(ex.Errors);
             }
