@@ -17,26 +17,54 @@ export class RegisterFormComponent implements OnInit {
     repeatedPassword: ""
   }
 
+  propertyErrorMessages = new Map();
+
   constructor(private http: HttpClient) {}
 
   ngOnInit(): void {}
 
+  userNameErrorMessages(): string[] {
+    return this.propertyErrorMessages.get("UserName");
+  }
+  
+  emailErrorMessages(): string[] {
+    return this.propertyErrorMessages.get("Email");
+  }
+
+  passwordErrorMessages(): string[] {
+    return this.propertyErrorMessages.get("Password");
+  }
+
+  repeatedPasswordErrorMessages(): string[] {
+    return this.propertyErrorMessages.get("RepeatedPassword");
+  }
+
   onRegister(): void {
+
     this.user.username = this.registerForm.value.username;
     this.user.email = this.registerForm.value.email;
     this.user.password = this.registerForm.value.password;
     this.user.repeatedPassword = this.registerForm.value.repeatedPassword;
-    console.log(this.user);
 
-    this.http.post(`https://localhost:5001/api/users/register`, 
-                  this.user, 
+    const url = 'https://localhost:5001/api/users/register';
+
+    this.propertyErrorMessages = new Map();
+    
+    this.http.post(url, this.user, 
                   { headers: {"Content-Type": "application/json"}, observe: 'response', responseType: 'text' })
                   .subscribe((res: HttpResponse<any>) => {
       console.log("Success sign up" + res.status);
       console.log(res.body)
     },
     error => {
-      console.log("oops", error);
-    })
+      if (error.status == 400) {
+        const errors = JSON.parse(error.error);
+        for (let i = 0; i < errors.length; i++) {
+          let propertyName = errors[i].propertyName;
+          let errorMessages = errors[i].errorMessages;
+          this.propertyErrorMessages.set(propertyName, errorMessages);
+        }
+      }
+    });
   }
 }
