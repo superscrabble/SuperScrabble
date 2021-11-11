@@ -183,6 +183,9 @@
   <data name="PasswordRequiresUppercase" xml:space="preserve">
     <value>В паролата трябва да има поне една главна буква</value>
   </data>
+  <data name="PasswordsMismatch" xml:space="preserve">
+    <value>Паролите не съвпадат</value>
+  </data>
   <data name="RepeatedPasswordDisplayName" xml:space="preserve">
     <value>Повторете паролата</value>
   </data>

@@ -120,5 +120,8 @@
 
         public static string NewEmailAddressDisplayName
             => ResourceManager.GetString(nameof(NewEmailAddressDisplayName), resourceCulture);
+
+        public static string PasswordsMismatch
+            => ResourceManager.GetString(nameof(PasswordsMismatch), resourceCulture);
     }
 }

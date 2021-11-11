@@ -35,7 +35,7 @@
 
         [Display(Name = nameof(Resource.RepeatedPasswordDisplayName), ResourceType = typeof(Resource))]
         [ResourceRequired(nameof(Resource.RepeatedPasswordIsRequired))]
-
+        [Compare(nameof(Password), ErrorMessageResourceType = typeof(Resource), ErrorMessageResourceName = nameof(Resource.PasswordsMismatch))]
         public string RepeatedPassword { get; init; }
     }
 }

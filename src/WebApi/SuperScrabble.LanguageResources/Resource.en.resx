@@ -183,6 +183,9 @@
   <data name="PasswordRequiresUppercase" xml:space="preserve">
     <value>Password requires at least one uppercase letter</value>
   </data>
+  <data name="PasswordsMismatch" xml:space="preserve">
+    <value>Passwords do not match</value>
+  </data>
   <data name="RepeatedPasswordDisplayName" xml:space="preserve">
     <value>Repeat password</value>
   </data>
