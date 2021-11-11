@@ -1,54 +1,42 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorHandler } from 'src/app/services/error-handler';
 
 @Component({
-  selector: 'app-register-form',
-  templateUrl: './register-form.component.html',
-  styleUrls: ['./register-form.component.css']
+  selector: 'app-login-form',
+  templateUrl: './login-form.component.html',
+  styleUrls: ['./login-form.component.css']
 })
-export class RegisterFormComponent implements OnInit {
-  @ViewChild('form', { static: false }) registerForm!: NgForm;
-  
+export class LoginFormComponent implements OnInit {
+  @ViewChild('form', { static: false }) loginForm!: NgForm;
+
   input = {
-    username: "",
-    email: "",
-    password: "",
-    repeatedPassword: ""
+    username: null,
+    password: null
   }
 
   propertyErrorMessages = new Map();
 
-  constructor(private http: HttpClient, private router: Router, private errorHandler: ErrorHandler) {}
+  constructor(private http: HttpClient, private router: Router, private errorHandler: ErrorHandler) { }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+  }
 
   userNameErrorMessages(): string[] {
     return this.propertyErrorMessages.get("UserName");
   }
   
-  emailErrorMessages(): string[] {
-    return this.propertyErrorMessages.get("Email");
-  }
-
   passwordErrorMessages(): string[] {
     return this.propertyErrorMessages.get("Password");
   }
 
-  repeatedPasswordErrorMessages(): string[] {
-    return this.propertyErrorMessages.get("RepeatedPassword");
-  }
+  onLogin(): void {
+    this.input.username = this.loginForm.value.username;
+    this.input.password = this.loginForm.value.password;
 
-  onRegister(): void {
-
-    this.input.username = this.registerForm.value.username;
-    this.input.email = this.registerForm.value.email;
-    this.input.password = this.registerForm.value.password;
-    this.input.repeatedPassword = this.registerForm.value.repeatedPassword;
-
-    const url = 'https://localhost:5001/api/users/register';
+    const url = 'https://localhost:5001/api/users/login';
 
     this.propertyErrorMessages = new Map();
     
