@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { NgForm } from '@angular/forms';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-register-form',
@@ -19,7 +20,7 @@ export class RegisterFormComponent implements OnInit {
 
   propertyErrorMessages = new Map();
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private router: Router) {}
 
   ngOnInit(): void {}
 
@@ -53,8 +54,9 @@ export class RegisterFormComponent implements OnInit {
     this.http.post(url, this.user, 
                   { headers: {"Content-Type": "application/json"}, observe: 'response', responseType: 'text' })
                   .subscribe((res: HttpResponse<any>) => {
-      console.log("Success sign up" + res.status);
-      console.log(res.body)
+      let data = JSON.parse(res.body);
+      localStorage.setItem("access_token", data["token"]);
+      this.router.navigate(['/']);
     },
     error => {
       if (error.status == 400) {
