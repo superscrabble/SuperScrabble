@@ -1,6 +1,5 @@
 ﻿namespace SuperScrabble.WebApi.Controllers
 {
-    using SuperScrabble.Services;
     using SuperScrabble.WebApi.Extensions;
     using SuperScrabble.InputModels.Users;
     using SuperScrabble.CustomExceptions.Users;
@@ -9,6 +8,7 @@
 
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Authorization;
+    using SuperScrabble.Services.Data;
 
     [ApiController]
     [Route("api/users/update")]

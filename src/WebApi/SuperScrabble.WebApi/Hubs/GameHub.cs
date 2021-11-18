@@ -1,11 +1,13 @@
 ﻿namespace SuperScrabble.WebApi.Hubs
 {
-    using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.SignalR;
-    using SuperScrabble.Services.Game;
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
+
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.SignalR;
+
+    using SuperScrabble.Services.Game;
 
     public class GameHub : Hub
     {
@@ -14,13 +16,21 @@
         public static readonly Dictionary<string, GameState> GamesByGroupName = new();
         public static readonly Dictionary<string, string> GroupsByUserName = new();
 
+        private readonly IGameService gameService;
+
+        public GameHub(IGameService gameService)
+        {
+            this.gameService = gameService;
+        }
+
+
         [Authorize]
         public async Task JoinRoom()
         {
             string id = Context.ConnectionId;
             string userName = Context.User.Identity.Name;
 
-            if(WaitingPlayers.ContainsKey(userName) && WaitingPlayers[userName] == id)
+            if (WaitingPlayers.ContainsKey(userName) && WaitingPlayers[userName] == id)
             {
                 return;
             }
@@ -38,9 +48,12 @@
                     GroupsByUserName.Add(waitingPlayer.Key, groupName);
                 }
 
-                GamesByGroupName.Add(groupName, new GameState(WaitingPlayers.Keys));
+                var gameState = this.gameService.CreateGame(WaitingPlayers.Keys);
+                GamesByGroupName.Add(groupName, gameState);
+
                 await this.Clients.Group(groupName).SendAsync("StartGame", GamesByGroupName[groupName]);
                 WaitingPlayers.Clear();
+
                 //TODO: ensure that race condition will not happen when accessing waitingPlayers
             }
             else

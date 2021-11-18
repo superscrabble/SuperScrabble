@@ -1,14 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SuperScrabble.Services.Game
+﻿namespace SuperScrabble.Services.Game
 {
+    using System.Collections.Generic;
+
     public class Player
     {
         private readonly List<Tile> tiles = new();
+
+        public Player(string userName, int points)
+        {
+            this.UserName = userName;
+            this.Points = points;
+        }
 
         public string UserName { get; set; }
 
@@ -18,21 +20,22 @@ namespace SuperScrabble.Services.Game
 
         public void AddTile(Tile tile)
         {
-            tiles.Add(tile);
+            this.tiles.Add(tile);
         }
 
         public void RemoveTile(Tile tile)
         {
-            tiles.Remove(tile);
+            this.tiles.Remove(tile);
         }
 
         public Tile GetTile(int index)
         {
-            if (index < 0 || index >= tiles.Count)
+            if (index < 0 || index >= this.tiles.Count)
             {
                 return null;
             }
-            return tiles[index];
+
+            return this.tiles[index];
         }
     }
 }

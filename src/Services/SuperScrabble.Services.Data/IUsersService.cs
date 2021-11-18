@@ -1,9 +1,9 @@
-﻿namespace SuperScrabble.Services
+﻿namespace SuperScrabble.Services.Data
 {
+    using System.Threading.Tasks;
+
     using SuperScrabble.Models;
     using SuperScrabble.InputModels.Users;
-
-    using System.Threading.Tasks;
 
     public interface IUsersService
     {

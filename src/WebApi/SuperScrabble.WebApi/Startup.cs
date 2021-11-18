@@ -1,10 +1,5 @@
 namespace SuperScrabble.WebApi
 {
-    using SuperScrabble.Data;
-    using SuperScrabble.Common;
-    using SuperScrabble.Models;
-    using SuperScrabble.Services;
-
     using System.Text;
     using System.Globalization;
     using System.Threading.Tasks;
@@ -23,8 +18,15 @@ namespace SuperScrabble.WebApi
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.IdentityModel.Tokens;
 
-    using static SuperScrabble.Common.ModelValidationConstraints;
+    using SuperScrabble.Data;
+    using SuperScrabble.Common;
+    using SuperScrabble.Models;
     using SuperScrabble.WebApi.Hubs;
+    using SuperScrabble.Services.Data;
+
+    using static SuperScrabble.Common.ModelValidationConstraints;
+    using SuperScrabble.Services.Game;
+    using SuperScrabble.Services;
 
     public class Startup
     {
@@ -44,7 +46,11 @@ namespace SuperScrabble.WebApi
                 options.AddDefaultPolicy(builder =>
                 {
                     //Front-end cors
-                    builder.WithOrigins("https://localhost:4200", "http://localhost:4200").AllowAnyHeader().AllowAnyMethod().AllowCredentials();
+                    builder
+                        .WithOrigins("https://localhost:4200", "http://localhost:4200")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials();
                 });
             });
 
@@ -77,6 +83,9 @@ namespace SuperScrabble.WebApi
             AddJwtBearerAuthentication(services);
 
             services.AddTransient<IUsersService, UsersService>();
+            services.AddTransient<IGameService, GameService>();
+            services.AddTransient<IShuffleService, ShuffleService>();
+            services.AddTransient<ITilesProvider, MyOldGameboardTilesProvider>();
 
             services.AddControllers();
             services.AddSignalR();

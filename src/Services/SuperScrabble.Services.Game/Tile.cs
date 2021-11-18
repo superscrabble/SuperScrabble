@@ -1,10 +1,17 @@
-﻿using System;
-
-namespace SuperScrabble.Services.Game
+﻿namespace SuperScrabble.Services.Game
 {
+    using System;
+
     public class Tile
     {
+        public Tile(char letter, int points)
+        {
+            this.Letter = letter;
+            this.Points = points;
+        }
+
         public char Letter { get; set; }
+
         public int Points { get; set; }
 
         public override bool Equals(object obj)
@@ -12,14 +19,14 @@ namespace SuperScrabble.Services.Game
             if(obj != null && obj is Tile)
             {
                 Tile other = obj as Tile;
-                return other.Letter == this.Letter && other.Points == this.Points;
+                return this.Letter == other.Letter && this.Points == other.Points;
             }
             return false;
         }
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(Letter, Points);
+            return HashCode.Combine(this.Letter, this.Points);
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31727.386
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{7A7F1A7A-46AE-422D-852F-A15EF562F43D}"
 EndProject
@@ -43,7 +43,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SuperScrabble.CustomExcepti
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SuperScrabble.Utilities", "Common\SuperScrabble.Utilities\SuperScrabble.Utilities.csproj", "{FFEC0981-0F2A-419D-B712-BE4A53E9C276}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SuperScrabble.Services.Game", "Services\SuperScrabble.Services.Game\SuperScrabble.Services.Game.csproj", "{65767B8C-BEEF-4682-9F1C-5A93873FBC0E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SuperScrabble.Services.Game", "Services\SuperScrabble.Services.Game\SuperScrabble.Services.Game.csproj", "{65767B8C-BEEF-4682-9F1C-5A93873FBC0E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SuperScrabble.Services.Data", "Services\SuperScrabble.Services.Data\SuperScrabble.Services.Data.csproj", "{D07DDCB1-73A2-4E14-AAE5-5345B22E6966}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -111,6 +113,10 @@ Global
 		{65767B8C-BEEF-4682-9F1C-5A93873FBC0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{65767B8C-BEEF-4682-9F1C-5A93873FBC0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{65767B8C-BEEF-4682-9F1C-5A93873FBC0E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D07DDCB1-73A2-4E14-AAE5-5345B22E6966}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D07DDCB1-73A2-4E14-AAE5-5345B22E6966}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D07DDCB1-73A2-4E14-AAE5-5345B22E6966}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D07DDCB1-73A2-4E14-AAE5-5345B22E6966}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -131,6 +137,7 @@ Global
 		{2F1DB81C-0305-4D15-A130-FBEFE09CC115} = {7CDE07F6-CE61-4B5B-BE93-ABA6E019C498}
 		{FFEC0981-0F2A-419D-B712-BE4A53E9C276} = {7CDE07F6-CE61-4B5B-BE93-ABA6E019C498}
 		{65767B8C-BEEF-4682-9F1C-5A93873FBC0E} = {B825F5F0-F879-47D2-81F5-88AA7944B9A3}
+		{D07DDCB1-73A2-4E14-AAE5-5345B22E6966} = {B825F5F0-F879-47D2-81F5-88AA7944B9A3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F9BC309A-4B7E-4CE1-B09E-AEC8E61A0750}

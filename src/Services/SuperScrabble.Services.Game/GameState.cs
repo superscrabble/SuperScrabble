@@ -1,48 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SuperScrabble.Services.Game
+﻿namespace SuperScrabble.Services.Game
 {
+    using System.Collections.Generic;
+
     public class GameState
     {
-        public int PlayerIndex { get; private set; }
+        private readonly TilesBag tilesBag;
         private readonly List<Player> players = new();
-        private readonly TilesBag tilesBag = new();
 
-        public GameState(IEnumerable<string> userNames)
+        public GameState(IEnumerable<string> userNames, TilesBag tilesBag)
         {
-            var shuffledUserNames = Shuffle(userNames);
-
-            foreach (var userName in shuffledUserNames)
+            foreach (string userName in userNames)
             {
-                var player = new Player { UserName = userName, Points = 0 };
-                this.players.Add(player);
-            }
-            PlayerIndex = 0;
-        }
-
-        private IEnumerable<T> Shuffle<T>(IEnumerable<T> items)
-        {
-            var random = new Random();
-            var list = items.ToList();
-
-            var result = new List<T>();
-            while (list.Count > 0)
-            {
-                var index = random.Next(list.Count);
-                result.Add(list[index]);
-                list.RemoveAt(index);
+                this.players.Add(new Player(userName, 0));
             }
 
-            return result;
+            this.tilesBag = tilesBag;
+            this.PlayerIndex = 0;
         }
+
+        public int PlayerIndex { get; private set; }
 
         public void NextPlayer()
         {
-            PlayerIndex = PlayerIndex >= userNames.Count ? 0 : PlayerIndex + 1;
+            this.PlayerIndex = this.PlayerIndex >= this.players.Count ? 0 : this.PlayerIndex + 1;
         }
     }
 }

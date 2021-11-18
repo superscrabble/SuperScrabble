@@ -1,7 +1,6 @@
 ﻿namespace SuperScrabble.WebApi.Controllers
 {
     using SuperScrabble.Models;
-    using SuperScrabble.Services;
     using SuperScrabble.ViewModels;
     using SuperScrabble.WebApi.Extensions;
     using SuperScrabble.InputModels.Users;
@@ -11,6 +10,7 @@
 
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Authorization;
+    using SuperScrabble.Services.Data;
 
     [ApiController]
     [Route("api/[controller]")]
