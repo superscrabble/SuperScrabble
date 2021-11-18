@@ -8,6 +8,8 @@ import { SignalrService } from 'src/app/services/signalr.service';
 })
 export class HomeComponent implements OnInit {
 
+  isSearchingForGame: boolean = false;
+
   constructor(private signalrService: SignalrService) { }
 
   ngOnInit(): void {
@@ -17,6 +19,11 @@ export class HomeComponent implements OnInit {
 
   joinRoom() {
     this.signalrService.joinRoom();
+    this.isSearchingForGame = true;
   }
 
+  leaveQueue() {
+    this.signalrService.leaveQueue();
+    this.isSearchingForGame = false;
+  }
 }

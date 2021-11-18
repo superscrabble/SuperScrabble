@@ -43,4 +43,9 @@ export class SignalrService {
     console.log("Join Room")
     this.hubConnection?.invoke("JoinRoom");
   }
+
+  public leaveQueue() {
+    console.log("Leave Room")
+    this.hubConnection?.invoke("LeaveQueue");
+  }
 }

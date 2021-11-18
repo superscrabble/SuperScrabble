@@ -53,7 +53,17 @@
             // check for already waiting players/rooms
         }
 
-        //LeaveQueue() - remove from WaitingPlayer
+        [Authorize]
+        public async Task LeaveQueue()
+        {
+            string id = Context.ConnectionId;
+            string userName = Context.User.Identity.Name;
+
+            WaitingPlayers.Remove(userName);
+            await this.Groups.RemoveFromGroupAsync(id, nameof(WaitingPlayers));
+            int neededPlayersCount = GamePlayersCount - WaitingPlayers.Count;
+            await this.Clients.Groups(nameof(WaitingPlayers)).SendAsync("WaitingForMorePlayers", neededPlayersCount);
+        }
         //LeaveRoom() - remove from current Game
         //Game - writeWord(), 
 
