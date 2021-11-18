@@ -24,6 +24,7 @@ namespace SuperScrabble.WebApi
     using Microsoft.IdentityModel.Tokens;
 
     using static SuperScrabble.Common.ModelValidationConstraints;
+    using SuperScrabble.WebApi.Hubs;
 
     public class Startup
     {
@@ -78,6 +79,7 @@ namespace SuperScrabble.WebApi
             services.AddTransient<IUsersService, UsersService>();
 
             services.AddControllers();
+            services.AddSignalR();
 
             services.AddSwaggerGen(c =>
             {
@@ -109,6 +111,7 @@ namespace SuperScrabble.WebApi
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<GameHub>("/gamehub");
             });
         }
 
