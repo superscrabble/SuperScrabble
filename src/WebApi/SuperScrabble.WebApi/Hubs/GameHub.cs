@@ -38,8 +38,8 @@
                     GroupsByUserName.Add(waitingPlayer.Key, groupName);
                 }
 
-                await this.Clients.Group(groupName).SendAsync("StartGame", WaitingPlayers);
                 GamesByGroupName.Add(groupName, new GameState(WaitingPlayers.Keys));
+                await this.Clients.Group(groupName).SendAsync("StartGame", GamesByGroupName[groupName]);
                 WaitingPlayers.Clear();
                 //TODO: ensure that race condition will not happen when accessing waitingPlayers
             }
