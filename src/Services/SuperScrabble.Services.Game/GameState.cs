@@ -9,26 +9,33 @@ namespace SuperScrabble.Services.Game
     public class GameState
     {
         public int PlayerIndex { get; private set; }
-        private readonly List<string> userNames = new();
+        private readonly List<Player> players = new();
 
         public GameState(IEnumerable<string> userNames)
         {
-            this.userNames.AddRange(Shuffle(userNames));
+            var shuffledUserNames = Shuffle(userNames);
+
+            foreach (var userName in shuffledUserNames)
+            {
+                var player = new Player { UserName = userName, Points = 0 };
+                this.players.Add(player);
+            }
+            PlayerIndex = 0;
         }
 
-        private IEnumerable<string> Shuffle(IEnumerable<string> items)
+        private IEnumerable<T> Shuffle<T>(IEnumerable<T> items)
         {
             var random = new Random();
-            var list= items.ToList();
-            
-            var result = new List<string>();
-            while(list.Count > 0)
+            var list = items.ToList();
+
+            var result = new List<T>();
+            while (list.Count > 0)
             {
                 var index = random.Next(list.Count);
                 result.Add(list[index]);
                 list.RemoveAt(index);
             }
-            
+
             return result;
         }
 
