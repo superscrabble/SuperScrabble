@@ -2,6 +2,7 @@
 {
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.SignalR;
+    using SuperScrabble.Services.Game;
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
@@ -10,12 +11,13 @@
     {
         public const int GamePlayersCount = 3;
         public static readonly Dictionary<string, string> WaitingPlayers = new();
+        public static readonly Dictionary<string, GameState> GamesByGroupName = new();
+        public static readonly Dictionary<string, string> GroupsByUserName = new();
 
         [Authorize]
         public async Task JoinRoom()
         {
             string id = Context.ConnectionId;
-
             string userName = Context.User.Identity.Name;
 
             if(WaitingPlayers.ContainsKey(userName) && WaitingPlayers[userName] == id)
@@ -33,21 +35,18 @@
                 {
                     await this.Groups.AddToGroupAsync(waitingPlayer.Value, groupName);
                     await this.Groups.RemoveFromGroupAsync(waitingPlayer.Value, nameof(WaitingPlayers));
+                    GroupsByUserName.Add(waitingPlayer.Key, groupName);
                 }
 
                 await this.Clients.Group(groupName).SendAsync("StartGame", WaitingPlayers);
+                GamesByGroupName.Add(groupName, new GameState(WaitingPlayers.Keys));
                 WaitingPlayers.Clear();
-                // create game service instance
-                // add players to the game
-                // sendMessage("StartGame", gameState)
-
                 //TODO: ensure that race condition will not happen when accessing waitingPlayers
             }
             else
             {
                 await Groups.AddToGroupAsync(id, nameof(WaitingPlayers));
-                int neededPlayersCount = GamePlayersCount - WaitingPlayers.Count;
-                await this.Clients.Groups(nameof(WaitingPlayers)).SendAsync("WaitingForMorePlayers", neededPlayersCount);
+                await SendNeededPlayersCountAsync(nameof(WaitingPlayers));
             }
 
             // check for already waiting players/rooms
@@ -61,9 +60,15 @@
 
             WaitingPlayers.Remove(userName);
             await this.Groups.RemoveFromGroupAsync(id, nameof(WaitingPlayers));
-            int neededPlayersCount = GamePlayersCount - WaitingPlayers.Count;
-            await this.Clients.Groups(nameof(WaitingPlayers)).SendAsync("WaitingForMorePlayers", neededPlayersCount);
+            await SendNeededPlayersCountAsync(nameof(WaitingPlayers));
         }
+
+        private async Task SendNeededPlayersCountAsync(string groupName)
+        {
+            int neededPlayersCount = GamePlayersCount - WaitingPlayers.Count;
+            await this.Clients.Groups(groupName).SendAsync("WaitingForMorePlayers", neededPlayersCount);
+        }
+
         //LeaveRoom() - remove from current Game
         //Game - writeWord(), 
 
