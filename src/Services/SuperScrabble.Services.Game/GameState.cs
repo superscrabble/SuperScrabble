@@ -10,6 +10,7 @@ namespace SuperScrabble.Services.Game
     {
         public int PlayerIndex { get; private set; }
         private readonly List<Player> players = new();
+        private readonly TilesBag tilesBag = new();
 
         public GameState(IEnumerable<string> userNames)
         {
