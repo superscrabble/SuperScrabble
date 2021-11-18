@@ -32,6 +32,10 @@ export class SignalrService {
     this.hubConnection?.on('StartGame', (data) => {
       console.log(data);
     });
+
+    this.hubConnection?.on('WaitingForMorePlayers', (data) =>   {
+      console.log("Waiting for " + data + " more players!");
+    });
   }
 
   public joinRoom() {

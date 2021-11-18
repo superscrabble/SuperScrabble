@@ -8,6 +8,7 @@
 
     public class GameHub : Hub
     {
+        public const int GamePlayersCount = 3;
         public static readonly Dictionary<string, string> WaitingPlayers = new();
 
         [Authorize]
@@ -17,15 +18,21 @@
 
             string userName = Context.User.Identity.Name;
 
+            if(WaitingPlayers.ContainsKey(userName) && WaitingPlayers[userName] == id)
+            {
+                return;
+            }
+
             WaitingPlayers[userName] = id;
 
-            if (WaitingPlayers.Count >= 2)
+            if (WaitingPlayers.Count >= GamePlayersCount)
             {
                 string groupName = Guid.NewGuid().ToString();
 
                 foreach (var waitingPlayer in WaitingPlayers)
                 {
                     await this.Groups.AddToGroupAsync(waitingPlayer.Value, groupName);
+                    await this.Groups.RemoveFromGroupAsync(waitingPlayer.Value, nameof(WaitingPlayers));
                 }
 
                 await this.Clients.Group(groupName).SendAsync("StartGame", WaitingPlayers);
@@ -33,16 +40,22 @@
                 // create game service instance
                 // add players to the game
                 // sendMessage("StartGame", gameState)
+
+                //TODO: ensure that race condition will not happen when accessing waitingPlayers
             }
             else
             {
-                //await Groups.AddToGroupAsync(id, "WaitingPlayers");
-                //int neededPlayersCount = 4 - WaitingPlayers.Count;
-                //await Clients.Groups("WaitingPlayers").SendAsync("WaitingForMorePlayers", neededPlayersCount);
+                await Groups.AddToGroupAsync(id, nameof(WaitingPlayers));
+                int neededPlayersCount = GamePlayersCount - WaitingPlayers.Count;
+                await this.Clients.Groups(nameof(WaitingPlayers)).SendAsync("WaitingForMorePlayers", neededPlayersCount);
             }
 
             // check for already waiting players/rooms
         }
+
+        //LeaveQueue() - remove from WaitingPlayer
+        //LeaveRoom() - remove from current Game
+        //Game - writeWord(), 
 
         // click start game button -> loading screen -> start game
     }
