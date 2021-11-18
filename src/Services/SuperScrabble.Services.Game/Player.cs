@@ -6,20 +6,33 @@ using System.Threading.Tasks;
 
 namespace SuperScrabble.Services.Game
 {
-    class Player
+    public class Player
     {
+        private readonly List<Tile> tiles = new();
+
         public string UserName { get; set; }
+
         public int Points { get; set; }
-        public IList<Tile> Tiles { get; set; }
+
+        public IReadOnlyCollection<Tile> Tiles => this.tiles.AsReadOnly();
 
         public void AddTile(Tile tile)
         {
-            Tiles.Add(tile);
+            tiles.Add(tile);
         }
 
         public void RemoveTile(Tile tile)
         {
-            Tiles.Remove(tile);
+            tiles.Remove(tile);
+        }
+
+        public Tile GetTile(int index)
+        {
+            if (index < 0 || index >= tiles.Count)
+            {
+                return null;
+            }
+            return tiles[index];
         }
     }
 }
