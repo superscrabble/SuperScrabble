@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { SignalrService } from 'src/app/services/signalr.service';
 
 @Component({
   selector: 'app-home',
@@ -7,9 +8,15 @@ import { Component, OnInit } from '@angular/core';
 })
 export class HomeComponent implements OnInit {
 
-  constructor() { }
+  constructor(private signalrService: SignalrService) { }
 
   ngOnInit(): void {
+    this.signalrService.startConnection();
+    this.signalrService.addTransferGameHubDataListener();
+  }
+
+  joinRoom() {
+    this.signalrService.joinRoom();
   }
 
 }
