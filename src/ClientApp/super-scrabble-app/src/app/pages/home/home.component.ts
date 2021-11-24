@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Utilities } from 'src/app/common/utilities';
 import { SignalrService } from 'src/app/services/signalr.service';
 
 @Component({
@@ -10,7 +11,7 @@ export class HomeComponent implements OnInit {
 
   isSearchingForGame: boolean = false;
 
-  constructor(private signalrService: SignalrService) { }
+  constructor(private signalrService: SignalrService, private utilities: Utilities) { }
 
   ngOnInit(): void {
     this.signalrService.startConnection();
@@ -25,5 +26,9 @@ export class HomeComponent implements OnInit {
   leaveQueue() {
     this.signalrService.leaveQueue();
     this.isSearchingForGame = false;
+  }
+
+  hasAccessToken() {
+    return this.utilities.hasAccessToken();
   }
 }
