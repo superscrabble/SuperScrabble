@@ -1,0 +1,57 @@
+﻿namespace SuperScrabble.Services.Game.Models
+{
+    using System.Collections.Generic;
+
+    using SuperScrabble.Common;
+
+    public abstract class Board : IBoard
+    {
+        private readonly Cell[,] cells;
+        private readonly Dictionary<CellType, List<Position>> positionsByBonusCellTypes;
+
+        protected Board(
+            int width,
+            int height,
+            Dictionary<CellType, List<Position>> positionsByBonusCellTypes)
+        {
+            this.cells = new Cell[width, height];
+            this.positionsByBonusCellTypes = positionsByBonusCellTypes;
+
+            this.InitializeAllCellsAsBasic();
+            this.InitializeBonusCells();
+        }
+
+        public int Height => this.cells.GetLength(0);
+
+        public int Width => this.cells.GetLength(1);
+
+        public Cell this[int row, int column]
+        {
+            get => this.cells[row, column];
+
+            set => this.cells[row, column] = value;
+        }
+
+        private void InitializeAllCellsAsBasic()
+        {
+            for (int row = 0; row < this.Height; row++)
+            {
+                for (int col = 0; col < this.Width; col++)
+                {
+                    this[row, col] = new Cell(CellType.Basic);
+                }
+            }
+        }
+
+        private void InitializeBonusCells()
+        {
+            foreach (var positionsByCellType in this.positionsByBonusCellTypes)
+            {
+                foreach (Position position in positionsByCellType.Value)
+                {
+                    this[position.Row, position.Column] = new Cell(positionsByCellType.Key);
+                }
+            }
+        }
+    }
+}

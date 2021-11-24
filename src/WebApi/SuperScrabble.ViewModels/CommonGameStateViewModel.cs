@@ -7,5 +7,7 @@
         public int RemainingTilesCount { get; set; }
 
         public IEnumerable<KeyValuePair<string, int>> PointsByUserNames { get; set; }
+
+        public BoardViewModel Board { get; set; }
     }
 }

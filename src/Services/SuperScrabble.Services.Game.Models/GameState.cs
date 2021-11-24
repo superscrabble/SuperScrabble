@@ -7,7 +7,10 @@
     {
         private readonly List<Player> players = new();
 
-        public GameState(IEnumerable<KeyValuePair<string, string>> connectionIdsByUserNames, TilesBag tilesBag)
+        public GameState(
+            IEnumerable<KeyValuePair<string, string>> connectionIdsByUserNames,
+            TilesBag tilesBag,
+            IBoard board)
         {
             foreach (var user in connectionIdsByUserNames)
             {
@@ -16,9 +19,12 @@
 
             this.TilesBag = tilesBag;
             this.PlayerIndex = 0;
+            this.Board = board;
         }
 
         public TilesBag TilesBag { get; }
+
+        public IBoard Board { get; }
 
         public int PlayerIndex { get; private set; }
 
