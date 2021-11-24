@@ -2,6 +2,8 @@
 {
     using System.Collections.Generic;
 
+    using SuperScrabble.Services.Game.Models;
+
     public class MyOldGameboardTilesProvider : ITilesProvider
     {
         private static readonly Dictionary<char, TileInfo> Tiles = new()

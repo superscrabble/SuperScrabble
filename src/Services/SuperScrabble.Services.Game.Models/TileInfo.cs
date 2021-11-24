@@ -1,4 +1,4 @@
-﻿namespace SuperScrabble.Services.Game
+﻿namespace SuperScrabble.Services.Game.Models
 {
     public class TileInfo
     {

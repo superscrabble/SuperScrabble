@@ -8,11 +8,12 @@
     using Microsoft.AspNetCore.SignalR;
 
     using SuperScrabble.Services.Game;
+    using SuperScrabble.Services.Game.Models;
 
     public class GameHub : Hub
     {
         public const int GamePlayersCount = 3;
-        public static readonly Dictionary<string, string> WaitingPlayers = new();
+        public static readonly Dictionary<string, string> WaitingConnectionIdsByUserName = new();
         public static readonly Dictionary<string, GameState> GamesByGroupName = new();
         public static readonly Dictionary<string, string> GroupsByUserName = new();
 
@@ -30,39 +31,65 @@
             string id = Context.ConnectionId;
             string userName = Context.User.Identity.Name;
 
-            if (WaitingPlayers.ContainsKey(userName) && WaitingPlayers[userName] == id)
+            if (WaitingConnectionIdsByUserName.ContainsKey(userName) 
+                && WaitingConnectionIdsByUserName[userName] == id)
             {
                 return;
             }
 
-            WaitingPlayers[userName] = id;
+            if (GroupsByUserName.ContainsKey(userName))
+            {
+                // TODO: Send appropriate message to the user
+                return;
+            }
 
-            if (WaitingPlayers.Count >= GamePlayersCount)
+            WaitingConnectionIdsByUserName[userName] = id;
+
+            if (WaitingConnectionIdsByUserName.Count >= GamePlayersCount)
             {
                 string groupName = Guid.NewGuid().ToString();
 
-                foreach (var waitingPlayer in WaitingPlayers)
+                foreach (var waitingPlayer in WaitingConnectionIdsByUserName)
                 {
                     await this.Groups.AddToGroupAsync(waitingPlayer.Value, groupName);
-                    await this.Groups.RemoveFromGroupAsync(waitingPlayer.Value, nameof(WaitingPlayers));
+                    await this.Groups.RemoveFromGroupAsync(waitingPlayer.Value, nameof(WaitingConnectionIdsByUserName));
+
                     GroupsByUserName.Add(waitingPlayer.Key, groupName);
                 }
 
-                var gameState = this.gameService.CreateGame(WaitingPlayers.Keys);
+                var gameState = this.gameService.CreateGame(WaitingConnectionIdsByUserName);
                 GamesByGroupName.Add(groupName, gameState);
 
-                await this.Clients.Group(groupName).SendAsync("StartGame", GamesByGroupName[groupName]);
-                WaitingPlayers.Clear();
+                await this.Clients.Group(groupName).SendAsync("StartGame");
+                await this.UpdateGameStateAsync(groupName);
+
+                WaitingConnectionIdsByUserName.Clear();
 
                 //TODO: ensure that race condition will not happen when accessing waitingPlayers
             }
             else
             {
-                await Groups.AddToGroupAsync(id, nameof(WaitingPlayers));
-                await SendNeededPlayersCountAsync(nameof(WaitingPlayers));
+                await Groups.AddToGroupAsync(id, nameof(WaitingConnectionIdsByUserName));
+                await SendNeededPlayersCountAsync(nameof(WaitingConnectionIdsByUserName));
             }
 
             // check for already waiting players/rooms
+        }
+
+        public async Task UpdateGameStateAsync(string groupName)
+        {
+            GameState gameState = GamesByGroupName[groupName];
+
+            foreach (Player player in gameState.Players)
+            {
+                this.gameService.FillPlayerTiles(gameState, player.UserName);
+            }
+
+            foreach (Player player in gameState.Players)
+            {
+                var viewModel = this.gameService.MapFromGameState(gameState, player.UserName);
+                await this.Clients.Client(player.ConnectionId).SendAsync("UpdateGameState", viewModel);
+            }
         }
 
         [Authorize]
@@ -71,14 +98,14 @@
             string id = Context.ConnectionId;
             string userName = Context.User.Identity.Name;
 
-            WaitingPlayers.Remove(userName);
-            await this.Groups.RemoveFromGroupAsync(id, nameof(WaitingPlayers));
-            await SendNeededPlayersCountAsync(nameof(WaitingPlayers));
+            WaitingConnectionIdsByUserName.Remove(userName);
+            await this.Groups.RemoveFromGroupAsync(id, nameof(WaitingConnectionIdsByUserName));
+            await SendNeededPlayersCountAsync(nameof(WaitingConnectionIdsByUserName));
         }
 
         private async Task SendNeededPlayersCountAsync(string groupName)
         {
-            int neededPlayersCount = GamePlayersCount - WaitingPlayers.Count;
+            int neededPlayersCount = GamePlayersCount - WaitingConnectionIdsByUserName.Count;
             await this.Clients.Groups(groupName).SendAsync("WaitingForMorePlayers", neededPlayersCount);
         }
 
