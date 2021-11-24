@@ -29,12 +29,16 @@ export class SignalrService {
   }
 
   public addTransferGameHubDataListener = () => {
-    this.hubConnection?.on('StartGame', (data) => {
-      console.log(data);
+    this.hubConnection?.on('StartGame', () => {
+      console.log("Game started");
     });
 
     this.hubConnection?.on('WaitingForMorePlayers', (data) =>   {
       console.log("Waiting for " + data + " more players!");
+    });
+
+    this.hubConnection?.on("UpdateGameState", (data) => {
+      console.log(data);
     });
   }
 
