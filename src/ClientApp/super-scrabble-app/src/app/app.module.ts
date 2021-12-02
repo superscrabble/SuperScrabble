@@ -13,6 +13,7 @@ import { LoginFormComponent } from './pages/login-form/login-form.component';
 import { HomeComponent } from './pages/home/home.component';
 import { NavbarComponent } from './pages/navbar/navbar.component';
 import { Utilities } from './common/utilities';
+import { GameComponent } from './pages/game/game.component';
 
 @NgModule({
   declarations: [
@@ -21,6 +22,7 @@ import { Utilities } from './common/utilities';
     LoginFormComponent,
     HomeComponent,
     NavbarComponent,
+    GameComponent,
   ],
   imports: [
     BrowserModule,

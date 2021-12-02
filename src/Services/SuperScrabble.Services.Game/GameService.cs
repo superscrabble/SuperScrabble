@@ -72,7 +72,12 @@
                 }
             }
 
-            var boardViewModel = new BoardViewModel { Cells = cellViewModels };
+            var boardViewModel = new BoardViewModel
+            {
+                Cells = cellViewModels,
+                Width = gameState.Board.Width,
+                Height = gameState.Board.Height
+            };
 
             var commonViewModel = new CommonGameStateViewModel
             {

@@ -15,7 +15,7 @@ export class HomeComponent implements OnInit {
 
   ngOnInit(): void {
     this.signalrService.startConnection();
-    this.signalrService.addTransferGameHubDataListener();
+    this.signalrService.addStartGameListeners();
   }
 
   joinRoom() {

@@ -12,7 +12,7 @@
 
     public class GameHub : Hub
     {
-        public const int GamePlayersCount = 3;
+        public const int GamePlayersCount = 2;
         public static readonly Dictionary<string, string> WaitingConnectionIdsByUserName = new();
         public static readonly Dictionary<string, GameState> GamesByGroupName = new();
         public static readonly Dictionary<string, string> GroupsByUserName = new();
@@ -60,7 +60,7 @@
                 var gameState = this.gameService.CreateGame(WaitingConnectionIdsByUserName);
                 GamesByGroupName.Add(groupName, gameState);
 
-                await this.Clients.Group(groupName).SendAsync("StartGame");
+                await this.Clients.Group(groupName).SendAsync("StartGame", groupName);
                 await this.UpdateGameStateAsync(groupName);
 
                 WaitingConnectionIdsByUserName.Clear();
@@ -76,7 +76,20 @@
             // check for already waiting players/rooms
         }
 
-        public async Task UpdateGameStateAsync(string groupName)
+        [Authorize]
+        public async Task LoadGame(string groupName)
+        {
+            string userName = Context.User.Identity.Name;
+
+            if(GroupsByUserName.ContainsKey(userName) && GroupsByUserName[userName] == groupName)
+            {
+                GameState gameState = GamesByGroupName[groupName];
+                var viewModel = this.gameService.MapFromGameState(gameState, userName);
+                await this.Clients.Client(this.Context.ConnectionId).SendAsync("UpdateGameState", viewModel);
+            }
+        }
+        
+        private async Task UpdateGameStateAsync(string groupName)
         {
             GameState gameState = GamesByGroupName[groupName];
 
