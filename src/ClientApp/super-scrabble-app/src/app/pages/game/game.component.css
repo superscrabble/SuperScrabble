@@ -1,0 +1,24 @@
+.basic-cell {
+    background-color: #52B788;
+}
+
+.center-cell {
+    background-color: #FA9789;
+}
+
+.x2-letter-cell {
+    background-color: #61C7FA;
+}
+
+.x3-letter-cell {
+    color: white;
+    background-color: #0D6896;
+}
+
+.x2-word-cell {
+    background-color: #FA9789;
+}
+
+.x3-word-cell {
+    background-color: #F97362;
+}

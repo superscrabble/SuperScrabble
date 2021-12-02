@@ -5,7 +5,14 @@
     <div class="col-md-6">
         <table>
             <tr *ngFor="let row of board">
-                <td class="border p-2" *ngFor="let column of row">{{column.type}}</td>
+                <td *ngFor="let cell of row" class="border p-2 {{getClassNameByCellType(cell.type)}}">
+                    <div *ngIf="cell.tile">
+                        {{cell.tile.letter}}{{cell.tile.points}}
+                    </div>
+                    <div *ngIf="!cell.tile">
+                        {{getValueWhenEmptyByCellType(cell.type)}}
+                    </div>
+                </td>
             </tr>
         </table>
         <div>

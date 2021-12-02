@@ -1,10 +1,10 @@
 import { Tile } from 'src/app/models/tile';
 
 export class Cell {
-    type: string;
-    tile: Tile;
+    type: number;
+    tile: Tile | null;
 
-    constructor(type: string, tile: Tile) {
+    constructor(type: number, tile: Tile | null) {
         this.type = type;
         this.tile = tile;
     }

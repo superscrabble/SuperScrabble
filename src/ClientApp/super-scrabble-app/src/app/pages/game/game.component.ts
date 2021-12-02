@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { SignalrService } from 'src/app/services/signalr.service';
 import { Tile } from 'src/app/models/tile';
 import { Cell } from 'src/app/models/cell';
+import { CellViewData } from 'src/app/models/cellViewData';
 
 @Component({
   selector: 'app-game',
@@ -12,6 +13,7 @@ export class GameComponent implements OnInit {
 
   board: Cell[][] = new Array();
   playerTiles: Tile[] = new Array();
+  cellViewDataByType: Map<number, CellViewData> = new Map();
 
   constructor(private signalrService: SignalrService) {}
 
@@ -28,7 +30,8 @@ export class GameComponent implements OnInit {
       this.loadBoard(data.commonGameState.board);
     })
 
-    this.signalrService.loadGame(id);    
+    this.signalrService.loadGame(id);
+    this.loadCellViewDataByType();
 
     this.playerTiles = new Array(5).fill(new Tile('A', 2));
   }
@@ -38,7 +41,27 @@ export class GameComponent implements OnInit {
     
     for(let i = 0; i < board.cells.length; i++) {
       let cell = board.cells[i];
-      this.board[cell.position.row][cell.position.column] = new Cell(cell.type.toString(), new Tile('G', 2))
+      let tile = cell.tile ? new Tile(cell.tile.letter, cell.tile.points) : null;
+      this.board[cell.position.row][cell.position.column] = new Cell(cell.type, tile);
     }
+  }
+
+  loadCellViewDataByType() {
+    this.cellViewDataByType = new Map([
+      [0, new CellViewData("basic-cell", " ")],
+      [1, new CellViewData("center-cell", "")],
+      [2, new CellViewData("x2-letter-cell", "x2")],
+      [3, new CellViewData("x3-letter-cell", "x3")],
+      [4, new CellViewData("x2-word-cell", "x2")],
+      [5, new CellViewData("x3-word-cell", "x3")],
+    ]);
+  }
+
+  getClassNameByCellType(type: number) {
+    return this.cellViewDataByType.get(type)?.className;
+  }
+
+  getValueWhenEmptyByCellType(type: number) {
+    return this.cellViewDataByType.get(type)?.valueWhenEmpty;
   }
 }
