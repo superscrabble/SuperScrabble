@@ -6,7 +6,7 @@
 
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.SignalR;
-
+    using SuperScrabble.InputModels.Game;
     using SuperScrabble.Services.Game;
     using SuperScrabble.Services.Game.Models;
 
@@ -24,6 +24,22 @@
             this.gameService = gameService;
         }
 
+        [Authorize]
+        public void WriteWord(WriteWordInputModel input)
+        {
+            string authorName = this.Context.User.Identity.Name;
+            string groupName = GroupsByUserName[authorName];
+            GameState gameState = GamesByGroupName[groupName];
+
+            gameService.WriteWord(gameState, input, authorName);
+
+            // validate letters and game state
+            // get new word(s)
+            // check if new word(s) exist(s)
+            // calculate points
+            // update score
+            // send response with updated game state
+        }
 
         [Authorize]
         public async Task JoinRoom()
@@ -121,10 +137,5 @@
             int neededPlayersCount = GamePlayersCount - WaitingConnectionIdsByUserName.Count;
             await this.Clients.Groups(groupName).SendAsync("WaitingForMorePlayers", neededPlayersCount);
         }
-
-        //LeaveRoom() - remove from current Game
-        //Game - writeWord(), 
-
-        // click start game button -> loading screen -> start game
     }
 }

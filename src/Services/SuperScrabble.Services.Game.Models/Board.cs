@@ -53,5 +53,22 @@
                 }
             }
         }
+
+        public bool IsCellFree(Position position)
+        {
+            if (!this.IsPositionInside(position))
+            {
+                return false;
+            }
+
+            Cell cell = this[position.Row, position.Column];
+            return cell.Tile == null;
+        }
+
+        public bool IsPositionInside(Position position)
+        {
+            return position.Row >= 0 && position.Column >= 0 
+                && position.Row < this.Height && position.Column < this.Width;
+        }
     }
 }

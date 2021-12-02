@@ -6,6 +6,7 @@
     using SuperScrabble.Services.Game.Models;
     using SuperScrabble.ViewModels;
     using SuperScrabble.Common;
+    using SuperScrabble.InputModels.Game;
 
     public class GameService : IGameService
     {
@@ -93,6 +94,66 @@
             };
 
             return playerViewModel;
+        }
+
+        public void WriteWord(GameState gameState, WriteWordInputModel input, string authorUserName)
+        {
+            Player player = gameState.GetPlayer(authorUserName);
+
+            if (!input.PositionsByTiles.Any() || input.PositionsByTiles.Count() > player.Tiles.Count)
+            {
+                // Invalid input tiles count
+            }
+
+            var playerTiles = player.Tiles.ToList();
+
+            var uniqueRows = new HashSet<int>();
+            var uniqueColumns = new HashSet<int>();
+
+            foreach (var positionByTile in input.PositionsByTiles)
+            {
+                Tile tile = playerTiles.FirstOrDefault(pt => pt.Equals(positionByTile.Key));
+
+                Position position = positionByTile.Value;
+                bool isFree = gameState.Board.IsCellFree(position);
+
+                uniqueRows.Add(position.Row);
+                uniqueColumns.Add(position.Column);
+
+                if (tile == null)
+                {
+                    // User does not have the given tile
+                    return;
+                }
+
+                if (!isFree)
+                {
+                    // Tile position is outside the board range or cell is already taken
+                    return;
+                }
+
+                playerTiles.Remove(tile);
+            }
+
+            if (uniqueRows.Count > 1 && uniqueColumns.Count > 1)
+            {
+                // Tiles must be on the same horizontal or vertical line
+                return;
+            }
+
+            bool hasRepeatingHorizontalPositions = uniqueRows.Count == 1
+                && uniqueColumns.Count != input.PositionsByTiles.Count();
+
+            bool hasRepeatingVerticalPositions = uniqueColumns.Count == 1 
+                && uniqueRows.Count != input.PositionsByTiles.Count();
+
+            if (hasRepeatingHorizontalPositions || hasRepeatingVerticalPositions)
+            {
+                // Equal tile positions are not allowed
+                return;
+            }
+
+            // Задължително поне 1 от вече написаните букви трябва да участва в някоя от новополучените думи
         }
     }
 }
