@@ -1,24 +1,41 @@
-<div class="row">
-    <div class="col col-md-3">
-        <div></div>
+<div class="row d-flex justify-content-center flex-nowrap">
+    <div class="col-md-3">
+        <div class="border rounded">
+            <table class="table">
+                <th>Резултат</th>
+                <tr *ngFor="let pointsByUserName of pointsByUserNames | keyvalue; let i = index">
+                    <td>{{i + 1}}</td>
+                    <td>{{pointsByUserName.key}}</td>
+                    <td>{{pointsByUserName.value}}</td>
+                </tr>
+            </table>
+        </div>
     </div>
     <div class="col-md-6">
-        <table>
-            <tr *ngFor="let row of board">
-                <td *ngFor="let cell of row" class="border p-2 {{getClassNameByCellType(cell.type)}}">
-                    <div *ngIf="cell.tile">
-                        {{cell.tile.letter}}{{cell.tile.points}}
-                    </div>
-                    <div *ngIf="!cell.tile">
-                        {{getValueWhenEmptyByCellType(cell.type)}}
-                    </div>
-                </td>
-            </tr>
-        </table>
+        <div class="row d-flex justify-content-center px-5">
+            <table>
+                <tr *ngFor="let row of board">
+                    <td *ngFor="let cell of row" class="border p-2 text-center {{getClassNameByCellType(cell.type)}}">
+                        <div *ngIf="cell.tile">
+                            {{cell.tile.letter}}{{cell.tile.points}}
+                        </div>
+                        <div *ngIf="!cell.tile">
+                            {{getValueWhenEmptyByCellType(cell.type)}}
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
         <div class="my-3 text-center">
-            <span class="mx-2 border p-2" *ngFor="let playerTile of playerTiles">{{playerTile.letter}}{{playerTile.points}}</span>
+            <span class="mx-2 border p-3 text-center" *ngFor="let playerTile of playerTiles">
+                {{playerTile.letter}}
+                <span style="font-size: 10px">
+                    {{playerTile.points}}
+                </span>
+            </span>
         </div>
     </div>
     <div class="col-md-3">
+        <div class="alert alert-warning dispay-2">Букви {{remainingTilesCount}}</div>
     </div>
 </div>
