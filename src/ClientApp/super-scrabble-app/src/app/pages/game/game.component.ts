@@ -28,12 +28,11 @@ export class GameComponent implements OnInit {
 
     this.signalrService.hubConnection?.on("UpdateGameState", (data) => {      
       this.loadBoard(data.commonGameState.board);
+      this.loadPlayerTiles(data.tiles);
     })
 
     this.signalrService.loadGame(id);
     this.loadCellViewDataByType();
-
-    this.playerTiles = new Array(5).fill(new Tile('A', 2));
   }
 
   loadBoard(board: any): void {
@@ -43,6 +42,15 @@ export class GameComponent implements OnInit {
       let cell = board.cells[i];
       let tile = cell.tile ? new Tile(cell.tile.letter, cell.tile.points) : null;
       this.board[cell.position.row][cell.position.column] = new Cell(cell.type, tile);
+    }
+  }
+
+  loadPlayerTiles(playerTiles: any): void {
+    console.log(playerTiles);
+    this.playerTiles = new Array(playerTiles.length);
+    for(let i = 0; i < playerTiles.length; i++) {
+      let playerTile = playerTiles[i];
+      this.playerTiles[i] = new Tile(playerTile.letter, playerTile.points);
     }
   }
 
