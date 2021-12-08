@@ -96,6 +96,19 @@
             return playerViewModel;
         }
 
+        // WriteWordErrorHandler
+        // - InvalidTilesCount()
+
+        // gameService.WriteWord(gameState, input, username)
+
+        // CreateWriteWordHan
+
+        // IWriteWord
+
+        // WriteWordHandler
+        // 
+        // - InvalidTilesCount()
+
         public void WriteWord(GameState gameState, WriteWordInputModel input, string authorUserName)
         {
             Player player = gameState.GetPlayer(authorUserName);
@@ -103,6 +116,7 @@
             if (!input.PositionsByTiles.Any() || input.PositionsByTiles.Count() > player.Tiles.Count)
             {
                 // Invalid input tiles count
+                return;
             }
 
             var playerTiles = player.Tiles.ToList();
@@ -153,6 +167,9 @@
                 return;
             }
 
+            // All new tiles must be placed in a straight line
+            // All tile positions must be inside the board range
+            // All tile positions must be of free cells
             // Задължително поне 1 от вече написаните букви трябва да участва в някоя от новополучените думи
         }
     }

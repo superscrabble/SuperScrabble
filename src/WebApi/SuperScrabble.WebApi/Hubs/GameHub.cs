@@ -12,102 +12,81 @@
 
     public class GameHub : Hub
     {
-        public const int GamePlayersCount = 2;
-        public static readonly Dictionary<string, string> WaitingConnectionIdsByUserName = new();
-        public static readonly Dictionary<string, GameState> GamesByGroupName = new();
-        public static readonly Dictionary<string, string> GroupsByUserName = new();
+        public const string WaitingPlayersQueueGroupName = "WaitingPlayerQueue";
+        public const string StartGameMethodName = "StartGame";
 
         private readonly IGameService gameService;
+        private readonly IGameStateManager gameStateManager;
 
-        public GameHub(IGameService gameService)
+        public GameHub(IGameService gameService, IGameStateManager gameStateManager)
         {
             this.gameService = gameService;
+            this.gameStateManager = gameStateManager;
         }
 
         [Authorize]
         public void WriteWord(WriteWordInputModel input)
         {
-            string authorName = this.Context.User.Identity.Name;
-            string groupName = GroupsByUserName[authorName];
-            GameState gameState = GamesByGroupName[groupName];
-
-            gameService.WriteWord(gameState, input, authorName);
-
-            // validate letters and game state
-            // get new word(s)
-            // check if new word(s) exist(s)
-            // calculate points
-            // update score
-            // send response with updated game state
+            throw new NotImplementedException(nameof(this.WriteWord));
         }
 
         [Authorize]
         public async Task JoinRoom()
         {
-            string id = Context.ConnectionId;
+            string connectionId = Context.ConnectionId;
             string userName = Context.User.Identity.Name;
 
-            if (WaitingConnectionIdsByUserName.ContainsKey(userName) 
-                && WaitingConnectionIdsByUserName[userName] == id)
+            if (this.gameStateManager.IsUserAlreadyWaiting(userName, connectionId)
+                || this.gameStateManager.IsUserAlreadyInsideGame(userName))
             {
                 return;
             }
 
-            if (GroupsByUserName.ContainsKey(userName))
+            this.gameStateManager.AddUserToWaitingList(userName, connectionId);
+
+            if (!this.gameStateManager.IsWaitingQueueFull)
             {
-                // TODO: Send appropriate message to the user
+                await this.Groups.AddToGroupAsync(connectionId, WaitingPlayersQueueGroupName);
+                await this.SendNeededPlayersCountAsync(WaitingPlayersQueueGroupName);
                 return;
             }
 
-            WaitingConnectionIdsByUserName[userName] = id;
+            string groupName = this.gameStateManager.CreateGroupFromWaitingPlayers();
+            var waitingPlayers = this.gameStateManager.GetWaitingPlayers(groupName);
 
-            if (WaitingConnectionIdsByUserName.Count >= GamePlayersCount)
+            foreach (var waitingPlayer in waitingPlayers)
             {
-                string groupName = Guid.NewGuid().ToString();
+                string waitingPlayerConnectionId = waitingPlayer.Value;
 
-                foreach (var waitingPlayer in WaitingConnectionIdsByUserName)
-                {
-                    await this.Groups.AddToGroupAsync(waitingPlayer.Value, groupName);
-                    await this.Groups.RemoveFromGroupAsync(waitingPlayer.Value, nameof(WaitingConnectionIdsByUserName));
-
-                    GroupsByUserName.Add(waitingPlayer.Key, groupName);
-                }
-
-                var gameState = this.gameService.CreateGame(WaitingConnectionIdsByUserName);
-                GamesByGroupName.Add(groupName, gameState);
-
-                await this.Clients.Group(groupName).SendAsync("StartGame", groupName);
-                await this.UpdateGameStateAsync(groupName);
-
-                WaitingConnectionIdsByUserName.Clear();
-
-                //TODO: ensure that race condition will not happen when accessing waitingPlayers
-            }
-            else
-            {
-                await Groups.AddToGroupAsync(id, nameof(WaitingConnectionIdsByUserName));
-                await SendNeededPlayersCountAsync(nameof(WaitingConnectionIdsByUserName));
+                await this.Groups.AddToGroupAsync(waitingPlayerConnectionId, groupName);
+                await this.Groups.RemoveFromGroupAsync(waitingPlayerConnectionId, WaitingPlayersQueueGroupName);
             }
 
-            // check for already waiting players/rooms
+            GameState gameState = this.gameService.CreateGame(waitingPlayers);
+            this.gameStateManager.AddGameStateToGroup(gameState, groupName);
+
+            await this.Clients.Group(groupName).SendAsync(StartGameMethodName, groupName);
+            await this.UpdateGameStateAsync(groupName);
+
+            this.gameStateManager.ClearWaitingQueue();
         }
 
         [Authorize]
         public async Task LoadGame(string groupName)
         {
             string userName = Context.User.Identity.Name;
-
-            if(GroupsByUserName.ContainsKey(userName) && GroupsByUserName[userName] == groupName)
+            
+            if (this.gameStateManager.IsUserInsideGroup(userName, groupName))
             {
-                GameState gameState = GamesByGroupName[groupName];
+                GameState gameState = this.gameStateManager.GetGameState(userName);
                 var viewModel = this.gameService.MapFromGameState(gameState, userName);
                 await this.Clients.Client(this.Context.ConnectionId).SendAsync("UpdateGameState", viewModel);
             }
         }
-        
+
         private async Task UpdateGameStateAsync(string groupName)
         {
-            GameState gameState = GamesByGroupName[groupName];
+            GameState gameState = this.gameStateManager.GetGameStateByGroupName(groupName);
 
             foreach (Player player in gameState.Players)
             {
@@ -124,18 +103,18 @@
         [Authorize]
         public async Task LeaveQueue()
         {
-            string id = Context.ConnectionId;
+            string connectionId = Context.ConnectionId;
             string userName = Context.User.Identity.Name;
 
-            WaitingConnectionIdsByUserName.Remove(userName);
-            await this.Groups.RemoveFromGroupAsync(id, nameof(WaitingConnectionIdsByUserName));
-            await SendNeededPlayersCountAsync(nameof(WaitingConnectionIdsByUserName));
+            this.gameStateManager.RemoveUserFromWaitingQueue(userName);
+            await this.Groups.RemoveFromGroupAsync(connectionId, WaitingPlayersQueueGroupName);
+            await SendNeededPlayersCountAsync(WaitingPlayersQueueGroupName);
         }
 
         private async Task SendNeededPlayersCountAsync(string groupName)
         {
-            int neededPlayersCount = GamePlayersCount - WaitingConnectionIdsByUserName.Count;
-            await this.Clients.Groups(groupName).SendAsync("WaitingForMorePlayers", neededPlayersCount);
+            await this.Clients.Groups(groupName)
+                .SendAsync("WaitingForMorePlayers", this.gameStateManager.NeededPlayersCount);
         }
     }
 }
