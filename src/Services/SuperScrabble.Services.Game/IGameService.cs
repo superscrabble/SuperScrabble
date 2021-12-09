@@ -1,6 +1,7 @@
 ﻿namespace SuperScrabble.Services.Game
 {
     using System.Collections.Generic;
+
     using SuperScrabble.InputModels.Game;
     using SuperScrabble.Services.Game.Models;
     using SuperScrabble.ViewModels;
@@ -13,6 +14,6 @@
 
         void FillPlayerTiles(GameState gameState, string userName);
 
-        void WriteWord(GameState gameState, WriteWordInputModel input, string authorUserName);
+        WriteWordResult WriteWord(GameState gameState, WriteWordInputModel input, string authorUserName);
     }
 }

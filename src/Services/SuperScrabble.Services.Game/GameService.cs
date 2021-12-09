@@ -96,27 +96,37 @@
             return playerViewModel;
         }
 
-        // WriteWordErrorHandler
-        // - InvalidTilesCount()
-
-        // gameService.WriteWord(gameState, input, username)
-
-        // CreateWriteWordHan
-
-        // IWriteWord
-
-        // WriteWordHandler
-        // 
-        // - InvalidTilesCount()
-
-        public void WriteWord(GameState gameState, WriteWordInputModel input, string authorUserName)
+        public WriteWordResult WriteWord(GameState gameState, WriteWordInputModel input, string authorUserName)
         {
             Player player = gameState.GetPlayer(authorUserName);
+            WriteWordResult result = ValidatePlayerTiles(input, gameState, player);
 
-            if (!input.PositionsByTiles.Any() || input.PositionsByTiles.Count() > player.Tiles.Count)
+            if (!result.IsSucceeded)
             {
-                // Invalid input tiles count
-                return;
+                return result;
+            }
+
+            // TODO: Implement core functionality
+
+            return result;
+        }
+
+        private static bool IsInputTilesCountValid(WriteWordInputModel input, Player player)
+        {
+            return !input.PositionsByTiles.Any() || input.PositionsByTiles.Count() > player.Tiles.Count;
+        }
+
+        private static WriteWordResult ValidatePlayerTiles(WriteWordInputModel input, GameState gameState, Player player)
+        {
+            var result = new WriteWordResult
+            { 
+                IsSucceeded = false
+            };
+
+            if (IsInputTilesCountValid(input, player))
+            {
+                result.ErrorsByCodes.Add("InvalidTilesCount", "");
+                return result;
             }
 
             var playerTiles = player.Tiles.ToList();
@@ -127,23 +137,27 @@
             foreach (var positionByTile in input.PositionsByTiles)
             {
                 Tile tile = playerTiles.FirstOrDefault(pt => pt.Equals(positionByTile.Key));
-
                 Position position = positionByTile.Value;
-                bool isFree = gameState.Board.IsCellFree(position);
 
                 uniqueRows.Add(position.Row);
                 uniqueColumns.Add(position.Column);
 
                 if (tile == null)
                 {
-                    // User does not have the given tile
-                    return;
+                    result.ErrorsByCodes.Add("UnexistingPlayerTile", "");
+                    return result;
                 }
 
-                if (!isFree)
+                if (!gameState.Board.IsPositionInside(position))
                 {
-                    // Tile position is outside the board range or cell is already taken
-                    return;
+                    result.ErrorsByCodes.Add("TilePositionOutsideBoardRange", "");
+                    return result;
+                }
+
+                if (!gameState.Board.IsCellFree(position))
+                {
+                    result.ErrorsByCodes.Add("TilePositionAlreadyTaken", "");
+                    return result;
                 }
 
                 playerTiles.Remove(tile);
@@ -151,26 +165,24 @@
 
             if (uniqueRows.Count > 1 && uniqueColumns.Count > 1)
             {
-                // Tiles must be on the same horizontal or vertical line
-                return;
+                result.ErrorsByCodes.Add("TilesNotOnTheSameLine", "");
+                return result;
             }
 
             bool hasRepeatingHorizontalPositions = uniqueRows.Count == 1
                 && uniqueColumns.Count != input.PositionsByTiles.Count();
 
-            bool hasRepeatingVerticalPositions = uniqueColumns.Count == 1 
+            bool hasRepeatingVerticalPositions = uniqueColumns.Count == 1
                 && uniqueRows.Count != input.PositionsByTiles.Count();
 
             if (hasRepeatingHorizontalPositions || hasRepeatingVerticalPositions)
             {
-                // Equal tile positions are not allowed
-                return;
+                result.ErrorsByCodes.Add("InputTilesPositionsCollision", "");
+                return result;
             }
 
-            // All new tiles must be placed in a straight line
-            // All tile positions must be inside the board range
-            // All tile positions must be of free cells
-            // Задължително поне 1 от вече написаните букви трябва да участва в някоя от новополучените думи
+            result.IsSucceeded = true;
+            return result;
         }
     }
 }
