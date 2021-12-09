@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { SignalrService } from 'src/app/services/signalr.service';
 import { Tile } from 'src/app/models/tile';
 import { Cell } from 'src/app/models/cell';
@@ -16,6 +16,9 @@ export class GameComponent implements OnInit {
   cellViewDataByType: Map<number, CellViewData> = new Map();
   remainingTilesCount: number = 0;
   pointsByUserNames: Map<string, number> = new Map();
+  selectedPlayerTile: Tile | null = null;
+  updatedBoardCells: any[] = new Array();
+  selectedBoardCell: Cell | null = null;
 
   constructor(private signalrService: SignalrService) {}
 
@@ -28,7 +31,7 @@ export class GameComponent implements OnInit {
     const params = url.split("/");
     let id = params[params.length - 1];
 
-    this.signalrService.hubConnection?.on("UpdateGameState", (data) => {      
+    this.signalrService.hubConnection?.on("UpdateGameState", data => {      
       console.log(data);
       this.loadBoard(data.commonGameState.board);
       this.loadPlayerTiles(data.tiles);
@@ -71,9 +74,10 @@ export class GameComponent implements OnInit {
   }
 
   loadCellViewDataByType() {
+    const emptyCellValue = " ";
     this.cellViewDataByType = new Map([
-      [0, new CellViewData("basic-cell", " ")],
-      [1, new CellViewData("center-cell", "")],
+      [0, new CellViewData("basic-cell", emptyCellValue)],
+      [1, new CellViewData("center-cell", emptyCellValue)],
       [2, new CellViewData("x2-letter-cell", "x2")],
       [3, new CellViewData("x3-letter-cell", "x3")],
       [4, new CellViewData("x2-word-cell", "x2")],
@@ -88,6 +92,105 @@ export class GameComponent implements OnInit {
   getValueWhenEmptyByCellType(type: number) {
     return this.cellViewDataByType.get(type)?.valueWhenEmpty;
   }
+
+  clickOnPlayerTile(playerTile: Tile | any) { //either with index
+      if(playerTile != null) {  
+        //Check whether the player has the tile
+        for(let i = 0; i < this.playerTiles.length; i++) {
+          if(this.playerTiles[i] == playerTile) {
+            this.selectedPlayerTile = playerTile;
+          }
+        }
+      }
+  }
+
+  clickOnBoardCell(cell: Cell | any) {
+    if(!cell) {
+        return;
+    }
+
+    //swap the selected player tile and the selected board cell
+    if(cell.tile && this.selectedPlayerTile) {
+        let temp = cell.tile;
+        cell.tile = this.selectedPlayerTile;
+        //check whether the player had the tile in the current round
+        this.playerTiles.push(temp);
+        this.playerTiles = this.playerTiles.filter(item => item !== this.selectedPlayerTile);
+        this.selectedPlayerTile = null;
+        return;
+    }
+
+    //place the selected player tile
+    if(this.selectedPlayerTile) {
+        if(!cell.tile) {
+            cell.tile = this.selectedPlayerTile;
+            this.playerTiles = this.playerTiles.filter(item => item !== this.selectedPlayerTile);
+            this.saveUpdatedBoardCellWithPosition(cell);
+            this.selectedPlayerTile = null;
+            return;
+        }
+    }
+
+    //select a cell
+    if(cell.tile) {
+        // TODO: check whether the cell is on the board
+        this.selectedBoardCell = cell;
+        return;
+    }
+
+    //move a tile from a selected cell to another cell
+    if(this.selectedBoardCell) {
+        let tempTile = this.selectedBoardCell.tile;
+        this.selectedBoardCell.tile = cell.tile;
+        cell.tile = tempTile;
+
+        this.updatedBoardCells = this.updatedBoardCells.filter(item => item.key !== this.selectedBoardCell);
+        this.saveUpdatedBoardCellWithPosition(cell);
+        this.selectedBoardCell = null;
+        return;
+    }
+  }
+
+  saveUpdatedBoardCellWithPosition(cell: Cell) {
+    for(let row = 0; row < this.board.length; row++) {
+        for(let col = 0; col < this.board[row].length; col++) {
+            if(this.board[row][col] == cell) {
+                this.updatedBoardCells.push({key: cell, value: {row: row, column: col}})
+                return;
+            }       
+        }
+    }
+  }
+
+  rightClickOnBoardCell(cell: Cell | any) {
+    if(cell.tile && cell == this.selectedBoardCell) {
+        this.playerTiles.push(cell.tile);
+        this.selectedBoardCell = null;
+        cell.tile = null;
+    }
+    return false;
+  }
+
+  getClassNameIfSelected(object: Tile | Cell | any) {
+    if(object instanceof Tile) {
+        if(this.selectedPlayerTile && this.selectedPlayerTile == object) {
+            return "selected-tile";
+        }
+    } else if(object instanceof Cell) {
+        if(this.selectedBoardCell && this.selectedBoardCell == object) {
+            return "selected-cell";
+        }
+    }
+    return "";
+  }
+
+  writeWord() : void {
+    if(this.updatedBoardCells.length > 0) {
+        this.updatedBoardCells = this.updatedBoardCells.map(item => ({key: item.key.tile, value: item.value}))
+        this.signalrService.writeWord(this.updatedBoardCells);
+        this.updatedBoardCells = new Array();
+    }
+  }  
 
   loadMockData(): void {
     let data = 
@@ -1927,6 +2030,10 @@ export class GameComponent implements OnInit {
       {
           "letter": "Е",
           "points": 1
+      },
+      {
+        "letter": "Е",
+        "points": 2
       },
       {
           "letter": "И",

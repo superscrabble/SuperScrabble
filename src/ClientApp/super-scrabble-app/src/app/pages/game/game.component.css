@@ -22,3 +22,11 @@
 .x3-word-cell {
     background-color: #F97362;
 }
+
+.selected-tile {
+    background-color: #F97362;
+}
+
+.selected-cell {
+    background-color: #f5c453;
+}

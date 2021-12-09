@@ -68,7 +68,16 @@ export class SignalrService {
 
   public loadGame(groupName: string) {
     if(this.hubConnection?.state == signalR.HubConnectionState.Connected) {
-      this.hubConnection?.invoke("LoadGame", groupName)  ;
+      this.hubConnection?.invoke("LoadGame", groupName);
+    }
+  }
+
+  public writeWord(cells: any[]) {
+    if(cells.length > 0) {
+      let input = {
+        positionsByTiles: cells
+      }
+      this.hubConnection?.invoke("WriteWord", input);
     }
   }
 }

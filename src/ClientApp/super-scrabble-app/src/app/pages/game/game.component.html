@@ -15,7 +15,11 @@
         <div class="row d-flex justify-content-center px-5">
             <table>
                 <tr *ngFor="let row of board">
-                    <td *ngFor="let cell of row" class="border p-2 text-center {{getClassNameByCellType(cell.type)}}">
+                    <td *ngFor="let cell of row" 
+                        class="border p-2 text-center {{getClassNameByCellType(cell.type)}}
+                                                      {{getClassNameIfSelected(cell)}}"
+                        (click)="clickOnBoardCell(cell)"
+                        (contextmenu)="rightClickOnBoardCell(cell)">
                         <div *ngIf="cell.tile">
                             {{cell.tile.letter}}{{cell.tile.points}}
                         </div>
@@ -27,7 +31,7 @@
             </table>
         </div>
         <div class="my-3 text-center">
-            <span class="mx-2 border p-3 text-center" *ngFor="let playerTile of playerTiles">
+            <span cdkDrag *ngFor="let playerTile of playerTiles" class="mx-2 border p-3 text-center {{getClassNameIfSelected(playerTile)}}" (click)="clickOnPlayerTile(playerTile)">
                 {{playerTile.letter}}
                 <span style="font-size: 10px">
                     {{playerTile.points}}
@@ -37,5 +41,6 @@
     </div>
     <div class="col-md-3">
         <div class="alert alert-warning dispay-2">Букви {{remainingTilesCount}}</div>
+        <button (click)="writeWord()">Напиши дума</button>
     </div>
 </div>
