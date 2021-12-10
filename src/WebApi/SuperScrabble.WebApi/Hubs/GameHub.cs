@@ -27,6 +27,17 @@
         [Authorize]
         public void WriteWord(WriteWordInputModel input)
         {
+            //TODO:
+            //Unit tests for the WriteWord service logic
+            //Integrate words inside the database
+            //Implement core business logic for the game (points counting, word formation, etc.)
+
+            //IWordsService
+            //MockWordsRepo.GetAll()
+            //MockWordsService
+            //IRepository
+            //EFRepository
+            //TODO: Words Seeding
             throw new NotImplementedException(nameof(this.WriteWord));
         }
 

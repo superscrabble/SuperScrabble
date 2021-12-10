@@ -16,6 +16,8 @@
         {
         }
 
+        public DbSet<Word> Words { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)

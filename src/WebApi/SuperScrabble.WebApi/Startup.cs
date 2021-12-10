@@ -27,6 +27,7 @@ namespace SuperScrabble.WebApi
     using static SuperScrabble.Common.ModelValidationConstraints;
     using SuperScrabble.Services.Game;
     using SuperScrabble.Services;
+    using SuperScrabble.Data.Repositories;
 
     public class Startup
     {
@@ -82,6 +83,9 @@ namespace SuperScrabble.WebApi
 
             AddJwtBearerAuthentication(services);
 
+            services.AddScoped(typeof(IRepository<>), typeof(EFRepository<>));
+
+            services.AddTransient<IWordsService, WordsService>();
             services.AddTransient<IUsersService, UsersService>();
             services.AddTransient<IGameService, GameService>();
             services.AddTransient<IShuffleService, ShuffleService>();
