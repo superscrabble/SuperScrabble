@@ -3,7 +3,7 @@
     using SuperScrabble.Services.Game.Models;
     using System.Collections.Generic;
 
-    public interface IGameStateManager
+    public interface IGameStateProvider
     {
         GameState GetGameState(string userName);
 

@@ -2,9 +2,9 @@
 {
     using System.Collections.Generic;
 
+    using SuperScrabble.ViewModels;
     using SuperScrabble.InputModels.Game;
     using SuperScrabble.Services.Game.Models;
-    using SuperScrabble.ViewModels;
 
     public interface IGameService
     {

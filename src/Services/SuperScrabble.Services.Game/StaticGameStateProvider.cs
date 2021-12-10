@@ -5,7 +5,7 @@
 
     using SuperScrabble.Services.Game.Models;
 
-    public class StaticGameStateManager : IGameStateManager
+    public class StaticGameStateProvider : IGameStateProvider
     {
         private static readonly Dictionary<string, string> waitingConnectionIdsByUserName = new();
         private static readonly Dictionary<string, string> groupsByUserName = new();
@@ -13,7 +13,7 @@
 
         private readonly int playersInsideGameCount;
 
-        public StaticGameStateManager()
+        public StaticGameStateProvider()
         {
             this.playersInsideGameCount = 2;
         }

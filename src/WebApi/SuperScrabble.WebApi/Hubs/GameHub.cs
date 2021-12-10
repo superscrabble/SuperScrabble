@@ -16,9 +16,9 @@
         public const string StartGameMethodName = "StartGame";
 
         private readonly IGameService gameService;
-        private readonly IGameStateManager gameStateManager;
+        private readonly IGameStateProvider gameStateManager;
 
-        public GameHub(IGameService gameService, IGameStateManager gameStateManager)
+        public GameHub(IGameService gameService, IGameStateProvider gameStateManager)
         {
             this.gameService = gameService;
             this.gameStateManager = gameStateManager;

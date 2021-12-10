@@ -3,25 +3,28 @@
     using System.Linq;
     using System.Collections.Generic;
 
-    using SuperScrabble.Services.Game.Models;
-    using SuperScrabble.ViewModels;
     using SuperScrabble.Common;
+    using SuperScrabble.ViewModels;
     using SuperScrabble.InputModels.Game;
+    using SuperScrabble.Services.Game.Models;
 
     public class GameService : IGameService
     {
         private readonly IShuffleService shuffleService;
         private readonly ITilesProvider tilesProvider;
         private readonly IBonusCellsProvider bonusCellsProvider;
+        private readonly IGameplayConstantsProvider gameplayConstantsProvider;
 
         public GameService(
             IShuffleService shuffleService,
             ITilesProvider tilesProvider,
-            IBonusCellsProvider bonusCellsProvider)
+            IBonusCellsProvider bonusCellsProvider,
+            IGameplayConstantsProvider gameplayConstantsProvider)
         {
             this.shuffleService = shuffleService;
             this.tilesProvider = tilesProvider;
             this.bonusCellsProvider = bonusCellsProvider;
+            this.gameplayConstantsProvider = gameplayConstantsProvider;
         }
 
         public GameState CreateGame(IEnumerable<KeyValuePair<string, string>> connectionIdsByUserNames)
@@ -43,7 +46,7 @@
 
             Player player = gameState.GetPlayer(userName);
 
-            int neededTilesCount = GameConstants.PlayerTilesCount - player.Tiles.Count;
+            int neededTilesCount = this.gameplayConstantsProvider.PlayerTilesCount - player.Tiles.Count;
 
             for (int i = 0; i < neededTilesCount; i++)
             {
