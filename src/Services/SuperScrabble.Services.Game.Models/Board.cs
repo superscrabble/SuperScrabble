@@ -72,5 +72,10 @@
             return position.Row >= 0 && position.Column >= 0 
                 && position.Row < this.Height && position.Column < this.Width;
         }
+
+        public void FreeCell(Position position)
+        {
+            this[position].Tile = null;
+        }
     }
 }

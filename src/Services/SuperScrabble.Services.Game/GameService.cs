@@ -200,16 +200,23 @@
 
             IBoard board = gameState.Board;
 
+            foreach (var positionByTile in sortedPositionsByTiles)
+            {
+                board[positionByTile.Value].Tile = positionByTile.Key;
+            }
+
             if (areTilesOrderedVertically)
             {
                 var wordBuilders = new List<WordBuilder>();
 
-                Position topMostPosition = sortedPositionsByTiles.First().Value;
+                var topMostPositionByTile = sortedPositionsByTiles.First();
+
+                Position topMostPosition = topMostPositionByTile.Value;
                 Position bottomMostPosition = sortedPositionsByTiles.Last().Value;
 
                 var mainWordBuilder = new WordBuilder();
                 mainWordBuilder.AppendUpwardExistingBoardTiles(board, topMostPosition);
-                mainWordBuilder.AppendNewTiles(sortedPositionsByTiles);
+                mainWordBuilder.AppendNewTiles(new[] { topMostPositionByTile });
                 mainWordBuilder.AppendDownwardExistingBoardTiles(board, bottomMostPosition);
                 wordBuilders.Add(mainWordBuilder);
 
@@ -222,6 +229,9 @@
                     currentWordBuilder.AppendRightwardExistingBoardTiles(board, startingPosition);
                     wordBuilders.Add(currentWordBuilder);
                 }
+
+                // If any of the newly formed words is invalid (db or others (new tiles don't touch any of the old tiles))
+                // then revert board to initial state (before placing the new tiles)
             }
             else
             {

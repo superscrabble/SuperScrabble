@@ -12,6 +12,8 @@
 
         Cell this[Position position] { get; set; }
 
+        void FreeCell(Position position);
+
         bool IsCellFree(Position position);
 
         bool IsPositionInside(Position position);

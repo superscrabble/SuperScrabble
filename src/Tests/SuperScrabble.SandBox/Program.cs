@@ -1,5 +1,7 @@
-﻿using SuperScrabble.Data;
+﻿using SuperScrabble.Common;
+using SuperScrabble.Data;
 using SuperScrabble.Data.Repositories;
+using SuperScrabble.InputModels.Game;
 using SuperScrabble.Models;
 using SuperScrabble.Services;
 using SuperScrabble.Services.Data;
@@ -32,10 +34,37 @@ namespace SuperScrabble.SandBox
             }
 
             gameState.Board[7, 7].Tile = new Tile('К', 2);
-            gameState.Board[8, 7].Tile = new Tile('О', 1);
-            gameState.Board[9, 7].Tile = new Tile('Н', 1);
+            gameState.Board[7, 8].Tile = new Tile('О', 1);
+            gameState.Board[7, 9].Tile = new Tile('Н', 1);
 
+            var input = new WriteWordInputModel
+            {
+                PositionsByTiles = new List<KeyValuePair<Tile, Position>>
+                {
+                    new(gameState.Players.First(p => p.UserName == "Georgi").GetTile(0), new Position(6, 8)),
+                    new(gameState.Players.First(p => p.UserName == "Georgi").GetTile(1), new Position(8, 8)),
+                },
+            };
 
+            gameService.WriteWord(gameState, input, "Georgi");
+
+            for (int row = 0; row < gameState.Board.Height; row++)
+            {
+                for (int col = 0; col < gameState.Board.Width; col++)
+                {
+
+                    if (gameState.Board[row, col].Tile == null)
+                    {
+                        Console.Write("#");
+                    }
+                    else
+                    {
+                        Console.Write(gameState.Board[row, col].Tile.Letter);
+                    }
+                }
+
+                Console.WriteLine();
+            }
         }
     }
 }
