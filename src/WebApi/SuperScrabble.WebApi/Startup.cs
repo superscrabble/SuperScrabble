@@ -28,6 +28,8 @@ namespace SuperScrabble.WebApi
     using SuperScrabble.Services.Game;
     using SuperScrabble.Services;
     using SuperScrabble.Data.Repositories;
+    using SuperScrabble.Data.Seeding;
+    using Microsoft.EntityFrameworkCore;
 
     public class Startup
     {
@@ -107,6 +109,13 @@ namespace SuperScrabble.WebApi
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            using (var serviceScope = app.ApplicationServices.CreateScope())
+            {
+                AppDbContext dbContext = serviceScope.ServiceProvider.GetRequiredService<AppDbContext>();
+                dbContext.Database.Migrate();
+                new AppSeeder().SeedAsync(dbContext, serviceScope.ServiceProvider).GetAwaiter().GetResult();
+            }
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
