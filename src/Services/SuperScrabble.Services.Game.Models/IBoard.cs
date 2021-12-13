@@ -10,6 +10,8 @@
 
         Cell this[int row, int column] { get; set; }
 
+        Cell this[Position position] { get; set; }
+
         bool IsCellFree(Position position);
 
         bool IsPositionInside(Position position);

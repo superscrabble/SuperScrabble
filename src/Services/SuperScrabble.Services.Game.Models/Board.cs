@@ -25,6 +25,13 @@
 
         public int Width => this.cells.GetLength(1);
 
+        public Cell this[Position position]
+        { 
+            get => this[position.Row, position.Column];
+
+            set => this[position.Row, position.Column] = value;
+        }
+        
         public Cell this[int row, int column]
         {
             get => this.cells[row, column];

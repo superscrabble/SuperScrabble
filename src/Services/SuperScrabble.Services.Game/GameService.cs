@@ -7,6 +7,7 @@
     using SuperScrabble.ViewModels;
     using SuperScrabble.InputModels.Game;
     using SuperScrabble.Services.Game.Models;
+    using SuperScrabble.Services.Data;
 
     public class GameService : IGameService
     {
@@ -14,17 +15,20 @@
         private readonly ITilesProvider tilesProvider;
         private readonly IBonusCellsProvider bonusCellsProvider;
         private readonly IGameplayConstantsProvider gameplayConstantsProvider;
+        private readonly IWordsService wordsService;
 
         public GameService(
             IShuffleService shuffleService,
             ITilesProvider tilesProvider,
             IBonusCellsProvider bonusCellsProvider,
-            IGameplayConstantsProvider gameplayConstantsProvider)
+            IGameplayConstantsProvider gameplayConstantsProvider,
+            IWordsService wordsService)
         {
             this.shuffleService = shuffleService;
             this.tilesProvider = tilesProvider;
             this.bonusCellsProvider = bonusCellsProvider;
             this.gameplayConstantsProvider = gameplayConstantsProvider;
+            this.wordsService = wordsService;
         }
 
         public GameState CreateGame(IEnumerable<KeyValuePair<string, string>> connectionIdsByUserNames)
@@ -109,6 +113,10 @@
                 return result;
             }
 
+            // determine whether letters are ordered horizontally or vertically
+            // find left most or top most
+            // start going left or up until an empty cell is found
+            // 
             // TODO: Implement core functionality
 
             return result;
@@ -119,7 +127,7 @@
             return !input.PositionsByTiles.Any() || input.PositionsByTiles.Count() > player.Tiles.Count;
         }
 
-        private static WriteWordResult ValidatePlayerTiles(WriteWordInputModel input, GameState gameState, Player player)
+        private WriteWordResult ValidatePlayerTiles(WriteWordInputModel input, GameState gameState, Player player)
         {
             var result = new WriteWordResult
             { 
@@ -182,6 +190,42 @@
             {
                 result.ErrorsByCodes.Add("InputTilesPositionsCollision", "");
                 return result;
+            }
+
+            bool areTilesOrderedVertically = uniqueRows.Count > uniqueColumns.Count;
+
+            var sortedPositionsByTiles = areTilesOrderedVertically ? 
+                input.PositionsByTiles.OrderBy(pt => pt.Value.Row) : 
+                input.PositionsByTiles.OrderBy(pt => pt.Value.Column);
+
+            IBoard board = gameState.Board;
+
+            if (areTilesOrderedVertically)
+            {
+                var wordBuilders = new List<WordBuilder>();
+
+                Position topMostPosition = sortedPositionsByTiles.First().Value;
+                Position bottomMostPosition = sortedPositionsByTiles.Last().Value;
+
+                var mainWordBuilder = new WordBuilder();
+                mainWordBuilder.AppendUpwardExistingBoardTiles(board, topMostPosition);
+                mainWordBuilder.AppendNewTiles(sortedPositionsByTiles);
+                mainWordBuilder.AppendDownwardExistingBoardTiles(board, bottomMostPosition);
+                wordBuilders.Add(mainWordBuilder);
+
+                foreach (var positionByTile in sortedPositionsByTiles)
+                {
+                    var currentWordBuilder = new WordBuilder();
+                    Position startingPosition = positionByTile.Value;
+                    currentWordBuilder.AppendLeftwardExistingBoardTiles(board, startingPosition);
+                    currentWordBuilder.AppendNewTiles(new[] { positionByTile });
+                    currentWordBuilder.AppendRightwardExistingBoardTiles(board, startingPosition);
+                    wordBuilders.Add(currentWordBuilder);
+                }
+            }
+            else
+            {
+                Position leftMostPosition = sortedPositionsByTiles.First().Value;
             }
 
             result.IsSucceeded = true;
