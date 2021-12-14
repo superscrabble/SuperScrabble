@@ -16,53 +16,62 @@
         public void AppendLeftwardExistingBoardTiles(IBoard board, Position startingPosition)
         {
             this.AppendExistingBoardTiles(
-                board, startingPosition, x => new Position(x.Row, x.Column - 1), toFront: true);
+                board,
+                startingPosition,
+                x => new Position(x.Row, x.Column - 1),
+                toFront: true,
+                includeStartingPosition: true);
         }
 
         public void AppendRightwardExistingBoardTiles(IBoard board, Position startingPosition)
         {
             this.AppendExistingBoardTiles(
-                board, startingPosition, x => new Position(x.Row, x.Column + 1), toFront: false);
+                board,
+                startingPosition,
+                x => new Position(x.Row, x.Column + 1),
+                toFront: false,
+                includeStartingPosition: false);
         }
 
         public void AppendUpwardExistingBoardTiles(IBoard board, Position startingPosition)
         {
             this.AppendExistingBoardTiles(
-                board, startingPosition, x => new Position(x.Row - 1, x.Column), toFront: true);
+                board,
+                startingPosition,
+                x => new Position(x.Row - 1, x.Column),
+                toFront: true,
+                includeStartingPosition: true);
         }
 
         public void AppendDownwardExistingBoardTiles(IBoard board, Position startingPosition)
         {
             this.AppendExistingBoardTiles(
-                board, startingPosition, x => new Position(x.Row + 1, x.Column), toFront: false);
-        }
-
-        public void AppendNewTiles(IEnumerable<KeyValuePair<Tile, Position>> positionsByTiles, bool toFront = false)
-        {
-            foreach (var positionByTile in positionsByTiles)
-            {
-                if (toFront)
-                {
-                    this.AppendToFront(positionByTile);
-                }
-                else
-                {
-                    this.AppendToBack(positionByTile);
-                }
-            }
+                board,
+                startingPosition,
+                x => new Position(x.Row + 1, x.Column),
+                toFront: false,
+                includeStartingPosition: false);
         }
 
         private void AppendExistingBoardTiles(
             IBoard board,
             Position startingPosition,
             Func<Position, Position> getNextPosition,
-            bool toFront)
+            bool toFront,
+            bool includeStartingPosition)
         {
             var current = new Position(startingPosition.Row, startingPosition.Column);
 
             while (true)
             {
-                current = getNextPosition(current);
+                if (includeStartingPosition)
+                {
+                    includeStartingPosition = false;
+                }
+                else
+                {
+                    current = getNextPosition(current);
+                }
 
                 if (!board.IsPositionInside(current) || board.IsCellFree(current))
                 {

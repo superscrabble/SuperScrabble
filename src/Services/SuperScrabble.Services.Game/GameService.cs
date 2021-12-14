@@ -8,6 +8,7 @@
     using SuperScrabble.InputModels.Game;
     using SuperScrabble.Services.Game.Models;
     using SuperScrabble.Services.Data;
+    using System;
 
     public class GameService : IGameService
     {
@@ -192,54 +193,74 @@
                 return result;
             }
 
-            bool areTilesOrderedVertically = uniqueRows.Count > uniqueColumns.Count;
+            bool areTilesAllignedVertically = uniqueRows.Count > uniqueColumns.Count;
 
-            var sortedPositionsByTiles = areTilesOrderedVertically ? 
+            var sortedPositionsByTiles = areTilesAllignedVertically ? 
                 input.PositionsByTiles.OrderBy(pt => pt.Value.Row) : 
                 input.PositionsByTiles.OrderBy(pt => pt.Value.Column);
 
-            IBoard board = gameState.Board;
+            var wordBuilders = GetAllNewWords(gameState.Board, sortedPositionsByTiles, areTilesAllignedVertically);
 
+            result.IsSucceeded = true;
+            return result;
+        }
+
+        private static IEnumerable<WordBuilder> GetAllNewWords(IBoard board, IEnumerable<KeyValuePair<Tile, Position>> sortedPositionsByTiles, bool areTilesAllignedVertically)
+        {
+            // Place new tiles on the board
             foreach (var positionByTile in sortedPositionsByTiles)
             {
                 board[positionByTile.Value].Tile = positionByTile.Key;
             }
 
-            if (areTilesOrderedVertically)
+            Position startingPosition = sortedPositionsByTiles.First().Value;
+
+            var wordBuilders = new List<WordBuilder>();
+            var mainWordBuilder = new WordBuilder();
+
+            if (areTilesAllignedVertically)
             {
-                var wordBuilders = new List<WordBuilder>();
-
-                var topMostPositionByTile = sortedPositionsByTiles.First();
-
-                Position topMostPosition = topMostPositionByTile.Value;
-                Position bottomMostPosition = sortedPositionsByTiles.Last().Value;
-
-                var mainWordBuilder = new WordBuilder();
-                mainWordBuilder.AppendUpwardExistingBoardTiles(board, topMostPosition);
-                mainWordBuilder.AppendNewTiles(new[] { topMostPositionByTile });
-                mainWordBuilder.AppendDownwardExistingBoardTiles(board, bottomMostPosition);
-                wordBuilders.Add(mainWordBuilder);
-
-                foreach (var positionByTile in sortedPositionsByTiles)
-                {
-                    var currentWordBuilder = new WordBuilder();
-                    Position startingPosition = positionByTile.Value;
-                    currentWordBuilder.AppendLeftwardExistingBoardTiles(board, startingPosition);
-                    currentWordBuilder.AppendNewTiles(new[] { positionByTile });
-                    currentWordBuilder.AppendRightwardExistingBoardTiles(board, startingPosition);
-                    wordBuilders.Add(currentWordBuilder);
-                }
-
-                // If any of the newly formed words is invalid (db or others (new tiles don't touch any of the old tiles))
-                // then revert board to initial state (before placing the new tiles)
+                mainWordBuilder.AppendUpwardExistingBoardTiles(board, startingPosition);
+                mainWordBuilder.AppendDownwardExistingBoardTiles(board, startingPosition);
             }
             else
             {
-                Position leftMostPosition = sortedPositionsByTiles.First().Value;
+                mainWordBuilder.AppendLeftwardExistingBoardTiles(board, startingPosition);
+                mainWordBuilder.AppendRightwardExistingBoardTiles(board, startingPosition);
             }
 
-            result.IsSucceeded = true;
-            return result;
+            wordBuilders.Add(mainWordBuilder);
+
+            foreach (var positionByTile in sortedPositionsByTiles)
+            {
+                var secondaryWordBuilder = new WordBuilder();
+                var currentStartingPosition = positionByTile.Value;
+
+                if (areTilesAllignedVertically)
+                {
+                    secondaryWordBuilder.AppendLeftwardExistingBoardTiles(board, currentStartingPosition);
+                    secondaryWordBuilder.AppendRightwardExistingBoardTiles(board, currentStartingPosition);
+                }
+                else
+                {
+                    secondaryWordBuilder.AppendUpwardExistingBoardTiles(board, currentStartingPosition);
+                    secondaryWordBuilder.AppendDownwardExistingBoardTiles(board, currentStartingPosition);
+                }
+
+                if (secondaryWordBuilder.PositionsByTiles.Count <= 1)
+                {
+                    // Skip all new single letter words
+                    continue;
+                }
+
+                wordBuilders.Add(secondaryWordBuilder);
+            }
+
+            // TODO: Fix this validation
+            bool areNewTilesConnectedToTheOldOnes = wordBuilders
+                .Any(wb => wb.PositionsByTiles.Any(pbt => sortedPositionsByTiles.Any(x => x.Value.Equals(pbt.Value) == false)));
+
+            return areNewTilesConnectedToTheOldOnes ? wordBuilders : null; // TODO: Handle the error
         }
     }
 }

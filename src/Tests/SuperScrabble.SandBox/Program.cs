@@ -41,8 +41,11 @@ namespace SuperScrabble.SandBox
             {
                 PositionsByTiles = new List<KeyValuePair<Tile, Position>>
                 {
-                    new(gameState.Players.First(p => p.UserName == "Georgi").GetTile(0), new Position(6, 8)),
-                    new(gameState.Players.First(p => p.UserName == "Georgi").GetTile(1), new Position(8, 8)),
+                    new(gameState.Players.First(p => p.UserName == "Georgi").GetTile(0), new Position(4, 8)),
+                    new(gameState.Players.First(p => p.UserName == "Georgi").GetTile(1), new Position(5, 8)),
+                   new(gameState.Players.First(p => p.UserName == "Georgi").GetTile(2), new Position(6, 8)),
+                    new(gameState.Players.First(p => p.UserName == "Georgi").GetTile(3), new Position(8, 8)),
+                    new(gameState.Players.First(p => p.UserName == "Georgi").GetTile(4), new Position(9, 8)),
                 },
             };
 
