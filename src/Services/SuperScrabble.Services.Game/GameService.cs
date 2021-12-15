@@ -99,7 +99,7 @@
             var commonViewModel = new CommonGameStateViewModel
             {
                 RemainingTilesCount = gameState.TilesCount,
-                PointsByUserNames = gameState.Players.ToDictionary(p => p.UserName, p => p.Points),
+                PointsByUserNames = gameState.Players.ToDictionary(p => p.UserName, p => p.Points).OrderByDescending(pbu => pbu.Value),
                 Board = boardViewModel,
             };
 

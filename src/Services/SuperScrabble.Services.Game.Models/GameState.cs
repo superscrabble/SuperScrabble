@@ -30,7 +30,7 @@
 
         public int PlayerIndex { get; private set; }
 
-        public IReadOnlyCollection<Player> Players => this.players.AsReadOnly();
+        public IReadOnlyCollection<Player> Players => this.players.ToList().AsReadOnly();
 
         public int TilesCount => this.TilesBag.TilesCount;
 
@@ -41,7 +41,12 @@
 
         public void NextPlayer()
         {
-            this.PlayerIndex = this.PlayerIndex >= this.players.Count ? 0 : this.PlayerIndex + 1;
+            this.PlayerIndex++;
+
+            if (this.PlayerIndex >= this.Players.Count)
+            {
+                this.PlayerIndex = 0;
+            }
         }
     }
 }

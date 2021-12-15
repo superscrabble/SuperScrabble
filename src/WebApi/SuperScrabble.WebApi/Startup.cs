@@ -90,7 +90,8 @@ namespace SuperScrabble.WebApi
             // TODO: Think about AddSingleton()
             services.AddScoped<IGameStateManager, StaticGameStateManager>();
 
-            services.AddTransient<IWordsService, WordsService>();
+            //services.AddTransient<IWordsService, WordsService>();
+            services.AddTransient<IWordsService, AlwaysValidWordsService>();
             services.AddTransient<IUsersService, UsersService>();
             services.AddTransient<IGameService, GameService>();
             services.AddTransient<IShuffleService, ShuffleService>();
