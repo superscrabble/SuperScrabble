@@ -119,6 +119,10 @@
                 RestorePreviousBoardState(gameState.Board, input);
             }
 
+            foreach (var positionByTile in input.PositionsByTiles)
+            {
+                gameState.GetPlayer(authorUserName).RemoveTile(positionByTile.Key);
+            }
             return result;
         }
 
@@ -130,7 +134,7 @@
         private WriteWordResult ValidatePlayerTiles(WriteWordInputModel input, GameState gameState, Player player)
         {
             var result = new WriteWordResult
-            { 
+            {
                 IsSucceeded = false
             };
 
@@ -204,7 +208,7 @@
                 : curr => new Position(curr.Row, curr.Column + 1);
 
             bool goesThroughCenter = false;
-            
+
             if (gameState.Board.IsEmpty())
             {
                 goesThroughCenter = input.PositionsByTiles.Any(pbt => gameState.Board.IsPositionCenter(pbt.Value));

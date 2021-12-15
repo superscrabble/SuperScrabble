@@ -98,8 +98,7 @@
             }
         }
 
-        // TODO: Player order
-        // TODO: Remove player tiles after writing the word
+        // TODO: Player order + timer
         // TODO: Implement scoring
         // TODO: onDisconnected edge cases
         // TODO: handle unauthenticated users
