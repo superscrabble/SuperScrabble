@@ -5,6 +5,7 @@
     using System.Collections.Generic;
 
     using SuperScrabble.Common;
+    using System.Text;
 
     public class WordBuilder
     {
@@ -99,6 +100,18 @@
         private void AppendToBack(KeyValuePair<Tile, Position> positionByTile)
         {
             this.positionsByTiles.AddLast(positionByTile);
+        }
+
+        public override string ToString()
+        {
+            StringBuilder stringBuilder = new();
+
+            foreach (var positionByTile in positionsByTiles)
+            {
+                stringBuilder.Append(positionByTile.Key.Letter);
+            }
+
+            return stringBuilder.ToString();
         }
     }
 }

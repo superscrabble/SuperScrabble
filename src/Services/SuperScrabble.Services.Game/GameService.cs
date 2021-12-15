@@ -119,6 +119,8 @@
                 RestorePreviousBoardState(gameState.Board, input);
             }
 
+
+
             foreach (var positionByTile in input.PositionsByTiles)
             {
                 gameState.GetPlayer(authorUserName).RemoveTile(positionByTile.Key);
@@ -255,6 +257,26 @@
                 return writeWordResult;
             }
 
+            List<WordBuilder> notExistingWords = new();
+
+            foreach (var word in words)
+            {
+                if(!wordsService.IsWordValid(word.ToString().ToLower()))
+                {
+                    notExistingWords.Add(word);
+                }
+            }
+
+            //another option
+            //bool areAllWordsExisting = wordsService.AreAllWordsValid(words.Select(w => w.ToString().ToLower()));
+            
+            if(notExistingWords.Count > 0)
+            {
+                //Return notExistingWords view model
+                result.ErrorsByCodes.Add("WordDoesNotExist", "");
+                return result;
+            }
+           
             result.IsSucceeded = true;
             return result;
         }

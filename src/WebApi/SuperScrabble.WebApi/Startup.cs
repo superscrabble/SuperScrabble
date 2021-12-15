@@ -97,6 +97,7 @@ namespace SuperScrabble.WebApi
             services.AddTransient<ITilesProvider, MyOldBoardTilesProvider>();
             services.AddTransient<IBonusCellsProvider, MyOldBoardBonusCellsProvider>();
             services.AddTransient<IGameplayConstantsProvider, StandardGameplayConstantsProvider>();
+            services.AddTransient<IScoringService, ScoringService>();
 
             services.AddControllers();
             services.AddSignalR();
