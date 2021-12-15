@@ -109,12 +109,12 @@ namespace SuperScrabble.WebApi
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            using (var serviceScope = app.ApplicationServices.CreateScope())
-            {
-                AppDbContext dbContext = serviceScope.ServiceProvider.GetRequiredService<AppDbContext>();
-                dbContext.Database.Migrate();
-                new AppSeeder().SeedAsync(dbContext, serviceScope.ServiceProvider).GetAwaiter().GetResult();
-            }
+            //using (var serviceScope = app.ApplicationServices.CreateScope())
+            //{
+            //    AppDbContext dbContext = serviceScope.ServiceProvider.GetRequiredService<AppDbContext>();
+            //    dbContext.Database.Migrate();
+            //    new AppSeeder().SeedAsync(dbContext, serviceScope.ServiceProvider).GetAwaiter().GetResult();
+            //}
 
             if (env.IsDevelopment())
             {

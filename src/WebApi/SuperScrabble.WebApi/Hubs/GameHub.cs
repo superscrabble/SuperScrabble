@@ -89,13 +89,30 @@
         public async Task LoadGame(string groupName)
         {
             string userName = Context.User.Identity.Name;
-            
+
             if (this.gameStateManager.IsUserInsideGroup(userName, groupName))
             {
                 GameState gameState = this.gameStateManager.GetGameState(userName);
                 var viewModel = this.gameService.MapFromGameState(gameState, userName);
                 await this.Clients.Client(this.Context.ConnectionId).SendAsync("UpdateGameState", viewModel);
             }
+        }
+
+        // TODO: Player order
+        // TODO: Remove player tiles after writing the word
+        // TODO: Implement scoring
+        // TODO: onDisconnected edge cases
+        // TODO: handle unauthenticated users
+        // TODO: remove player from waiting list and started games when logging out
+        // TODO: onConnected -> check timed out players (GameStateManager)
+        public override Task OnDisconnectedAsync(Exception exception)
+        {
+            if (this.UserName != null)
+            {
+                this.gameStateManager.RemoveUserFromWaitingQueue(this.UserName);
+            }
+
+            return Task.CompletedTask;
         }
 
         private async Task UpdateGameStateAsync(string groupName)
