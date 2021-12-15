@@ -3,11 +3,13 @@
     using SuperScrabble.Services.Game.Models;
     using System.Collections.Generic;
 
-    public interface IGameStateProvider
+    public interface IGameStateManager
     {
         GameState GetGameState(string userName);
 
         GameState GetGameStateByGroupName(string groupName);
+
+        string GetGroupName(string userName);
 
         bool IsUserAlreadyWaiting(string userName, string connectionId);
 

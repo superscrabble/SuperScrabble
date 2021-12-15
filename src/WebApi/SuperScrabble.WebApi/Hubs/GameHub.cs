@@ -9,6 +9,7 @@
     using SuperScrabble.InputModels.Game;
     using SuperScrabble.Services.Game;
     using SuperScrabble.Services.Game.Models;
+    using SuperScrabble.ViewModels;
 
     public class GameHub : Hub
     {
@@ -16,29 +17,31 @@
         public const string StartGameMethodName = "StartGame";
 
         private readonly IGameService gameService;
-        private readonly IGameStateProvider gameStateManager;
+        private readonly IGameStateManager gameStateManager;
 
-        public GameHub(IGameService gameService, IGameStateProvider gameStateManager)
+        public GameHub(IGameService gameService, IGameStateManager gameStateManager)
         {
             this.gameService = gameService;
             this.gameStateManager = gameStateManager;
         }
 
-        [Authorize]
-        public void WriteWord(WriteWordInputModel input)
-        {
-            //TODO:
-            //Unit tests for the WriteWord service logic
-            //Integrate words inside the database
-            //Implement core business logic for the game (points counting, word formation, etc.)
+        public string UserName => this.Context.User.Identity.Name;
 
-            //IWordsService
-            //MockWordsRepo.GetAll()
-            //MockWordsService
-            //IRepository
-            //EFRepository
-            //TODO: Words Seeding
-            throw new NotImplementedException(nameof(this.WriteWord));
+        [Authorize]
+        public async Task WriteWord(WriteWordInputModel input)
+        {
+            GameState gameState = this.gameStateManager.GetGameState(this.UserName);
+            WriteWordResult result = this.gameService.WriteWord(gameState, input, this.UserName);
+
+            if (!result.IsSucceeded)
+            {
+                await this.Clients.Client(this.Context.ConnectionId).SendAsync("InvalidWriteWordInput", result);
+            }
+            else
+            {
+                string groupName = this.gameStateManager.GetGroupName(this.UserName);
+                await this.UpdateGameStateAsync(groupName);
+            }
         }
 
         [Authorize]

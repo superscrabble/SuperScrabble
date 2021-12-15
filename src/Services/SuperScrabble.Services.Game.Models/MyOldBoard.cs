@@ -9,7 +9,7 @@
         private const int MyOldBoardWidth = 15;
         private const int MyOldBoardHeight = 15;
 
-        public MyOldBoard(Dictionary<CellType, List<Position>> positionsByBonusCellTypes) 
+        public MyOldBoard(Dictionary<CellType, List<Position>> positionsByBonusCellTypes)
             : base(MyOldBoardWidth, MyOldBoardHeight, positionsByBonusCellTypes)
         {
         }

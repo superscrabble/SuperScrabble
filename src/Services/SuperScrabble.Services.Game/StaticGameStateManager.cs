@@ -5,7 +5,7 @@
 
     using SuperScrabble.Services.Game.Models;
 
-    public class StaticGameStateProvider : IGameStateProvider
+    public class StaticGameStateManager : IGameStateManager
     {
         private static readonly Dictionary<string, string> waitingConnectionIdsByUserName = new();
         private static readonly Dictionary<string, string> groupsByUserName = new();
@@ -13,7 +13,7 @@
 
         private readonly int playersInsideGameCount;
 
-        public StaticGameStateProvider()
+        public StaticGameStateManager()
         {
             this.playersInsideGameCount = 2;
         }
@@ -82,6 +82,16 @@
             }
 
             return gamesByGroupName[groupName];
+        }
+
+        public string GetGroupName(string userName)
+        {
+            if (!groupsByUserName.ContainsKey(userName))
+            {
+                throw new ArgumentException("No group was found for the given username");
+            }
+
+            return groupsByUserName[userName];
         }
 
         public IEnumerable<KeyValuePair<string, string>> GetWaitingPlayers(string groupName)

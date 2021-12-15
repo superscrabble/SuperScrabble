@@ -17,5 +17,9 @@
         bool IsCellFree(Position position);
 
         bool IsPositionInside(Position position);
+
+        bool IsEmpty();
+
+        bool IsPositionCenter(Position position);
     }
 }

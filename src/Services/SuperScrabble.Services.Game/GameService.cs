@@ -55,6 +55,11 @@
 
             for (int i = 0; i < neededTilesCount; i++)
             {
+                if (gameState.TilesCount <= 0)
+                {
+                    break;
+                }
+
                 Tile tile = gameState.TilesBag.DrawTile();
                 player.AddTile(tile);
             }
@@ -111,14 +116,8 @@
 
             if (!result.IsSucceeded)
             {
-                return result;
+                RestorePreviousBoardState(gameState.Board, input);
             }
-
-            // determine whether letters are ordered horizontally or vertically
-            // find left most or top most
-            // start going left or up until an empty cell is found
-            // 
-            // TODO: Implement core functionality
 
             return result;
         }
@@ -195,23 +194,90 @@
 
             bool areTilesAllignedVertically = uniqueRows.Count > uniqueColumns.Count;
 
-            var sortedPositionsByTiles = areTilesAllignedVertically ? 
-                input.PositionsByTiles.OrderBy(pt => pt.Value.Row) : 
+            var sortedPositionsByTiles = areTilesAllignedVertically ?
+                input.PositionsByTiles.OrderBy(pt => pt.Value.Row) :
                 input.PositionsByTiles.OrderBy(pt => pt.Value.Column);
 
-            var wordBuilders = GetAllNewWords(gameState.Board, sortedPositionsByTiles, areTilesAllignedVertically);
+
+            Func<Position, Position> getNextPosition = areTilesAllignedVertically
+                ? curr => new Position(curr.Row + 1, curr.Column)
+                : curr => new Position(curr.Row, curr.Column + 1);
+
+            bool goesThroughCenter = false;
+            
+            if (gameState.Board.IsEmpty())
+            {
+                goesThroughCenter = input.PositionsByTiles.Any(pbt => gameState.Board.IsPositionCenter(pbt.Value));
+
+                if (!goesThroughCenter)
+                {
+                    result.ErrorsByCodes.Add("FirstWordMustBeOnTheBoardCenter", "");
+                    return result;
+                }
+            }
+
+            PlacePlayerTiles(gameState.Board, sortedPositionsByTiles);
+
+            int passedPlayerTiles = 0;
+
+            Position startingPosition = sortedPositionsByTiles.First().Value;
+            var currentPosition = new Position(startingPosition.Row, startingPosition.Column);
+
+            while (true)
+            {
+                if (!gameState.Board.IsPositionInside(currentPosition) || gameState.Board.IsCellFree(currentPosition))
+                {
+                    break;
+                }
+
+                if (sortedPositionsByTiles.Any(pbt => pbt.Value.Equals(currentPosition)))
+                {
+                    passedPlayerTiles++;
+                }
+
+                currentPosition = getNextPosition(currentPosition);
+            }
+
+            if (passedPlayerTiles != sortedPositionsByTiles.Count())
+            {
+                result.ErrorsByCodes.Add("GapsBetweenInputTilesNotAllowed", "");
+                return result;
+            }
+
+            var (writeWordResult, words) = GetAllNewWords(gameState.Board, sortedPositionsByTiles, areTilesAllignedVertically, goesThroughCenter);
+
+            if (!writeWordResult.IsSucceeded)
+            {
+                return writeWordResult;
+            }
 
             result.IsSucceeded = true;
             return result;
         }
 
-        private static IEnumerable<WordBuilder> GetAllNewWords(IBoard board, IEnumerable<KeyValuePair<Tile, Position>> sortedPositionsByTiles, bool areTilesAllignedVertically)
+        private static void PlacePlayerTiles(IBoard board, IEnumerable<KeyValuePair<Tile, Position>> positionsByTiles)
         {
-            // Place new tiles on the board
-            foreach (var positionByTile in sortedPositionsByTiles)
+            foreach (var positionByTile in positionsByTiles)
             {
                 board[positionByTile.Value].Tile = positionByTile.Key;
             }
+        }
+
+        private static void RestorePreviousBoardState(IBoard board, WriteWordInputModel input)
+        {
+            foreach (var positionByTile in input.PositionsByTiles)
+            {
+                board.FreeCell(positionByTile.Value);
+            }
+        }
+
+        private static (WriteWordResult, IEnumerable<WordBuilder>) GetAllNewWords(
+            IBoard board,
+            IEnumerable<KeyValuePair<Tile, Position>> sortedPositionsByTiles,
+            bool areTilesAllignedVertically,
+            bool isThisTheFirstInput)
+        {
+            var result = new WriteWordResult() { IsSucceeded = false };
 
             Position startingPosition = sortedPositionsByTiles.First().Value;
 
@@ -256,11 +322,49 @@
                 wordBuilders.Add(secondaryWordBuilder);
             }
 
-            // TODO: Fix this validation
-            bool areNewTilesConnectedToTheOldOnes = wordBuilders
-                .Any(wb => wb.PositionsByTiles.Any(pbt => sortedPositionsByTiles.Any(x => x.Value.Equals(pbt.Value) == false)));
+            if (isThisTheFirstInput)
+            {
+                result.IsSucceeded = true;
+                return (result, wordBuilders);
+            }
 
-            return areNewTilesConnectedToTheOldOnes ? wordBuilders : null; // TODO: Handle the error
+            if (wordBuilders.Count <= 1 && sortedPositionsByTiles.Count() == wordBuilders.First().PositionsByTiles.Count)
+            {
+                result.ErrorsByCodes.Add("NewTilesNotConnectedToTheOldOnes", "");
+                return (result, null);
+            }
+            else
+            {
+                result.IsSucceeded = true;
+                return (result, wordBuilders);
+            }
+
+            // SLOW BUT SECURE VALIDATION
+
+            /*bool areNewTilesConnectedToTheOldOnes = false;
+
+            foreach (WordBuilder wordBuilder in wordBuilders)
+            {
+                bool isWordDisconnected = wordBuilder
+                    .PositionsByTiles.All(x => sortedPositionsByTiles.Any(p => p.Equals(x)));
+
+                if (!isWordDisconnected)
+                {
+                    areNewTilesConnectedToTheOldOnes = true;
+                    break;
+                }
+            }
+
+            if (!areNewTilesConnectedToTheOldOnes)
+            {
+                result.ErrorsByCodes.Add("NewTilesNotConnectedToTheOldOnes", "");
+            }
+            else
+            {
+                result.IsSucceeded = true;
+            }*/
+
+            //return areNewTilesConnectedToTheOldOnes ? (result, wordBuilders) : (result, null); // TODO: Handle the error
         }
     }
 }

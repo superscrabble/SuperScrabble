@@ -21,6 +21,8 @@
             this.InitializeBonusCells();
         }
 
+        private Position Center => new(this.Height / 2, this.Width / 2);
+
         public int Height => this.cells.GetLength(0);
 
         public int Width => this.cells.GetLength(1);
@@ -76,6 +78,16 @@
         public void FreeCell(Position position)
         {
             this[position].Tile = null;
+        }
+
+        public virtual bool IsEmpty()
+        {
+            return this[this.Height / 2, this.Width / 2].Tile == null;
+        }
+
+        public bool IsPositionCenter(Position position)
+        {
+            return this.Center.Equals(position);
         }
     }
 }

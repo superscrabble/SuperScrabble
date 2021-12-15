@@ -88,7 +88,7 @@ namespace SuperScrabble.WebApi
             services.AddScoped(typeof(IRepository<>), typeof(EFRepository<>));
 
             // TODO: Think about AddSingleton()
-            services.AddScoped<IGameStateProvider, StaticGameStateProvider>();
+            services.AddScoped<IGameStateManager, StaticGameStateManager>();
 
             services.AddTransient<IWordsService, WordsService>();
             services.AddTransient<IUsersService, UsersService>();
