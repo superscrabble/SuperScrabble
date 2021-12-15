@@ -31,6 +31,7 @@ export class GameComponent implements OnInit {
     const params = url.split("/");
     let id = params[params.length - 1];
 
+    //TODO: fix this to be called after hubConnection is Connected
     this.signalrService.hubConnection?.on("UpdateGameState", data => {      
       console.log(data);
       this.loadBoard(data.commonGameState.board);
@@ -188,6 +189,7 @@ export class GameComponent implements OnInit {
     if(this.updatedBoardCells.length > 0) {
         this.updatedBoardCells = this.updatedBoardCells.map(item => ({key: item.key.tile, value: item.value}))
         this.signalrService.writeWord(this.updatedBoardCells);
+
         this.updatedBoardCells = new Array();
     }
   }  

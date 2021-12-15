@@ -9,4 +9,13 @@
         DoubleWord = 4,
         TripleWord = 5,
     }
+
+    public static class CellTypeExtensions
+    {
+        public static bool IsWordBonus(this CellType cellType) =>
+            cellType == CellType.DoubleWord || cellType == CellType.TripleWord;
+
+        public static bool IsLetterBonus(this CellType cellType) =>
+            cellType == CellType.DoubleLetter || cellType == CellType.TripleLetter;
+    }
 }

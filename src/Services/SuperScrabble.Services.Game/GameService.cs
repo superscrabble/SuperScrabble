@@ -17,19 +17,22 @@
         private readonly IBonusCellsProvider bonusCellsProvider;
         private readonly IGameplayConstantsProvider gameplayConstantsProvider;
         private readonly IWordsService wordsService;
+        private readonly IScoringService scoringService;
 
         public GameService(
             IShuffleService shuffleService,
             ITilesProvider tilesProvider,
             IBonusCellsProvider bonusCellsProvider,
             IGameplayConstantsProvider gameplayConstantsProvider,
-            IWordsService wordsService)
+            IWordsService wordsService,
+            IScoringService scoringService)
         {
             this.shuffleService = shuffleService;
             this.tilesProvider = tilesProvider;
             this.bonusCellsProvider = bonusCellsProvider;
             this.gameplayConstantsProvider = gameplayConstantsProvider;
             this.wordsService = wordsService;
+            this.scoringService = scoringService;
         }
 
         public GameState CreateGame(IEnumerable<KeyValuePair<string, string>> connectionIdsByUserNames)
@@ -119,12 +122,13 @@
                 RestorePreviousBoardState(gameState.Board, input);
             }
 
-
-
             foreach (var positionByTile in input.PositionsByTiles)
             {
                 gameState.GetPlayer(authorUserName).RemoveTile(positionByTile.Key);
             }
+
+            this.scoringService.CalculatePointsFromPlayerInput(input, gameState.Board, words);
+
             return result;
         }
 
