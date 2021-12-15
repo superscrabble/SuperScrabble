@@ -1,15 +1,14 @@
 ﻿namespace SuperScrabble.Services.Game
 {
-    using System.Linq;
-    using System.Collections.Generic;
-
     using SuperScrabble.Common;
-    using SuperScrabble.ViewModels;
-    using SuperScrabble.InputModels.Game;
-    using SuperScrabble.Services.Game.Models;
-    using SuperScrabble.Services.Data;
-    using System;
     using SuperScrabble.CustomExceptions.Game;
+    using SuperScrabble.InputModels.Game;
+    using SuperScrabble.Services.Data;
+    using SuperScrabble.Services.Game.Models;
+    using SuperScrabble.ViewModels;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
 
     public class GameService : IGameService
     {

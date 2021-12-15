@@ -21,7 +21,7 @@ namespace SuperScrabble.Services.Game
 
                 foreach (var positionByTile in word.PositionsByTiles)
                 {
-                    bool isTileNew = input.PositionsByTiles.Any(x => x.Value.Equals(positionByTile.Value)));
+                    bool isTileNew = input.PositionsByTiles.Any(x => x.Value.Equals(positionByTile.Value));
                     Tile tile = positionByTile.Key;
                     int pointsForCurrentTile = tile.Points;
 

@@ -41,6 +41,10 @@ export class GameComponent implements OnInit {
       console.log("Tiles Count: " + this.remainingTilesCount)
     })
 
+    this.signalrService.hubConnection?.on("InvalidWriteWordInput", data => {
+        console.log(data);
+    })
+
     this.signalrService.loadGame(id);
     this.loadCellViewDataByType();
     this.loadMockData();
