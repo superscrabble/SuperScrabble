@@ -114,10 +114,19 @@
 
         public WriteWordResult WriteWord(GameState gameState, WriteWordInputModel input, string authorUserName)
         {
+            Player author = gameState.GetPlayer(authorUserName);
+            Player currentPlayer = gameState.CurrentPlayer;
+
+            if (author.UserName != currentPlayer.UserName)
+            {
+                var result = new WriteWordResult { IsSucceeded = false };
+                result.ErrorsByCodes.Add("TheGivenPlayerIsNotOnTurn", string.Empty);
+                return result;
+            }
+
             try
             {
-                Player player = gameState.GetPlayer(authorUserName);
-                var wordBuilders = ValidateInputTilesAndExtractWords(input, gameState, player);
+                var wordBuilders = ValidateInputTilesAndExtractWords(input, gameState, author);
 
                 foreach (var positionByTile in input.PositionsByTiles)
                 {
@@ -127,7 +136,9 @@
                 int newPoints = this.scoringService
                     .CalculatePointsFromPlayerInput(input, gameState.Board, wordBuilders);
 
-                player.Points += newPoints;
+                author.Points += newPoints;
+                gameState.NextPlayer();
+
                 return new WriteWordResult { IsSucceeded = true };
             }
             catch (ValidationFailedException ex)

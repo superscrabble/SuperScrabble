@@ -99,7 +99,6 @@
         }
 
         // TODO: Player order + timer
-        // TODO: Implement scoring
         // TODO: onDisconnected edge cases
         // TODO: handle unauthenticated users
         // TODO: remove player from waiting list and started games when logging out

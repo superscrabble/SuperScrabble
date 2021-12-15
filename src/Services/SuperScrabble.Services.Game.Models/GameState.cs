@@ -22,6 +22,8 @@
             this.Board = board;
         }
 
+        public Player CurrentPlayer => this.players[this.PlayerIndex];
+
         public TilesBag TilesBag { get; }
 
         public IBoard Board { get; }
