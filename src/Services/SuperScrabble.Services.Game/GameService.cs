@@ -9,6 +9,7 @@
     using SuperScrabble.Services.Game.Models;
     using SuperScrabble.Services.Data;
     using System;
+    using SuperScrabble.CustomExceptions.Game;
 
     public class GameService : IGameService
     {
@@ -114,22 +115,31 @@
 
         public WriteWordResult WriteWord(GameState gameState, WriteWordInputModel input, string authorUserName)
         {
-            Player player = gameState.GetPlayer(authorUserName);
-            WriteWordResult result = ValidatePlayerTiles(input, gameState, player);
+            try
+            {
+                Player player = gameState.GetPlayer(authorUserName);
+                var wordBuilders = ValidateInputTilesAndExtractWords(input, gameState, player);
 
-            if (!result.IsSucceeded)
+                foreach (var positionByTile in input.PositionsByTiles)
+                {
+                    gameState.GetPlayer(authorUserName).RemoveTile(positionByTile.Key);
+                }
+
+                int newPoints = this.scoringService
+                    .CalculatePointsFromPlayerInput(input, gameState.Board, wordBuilders);
+
+                player.Points += newPoints;
+                return new WriteWordResult { IsSucceeded = true };
+            }
+            catch (ValidationFailedException ex)
             {
                 RestorePreviousBoardState(gameState.Board, input);
+
+                var result = new WriteWordResult { IsSucceeded = false };
+
+                result.ErrorsByCodes.Add(ex.ErrorCode, ex.ErrorMessage);
+                return result;
             }
-
-            foreach (var positionByTile in input.PositionsByTiles)
-            {
-                gameState.GetPlayer(authorUserName).RemoveTile(positionByTile.Key);
-            }
-
-            this.scoringService.CalculatePointsFromPlayerInput(input, gameState.Board, words);
-
-            return result;
         }
 
         private static bool IsInputTilesCountValid(WriteWordInputModel input, Player player)
@@ -137,17 +147,11 @@
             return !input.PositionsByTiles.Any() || input.PositionsByTiles.Count() > player.Tiles.Count;
         }
 
-        private WriteWordResult ValidatePlayerTiles(WriteWordInputModel input, GameState gameState, Player player)
+        private IEnumerable<WordBuilder> ValidateInputTilesAndExtractWords(WriteWordInputModel input, GameState gameState, Player player)
         {
-            var result = new WriteWordResult
-            {
-                IsSucceeded = false
-            };
-
             if (IsInputTilesCountValid(input, player))
             {
-                result.ErrorsByCodes.Add("InvalidTilesCount", "");
-                return result;
+                throw new ValidationFailedException("InvalidInputTilesCount", string.Empty);
             }
 
             var playerTiles = player.Tiles.ToList();
@@ -165,20 +169,17 @@
 
                 if (tile == null)
                 {
-                    result.ErrorsByCodes.Add("UnexistingPlayerTile", "");
-                    return result;
+                    throw new ValidationFailedException("UnexistingPlayerTile", string.Empty);
                 }
 
                 if (!gameState.Board.IsPositionInside(position))
                 {
-                    result.ErrorsByCodes.Add("TilePositionOutsideBoardRange", "");
-                    return result;
+                    throw new ValidationFailedException("TilePositionOutsideBoardRange", string.Empty);
                 }
 
                 if (!gameState.Board.IsCellFree(position))
                 {
-                    result.ErrorsByCodes.Add("TilePositionAlreadyTaken", "");
-                    return result;
+                    throw new ValidationFailedException("TilePositionAlreadyTaken", string.Empty);
                 }
 
                 playerTiles.Remove(tile);
@@ -186,8 +187,7 @@
 
             if (uniqueRows.Count > 1 && uniqueColumns.Count > 1)
             {
-                result.ErrorsByCodes.Add("TilesNotOnTheSameLine", "");
-                return result;
+                throw new ValidationFailedException("TilesNotOnTheSameLine", string.Empty);
             }
 
             bool hasRepeatingHorizontalPositions = uniqueRows.Count == 1
@@ -198,8 +198,7 @@
 
             if (hasRepeatingHorizontalPositions || hasRepeatingVerticalPositions)
             {
-                result.ErrorsByCodes.Add("InputTilesPositionsCollision", "");
-                return result;
+                throw new ValidationFailedException("InputTilesPositionsCollision", string.Empty);
             }
 
             bool areTilesAllignedVertically = uniqueRows.Count > uniqueColumns.Count;
@@ -207,11 +206,6 @@
             var sortedPositionsByTiles = areTilesAllignedVertically ?
                 input.PositionsByTiles.OrderBy(pt => pt.Value.Row) :
                 input.PositionsByTiles.OrderBy(pt => pt.Value.Column);
-
-
-            Func<Position, Position> getNextPosition = areTilesAllignedVertically
-                ? curr => new Position(curr.Row + 1, curr.Column)
-                : curr => new Position(curr.Row, curr.Column + 1);
 
             bool goesThroughCenter = false;
 
@@ -221,21 +215,52 @@
 
                 if (!goesThroughCenter)
                 {
-                    result.ErrorsByCodes.Add("FirstWordMustBeOnTheBoardCenter", "");
-                    return result;
+                    throw new ValidationFailedException("FirstWordMustBeOnTheBoardCenter", string.Empty);
                 }
             }
 
             PlacePlayerTiles(gameState.Board, sortedPositionsByTiles);
 
-            int passedPlayerTiles = 0;
+            ValidateGapsBetweenTiles(gameState.Board, sortedPositionsByTiles, areTilesAllignedVertically);
 
+            var words = GetAllNewWords(
+                gameState.Board, sortedPositionsByTiles, areTilesAllignedVertically, goesThroughCenter);
+
+            List<WordBuilder> notExistingWords = new();
+
+            foreach (var word in words)
+            {
+                if (!wordsService.IsWordValid(word.ToString().ToLower()))
+                {
+                    notExistingWords.Add(word);
+                }
+            }
+
+            if (notExistingWords.Count > 0)
+            {
+                // Return notExistingWords view model
+                throw new ValidationFailedException("WordDoesNotExist", string.Empty);
+            }
+
+            return words;
+        }
+
+        private static void ValidateGapsBetweenTiles(
+            IBoard board,
+            IEnumerable<KeyValuePair<Tile, Position>> sortedPositionsByTiles,
+            bool areTilesAllignedVertically)
+        {
+            Func<Position, Position> getNextPosition = areTilesAllignedVertically
+                ? curr => new Position(curr.Row + 1, curr.Column)
+                : curr => new Position(curr.Row, curr.Column + 1);
+
+            int passedPlayerTiles = 0;
             Position startingPosition = sortedPositionsByTiles.First().Value;
             var currentPosition = new Position(startingPosition.Row, startingPosition.Column);
 
             while (true)
             {
-                if (!gameState.Board.IsPositionInside(currentPosition) || gameState.Board.IsCellFree(currentPosition))
+                if (!board.IsPositionInside(currentPosition) || board.IsCellFree(currentPosition))
                 {
                     break;
                 }
@@ -250,39 +275,8 @@
 
             if (passedPlayerTiles != sortedPositionsByTiles.Count())
             {
-                result.ErrorsByCodes.Add("GapsBetweenInputTilesNotAllowed", "");
-                return result;
+                throw new ValidationFailedException("GapsBetweenInputTilesNotAllowed", string.Empty);
             }
-
-            var (writeWordResult, words) = GetAllNewWords(gameState.Board, sortedPositionsByTiles, areTilesAllignedVertically, goesThroughCenter);
-
-            if (!writeWordResult.IsSucceeded)
-            {
-                return writeWordResult;
-            }
-
-            List<WordBuilder> notExistingWords = new();
-
-            foreach (var word in words)
-            {
-                if(!wordsService.IsWordValid(word.ToString().ToLower()))
-                {
-                    notExistingWords.Add(word);
-                }
-            }
-
-            //another option
-            //bool areAllWordsExisting = wordsService.AreAllWordsValid(words.Select(w => w.ToString().ToLower()));
-            
-            if(notExistingWords.Count > 0)
-            {
-                //Return notExistingWords view model
-                result.ErrorsByCodes.Add("WordDoesNotExist", "");
-                return result;
-            }
-           
-            result.IsSucceeded = true;
-            return result;
         }
 
         private static void PlacePlayerTiles(IBoard board, IEnumerable<KeyValuePair<Tile, Position>> positionsByTiles)
@@ -301,14 +295,12 @@
             }
         }
 
-        private static (WriteWordResult, IEnumerable<WordBuilder>) GetAllNewWords(
+        private static IEnumerable<WordBuilder> GetAllNewWords(
             IBoard board,
             IEnumerable<KeyValuePair<Tile, Position>> sortedPositionsByTiles,
             bool areTilesAllignedVertically,
             bool isThisTheFirstInput)
         {
-            var result = new WriteWordResult() { IsSucceeded = false };
-
             Position startingPosition = sortedPositionsByTiles.First().Value;
 
             var wordBuilders = new List<WordBuilder>();
@@ -354,47 +346,17 @@
 
             if (isThisTheFirstInput)
             {
-                result.IsSucceeded = true;
-                return (result, wordBuilders);
+                return wordBuilders;
             }
 
             if (wordBuilders.Count <= 1 && sortedPositionsByTiles.Count() == wordBuilders.First().PositionsByTiles.Count)
             {
-                result.ErrorsByCodes.Add("NewTilesNotConnectedToTheOldOnes", "");
-                return (result, null);
+                throw new ValidationFailedException("NewTilesNotConnectedToTheOldOnes", string.Empty);
             }
             else
             {
-                result.IsSucceeded = true;
-                return (result, wordBuilders);
+                return wordBuilders;
             }
-
-            // SLOW BUT SECURE VALIDATION
-
-            /*bool areNewTilesConnectedToTheOldOnes = false;
-
-            foreach (WordBuilder wordBuilder in wordBuilders)
-            {
-                bool isWordDisconnected = wordBuilder
-                    .PositionsByTiles.All(x => sortedPositionsByTiles.Any(p => p.Equals(x)));
-
-                if (!isWordDisconnected)
-                {
-                    areNewTilesConnectedToTheOldOnes = true;
-                    break;
-                }
-            }
-
-            if (!areNewTilesConnectedToTheOldOnes)
-            {
-                result.ErrorsByCodes.Add("NewTilesNotConnectedToTheOldOnes", "");
-            }
-            else
-            {
-                result.IsSucceeded = true;
-            }*/
-
-            //return areNewTilesConnectedToTheOldOnes ? (result, wordBuilders) : (result, null); // TODO: Handle the error
         }
     }
 }
