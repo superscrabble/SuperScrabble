@@ -1,3 +1,12 @@
+.page {
+    background-color: #1B4A4B;
+}
+
+.tile {
+    background-color: #E3CFAA;
+    box-shadow: 2px 2px 2px black;
+}
+
 .basic-cell {
     background-color: #52B788;
 }
@@ -29,4 +38,8 @@
 
 .selected-cell {
     background-color: #f5c453;
+}
+
+.cursor-default {
+    cursor: default;
 }

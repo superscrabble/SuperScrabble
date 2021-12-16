@@ -1,4 +1,4 @@
-<div class="row d-flex justify-content-center flex-nowrap">
+<div class="row d-flex justify-content-center flex-nowrap page">
     <div class="col-md-3">
         <div class="border rounded">
             <table class="table">
@@ -16,7 +16,7 @@
             <table>
                 <tr *ngFor="let row of board">
                     <td *ngFor="let cell of row" 
-                        class="border p-2 text-center {{getClassNameByCellType(cell.type)}}
+                        class="border border-dark p-2 text-center cursor-default {{getClassNameByCellType(cell.type)}}
                                                       {{getClassNameIfSelected(cell)}}"
                         (click)="clickOnBoardCell(cell)"
                         (contextmenu)="rightClickOnBoardCell(cell)">
@@ -31,7 +31,11 @@
             </table>
         </div>
         <div class="my-3 text-center">
-            <span cdkDrag *ngFor="let playerTile of playerTiles" class="mx-2 border p-3 text-center {{getClassNameIfSelected(playerTile)}}" (click)="clickOnPlayerTile(playerTile)">
+            <span
+                cdkDrag
+                *ngFor="let playerTile of playerTiles"
+                class="mx-2 border tile cursor-default rounded-1 p-2 text-center {{getClassNameIfSelected(playerTile)}}"
+                (click)="clickOnPlayerTile(playerTile)">
                 {{playerTile.letter}}
                 <span style="font-size: 10px">
                     {{playerTile.points}}
@@ -40,7 +44,14 @@
         </div>
     </div>
     <div class="col-md-3">
-        <div class="alert alert-warning dispay-2">Букви {{remainingTilesCount}}</div>
-        <button (click)="writeWord()">Напиши дума</button>
+        <div class="mt-5 mb-4">
+            <span class="alert alert-warning dispay-2">
+                <span>Оставащи букви - </span>
+                <b>{{remainingTilesCount}}</b>
+            </span>
+        </div>
+        <div>
+            <button class="btn btn-danger" (click)="writeWord()">Напиши дума</button>
+        </div>
     </div>
 </div>
