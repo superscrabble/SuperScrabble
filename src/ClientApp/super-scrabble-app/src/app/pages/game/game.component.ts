@@ -44,6 +44,7 @@ export class GameComponent implements OnInit {
 
     this.signalrService.hubConnection?.on("InvalidWriteWordInput", data => {
         console.log(data);
+        alert(Object.values(data.errorsByCodes));
         for(let i = 0; i < this.updatedBoardCells.length; i++) {
             this.playerTiles.push(this.updatedBoardCells[i].key)
             this.board[this.updatedBoardCells[i].value.row][this.updatedBoardCells[i].value.column].tile = null;
