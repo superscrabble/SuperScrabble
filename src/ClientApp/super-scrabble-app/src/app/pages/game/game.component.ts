@@ -101,6 +101,10 @@ export class GameComponent implements OnInit {
     return this.cellViewDataByType.get(type)?.className;
   }
 
+  getClassNameIfCellIsTaken(cell: Cell) {
+    return cell.tile ? "tile-on-cell rounded-1" : "";  
+  }
+
   getValueWhenEmptyByCellType(type: number) {
     return this.cellViewDataByType.get(type)?.valueWhenEmpty;
   }

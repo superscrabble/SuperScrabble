@@ -17,9 +17,10 @@
                 <tr *ngFor="let row of board">
                     <td *ngFor="let cell of row" 
                         class="border border-dark p-2 text-center cursor-default {{getClassNameByCellType(cell.type)}}
-                                                      {{getClassNameIfSelected(cell)}}"
+                                                      {{getClassNameIfSelected(cell)}} {{getClassNameIfCellIsTaken(cell)}}"
                         (click)="clickOnBoardCell(cell)"
                         (contextmenu)="rightClickOnBoardCell(cell)">
+
                         <div *ngIf="cell.tile">
                             {{cell.tile.letter}}{{cell.tile.points}}
                         </div>
