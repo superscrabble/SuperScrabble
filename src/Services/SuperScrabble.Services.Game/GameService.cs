@@ -166,10 +166,8 @@
             {
                 return false;
             }
-            else
-            {
-                return !input.PositionsByTiles.Any() || input.PositionsByTiles.Count() > player.Tiles.Count;
-            }
+            
+            return !input.PositionsByTiles.Any() || input.PositionsByTiles.Count() > player.Tiles.Count;
         }
 
         private IEnumerable<WordBuilder> ValidateInputTilesAndExtractWords(WriteWordInputModel input, GameState gameState, Player player)
