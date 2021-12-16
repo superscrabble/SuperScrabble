@@ -1,7 +1,8 @@
 ﻿namespace SuperScrabble.Services.Game
 {
-    using SuperScrabble.Services.Game.Models;
     using System.Collections.Generic;
+
+    using SuperScrabble.Services.Game.Models;
 
     public interface IGameStateManager
     {

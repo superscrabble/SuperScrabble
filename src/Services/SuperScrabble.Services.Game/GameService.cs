@@ -101,7 +101,10 @@
             var commonViewModel = new CommonGameStateViewModel
             {
                 RemainingTilesCount = gameState.TilesCount,
-                PointsByUserNames = gameState.Players.ToDictionary(p => p.UserName, p => p.Points).OrderByDescending(pbu => pbu.Value),
+
+                PointsByUserNames = gameState.Players.ToDictionary(
+                    p => p.UserName, p => p.Points).OrderByDescending(pbu => pbu.Value),
+
                 Board = boardViewModel,
             };
 
@@ -124,7 +127,7 @@
                 var result = new WriteWordResult { IsSucceeded = false };
 
                 result.ErrorsByCodes.Add(
-                    nameof(Resource.TheGivenPlayerIsNotOnTurn), Resource.TheGivenPlayerIsNotOnTurn);.
+                    nameof(Resource.TheGivenPlayerIsNotOnTurn), Resource.TheGivenPlayerIsNotOnTurn);
 
                 return result;
             }
@@ -157,14 +160,21 @@
             }
         }
 
-        private static bool IsInputTilesCountValid(WriteWordInputModel input, Player player)
+        private static bool IsInputTilesCountValid(WriteWordInputModel input, Player player, bool isBoardEmpty)
         {
-            return !input.PositionsByTiles.Any() || input.PositionsByTiles.Count() > player.Tiles.Count;
+            if (isBoardEmpty && input.PositionsByTiles.Count() < 2)
+            {
+                return false;
+            }
+            else
+            {
+                return !input.PositionsByTiles.Any() || input.PositionsByTiles.Count() > player.Tiles.Count;
+            }
         }
 
         private IEnumerable<WordBuilder> ValidateInputTilesAndExtractWords(WriteWordInputModel input, GameState gameState, Player player)
         {
-            if (IsInputTilesCountValid(input, player))
+            if (IsInputTilesCountValid(input, player, gameState.Board.IsEmpty()))
             {
                 throw new ValidationFailedException(
                     nameof(Resource.InvalidInputTilesCount), Resource.InvalidInputTilesCount);
