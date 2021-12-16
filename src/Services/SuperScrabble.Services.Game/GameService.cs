@@ -1,15 +1,16 @@
 ﻿namespace SuperScrabble.Services.Game
 {
+    using System;
+    using System.Linq;
+    using System.Collections.Generic;
+
     using SuperScrabble.Common;
-    using SuperScrabble.CustomExceptions.Game;
+    using SuperScrabble.ViewModels;
+    using SuperScrabble.Services.Data;
     using SuperScrabble.InputModels.Game;
     using SuperScrabble.LanguageResources;
-    using SuperScrabble.Services.Data;
     using SuperScrabble.Services.Game.Models;
-    using SuperScrabble.ViewModels;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
+    using SuperScrabble.CustomExceptions.Game;
 
     public class GameService : IGameService
     {
@@ -121,7 +122,10 @@
             if (author.UserName != currentPlayer.UserName)
             {
                 var result = new WriteWordResult { IsSucceeded = false };
-                result.ErrorsByCodes.Add("TheGivenPlayerIsNotOnTurn", string.Empty);
+
+                result.ErrorsByCodes.Add(
+                    nameof(Resource.TheGivenPlayerIsNotOnTurn), Resource.TheGivenPlayerIsNotOnTurn);.
+
                 return result;
             }
 
@@ -181,17 +185,20 @@
 
                 if (tile == null)
                 {
-                    throw new ValidationFailedException("UnexistingPlayerTile", string.Empty);
+                    throw new ValidationFailedException(
+                        nameof(Resource.UnexistingPlayerTile), Resource.UnexistingPlayerTile);
                 }
 
                 if (!gameState.Board.IsPositionInside(position))
                 {
-                    throw new ValidationFailedException("TilePositionOutsideBoardRange", string.Empty);
+                    throw new ValidationFailedException(
+                        nameof(Resource.TilePositionOutsideBoardRange), Resource.TilePositionOutsideBoardRange);
                 }
 
                 if (!gameState.Board.IsCellFree(position))
                 {
-                    throw new ValidationFailedException("TilePositionAlreadyTaken", string.Empty);
+                    throw new ValidationFailedException(
+                        nameof(Resource.TilePositionAlreadyTaken), Resource.TilePositionAlreadyTaken);
                 }
 
                 playerTiles.Remove(tile);
@@ -199,7 +206,8 @@
 
             if (uniqueRows.Count > 1 && uniqueColumns.Count > 1)
             {
-                throw new ValidationFailedException("TilesNotOnTheSameLine", string.Empty);
+                throw new ValidationFailedException(
+                    nameof(Resource.TilesNotOnTheSameLine), Resource.TilesNotOnTheSameLine);
             }
 
             bool hasRepeatingHorizontalPositions = uniqueRows.Count == 1
@@ -210,7 +218,8 @@
 
             if (hasRepeatingHorizontalPositions || hasRepeatingVerticalPositions)
             {
-                throw new ValidationFailedException("InputTilesPositionsCollision", string.Empty);
+                throw new ValidationFailedException(
+                    nameof(Resource.InputTilesPositionsCollide), Resource.InputTilesPositionsCollide);
             }
 
             bool areTilesAllignedVertically = uniqueRows.Count > uniqueColumns.Count;
@@ -227,7 +236,8 @@
 
                 if (!goesThroughCenter)
                 {
-                    throw new ValidationFailedException("FirstWordMustBeOnTheBoardCenter", string.Empty);
+                    throw new ValidationFailedException(
+                        nameof(Resource.FirstWordMustBeOnTheBoardCenter), Resource.FirstWordMustBeOnTheBoardCenter);
                 }
             }
 
@@ -250,8 +260,8 @@
 
             if (notExistingWords.Count > 0)
             {
-                // Return notExistingWords view model
-                throw new ValidationFailedException("WordDoesNotExist", string.Empty);
+                throw new ValidationFailedException(
+                    nameof(Resource.WordDoesNotExist), Resource.WordDoesNotExist);
             }
 
             return words;
@@ -287,7 +297,8 @@
 
             if (passedPlayerTiles != sortedPositionsByTiles.Count())
             {
-                throw new ValidationFailedException("GapsBetweenInputTilesNotAllowed", string.Empty);
+                throw new ValidationFailedException(
+                    nameof(Resource.GapsBetweenInputTilesNotAllowed), Resource.GapsBetweenInputTilesNotAllowed);
             }
         }
 
@@ -363,12 +374,11 @@
 
             if (wordBuilders.Count <= 1 && sortedPositionsByTiles.Count() == wordBuilders.First().PositionsByTiles.Count)
             {
-                throw new ValidationFailedException("NewTilesNotConnectedToTheOldOnes", string.Empty);
+                throw new ValidationFailedException(
+                    nameof(Resource.NewTilesNotConnectedToTheOldOnes), Resource.NewTilesNotConnectedToTheOldOnes);
             }
-            else
-            {
-                return wordBuilders;
-            }
+
+            return wordBuilders;
         }
     }
 }

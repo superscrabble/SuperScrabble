@@ -129,6 +129,15 @@
   <data name="EmailAddressIsRequired" xml:space="preserve">
     <value>Email address is required</value>
   </data>
+  <data name="FirstWordMustBeOnTheBoardCenter" xml:space="preserve">
+    <value>First word must cover the gameboard center</value>
+  </data>
+  <data name="GapsBetweenInputTilesNotAllowed" xml:space="preserve">
+    <value>You cannot have empty cells between the tiles you place</value>
+  </data>
+  <data name="InputTilesPositionsCollide" xml:space="preserve">
+    <value>You cannot place more than one tile on a single cell</value>
+  </data>
   <data name="InvalidInputTilesCount" xml:space="preserve">
     <value>You submitted invalid number of tiles</value>
   </data>
@@ -140,6 +149,9 @@
   </data>
   <data name="NewPasswordIsRequired" xml:space="preserve">
     <value>New password is required</value>
+  </data>
+  <data name="NewTilesNotConnectedToTheOldOnes" xml:space="preserve">
+    <value>At least one of the tiles you submit must touch some of the already placed tiles</value>
   </data>
   <data name="NewUserNameDisplayName" xml:space="preserve">
     <value>New username</value>
@@ -195,6 +207,21 @@
   <data name="RepeatedPasswordIsRequired" xml:space="preserve">
     <value>You must repeat the password</value>
   </data>
+  <data name="TheGivenPlayerIsNotOnTurn" xml:space="preserve">
+    <value>It's not your turn yet</value>
+  </data>
+  <data name="TilePositionAlreadyTaken" xml:space="preserve">
+    <value>You cannot place tiles on already taken cells</value>
+  </data>
+  <data name="TilePositionOutsideBoardRange" xml:space="preserve">
+    <value>You cannot place tiles outside the gameboard</value>
+  </data>
+  <data name="TilesNotOnTheSameLine" xml:space="preserve">
+    <value>All tiles you submit must be on the same horizontal or vertical line</value>
+  </data>
+  <data name="UnexistingPlayerTile" xml:space="preserve">
+    <value>You don't currently have any of the tiles you submitted</value>
+  </data>
   <data name="UserNameAlreadyExists" xml:space="preserve">
     <value>Username is already taken</value>
   </data>
@@ -206,5 +233,8 @@
   </data>
   <data name="UserNameIsRequired" xml:space="preserve">
     <value>Username is required</value>
+  </data>
+  <data name="WordDoesNotExist" xml:space="preserve">
+    <value>Unexisting word</value>
   </data>
 </root>

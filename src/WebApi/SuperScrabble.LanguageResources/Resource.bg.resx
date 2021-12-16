@@ -129,8 +129,17 @@
   <data name="EmailAddressIsRequired" xml:space="preserve">
     <value>Имейл адресът е задължителен</value>
   </data>
+  <data name="FirstWordMustBeOnTheBoardCenter" xml:space="preserve">
+    <value>Първата дума задължително трвябва да стъпва върху централната клетка на дъската</value>
+  </data>
+  <data name="GapsBetweenInputTilesNotAllowed" xml:space="preserve">
+    <value>Не може да има празни клетки между буквите, които поставяте</value>
+  </data>
+  <data name="InputTilesPositionsCollide" xml:space="preserve">
+    <value>Не може да поставяте повече от една буква върху дадена клетка </value>
+  </data>
   <data name="InvalidInputTilesCount" xml:space="preserve">
-    <value>Изпратили сте невалиден брой плочки</value>
+    <value>Поставили сте невалиден брой букви</value>
   </data>
   <data name="NewEmailAddressDisplayName" xml:space="preserve">
     <value>Нов имейл адрес</value>
@@ -140,6 +149,9 @@
   </data>
   <data name="NewPasswordIsRequired" xml:space="preserve">
     <value>Трябва да въведете нова парола</value>
+  </data>
+  <data name="NewTilesNotConnectedToTheOldOnes" xml:space="preserve">
+    <value>Поне една от буквите, които поставяте, трябва да се докосва от до вече поставена буква</value>
   </data>
   <data name="NewUserNameDisplayName" xml:space="preserve">
     <value>Ново потребителско име</value>
@@ -195,6 +207,21 @@
   <data name="RepeatedPasswordIsRequired" xml:space="preserve">
     <value>Задължително трябва да повторите паролата</value>
   </data>
+  <data name="TheGivenPlayerIsNotOnTurn" xml:space="preserve">
+    <value>Още не сте на ход</value>
+  </data>
+  <data name="TilePositionAlreadyTaken" xml:space="preserve">
+    <value>Не може да поставяте букви върху вече заети клетки</value>
+  </data>
+  <data name="TilePositionOutsideBoardRange" xml:space="preserve">
+    <value>Не може да поставяте букви извън игралната дъска</value>
+  </data>
+  <data name="TilesNotOnTheSameLine" xml:space="preserve">
+    <value>Всички букви, които поставяте, трябва да бъдат на една и съща хоризонтална или вертикална права</value>
+  </data>
+  <data name="UnexistingPlayerTile" xml:space="preserve">
+    <value>Поставили сте буква, която нямате</value>
+  </data>
   <data name="UserNameAlreadyExists" xml:space="preserve">
     <value>Потребителското име вече е заето</value>
   </data>
@@ -206,5 +233,8 @@
   </data>
   <data name="UserNameIsRequired" xml:space="preserve">
     <value>Потребителското име е задължително</value>
+  </data>
+  <data name="WordDoesNotExist" xml:space="preserve">
+    <value>Несъществуваща дума</value>
   </data>
 </root>

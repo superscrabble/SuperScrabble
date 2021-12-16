@@ -126,5 +126,35 @@
 
         public static string InvalidInputTilesCount
             => ResourceManager.GetString(nameof(InvalidInputTilesCount), resourceCulture);
+
+        public static string UnexistingPlayerTile
+            => ResourceManager.GetString(nameof(UnexistingPlayerTile), resourceCulture);
+
+        public static string TilePositionOutsideBoardRange
+            => ResourceManager.GetString(nameof(TilePositionOutsideBoardRange), resourceCulture);
+
+        public static string TilePositionAlreadyTaken
+            => ResourceManager.GetString(nameof(TilePositionAlreadyTaken), resourceCulture);
+
+        public static string TilesNotOnTheSameLine
+            => ResourceManager.GetString(nameof(TilesNotOnTheSameLine), resourceCulture);
+
+        public static string InputTilesPositionsCollide
+            => ResourceManager.GetString(nameof(InputTilesPositionsCollide), resourceCulture);
+
+        public static string FirstWordMustBeOnTheBoardCenter
+            => ResourceManager.GetString(nameof(FirstWordMustBeOnTheBoardCenter), resourceCulture);
+
+        public static string WordDoesNotExist
+            => ResourceManager.GetString(nameof(WordDoesNotExist), resourceCulture);
+
+        public static string GapsBetweenInputTilesNotAllowed
+            => ResourceManager.GetString(nameof(GapsBetweenInputTilesNotAllowed), resourceCulture);
+
+        public static string NewTilesNotConnectedToTheOldOnes
+            => ResourceManager.GetString(nameof(NewTilesNotConnectedToTheOldOnes), resourceCulture);
+
+        public static string TheGivenPlayerIsNotOnTurn
+            => ResourceManager.GetString(nameof(TheGivenPlayerIsNotOnTurn), resourceCulture);
     }
 }
