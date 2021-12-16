@@ -123,5 +123,8 @@
 
         public static string PasswordsMismatch
             => ResourceManager.GetString(nameof(PasswordsMismatch), resourceCulture);
+
+        public static string InvalidInputTilesCount
+            => ResourceManager.GetString(nameof(InvalidInputTilesCount), resourceCulture);
     }
 }

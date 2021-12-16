@@ -98,7 +98,13 @@
             }
         }
 
-        // TODO: Player order + timer
+        //TODO: Fix player scoreboard to the sorted
+        //TODO: User friendly validation messages (both languages)
+        //TODO: Display current player on frontend
+        //TODO: Fix frontend tiles bug
+        //TODO (optional): fix colors
+
+        // TODO: Timer
         // TODO: onDisconnected edge cases
         // TODO: handle unauthenticated users
         // TODO: remove player from waiting list and started games when logging out

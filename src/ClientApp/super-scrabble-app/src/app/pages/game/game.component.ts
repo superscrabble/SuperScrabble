@@ -71,11 +71,9 @@ export class GameComponent implements OnInit {
 
   loadScoreBoard(pointsByUserNames: any): void {
     this.pointsByUserNames.clear();
-
     for(let i = 0; i < pointsByUserNames.length; i++) {
       this.pointsByUserNames.set(pointsByUserNames[i].key, pointsByUserNames[i].value);
     }
-
     this.pointsByUserNames = new Map([...this.pointsByUserNames.entries()].sort((a, b) => b[1] - a[1]));
     console.log(this.pointsByUserNames);
   }

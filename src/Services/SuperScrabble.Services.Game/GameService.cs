@@ -3,6 +3,7 @@
     using SuperScrabble.Common;
     using SuperScrabble.CustomExceptions.Game;
     using SuperScrabble.InputModels.Game;
+    using SuperScrabble.LanguageResources;
     using SuperScrabble.Services.Data;
     using SuperScrabble.Services.Game.Models;
     using SuperScrabble.ViewModels;
@@ -161,7 +162,8 @@
         {
             if (IsInputTilesCountValid(input, player))
             {
-                throw new ValidationFailedException("InvalidInputTilesCount", string.Empty);
+                throw new ValidationFailedException(
+                    nameof(Resource.InvalidInputTilesCount), Resource.InvalidInputTilesCount);
             }
 
             var playerTiles = player.Tiles.ToList();

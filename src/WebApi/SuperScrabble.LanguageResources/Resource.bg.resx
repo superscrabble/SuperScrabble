@@ -129,6 +129,9 @@
   <data name="EmailAddressIsRequired" xml:space="preserve">
     <value>Имейл адресът е задължителен</value>
   </data>
+  <data name="InvalidInputTilesCount" xml:space="preserve">
+    <value>Изпратили сте невалиден брой плочки</value>
+  </data>
   <data name="NewEmailAddressDisplayName" xml:space="preserve">
     <value>Нов имейл адрес</value>
   </data>
