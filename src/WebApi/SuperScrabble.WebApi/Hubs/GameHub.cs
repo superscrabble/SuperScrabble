@@ -35,7 +35,7 @@
 
             if (!result.IsSucceeded)
             {
-                await this.Clients.Client(this.Context.ConnectionId).SendAsync("InvalidWriteWordInput", result);
+                    await this.Clients.Client(this.Context.ConnectionId).SendAsync("InvalidWriteWordInput", result);
             }
             else
             {
@@ -43,6 +43,8 @@
                 await this.UpdateGameStateAsync(groupName);
             }
         }
+
+        // вертикално с една буква не бачка
 
         [Authorize]
         public async Task JoinRoom()
@@ -102,7 +104,8 @@
         //TODO: User friendly validation messages (both languages)
         //TODO: Display current player on frontend
         //TODO: Fix frontend tiles bug
-        //TODO (optional): fix colors
+        //TODO: (optional): fix colors
+        //TODO: Add in gameState a bool field whether the player is already doing something
 
         // TODO: Timer
         // TODO: onDisconnected edge cases

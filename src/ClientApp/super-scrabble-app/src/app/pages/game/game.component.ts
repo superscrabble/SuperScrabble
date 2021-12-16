@@ -15,7 +15,7 @@ export class GameComponent implements OnInit {
   playerTiles: Tile[] = new Array();
   cellViewDataByType: Map<number, CellViewData> = new Map();
   remainingTilesCount: number = 0;
-  pointsByUserNames: Map<string, number> = new Map();
+  pointsByUserNames: any[] = new Array();// Map<string, number> = new Map();
   selectedPlayerTile: Tile | null = null;
   updatedBoardCells: any[] = new Array();
   selectedBoardCell: Cell | null = null;
@@ -39,10 +39,16 @@ export class GameComponent implements OnInit {
       this.remainingTilesCount = data.commonGameState.remainingTilesCount;
       this.loadScoreBoard(data.commonGameState.pointsByUserNames)
       console.log("Tiles Count: " + this.remainingTilesCount)
+      this.updatedBoardCells = [];
     })
 
     this.signalrService.hubConnection?.on("InvalidWriteWordInput", data => {
         console.log(data);
+        for(let i = 0; i < this.updatedBoardCells.length; i++) {
+            this.playerTiles.push(this.updatedBoardCells[i].key)
+            this.board[this.updatedBoardCells[i].value.row][this.updatedBoardCells[i].value.column].tile = null;
+        }
+        this.updatedBoardCells = [];
     })
 
     this.signalrService.loadGame(id);
@@ -70,11 +76,11 @@ export class GameComponent implements OnInit {
   }
 
   loadScoreBoard(pointsByUserNames: any): void {
-    this.pointsByUserNames.clear();
+    this.pointsByUserNames = [];
     for(let i = 0; i < pointsByUserNames.length; i++) {
-      this.pointsByUserNames.set(pointsByUserNames[i].key, pointsByUserNames[i].value);
+      this.pointsByUserNames.push({key: pointsByUserNames[i].key, value: pointsByUserNames[i].value});
     }
-    this.pointsByUserNames = new Map([...this.pointsByUserNames.entries()].sort((a, b) => b[1] - a[1]));
+    //this.pointsByUserNames = new Map([...this.pointsByUserNames.entries()].sort((a, b) => b[1] - a[1]));
     console.log(this.pointsByUserNames);
   }
 
@@ -104,6 +110,7 @@ export class GameComponent implements OnInit {
         for(let i = 0; i < this.playerTiles.length; i++) {
           if(this.playerTiles[i] == playerTile) {
             this.selectedPlayerTile = playerTile;
+            return;
           }
         }
       }
@@ -114,12 +121,29 @@ export class GameComponent implements OnInit {
         return;
     }
 
+    console.log("CLICK ON BOARD CELL")
+    console.log(this.updatedBoardCells);
+
     //swap the selected player tile and the selected board cell
     if(cell.tile && this.selectedPlayerTile) {
+        let isNewCell = false;
+        for(let i = 0; i < this.updatedBoardCells.length; i++) {
+            if(this.updatedBoardCells[i].key == cell) {
+                isNewCell = true;
+                break;
+            }
+        }
+
+        if(!isNewCell) {
+            return;
+        }
+
         let temp = cell.tile;
         cell.tile = this.selectedPlayerTile;
         //check whether the player had the tile in the current round
         this.playerTiles.push(temp);
+        this.saveUpdatedBoardCellWithPosition(cell);
+        this.updatedBoardCells = this.updatedBoardCells.filter(item => item.tile !== this.selectedPlayerTile)
         this.playerTiles = this.playerTiles.filter(item => item !== this.selectedPlayerTile);
         this.selectedPlayerTile = null;
         return;
@@ -138,8 +162,12 @@ export class GameComponent implements OnInit {
 
     //select a cell
     if(cell.tile) {
-        // TODO: check whether the cell is on the board
-        this.selectedBoardCell = cell;
+        for(let i = 0; i < this.updatedBoardCells.length; i++) {
+            if(this.updatedBoardCells[i].key == cell) {
+                this.selectedBoardCell = cell;
+                return;
+            }
+        }
         return;
     }
 
@@ -152,6 +180,9 @@ export class GameComponent implements OnInit {
         this.updatedBoardCells = this.updatedBoardCells.filter(item => item.key !== this.selectedBoardCell);
         this.saveUpdatedBoardCellWithPosition(cell);
         this.selectedBoardCell = null;
+
+        console.log("UPDATED BOARD CELLS: ");
+        console.log(this.updatedBoardCells);
         return;
     }
   }
@@ -170,6 +201,7 @@ export class GameComponent implements OnInit {
   rightClickOnBoardCell(cell: Cell | any) {
     if(cell.tile && cell == this.selectedBoardCell) {
         this.playerTiles.push(cell.tile);
+        this.updatedBoardCells = this.updatedBoardCells.filter(item => item.key !== cell.tile);
         this.selectedBoardCell = null;
         cell.tile = null;
     }
@@ -191,11 +223,19 @@ export class GameComponent implements OnInit {
 
   writeWord() : void {
     if(this.updatedBoardCells.length > 0) {
+        this.updatedBoardCells = this.updatedBoardCells.filter(item => item.key.tile !== null);
+        console.log("WRITING WORD")
+        console.log(this.updatedBoardCells);
         this.updatedBoardCells = this.updatedBoardCells.map(item => ({key: item.key.tile, value: item.value}))
-        this.signalrService.writeWord(this.updatedBoardCells);
-
-        this.updatedBoardCells = new Array();
+        try {
+            this.signalrService.writeWord(this.updatedBoardCells);
+        }
+        catch (ex) {
+            console.log("ERROR");
+            console.log(ex);
+        }
     }
+    console.log("AFTER WRITING WORD")
   }  
 
   loadMockData(): void {

@@ -167,12 +167,12 @@
                 return false;
             }
             
-            return !input.PositionsByTiles.Any() || input.PositionsByTiles.Count() > player.Tiles.Count;
+            return input.PositionsByTiles.Any() && input.PositionsByTiles.Count() <= player.Tiles.Count;
         }
 
         private IEnumerable<WordBuilder> ValidateInputTilesAndExtractWords(WriteWordInputModel input, GameState gameState, Player player)
         {
-            if (IsInputTilesCountValid(input, player, gameState.Board.IsEmpty()))
+            if (!IsInputTilesCountValid(input, player, gameState.Board.IsEmpty()))
             {
                 throw new ValidationFailedException(
                     nameof(Resource.InvalidInputTilesCount), Resource.InvalidInputTilesCount);
@@ -366,14 +366,10 @@
                     secondaryWordBuilder.AppendDownwardExistingBoardTiles(board, currentStartingPosition);
                 }
 
-                if (secondaryWordBuilder.PositionsByTiles.Count <= 1)
-                {
-                    // Skip all new single letter words
-                    continue;
-                }
-
                 wordBuilders.Add(secondaryWordBuilder);
             }
+
+            wordBuilders = wordBuilders.Where(wb => wb.PositionsByTiles.Count > 1).ToList();
 
             if (isThisTheFirstInput)
             {
