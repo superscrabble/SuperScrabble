@@ -114,6 +114,7 @@
             {
                 Tiles = gameState.GetPlayer(userName).Tiles,
                 CommonGameState = commonViewModel,
+                MyUserName = userName,
             };
 
             return playerViewModel;
