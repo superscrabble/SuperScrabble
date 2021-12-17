@@ -9,5 +9,7 @@
         public IEnumerable<KeyValuePair<string, int>> PointsByUserNames { get; set; }
 
         public BoardViewModel Board { get; set; }
+
+        public string PlayerOnTurnUserName { get; set; }
     }
 }

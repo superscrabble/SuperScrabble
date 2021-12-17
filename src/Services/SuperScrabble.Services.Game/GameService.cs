@@ -106,6 +106,8 @@
                     p => p.UserName, p => p.Points).OrderByDescending(pbu => pbu.Value),
 
                 Board = boardViewModel,
+
+                PlayerOnTurnUserName = gameState.CurrentPlayer.UserName,
             };
 
             var playerViewModel = new PlayerGameStateViewModel

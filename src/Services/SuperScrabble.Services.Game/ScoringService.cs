@@ -1,6 +1,5 @@
 ﻿namespace SuperScrabble.Services.Game
 {
-    using System;
     using System.Linq;
     using System.Collections.Generic;
 
@@ -13,16 +12,17 @@
         {
             int totalPoints = 0;
 
-            foreach (var word in words)
+            foreach (WordBuilder word in words)
             {
                 int currentWordPoints = 0;
                 var wordBonuses = new List<CellType>();
 
                 foreach (var positionByTile in word.PositionsByTiles)
                 {
-                    bool isTileNew = input.PositionsByTiles.Any(x => x.Value.Equals(positionByTile.Value));
                     Tile tile = positionByTile.Key;
                     int pointsForCurrentTile = tile.Points;
+
+                    bool isTileNew = input.PositionsByTiles.Any(x => x.Value.Equals(positionByTile.Value));
 
                     if (isTileNew)
                     {
@@ -35,9 +35,7 @@
 
                         if (cellType.IsLetterBonus())
                         {
-                            Func<int, int> increasePoints = cellType == CellType.DoubleLetter
-                                ? tilePoints => tilePoints * 2 : tilePoints => tilePoints * 3;
-
+                            int increasePoints(int tilePoints) => tilePoints * cellType.GetPointsMultiplier();
                             pointsForCurrentTile = increasePoints(pointsForCurrentTile);
                         }
                     }
@@ -45,11 +43,9 @@
                     currentWordPoints += pointsForCurrentTile;
                 }
 
-                foreach (var wordBonus in wordBonuses)
+                foreach (CellType wordBonus in wordBonuses)
                 {
-                    Func<int, int> increaseWordPoints = wordBonus == CellType.DoubleWord
-                        ? wordPoints => wordPoints * 2 : wordPoints => wordPoints * 3;
-
+                    int increaseWordPoints(int wordPoints) => wordPoints * wordBonus.GetPointsMultiplier();
                     currentWordPoints = increaseWordPoints(currentWordPoints);
                 }
 

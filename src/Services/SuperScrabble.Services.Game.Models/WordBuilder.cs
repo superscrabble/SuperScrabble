@@ -2,10 +2,10 @@
 {
     using System;
     using System.Linq;
+    using System.Text;
     using System.Collections.Generic;
 
     using SuperScrabble.Common;
-    using System.Text;
 
     public class WordBuilder
     {
@@ -104,7 +104,7 @@
 
         public override string ToString()
         {
-            StringBuilder stringBuilder = new();
+            var stringBuilder = new StringBuilder();
 
             foreach (var positionByTile in positionsByTiles)
             {
