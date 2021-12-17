@@ -1,11 +1,11 @@
 <div class="row d-flex justify-content-center flex-nowrap page">
     <div class="col-md-3">
-        <div class="border rounded scoreboard">
+        <div class="border rounded scoreboard mt-4">
             <table class="table">
                 <th>Резултат</th>
-                <tr *ngFor="let pointsByUserName of pointsByUserNames; let i = index">
+                <tr *ngFor="let pointsByUserName of pointsByUserNames; let i = index" class="{{getClassNameWhetherPlayerIsOnTurn(pointsByUserName.key)}}">
                     <td>{{i + 1}}</td>
-                    <td>{{pointsByUserName.key}}</td>
+                    <td>{{getUserName(pointsByUserName.key)}}</td>
                     <td>{{pointsByUserName.value}}</td>
                 </tr>
             </table>

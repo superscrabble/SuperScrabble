@@ -19,6 +19,8 @@ export class GameComponent implements OnInit {
   selectedPlayerTile: Tile | null = null;
   updatedBoardCells: any[] = new Array();
   selectedBoardCell: Cell | null = null;
+  playerNameOnTurn: string = "";
+  myUserName: string = "";
 
   constructor(private signalrService: SignalrService) {}
 
@@ -37,6 +39,8 @@ export class GameComponent implements OnInit {
       this.loadBoard(data.commonGameState.board);
       this.loadPlayerTiles(data.tiles);
       this.remainingTilesCount = data.commonGameState.remainingTilesCount;
+      this.playerNameOnTurn = data.commonGameState.playerOnTurnUserName;
+      this.myUserName = data.myUserName; //Can be moved into localStorage
       this.loadScoreBoard(data.commonGameState.pointsByUserNames)
       console.log("Tiles Count: " + this.remainingTilesCount)
       this.updatedBoardCells = [];
@@ -100,6 +104,15 @@ export class GameComponent implements OnInit {
   getClassNameByCellType(type: number) {
     return this.cellViewDataByType.get(type)?.className;
   }
+  
+  getClassNameWhetherPlayerIsOnTurn(playerName: string) {
+      console.log("Player " + playerName + " " + this.playerNameOnTurn)
+      return playerName == this.playerNameOnTurn ? "player-on-turn" : "";
+  }
+
+  getUserName(playerName: string) {
+      return playerName == this.myUserName ? playerName + " (аз)" : playerName;
+  } //Should be changed
 
   getClassNameIfCellIsTaken(cell: Cell) {
     if(cell.tile) {
