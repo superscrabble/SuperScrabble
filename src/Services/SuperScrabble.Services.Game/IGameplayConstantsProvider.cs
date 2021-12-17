@@ -3,5 +3,7 @@
     public interface IGameplayConstantsProvider
     {
         int PlayerTilesCount { get; }
+
+        int PlayersPerGameCount { get; }
     }
 }

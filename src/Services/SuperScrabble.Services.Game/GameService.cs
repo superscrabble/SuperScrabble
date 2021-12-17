@@ -172,7 +172,9 @@
 
         private IEnumerable<WordBuilder> ValidateInputTilesAndExtractWords(WriteWordInputModel input, GameState gameState, Player player)
         {
-            if (!IsInputTilesCountValid(input, player, gameState.Board.IsEmpty()))
+            IBoard board = gameState.Board;
+
+            if (!IsInputTilesCountValid(input, player, board.IsEmpty()))
             {
                 throw new ValidationFailedException(
                     nameof(Resource.InvalidInputTilesCount), Resource.InvalidInputTilesCount);
@@ -197,13 +199,13 @@
                         nameof(Resource.UnexistingPlayerTile), Resource.UnexistingPlayerTile);
                 }
 
-                if (!gameState.Board.IsPositionInside(position))
+                if (!board.IsPositionInside(position))
                 {
                     throw new ValidationFailedException(
                         nameof(Resource.TilePositionOutsideBoardRange), Resource.TilePositionOutsideBoardRange);
                 }
 
-                if (!gameState.Board.IsCellFree(position))
+                if (!board.IsCellFree(position))
                 {
                     throw new ValidationFailedException(
                         nameof(Resource.TilePositionAlreadyTaken), Resource.TilePositionAlreadyTaken);
@@ -238,9 +240,9 @@
 
             bool goesThroughCenter = false;
 
-            if (gameState.Board.IsEmpty())
+            if (board.IsEmpty())
             {
-                goesThroughCenter = input.PositionsByTiles.Any(pbt => gameState.Board.IsPositionCenter(pbt.Value));
+                goesThroughCenter = input.PositionsByTiles.Any(pbt => board.IsPositionCenter(pbt.Value));
 
                 if (!goesThroughCenter)
                 {
@@ -249,16 +251,16 @@
                 }
             }
 
-            PlacePlayerTiles(gameState.Board, sortedPositionsByTiles);
+            PlacePlayerTiles(board, sortedPositionsByTiles);
 
-            ValidateGapsBetweenTiles(gameState.Board, sortedPositionsByTiles, areTilesAllignedVertically);
+            ValidateGapsBetweenTiles(board, sortedPositionsByTiles, areTilesAllignedVertically);
 
             var words = GetAllNewWords(
-                gameState.Board, sortedPositionsByTiles, areTilesAllignedVertically, goesThroughCenter);
+                board, sortedPositionsByTiles, areTilesAllignedVertically, goesThroughCenter);
 
-            List<WordBuilder> notExistingWords = new();
+            var notExistingWords = new List<WordBuilder>();
 
-            foreach (var word in words)
+            foreach (WordBuilder word in words)
             {
                 if (!wordsService.IsWordValid(word.ToString().ToLower()))
                 {

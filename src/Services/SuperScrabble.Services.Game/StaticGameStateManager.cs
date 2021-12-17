@@ -12,10 +12,12 @@
         private static readonly Dictionary<string, GameState> gamesByGroupName = new();
 
         private readonly int playersInsideGameCount;
+        private readonly IGameplayConstantsProvider gameplayConstantsProvider;
 
-        public StaticGameStateManager()
+        public StaticGameStateManager(IGameplayConstantsProvider gameplayConstantsProvider)
         {
-            this.playersInsideGameCount = 2;
+            this.gameplayConstantsProvider = gameplayConstantsProvider;
+            this.playersInsideGameCount = this.gameplayConstantsProvider.PlayersPerGameCount;
         }
 
         public int WaitingPlayersCount =>
