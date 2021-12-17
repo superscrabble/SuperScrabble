@@ -102,7 +102,14 @@ export class GameComponent implements OnInit {
   }
 
   getClassNameIfCellIsTaken(cell: Cell) {
-    return cell.tile ? "tile-on-cell rounded-1" : "";  
+    if(cell.tile) {
+        if(this.selectedBoardCell == cell) {
+            return "selected-tile rounded-1";
+        } else {
+            return "tile-on-cell rounded-1";
+        }
+    }
+    return "";
   }
 
   getValueWhenEmptyByCellType(type: number) {

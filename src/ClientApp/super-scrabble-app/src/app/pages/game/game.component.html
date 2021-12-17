@@ -1,6 +1,6 @@
 <div class="row d-flex justify-content-center flex-nowrap page">
     <div class="col-md-3">
-        <div class="border rounded">
+        <div class="border rounded scoreboard">
             <table class="table">
                 <th>Резултат</th>
                 <tr *ngFor="let pointsByUserName of pointsByUserNames; let i = index">
@@ -17,12 +17,13 @@
                 <tr *ngFor="let row of board">
                     <td *ngFor="let cell of row" 
                         class="border border-dark p-2 text-center cursor-default {{getClassNameByCellType(cell.type)}}
-                                                      {{getClassNameIfSelected(cell)}} {{getClassNameIfCellIsTaken(cell)}}"
+                                                       {{getClassNameIfCellIsTaken(cell)}} {{getClassNameIfSelected(cell)}}"
                         (click)="clickOnBoardCell(cell)"
                         (contextmenu)="rightClickOnBoardCell(cell)">
 
                         <div *ngIf="cell.tile">
-                            {{cell.tile.letter}}{{cell.tile.points}}
+                            {{cell.tile.letter}}
+                            <span style="font-size: 10px">{{cell.tile.points}}</span>
                         </div>
                         <div *ngIf="!cell.tile">
                             {{getValueWhenEmptyByCellType(cell.type)}}

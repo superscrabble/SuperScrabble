@@ -38,7 +38,7 @@
 }
 
 .selected-cell {
-    background-color: #f5c453;
+    background-color: #F97362; /*#f5c453;*/
 }
 
 .cursor-default {
@@ -49,4 +49,8 @@
     background-color: #E3CFAA;
     box-shadow: 10px 2px 2px black;
     color: black;
+}
+
+.scoreboard {
+    background-color: #52B788;
 }
