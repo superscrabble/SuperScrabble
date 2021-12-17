@@ -206,7 +206,12 @@ export class GameComponent implements OnInit {
   rightClickOnBoardCell(cell: Cell | any) {
     if(cell.tile && cell == this.selectedBoardCell) {
         this.playerTiles.push(cell.tile);
-        this.updatedBoardCells = this.updatedBoardCells.filter(item => item.key !== cell.tile);
+        console.log("Right Click");
+        console.log(this.updatedBoardCells);
+        this.updatedBoardCells = this.updatedBoardCells.filter(item => item.key !== cell);
+        console.log(cell.tile);
+        console.log(this.updatedBoardCells);
+        console.log("After Right Click");
         this.selectedBoardCell = null;
         cell.tile = null;
     }
