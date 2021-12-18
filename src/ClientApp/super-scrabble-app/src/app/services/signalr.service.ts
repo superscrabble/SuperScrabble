@@ -95,4 +95,8 @@ export class SignalrService {
       this.hubConnection?.invoke("ExchangeTiles", input);
     }
   }
+
+  public skipTurn() {
+    this.hubConnection?.invoke("SkipTurn");
+  }
 }
