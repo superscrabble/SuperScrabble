@@ -14,6 +14,10 @@
 
         void FillPlayerTiles(GameState gameState, string userName);
 
-        WriteWordResult WriteWord(GameState gameState, WriteWordInputModel input, string authorUserName);
+        GameOperationResult WriteWord(
+            GameState gameState, WriteWordInputModel input, string authorUserName);
+
+        GameOperationResult ExchangeTiles(
+            GameState gameState, ExchangeTilesInputModel input, string exchangerUserName);
     }
 }

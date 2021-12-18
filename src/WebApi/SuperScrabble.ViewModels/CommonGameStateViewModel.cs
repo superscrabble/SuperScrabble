@@ -11,5 +11,7 @@
         public BoardViewModel Board { get; set; }
 
         public string PlayerOnTurnUserName { get; set; }
+
+        public bool IsTileExchangePossible { get; set; }
     }
 }

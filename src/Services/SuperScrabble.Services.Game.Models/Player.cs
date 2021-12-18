@@ -1,6 +1,7 @@
 ﻿namespace SuperScrabble.Services.Game.Models
 {
     using System.Collections.Generic;
+    using System.Linq;
 
     public class Player
     {
@@ -39,6 +40,25 @@
             }
 
             return this.tiles[index];
+        }
+
+        public bool OwnsAllTiles(IEnumerable<Tile> tilesToCheck)
+        {
+            var playerTilesCopy = this.Tiles.ToList();
+
+            foreach (Tile tile in tilesToCheck)
+            {
+                Tile playerTile = playerTilesCopy.FirstOrDefault(x => x.Equals(tile));
+
+                if (playerTile == null)
+                {
+                    return false;
+                }
+
+                playerTilesCopy.Remove(tile);
+            }
+
+            return true;
         }
     }
 }

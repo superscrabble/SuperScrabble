@@ -2,9 +2,9 @@
 {
     using System.Collections.Generic;
 
-    public class WriteWordResult
+    public class GameOperationResult
     {
-        public WriteWordResult()
+        public GameOperationResult()
         {
             this.ErrorsByCodes = new Dictionary<string, string>();
         }

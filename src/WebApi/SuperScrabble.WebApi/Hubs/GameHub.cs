@@ -27,24 +27,44 @@
 
         public string UserName => this.Context.User.Identity.Name;
 
+        public GameState GameState => this.gameStateManager.GetGameState(this.UserName);
+
+        public string GroupName => this.gameStateManager.GetGroupName(this.UserName);
+
         [Authorize]
         public async Task WriteWord(WriteWordInputModel input)
         {
-            GameState gameState = this.gameStateManager.GetGameState(this.UserName);
-            WriteWordResult result = this.gameService.WriteWord(gameState, input, this.UserName);
+            GameOperationResult result = this.gameService.WriteWord(this.GameState, input, this.UserName);
 
             if (!result.IsSucceeded)
             {
-                    await this.Clients.Client(this.Context.ConnectionId).SendAsync("InvalidWriteWordInput", result);
+                await this.SendValidationErrorMessage("InvalidWriteWordInput", result);
             }
             else
             {
-                string groupName = this.gameStateManager.GetGroupName(this.UserName);
-                await this.UpdateGameStateAsync(groupName);
+                await this.UpdateGameStateAsync(this.GroupName);
             }
         }
 
-        // вертикално с една буква не бачка
+        [Authorize]
+        public async Task ExchangeTiles(ExchangeTilesInputModel input)
+        {
+            GameOperationResult result = this.gameService.ExchangeTiles(this.GameState, input, this.UserName);
+
+            if (!result.IsSucceeded)
+            {
+                await this.SendValidationErrorMessage("InvalidExchangeTilesInput", result);
+            }
+            else
+            {
+                await this.UpdateGameStateAsync(this.GroupName);
+            }
+        }
+
+        private async Task SendValidationErrorMessage(string methodName, GameOperationResult result)
+        {
+            await this.Clients.Client(this.Context.ConnectionId).SendAsync(methodName, result);
+        }
 
         [Authorize]
         public async Task JoinRoom()

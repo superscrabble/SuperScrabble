@@ -7,6 +7,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\WebApi\SuperScrabble.ViewModels\SuperScrabble.ViewModels.csproj" />
     <ProjectReference Include="..\SuperScrabble.Services.Data\SuperScrabble.Services.Data.csproj" />
+    <ProjectReference Include="..\SuperScrabble.Services.Game.Common\SuperScrabble.Services.Game.Common.csproj" />
     <ProjectReference Include="..\SuperScrabble.Services.Game.Models\SuperScrabble.Services.Game.Models.csproj" />
     <ProjectReference Include="..\SuperScrabble.Services\SuperScrabble.Services.csproj" />
   </ItemGroup>

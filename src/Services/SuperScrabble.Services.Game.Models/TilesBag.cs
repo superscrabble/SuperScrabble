@@ -35,5 +35,10 @@
 
             return tile;
         }
+
+        public void AddTiles(IEnumerable<Tile> tiles)
+        {
+            this.tiles.AddRange(tiles);
+        }
     }
 }
