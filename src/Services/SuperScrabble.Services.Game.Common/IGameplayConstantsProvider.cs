@@ -5,5 +5,7 @@
         int PlayerTilesCount { get; }
 
         int PlayersPerGameCount { get; }
+
+        int MinSkipsCountForEachPlayerToEndTheGame { get; }
     }
 }

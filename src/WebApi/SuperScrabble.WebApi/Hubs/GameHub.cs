@@ -38,7 +38,7 @@
 
             if (!result.IsSucceeded)
             {
-                await this.SendValidationErrorMessage("InvalidWriteWordInput", result);
+                await this.SendValidationErrorMessageAsync("InvalidWriteWordInput", result);
             }
             else
             {
@@ -53,7 +53,7 @@
 
             if (!result.IsSucceeded)
             {
-                await this.SendValidationErrorMessage("InvalidExchangeTilesInput", result);
+                await this.SendValidationErrorMessageAsync("InvalidExchangeTilesInput", result);
             }
             else
             {
@@ -61,7 +61,22 @@
             }
         }
 
-        private async Task SendValidationErrorMessage(string methodName, GameOperationResult result)
+        [Authorize]
+        public async void SkipTurn()
+        {
+            GameOperationResult result = this.gameService.SkipTurn(this.GameState, this.UserName);
+
+            if (!result.IsSucceeded)
+            {
+                await this.SendValidationErrorMessageAsync("ImpossibleToSkipTurn", result);
+            }
+            else
+            {
+                await this.UpdateGameStateAsync(this.GroupName);
+            }
+        }
+
+        private async Task SendValidationErrorMessageAsync(string methodName, GameOperationResult result)
         {
             await this.Clients.Client(this.Context.ConnectionId).SendAsync(methodName, result);
         }

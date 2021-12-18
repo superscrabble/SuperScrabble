@@ -19,5 +19,7 @@
 
         GameOperationResult ExchangeTiles(
             GameState gameState, ExchangeTilesInputModel input, string exchangerUserName);
+
+        GameOperationResult SkipTurn(GameState gameState, string skipperUserName);
     }
 }

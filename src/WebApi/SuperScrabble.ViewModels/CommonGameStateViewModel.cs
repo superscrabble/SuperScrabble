@@ -13,5 +13,7 @@
         public string PlayerOnTurnUserName { get; set; }
 
         public bool IsTileExchangePossible { get; set; }
+
+        public bool IsGameOver { get; set; }
     }
 }

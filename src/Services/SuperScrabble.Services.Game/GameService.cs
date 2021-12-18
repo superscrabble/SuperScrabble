@@ -105,6 +105,7 @@
                 Board = boardViewModel,
                 PlayerOnTurnUserName = gameState.CurrentPlayer.UserName,
                 IsTileExchangePossible = gameState.IsTileExchangePossible,
+                IsGameOver = gameState.IsGameOver,
                 PointsByUserNames = gameState.Players.ToDictionary(
                     p => p.UserName, p => p.Points).OrderByDescending(pbu => pbu.Value),
             };
@@ -136,6 +137,7 @@
 
                 author.Points += newPoints;
                 gameState.NextPlayer();
+                gameState.ResetAllPlayersConsecutiveSkipsCount();
 
                 return new GameOperationResult { IsSucceeded = true };
             }
@@ -179,6 +181,36 @@
                 }
 
                 gameState.NextPlayer();
+                gameState.ResetAllPlayersConsecutiveSkipsCount();
+
+                return new GameOperationResult { IsSucceeded = true };
+            }
+            catch (ValidationFailedException ex)
+            {
+                var result = new GameOperationResult { IsSucceeded = false };
+                result.ErrorsByCodes.Add(ex.ErrorCode, ex.ErrorMessage);
+                return result;
+            }
+        }
+
+        public GameOperationResult SkipTurn(GameState gameState, string skipperUserName)
+        {
+            try
+            {
+                ValidateWhetherThePlayerIsOnTurn(gameState, skipperUserName);
+
+                bool isGameOver = gameState.Players.All(p => p.ConsecutiveSkipsCount >= 2);
+
+                if (isGameOver)
+                {
+                    gameState.EndGame();
+                }
+                else
+                {
+                    Player player = gameState.GetPlayer(skipperUserName);
+                    player.ConsecutiveSkipsCount++;
+                }
+
                 return new GameOperationResult { IsSucceeded = true };
             }
             catch (ValidationFailedException ex)
@@ -281,7 +313,7 @@
             if (!gameState.IsTileExchangePossible)
             {
                 throw new ValidationFailedException(
-                        nameof(Resource.ImpossibleTileExchange), Resource.ImpossibleTileExchange);
+                    nameof(Resource.ImpossibleTileExchange), Resource.ImpossibleTileExchange);
             }
 
             ValidateWhetherPlayerHasSubmittedTilesThatHeDoesOwn(exchanger, input.TilesToExchange);

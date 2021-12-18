@@ -12,7 +12,10 @@
             this.UserName = userName;
             this.Points = points;
             this.ConnectionId = connectionId;
+            this.ConsecutiveSkipsCount = 0;
         }
+
+        public int ConsecutiveSkipsCount { get; set; }
 
         public string UserName { get; set; }
 
