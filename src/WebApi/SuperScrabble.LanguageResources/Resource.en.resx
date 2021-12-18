@@ -135,6 +135,9 @@
   <data name="GapsBetweenInputTilesNotAllowed" xml:space="preserve">
     <value>You cannot have empty cells between the tiles you place</value>
   </data>
+  <data name="ImpossibleTileExchange" xml:space="preserve">
+    <value>You cannot exchange tiles</value>
+  </data>
   <data name="InputTilesPositionsCollide" xml:space="preserve">
     <value>You cannot place more than one tile on a single cell</value>
   </data>

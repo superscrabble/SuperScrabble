@@ -156,5 +156,8 @@
 
         public static string TheGivenPlayerIsNotOnTurn
             => ResourceManager.GetString(nameof(TheGivenPlayerIsNotOnTurn), resourceCulture);
+
+        public static string ImpossibleTileExchange
+            => ResourceManager.GetString(nameof(ImpossibleTileExchange), resourceCulture);
     }
 }

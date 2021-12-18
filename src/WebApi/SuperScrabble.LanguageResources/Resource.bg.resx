@@ -135,6 +135,9 @@
   <data name="GapsBetweenInputTilesNotAllowed" xml:space="preserve">
     <value>Не може да има празни клетки между буквите, които поставяте</value>
   </data>
+  <data name="ImpossibleTileExchange" xml:space="preserve">
+    <value>Не може да заменяте букви</value>
+  </data>
   <data name="InputTilesPositionsCollide" xml:space="preserve">
     <value>Не може да поставяте повече от една буква върху дадена клетка </value>
   </data>

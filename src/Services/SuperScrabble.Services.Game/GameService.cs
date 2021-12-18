@@ -11,6 +11,7 @@
     using SuperScrabble.LanguageResources;
     using SuperScrabble.Services.Game.Models;
     using SuperScrabble.CustomExceptions.Game;
+    using SuperScrabble.Services.Game.TilesProviders;
 
     public class GameService : IGameService
     {
@@ -279,7 +280,8 @@
 
             if (!gameState.IsTileExchangePossible)
             {
-                throw new ValidationFailedException("ImpossibleTileExchange", "");
+                throw new ValidationFailedException(
+                        nameof(Resource.ImpossibleTileExchange), Resource.ImpossibleTileExchange);
             }
 
             ValidateWhetherPlayerHasSubmittedTilesThatHeDoesOwn(exchanger, input.TilesToExchange);

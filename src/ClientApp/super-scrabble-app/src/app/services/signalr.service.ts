@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import * as signalR from "@microsoft/signalr";
 import { Utilities } from 'src/app/common/utilities';
+import { Tile } from '../models/tile';
 
 @Injectable({
   providedIn: 'root'
@@ -83,6 +84,15 @@ export class SignalrService {
         positionsByTiles: cells
       }
       this.hubConnection?.invoke("WriteWord", input);
+    }
+  }
+
+  public exchangeTiles(tiles: Tile[]) {
+    if(tiles.length > 0) {
+      let input = {
+        tilesToExchange: tiles
+      }
+      this.hubConnection?.invoke("ExchangeTiles", input);
     }
   }
 }

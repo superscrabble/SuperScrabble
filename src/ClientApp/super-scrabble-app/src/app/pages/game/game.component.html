@@ -52,8 +52,22 @@
             </span>
         </div>
         <div class="d-flex flex-column">
-            <button class="btn normal-btn">Пропусни ход</button>
-            <button class="btn normal-btn">Замени буква</button>
+            <button class="btn normal-btn mb-2">Пропусни ход</button>
+            <button class="btn normal-btn mb-2" [disabled]="!isTileExchangePossible" (click)="clickExchangeBtn()">Замени буква</button>
+            <div *ngIf="showExchangeField" class="">
+                <div class="my-3">
+                    <span
+                        *ngFor="let tile of playerTiles"
+                        class="mx-1 border tile cursor-default rounded-1 p-2 text-center {{getClassNameIfSelectedExchangeTile(tile)}}"
+                        (click)="clickOnExchangeTile(tile)">
+                        {{tile.letter}}
+                        <span style="font-size: 10px">
+                            {{tile.points}}
+                        </span>
+                    </span>
+                </div>
+                <button class="btn btn-danger my-2" (click)="exchangeSelectedTiles()">Замени</button>
+            </div>
             <button class="btn btn-danger" (click)="writeWord()">Напиши дума</button>
         </div>
     </div>

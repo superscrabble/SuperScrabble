@@ -30,6 +30,7 @@ namespace SuperScrabble.WebApi
     using SuperScrabble.Data.Repositories;
     using SuperScrabble.Data.Seeding;
     using Microsoft.EntityFrameworkCore;
+    using SuperScrabble.Services.Game.TilesProviders;
 
     public class Startup
     {
@@ -95,6 +96,7 @@ namespace SuperScrabble.WebApi
             services.AddTransient<IUsersService, UsersService>();
             services.AddTransient<IGameService, GameService>();
             services.AddTransient<IShuffleService, ShuffleService>();
+            //services.AddTransient<ITilesProvider, FakeTilesProvider>();
             services.AddTransient<ITilesProvider, MyOldBoardTilesProvider>();
             services.AddTransient<IBonusCellsProvider, MyOldBoardBonusCellsProvider>();
             services.AddTransient<IGameplayConstantsProvider, StandardGameplayConstantsProvider>();

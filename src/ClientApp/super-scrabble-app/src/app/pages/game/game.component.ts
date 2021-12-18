@@ -22,6 +22,9 @@ export class GameComponent implements OnInit {
   selectedBoardCell: Cell | null = null;
   playerNameOnTurn: string = "";
   myUserName: string = "";
+  showExchangeField: boolean = false;
+  selectedExchangeTiles: Tile[] = new Array();
+  isTileExchangePossible: boolean = true;
 
   constructor(private signalrService: SignalrService) {}
 
@@ -57,6 +60,7 @@ export class GameComponent implements OnInit {
         this.remainingTilesCount = data.commonGameState.remainingTilesCount;
         this.playerNameOnTurn = data.commonGameState.playerOnTurnUserName;
         this.myUserName = data.myUserName; //Can be moved into localStorage
+        this.isTileExchangePossible = data.commonGameState.isTileExchangePossible;
         this.loadScoreBoard(data.commonGameState.pointsByUserNames)
         this.updatedBoardCells = [];
     })
@@ -69,6 +73,13 @@ export class GameComponent implements OnInit {
             this.board[this.updatedBoardCells[i].value.row][this.updatedBoardCells[i].value.column].tile = null;
         }
         this.updatedBoardCells = [];
+    })
+
+    this.signalrService.hubConnection?.on("InvalidExchangeTilesInput", data => {
+        console.log(data);
+        alert(Object.values(data.errorsByCodes));
+        this.showExchangeField = false;
+        this.selectedExchangeTiles = [];
     })
   }
 
@@ -172,6 +183,38 @@ export class GameComponent implements OnInit {
           }
         }
       }
+  }
+
+  clickExchangeBtn() {
+    this.showExchangeField = !this.showExchangeField
+  }
+
+  clickOnExchangeTile(tile: Tile) {
+    if(tile) {
+        //Deselecting
+        for(let i = 0; i < this.selectedExchangeTiles.length; i++) {
+            if(this.selectedExchangeTiles[i] == tile) {
+                this.selectedExchangeTiles = this.selectedExchangeTiles.filter(item => item !== tile)
+                return;
+            }
+        }
+        this.selectedExchangeTiles.push(tile);
+    }
+  }
+
+  getClassNameIfSelectedExchangeTile(tile: Tile) {
+    for(let i = 0; i < this.selectedExchangeTiles.length; i++) {
+        if(this.selectedExchangeTiles[i] == tile) {
+            return "selected-tile";
+        }
+    }
+    return "";
+  }
+
+  exchangeSelectedTiles() {
+    this.signalrService.exchangeTiles(this.selectedExchangeTiles);
+    this.showExchangeField = false;
+    this.selectedExchangeTiles = [];
   }
 
   clickOnBoardCell(cell: Cell | any) {
