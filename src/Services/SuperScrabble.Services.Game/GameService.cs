@@ -136,8 +136,16 @@
                     .CalculatePointsFromPlayerInput(input, gameState.Board, wordBuilders);
 
                 author.Points += newPoints;
-                gameState.NextPlayer();
-                gameState.ResetAllPlayersConsecutiveSkipsCount();
+
+                if (author.Tiles.Count <= 0 && gameState.TilesCount <= 0)
+                {
+                    gameState.EndGame();
+                }
+                else
+                {
+                    gameState.NextPlayer();
+                    gameState.ResetAllPlayersConsecutiveSkipsCount();
+                }
 
                 return new GameOperationResult { IsSucceeded = true };
             }
