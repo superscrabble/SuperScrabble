@@ -1,6 +1,6 @@
 <div class="row d-flex justify-content-center flex-nowrap page">
     <div class="col-md-3">
-        <div class="border rounded scoreboard mt-4">
+        <div class="border border-dark rounded scoreboard mt-4">
             <table class="table">
                 <th>Резултат</th>
                 <tr *ngFor="let pointsByUserName of pointsByUserNames; let i = index" class="{{getClassNameWhetherPlayerIsOnTurn(pointsByUserName.key)}}">

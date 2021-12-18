@@ -106,13 +106,12 @@ export class GameComponent implements OnInit {
   }
   
   getClassNameWhetherPlayerIsOnTurn(playerName: string) {
-      console.log("Player " + playerName + " " + this.playerNameOnTurn)
       return playerName == this.playerNameOnTurn ? "player-on-turn" : "";
   }
 
-  getUserName(playerName: string) {
+  getUserName(playerName: string) { //Func name should be changed
       return playerName == this.myUserName ? playerName + " (аз)" : playerName;
-  } //Should be changed
+  }
 
   getClassNameIfCellIsTaken(cell: Cell) {
     if(cell.tile) {
@@ -130,7 +129,11 @@ export class GameComponent implements OnInit {
   }
 
   clickOnPlayerTile(playerTile: Tile | any) { //either with index
-      if(playerTile != null) {  
+      if(playerTile != null) {
+        if(playerTile == this.selectedPlayerTile) {
+            this.selectedPlayerTile = null;
+            return;
+        }  
         //Check whether the player has the tile
         for(let i = 0; i < this.playerTiles.length; i++) {
           if(this.playerTiles[i] == playerTile) {
@@ -167,8 +170,9 @@ export class GameComponent implements OnInit {
         cell.tile = this.selectedPlayerTile;
         //check whether the player had the tile in the current round
         this.playerTiles.push(temp);
-        this.saveUpdatedBoardCellWithPosition(cell);
-        this.updatedBoardCells = this.updatedBoardCells.filter(item => item.tile !== this.selectedPlayerTile)
+        //this.updatedBoardCells = this.updatedBoardCells.filter(item => item.tile !== this.selectedPlayerTile)
+        //this.addCellToUpdatedBoardCells(cell);
+        //this.saveUpdatedBoardCellWithPosition(cell);
         this.playerTiles = this.playerTiles.filter(item => item !== this.selectedPlayerTile);
         this.selectedPlayerTile = null;
         return;
@@ -179,7 +183,8 @@ export class GameComponent implements OnInit {
         if(!cell.tile) {
             cell.tile = this.selectedPlayerTile;
             this.playerTiles = this.playerTiles.filter(item => item !== this.selectedPlayerTile);
-            this.saveUpdatedBoardCellWithPosition(cell);
+            this.addCellToUpdatedBoardCells(cell);
+            //this.saveUpdatedBoardCellWithPosition(cell);
             this.selectedPlayerTile = null;
             return;
         }
@@ -187,6 +192,11 @@ export class GameComponent implements OnInit {
 
     //select a cell
     if(cell.tile) {
+        if(cell == this.selectedBoardCell) {
+            this.selectedBoardCell = null;
+            return;
+        }
+
         for(let i = 0; i < this.updatedBoardCells.length; i++) {
             if(this.updatedBoardCells[i].key == cell) {
                 this.selectedBoardCell = cell;
@@ -203,12 +213,24 @@ export class GameComponent implements OnInit {
         cell.tile = tempTile;
 
         this.updatedBoardCells = this.updatedBoardCells.filter(item => item.key !== this.selectedBoardCell);
-        this.saveUpdatedBoardCellWithPosition(cell);
+        this.addCellToUpdatedBoardCells(cell);
+        //this.saveUpdatedBoardCellWithPosition(cell);
         this.selectedBoardCell = null;
 
         console.log("UPDATED BOARD CELLS: ");
         console.log(this.updatedBoardCells);
         return;
+    }
+  }
+
+  addCellToUpdatedBoardCells(cell: Cell) {
+    if(cell && cell.tile) {
+        for(let i = 0; i < this.updatedBoardCells.length; i++) {
+            if(this.updatedBoardCells[i] == cell) {
+                return;
+            }
+        }
+        this.saveUpdatedBoardCellWithPosition(cell);
     }
   }
 
@@ -266,7 +288,7 @@ export class GameComponent implements OnInit {
         }
     }
     console.log("AFTER WRITING WORD")
-  }  
+  }
 
   loadMockData(): void {
     let data = 
