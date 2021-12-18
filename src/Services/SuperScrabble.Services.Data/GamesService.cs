@@ -8,6 +8,7 @@
     using SuperScrabble.InputModels.Game;
     using SuperScrabble.Data.Repositories;
     using SuperScrabble.Services.Game.Models;
+    using SuperScrabble.ViewModels;
 
     public class GamesService : IGamesService
     {
@@ -30,7 +31,7 @@
 
             if (!HasWinner(sortedPlayersByPoints))
             {
-                foreach(Player tiebreaker in GetAllTiebreakers(sortedPlayersByPoints, maxPoints))
+                foreach (Player tiebreaker in GetAllTiebreakers(sortedPlayersByPoints, maxPoints))
                 {
                     gameOutcomesByUserNames.Add(tiebreaker.UserName, GameOutcome.Draw);
                 }
@@ -80,6 +81,37 @@
         private static IEnumerable<Player> GetAllLosers(IOrderedEnumerable<Player> sortedPlayersByPoints, int maxPoints)
         {
             return sortedPlayersByPoints.Where(p => p.Points < maxPoints);
+        }
+
+        public async Task<EndGameSummaryViewModel> GetSummaryById(string id, string userName)
+        {
+            Game game = this.gamesRepository.All().FirstOrDefault(x => x.Id == id);
+
+            if (game == null)
+            {
+                return null;
+            }
+
+            var users = game.Users.OrderByDescending(x => x.Points);
+
+            EndGameSummaryViewModel result = new()
+            {
+                PointsByUserNames = game.Users.OrderByDescending(x => x.Points)
+                                              .Select(x => new KeyValuePair<string, int>(x.User.UserName, x.Points))
+            };
+
+            UserGame userGame = (await this.usersService.GetAsync(userName)).Games.FirstOrDefault(x => x.GameId == id);
+            //UserGame userGame = game.Users.ToList().First(x => x.User.UserName == userName);
+
+            
+            if (userGame == null)
+            {
+                //TODO: maybe the user is not authorized to see this game
+            }
+
+            result.GameOutcome = userGame.GameOutcome;
+
+            return result;
         }
     }
 }

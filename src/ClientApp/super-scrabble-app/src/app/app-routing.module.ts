@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { GameSummaryComponent } from './pages/game-summary/game-summary.component';
 import { GameComponent } from './pages/game/game.component';
 import { HomeComponent } from './pages/home/home.component';
 import { LoginFormComponent } from './pages/login-form/login-form.component';
@@ -11,6 +12,7 @@ const routes: Routes = [
   { path: 'register', component: RegisterFormComponent, pathMatch: 'full' },
   { path: 'login', component: LoginFormComponent, pathMatch: 'full' },
   { path: 'games/:id', component: GameComponent, pathMatch: 'full' },
+  { path: 'games/:id/summary', component: GameSummaryComponent, pathMatch: 'full'},
 ];
 
 @NgModule({

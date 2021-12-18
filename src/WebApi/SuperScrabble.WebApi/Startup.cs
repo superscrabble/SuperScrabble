@@ -96,8 +96,8 @@ namespace SuperScrabble.WebApi
             services.AddTransient<IUsersService, UsersService>();
             services.AddTransient<IGameService, GameService>();
             services.AddTransient<IShuffleService, ShuffleService>();
-            //services.AddTransient<ITilesProvider, FakeTilesProvider>();
-            services.AddTransient<ITilesProvider, MyOldBoardTilesProvider>();
+            services.AddTransient<ITilesProvider, FakeTilesProvider>();
+            //services.AddTransient<ITilesProvider, MyOldBoardTilesProvider>();
             services.AddTransient<IBonusCellsProvider, MyOldBoardBonusCellsProvider>();
             services.AddTransient<IGameplayConstantsProvider, StandardGameplayConstantsProvider>();
             services.AddTransient<IScoringService, ScoringService>();
@@ -114,12 +114,12 @@ namespace SuperScrabble.WebApi
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            //using (var serviceScope = app.ApplicationServices.CreateScope())
-            //{
-            //    AppDbContext dbContext = serviceScope.ServiceProvider.GetRequiredService<AppDbContext>();
-            //    dbContext.Database.Migrate();
-            //    new AppSeeder().SeedAsync(dbContext, serviceScope.ServiceProvider).GetAwaiter().GetResult();
-            //}
+            using (var serviceScope = app.ApplicationServices.CreateScope())
+            {
+                AppDbContext dbContext = serviceScope.ServiceProvider.GetRequiredService<AppDbContext>();
+                dbContext.Database.Migrate();
+                //new AppSeeder().SeedAsync(dbContext, serviceScope.ServiceProvider).GetAwaiter().GetResult();
+            }
 
             if (env.IsDevelopment())
             {

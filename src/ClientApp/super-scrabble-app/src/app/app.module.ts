@@ -14,6 +14,7 @@ import { HomeComponent } from './pages/home/home.component';
 import { NavbarComponent } from './pages/navbar/navbar.component';
 import { Utilities } from './common/utilities';
 import { GameComponent } from './pages/game/game.component';
+import { GameSummaryComponent } from './pages/game-summary/game-summary.component';
 
 @NgModule({
   declarations: [
@@ -23,6 +24,7 @@ import { GameComponent } from './pages/game/game.component';
     HomeComponent,
     NavbarComponent,
     GameComponent,
+    GameSummaryComponent,
   ],
   imports: [
     BrowserModule,

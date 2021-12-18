@@ -4,6 +4,7 @@ import { Tile } from 'src/app/models/tile';
 import { Cell } from 'src/app/models/cell';
 import { CellViewData } from 'src/app/models/cellViewData';
 import { HubConnection, HubConnectionState } from '@microsoft/signalr';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-game',
@@ -26,7 +27,7 @@ export class GameComponent implements OnInit {
   selectedExchangeTiles: Tile[] = new Array();
   isTileExchangePossible: boolean = true;
 
-  constructor(private signalrService: SignalrService) {}
+  constructor(private signalrService: SignalrService, private router: Router) {}
 
   ngOnInit(): void {
     //verify connection presence
@@ -66,6 +67,7 @@ export class GameComponent implements OnInit {
 
         if(data.commonGameState.isGameOver == true) {
             alert("GAME OVER!");
+            this.router.navigate([this.router.url + "/summary"]);
         }
     })
   
