@@ -110,6 +110,27 @@ export class GameComponent implements OnInit {
     ]);
   }
 
+  getClassNameByCell(cell: Cell) {
+      let result = " ";
+
+      result += this.getClassNameByCellType(cell.type);
+      result += " " + this.getClassNameIfCellIsTaken(cell);
+      result += " " + this.getClassNameIfSelected(cell);
+      result += " " + this.getClassNameIfNewCell(cell);
+
+      return result;
+  }
+
+  getClassNameIfNewCell(cell: Cell) {
+      for(let i = 0; i < this.updatedBoardCells.length; i++) {
+          if(this.updatedBoardCells[i].key == cell) {
+              //TODO: think how to show that a cell is new
+              //return "border border-info";
+          }
+      }
+      return "";
+  }
+
   getClassNameByCellType(type: number) {
     return this.cellViewDataByType.get(type)?.className;
   }
