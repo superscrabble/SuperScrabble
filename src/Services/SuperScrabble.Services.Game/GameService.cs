@@ -199,6 +199,8 @@
             {
                 ValidateWhetherThePlayerIsOnTurn(gameState, skipperUserName);
 
+                Player player = gameState.GetPlayer(skipperUserName);
+                player.ConsecutiveSkipsCount++;
                 bool isGameOver = gameState.Players.All(p => p.ConsecutiveSkipsCount >= 2);
 
                 if (isGameOver)
@@ -207,8 +209,7 @@
                 }
                 else
                 {
-                    Player player = gameState.GetPlayer(skipperUserName);
-                    player.ConsecutiveSkipsCount++;
+                    gameState.NextPlayer();
                 }
 
                 return new GameOperationResult { IsSucceeded = true };

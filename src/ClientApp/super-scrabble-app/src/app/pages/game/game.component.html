@@ -52,7 +52,7 @@
             </span>
         </div>
         <div class="d-flex flex-column">
-            <button class="btn normal-btn mb-2">Пропусни ход</button>
+            <button class="btn normal-btn mb-2" (click)="skipTurn()">Пропусни ход</button>
             <button class="btn normal-btn mb-2" [disabled]="!isTileExchangePossible" (click)="clickExchangeBtn()">Замени буква</button>
             <div *ngIf="showExchangeField" class="">
                 <div class="my-3">

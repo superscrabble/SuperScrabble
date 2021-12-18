@@ -63,6 +63,10 @@ export class GameComponent implements OnInit {
         this.isTileExchangePossible = data.commonGameState.isTileExchangePossible;
         this.loadScoreBoard(data.commonGameState.pointsByUserNames)
         this.updatedBoardCells = [];
+
+        if(data.commonGameState.isGameOver == true) {
+            alert("GAME OVER!");
+        }
     })
   
     this.signalrService.hubConnection?.on("InvalidWriteWordInput", data => {
@@ -80,6 +84,11 @@ export class GameComponent implements OnInit {
         alert(Object.values(data.errorsByCodes));
         this.showExchangeField = false;
         this.selectedExchangeTiles = [];
+    })
+
+    this.signalrService.hubConnection?.on("ImpossibleToSkipTurn", data => {
+        console.log(data);
+        alert(Object.values(data.errorsByCodes));
     })
   }
 
@@ -200,6 +209,10 @@ export class GameComponent implements OnInit {
         }
         this.selectedExchangeTiles.push(tile);
     }
+  }
+
+  skipTurn() {
+    this.signalrService.skipTurn();
   }
 
   getClassNameIfSelectedExchangeTile(tile: Tile) {
