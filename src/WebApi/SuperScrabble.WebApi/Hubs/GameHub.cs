@@ -1,28 +1,32 @@
 ﻿namespace SuperScrabble.WebApi.Hubs
 {
     using System;
-    using System.Collections.Generic;
     using System.Threading.Tasks;
 
-    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.SignalR;
-    using SuperScrabble.InputModels.Game;
-    using SuperScrabble.Services.Game;
-    using SuperScrabble.Services.Game.Models;
+    using Microsoft.AspNetCore.Authorization;
+
     using SuperScrabble.ViewModels;
+    using SuperScrabble.Services.Data;
+    using SuperScrabble.Services.Game;
+    using SuperScrabble.InputModels.Game;
+    using SuperScrabble.Services.Game.Models;
 
     public class GameHub : Hub
     {
         public const string WaitingPlayersQueueGroupName = "WaitingPlayerQueue";
         public const string StartGameMethodName = "StartGame";
+        public const string UpdateGameStateMethodName = "UpdateGameState";
 
         private readonly IGameService gameService;
         private readonly IGameStateManager gameStateManager;
+        private readonly IGamesService gamesService;
 
-        public GameHub(IGameService gameService, IGameStateManager gameStateManager)
+        public GameHub(IGameService gameService, IGameStateManager gameStateManager, IGamesService gamesService)
         {
             this.gameService = gameService;
             this.gameStateManager = gameStateManager;
+            this.gamesService = gamesService;
         }
 
         public string UserName => this.Context.User.Identity.Name;
@@ -30,6 +34,8 @@
         public GameState GameState => this.gameStateManager.GetGameState(this.UserName);
 
         public string GroupName => this.gameStateManager.GetGroupName(this.UserName);
+
+        public string ConnectionId => this.Context.ConnectionId;
 
         [Authorize]
         public async Task WriteWord(WriteWordInputModel input)
@@ -39,11 +45,11 @@
             if (!result.IsSucceeded)
             {
                 await this.SendValidationErrorMessageAsync("InvalidWriteWordInput", result);
+                return;
             }
-            else
-            {
-                await this.UpdateGameStateAsync(this.GroupName);
-            }
+
+            await this.SaveGameIfTheGameIsOverAsync();
+            await this.UpdateGameStateAsync(this.GroupName);
         }
 
         [Authorize]
@@ -54,11 +60,10 @@
             if (!result.IsSucceeded)
             {
                 await this.SendValidationErrorMessageAsync("InvalidExchangeTilesInput", result);
+                return;
             }
-            else
-            {
-                await this.UpdateGameStateAsync(this.GroupName);
-            }
+            
+            await this.UpdateGameStateAsync(this.GroupName);
         }
 
         [Authorize]
@@ -69,35 +74,27 @@
             if (!result.IsSucceeded)
             {
                 await this.SendValidationErrorMessageAsync("ImpossibleToSkipTurn", result);
+                return;
             }
-            else
-            {
-                await this.UpdateGameStateAsync(this.GroupName);
-            }
-        }
 
-        private async Task SendValidationErrorMessageAsync(string methodName, GameOperationResult result)
-        {
-            await this.Clients.Client(this.Context.ConnectionId).SendAsync(methodName, result);
+            await this.SaveGameIfTheGameIsOverAsync();
+            await this.UpdateGameStateAsync(this.GroupName);
         }
 
         [Authorize]
         public async Task JoinRoom()
         {
-            string connectionId = Context.ConnectionId;
-            string userName = Context.User.Identity.Name;
-
-            if (this.gameStateManager.IsUserAlreadyWaiting(userName, connectionId)
-                || this.gameStateManager.IsUserAlreadyInsideGame(userName))
+            if (this.gameStateManager.IsUserAlreadyWaiting(this.UserName, this.ConnectionId)
+                || this.gameStateManager.IsUserAlreadyInsideGame(this.UserName))
             {
                 return;
             }
 
-            this.gameStateManager.AddUserToWaitingList(userName, connectionId);
+            this.gameStateManager.AddUserToWaitingList(this.UserName, this.ConnectionId);
 
             if (!this.gameStateManager.IsWaitingQueueFull)
             {
-                await this.Groups.AddToGroupAsync(connectionId, WaitingPlayersQueueGroupName);
+                await this.Groups.AddToGroupAsync(this.ConnectionId, WaitingPlayersQueueGroupName);
                 await this.SendNeededPlayersCountAsync(WaitingPlayersQueueGroupName);
                 return;
             }
@@ -125,28 +122,21 @@
         [Authorize]
         public async Task LoadGame(string groupName)
         {
-            string userName = Context.User.Identity.Name;
-
-            if (this.gameStateManager.IsUserInsideGroup(userName, groupName))
+            if (this.gameStateManager.IsUserInsideGroup(this.UserName, groupName))
             {
-                GameState gameState = this.gameStateManager.GetGameState(userName);
-                var viewModel = this.gameService.MapFromGameState(gameState, userName);
-                await this.Clients.Client(this.Context.ConnectionId).SendAsync("UpdateGameState", viewModel);
+                var viewModel = this.gameService.MapFromGameState(this.GameState, this.UserName);
+                await this.Clients.Client(this.Context.ConnectionId).SendAsync(UpdateGameStateMethodName, viewModel);
             }
         }
 
-        //TODO: Fix player scoreboard to the sorted
-        //TODO: User friendly validation messages (both languages)
-        //TODO: Display current player on frontend
-        //TODO: Fix frontend tiles bug
-        //TODO: (optional): fix colors
-        //TODO: Add in gameState a bool field whether the player is already doing something
+        [Authorize]
+        public async Task LeaveQueue()
+        {
+            this.gameStateManager.RemoveUserFromWaitingQueue(this.UserName);
+            await this.Groups.RemoveFromGroupAsync(this.ConnectionId, WaitingPlayersQueueGroupName);
+            await this.SendNeededPlayersCountAsync(WaitingPlayersQueueGroupName);
+        }
 
-        // TODO: Timer
-        // TODO: onDisconnected edge cases
-        // TODO: handle unauthenticated users
-        // TODO: remove player from waiting list and started games when logging out
-        // TODO: onConnected -> check timed out players (GameStateManager)
         public override Task OnDisconnectedAsync(Exception exception)
         {
             if (this.UserName != null)
@@ -155,6 +145,25 @@
             }
 
             return Task.CompletedTask;
+        }
+
+        private async Task SaveGameIfTheGameIsOverAsync()
+        {
+            if (this.GameState.IsGameOver)
+            {
+                var saveGameInput = new SaveGameInputModel
+                {
+                    Players = this.GameState.Players,
+                    GameId = this.GroupName,
+                };
+
+                await this.gamesService.SaveGameAsync(saveGameInput);
+            }
+        }
+
+        private async Task SendValidationErrorMessageAsync(string methodName, GameOperationResult result)
+        {
+            await this.Clients.Client(this.Context.ConnectionId).SendAsync(methodName, result);
         }
 
         private async Task UpdateGameStateAsync(string groupName)
@@ -169,19 +178,8 @@
             foreach (Player player in gameState.Players)
             {
                 var viewModel = this.gameService.MapFromGameState(gameState, player.UserName);
-                await this.Clients.Client(player.ConnectionId).SendAsync("UpdateGameState", viewModel);
+                await this.Clients.Client(player.ConnectionId).SendAsync(UpdateGameStateMethodName, viewModel);
             }
-        }
-
-        [Authorize]
-        public async Task LeaveQueue()
-        {
-            string connectionId = Context.ConnectionId;
-            string userName = Context.User.Identity.Name;
-
-            this.gameStateManager.RemoveUserFromWaitingQueue(userName);
-            await this.Groups.RemoveFromGroupAsync(connectionId, WaitingPlayersQueueGroupName);
-            await SendNeededPlayersCountAsync(WaitingPlayersQueueGroupName);
         }
 
         private async Task SendNeededPlayersCountAsync(string groupName)

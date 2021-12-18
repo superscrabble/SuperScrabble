@@ -18,6 +18,10 @@
 
         public DbSet<Word> Words { get; set; }
 
+        public DbSet<Game> Games { get; set; }
+
+        public DbSet<UserGame> UsersGames { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
@@ -31,6 +35,26 @@
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+
+            builder
+                .Entity<UserGame>()
+                .HasKey(userGame => new 
+                { 
+                    userGame.GameId,
+                    userGame.UserId
+                });
+
+            builder
+                .Entity<UserGame>()
+                .HasOne(userGame => userGame.Game)
+                .WithMany(game => game.Users)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder
+                .Entity<UserGame>()
+                .HasOne(userGame => userGame.User)
+                .WithMany(user => user.Games)
+                .OnDelete(DeleteBehavior.Restrict);
 
             RenameDefaultIdentityModels(builder);
         }
