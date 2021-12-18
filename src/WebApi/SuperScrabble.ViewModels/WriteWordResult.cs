@@ -11,6 +11,6 @@
 
         public bool IsSucceeded { get; set; }
 
-        public IDictionary<string, string> ErrorsByCodes { get; set; }
+        public IDictionary<string, string> ErrorsByCodes { get; }
     }
 }

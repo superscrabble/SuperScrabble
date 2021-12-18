@@ -12,6 +12,7 @@ export class SignalrService {
 
   //FIXME: change the access modifier
   public hubConnection?: signalR.HubConnection;
+  public hubConnectionStartPromise: Promise<void> | null = null;
 
   public startConnection = () => {
     if(this.hubConnection?.state == signalR.HubConnectionState.Connected) {
@@ -22,20 +23,23 @@ export class SignalrService {
                             .withUrl('https://localhost:5001/gamehub',  { accessTokenFactory: () => this.utilities.getAccessToken()})
                             .build();
 
-    console.log("Before start connection")
+    this.hubConnectionStartPromise = this.hubConnection.start();
+
+    this.hubConnectionStartPromise.catch(err => console.log('Error while starting connection: ' + err));
+    //TODO: assure that everything about connection is working
+    /*console.log("Before start connection")
     this.hubConnection
       .start()
       .then(() => {
         console.log('Connection started')
       })
-      .catch(err => console.log('Error while starting connection: ' + err))
+      .catch(err => console.log('Error while starting connection: ' + err))*/
     console.log("After start connection")
   }
 
   //TODO: find a way to unsubscribe a listener
   public addStartGameListeners = () => {
     this.hubConnection?.on('StartGame', (data) => {
-      console.log("Game started");
       this.router.navigateByUrl("/games/" + data);
     });
 
@@ -68,6 +72,7 @@ export class SignalrService {
 
   public loadGame(groupName: string) {
     if(this.hubConnection?.state == signalR.HubConnectionState.Connected) {
+      console.log("Call Load Game in SignalR")
       this.hubConnection?.invoke("LoadGame", groupName);
     }
   }

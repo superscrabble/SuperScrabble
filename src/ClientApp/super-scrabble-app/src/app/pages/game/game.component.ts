@@ -3,6 +3,7 @@ import { SignalrService } from 'src/app/services/signalr.service';
 import { Tile } from 'src/app/models/tile';
 import { Cell } from 'src/app/models/cell';
 import { CellViewData } from 'src/app/models/cellViewData';
+import { HubConnection, HubConnectionState } from '@microsoft/signalr';
 
 @Component({
   selector: 'app-game',
@@ -27,25 +28,39 @@ export class GameComponent implements OnInit {
   ngOnInit(): void {
     //verify connection presence
     this.signalrService.startConnection();
-    //this.signalrService.addInGameListeners();
 
     const url = window.location.href;
     const params = url.split("/");
     let id = params[params.length - 1];
 
-    //TODO: fix this to be called after hubConnection is Connected
-    this.signalrService.hubConnection?.on("UpdateGameState", data => {      
-      console.log(data);
-      this.loadBoard(data.commonGameState.board);
-      this.loadPlayerTiles(data.tiles);
-      this.remainingTilesCount = data.commonGameState.remainingTilesCount;
-      this.playerNameOnTurn = data.commonGameState.playerOnTurnUserName;
-      this.myUserName = data.myUserName; //Can be moved into localStorage
-      this.loadScoreBoard(data.commonGameState.pointsByUserNames)
-      console.log("Tiles Count: " + this.remainingTilesCount)
-      this.updatedBoardCells = [];
-    })
+    if(this.signalrService.hubConnection
+        && this.signalrService.hubConnection.state == HubConnectionState.Connected) {
+            this.attachGameListeners();
+            this.signalrService.loadGame(id);
+    } else {
+        //TODO: Handle slow connection/loading -> showing loading screen
+        this.signalrService.hubConnectionStartPromise?.then( () => {
+            this.attachGameListeners();
+            this.signalrService.loadGame(id);
+        })
+    }
 
+    this.loadCellViewDataByType();
+    this.loadMockData(); //TODO: Remove this in production
+  }
+
+  attachGameListeners() {
+    this.signalrService.hubConnection?.on("UpdateGameState", data => {      
+        console.log(data);
+        this.loadBoard(data.commonGameState.board);
+        this.loadPlayerTiles(data.tiles);
+        this.remainingTilesCount = data.commonGameState.remainingTilesCount;
+        this.playerNameOnTurn = data.commonGameState.playerOnTurnUserName;
+        this.myUserName = data.myUserName; //Can be moved into localStorage
+        this.loadScoreBoard(data.commonGameState.pointsByUserNames)
+        this.updatedBoardCells = [];
+    })
+  
     this.signalrService.hubConnection?.on("InvalidWriteWordInput", data => {
         console.log(data);
         alert(Object.values(data.errorsByCodes));
@@ -55,10 +70,6 @@ export class GameComponent implements OnInit {
         }
         this.updatedBoardCells = [];
     })
-
-    this.signalrService.loadGame(id);
-    this.loadCellViewDataByType();
-    this.loadMockData();
   }
 
   loadBoard(board: any): void {
@@ -85,8 +96,6 @@ export class GameComponent implements OnInit {
     for(let i = 0; i < pointsByUserNames.length; i++) {
       this.pointsByUserNames.push({key: pointsByUserNames[i].key, value: pointsByUserNames[i].value});
     }
-    //this.pointsByUserNames = new Map([...this.pointsByUserNames.entries()].sort((a, b) => b[1] - a[1]));
-    console.log(this.pointsByUserNames);
   }
 
   loadCellViewDataByType() {
@@ -109,7 +118,7 @@ export class GameComponent implements OnInit {
       return playerName == this.playerNameOnTurn ? "player-on-turn" : "";
   }
 
-  getUserName(playerName: string) { //Func name should be changed
+  modifyCurrentUserName(playerName: string) {
       return playerName == this.myUserName ? playerName + " (аз)" : playerName;
   }
 
@@ -168,12 +177,8 @@ export class GameComponent implements OnInit {
 
         let temp = cell.tile;
         cell.tile = this.selectedPlayerTile;
-        //check whether the player had the tile in the current round
         this.playerTiles.push(temp);
-        //this.updatedBoardCells = this.updatedBoardCells.filter(item => item.tile !== this.selectedPlayerTile)
-        //this.addCellToUpdatedBoardCells(cell);
-        //this.saveUpdatedBoardCellWithPosition(cell);
-        this.playerTiles = this.playerTiles.filter(item => item !== this.selectedPlayerTile);
+        this.removeTileFromPlayerTiles(this.selectedPlayerTile);
         this.selectedPlayerTile = null;
         return;
     }
@@ -182,9 +187,8 @@ export class GameComponent implements OnInit {
     if(this.selectedPlayerTile) {
         if(!cell.tile) {
             cell.tile = this.selectedPlayerTile;
-            this.playerTiles = this.playerTiles.filter(item => item !== this.selectedPlayerTile);
+            this.removeTileFromPlayerTiles(this.selectedPlayerTile);
             this.addCellToUpdatedBoardCells(cell);
-            //this.saveUpdatedBoardCellWithPosition(cell);
             this.selectedPlayerTile = null;
             return;
         }
@@ -212,15 +216,26 @@ export class GameComponent implements OnInit {
         this.selectedBoardCell.tile = cell.tile;
         cell.tile = tempTile;
 
-        this.updatedBoardCells = this.updatedBoardCells.filter(item => item.key !== this.selectedBoardCell);
+        this.removeCellFromUpdatedBoardCells(this.selectedBoardCell);
         this.addCellToUpdatedBoardCells(cell);
-        //this.saveUpdatedBoardCellWithPosition(cell);
         this.selectedBoardCell = null;
 
         console.log("UPDATED BOARD CELLS: ");
         console.log(this.updatedBoardCells);
         return;
     }
+  }
+
+  removeTileFromPlayerTiles(playerTile: Tile) {
+      if(playerTile) {
+        this.playerTiles = this.playerTiles.filter(item => item !== playerTile);
+      }
+  }
+
+  removeCellFromUpdatedBoardCells(cell: Cell) {
+      if(cell) {
+        this.updatedBoardCells = this.updatedBoardCells.filter(item => item.key !== cell);
+      }
   }
 
   addCellToUpdatedBoardCells(cell: Cell) {
@@ -248,12 +263,7 @@ export class GameComponent implements OnInit {
   rightClickOnBoardCell(cell: Cell | any) {
     if(cell.tile && cell == this.selectedBoardCell) {
         this.playerTiles.push(cell.tile);
-        console.log("Right Click");
-        console.log(this.updatedBoardCells);
-        this.updatedBoardCells = this.updatedBoardCells.filter(item => item.key !== cell);
-        console.log(cell.tile);
-        console.log(this.updatedBoardCells);
-        console.log("After Right Click");
+        this.removeCellFromUpdatedBoardCells(cell);
         this.selectedBoardCell = null;
         cell.tile = null;
     }

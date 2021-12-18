@@ -5,7 +5,7 @@
                 <th>Резултат</th>
                 <tr *ngFor="let pointsByUserName of pointsByUserNames; let i = index" class="{{getClassNameWhetherPlayerIsOnTurn(pointsByUserName.key)}}">
                     <td>{{i + 1}}</td>
-                    <td>{{getUserName(pointsByUserName.key)}}</td>
+                    <td>{{modifyCurrentUserName(pointsByUserName.key)}}</td>
                     <td>{{pointsByUserName.value}}</td>
                 </tr>
             </table>
