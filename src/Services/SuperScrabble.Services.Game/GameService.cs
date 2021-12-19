@@ -458,7 +458,9 @@
                 return wordBuilders;
             }
 
-            if (wordBuilders.Count <= 1 && sortedPositionsByTiles.Count() == wordBuilders.First().PositionsByTiles.Count)
+            if ((wordBuilders.Count <= 1
+                && sortedPositionsByTiles.Count() == wordBuilders.FirstOrDefault()?.PositionsByTiles.Count)
+                || wordBuilders.Count <= 0)
             {
                 throw new ValidationFailedException(
                     nameof(Resource.NewTilesNotConnectedToTheOldOnes), Resource.NewTilesNotConnectedToTheOldOnes);
