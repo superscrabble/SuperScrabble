@@ -79,7 +79,7 @@ export class GameComponent implements OnInit {
     this.signalrService.hubConnection?.on("InvalidWriteWordInput", data => {
         console.log(data);
         alert(Object.values(data.errorsByCodes));
-        this.dialog.open(ErrorDialog, { data: { message: data.errorsByCodes}});
+        this.dialog.open(ErrorDialog, { data: { message: Object.values(data.errorsByCodes)}});
         for(let i = 0; i < this.updatedBoardCells.length; i++) {
             this.playerTiles.push(this.updatedBoardCells[i].key)
             this.board[this.updatedBoardCells[i].value.row][this.updatedBoardCells[i].value.column].tile = null;
@@ -90,7 +90,7 @@ export class GameComponent implements OnInit {
     this.signalrService.hubConnection?.on("InvalidExchangeTilesInput", data => {
         console.log(data);
         alert(Object.values(data.errorsByCodes));
-        this.dialog.open(ErrorDialog, { data: { message: data.errorsByCodes}});
+        this.dialog.open(ErrorDialog, { data: { message: Object.values(data.errorsByCodes)}});
         this.showExchangeField = false;
         this.selectedExchangeTiles = [];
     })
@@ -98,7 +98,7 @@ export class GameComponent implements OnInit {
     this.signalrService.hubConnection?.on("ImpossibleToSkipTurn", data => {
         console.log(data);
         alert(Object.values(data.errorsByCodes));
-        this.dialog.open(ErrorDialog, { data: { message: data.errorsByCodes}});
+        this.dialog.open(ErrorDialog, { data: { message: Object.values(data.errorsByCodes)}});
     })
   }
 
@@ -371,6 +371,7 @@ export class GameComponent implements OnInit {
   }
 
   writeWord() : void {
+    this.dialog.open(ErrorDialog, { data: { message: "Zatvori sas"}})
     if(this.updatedBoardCells.length > 0) {
         this.updatedBoardCells = this.updatedBoardCells.filter(item => item.key.tile !== null);
         console.log("WRITING WORD")
