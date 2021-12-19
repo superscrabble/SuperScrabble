@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="DrawGameOutcome" xml:space="preserve">
+    <value>Равенство</value>
+  </data>
   <data name="EmailAddressAlreadyExists" xml:space="preserve">
     <value>Имейл адресът вече е регистриран</value>
   </data>
@@ -143,6 +146,9 @@
   </data>
   <data name="InvalidInputTilesCount" xml:space="preserve">
     <value>Поставили сте невалиден брой букви</value>
+  </data>
+  <data name="LossGameOutcome" xml:space="preserve">
+    <value>Загуба</value>
   </data>
   <data name="NewEmailAddressDisplayName" xml:space="preserve">
     <value>Нов имейл адрес</value>
@@ -236,6 +242,9 @@
   </data>
   <data name="UserNameIsRequired" xml:space="preserve">
     <value>Потребителското име е задължително</value>
+  </data>
+  <data name="WinGameOutcome" xml:space="preserve">
+    <value>Победа</value>
   </data>
   <data name="WordDoesNotExist" xml:space="preserve">
     <value>Несъществуваща дума</value>

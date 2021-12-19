@@ -159,5 +159,14 @@
 
         public static string ImpossibleTileExchange
             => ResourceManager.GetString(nameof(ImpossibleTileExchange), resourceCulture);
+
+        public static string WinGameOutcome
+            => ResourceManager.GetString(nameof(WinGameOutcome), resourceCulture);
+
+        public static string LossGameOutcome
+            => ResourceManager.GetString(nameof(LossGameOutcome), resourceCulture);
+
+        public static string DrawGameOutcome
+            => ResourceManager.GetString(nameof(DrawGameOutcome), resourceCulture);
     }
 }

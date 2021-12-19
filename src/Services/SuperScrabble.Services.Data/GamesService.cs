@@ -10,6 +10,7 @@
     using SuperScrabble.Services.Game.Models;
     using SuperScrabble.ViewModels;
     using System;
+    using SuperScrabble.LanguageResources;
 
     public class GamesService : IGamesService
     {
@@ -90,8 +91,6 @@
         {
             Game game = this.gamesRepository.All().FirstOrDefault(x => x.Id == id);
 
-            Console.WriteLine(String.Join("\n", this.gamesRepository.All().Select(x => x.Id)));
-
             if (game == null)
             {
                 return null;
@@ -107,7 +106,14 @@
 
             UserGame userGame = game.Users.FirstOrDefault(u => u.User.UserName == userName);
 
-            result.GameOutcome = userGame.GameOutcome;
+            var gameOutcomeMessages = new Dictionary<GameOutcome, string>
+            {
+                [GameOutcome.Loss] = Resource.LossGameOutcome,
+                [GameOutcome.Win] = Resource.WinGameOutcome,
+                [GameOutcome.Draw] = Resource.DrawGameOutcome,
+            };
+
+            result.GameOutcome = gameOutcomeMessages[userGame.GameOutcome];
             return result;
         }
     }
