@@ -1,6 +1,7 @@
 ﻿namespace SuperScrabble.WebApi.Hubs
 {
     using System;
+    using System.Linq;
     using System.Threading.Tasks;
 
     using Microsoft.AspNetCore.SignalR;
@@ -11,6 +12,7 @@
     using SuperScrabble.Services.Game;
     using SuperScrabble.InputModels.Game;
     using SuperScrabble.Services.Game.Models;
+    using SuperScrabble.Services.Game.TilesProviders;
 
     public class GameHub : Hub
     {
@@ -21,12 +23,21 @@
         private readonly IGameService gameService;
         private readonly IGameStateManager gameStateManager;
         private readonly IGamesService gamesService;
+        private readonly ITilesProvider tilesProvider;
+        private readonly IGameplayConstantsProvider gameplayConstantsProvider;
 
-        public GameHub(IGameService gameService, IGameStateManager gameStateManager, IGamesService gamesService)
+        public GameHub(
+            IGameService gameService,
+            IGameStateManager gameStateManager,
+            IGamesService gamesService,
+            ITilesProvider tilesProvider,
+            IGameplayConstantsProvider gameplayConstantsProvider)
         {
             this.gameService = gameService;
             this.gameStateManager = gameStateManager;
             this.gamesService = gamesService;
+            this.tilesProvider = tilesProvider;
+            this.gameplayConstantsProvider = gameplayConstantsProvider;
         }
 
         public string UserName => this.Context.User.Identity.Name;
@@ -79,6 +90,16 @@
 
             await this.SaveGameIfTheGameIsOverAsync();
             await this.UpdateGameStateAsync(this.GroupName);
+        }
+
+        [Authorize]
+        public async Task GetAllWildcardOptions()
+        {
+            var options = this.tilesProvider.GetTiles()
+                .Where(x => x.Key != this.gameplayConstantsProvider.WildcardValue)
+                .Select(x => new Tile(x.Key, x.Value.Points));
+
+            await this.Clients.Caller.SendAsync("ReceiveAllWildcardOptions", options);
         }
 
         [Authorize]
