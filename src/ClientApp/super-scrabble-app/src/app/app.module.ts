@@ -15,6 +15,8 @@ import { NavbarComponent } from './pages/navbar/navbar.component';
 import { Utilities } from './common/utilities';
 import { GameComponent } from './pages/game/game.component';
 import { GameSummaryComponent } from './pages/game-summary/game-summary.component';
+import { MatDialogModule } from '@angular/material/dialog';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations'; 
 
 @NgModule({
   declarations: [
@@ -32,6 +34,8 @@ import { GameSummaryComponent } from './pages/game-summary/game-summary.componen
     HttpClientModule,
     FormsModule,
     NgbModule,
+    MatDialogModule,
+    BrowserAnimationsModule,
   ],
   providers: [ Utilities ],
   bootstrap: [AppComponent]

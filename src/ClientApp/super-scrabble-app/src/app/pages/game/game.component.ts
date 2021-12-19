@@ -1,10 +1,11 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { SignalrService } from 'src/app/services/signalr.service';
 import { Tile } from 'src/app/models/tile';
 import { Cell } from 'src/app/models/cell';
 import { CellViewData } from 'src/app/models/cellViewData';
 import { HubConnection, HubConnectionState } from '@microsoft/signalr';
 import { Router } from '@angular/router';
+import {MatDialog} from '@angular/material/dialog';
 
 @Component({
   selector: 'app-game',
@@ -27,7 +28,7 @@ export class GameComponent implements OnInit {
   selectedExchangeTiles: Tile[] = new Array();
   isTileExchangePossible: boolean = true;
 
-  constructor(private signalrService: SignalrService, private router: Router) {}
+  constructor(private signalrService: SignalrService, private router: Router, public dialog: MatDialog) {}
 
   ngOnInit(): void {
     //verify connection presence
@@ -67,6 +68,7 @@ export class GameComponent implements OnInit {
 
         if(data.commonGameState.isGameOver == true) {
             alert("GAME OVER!");
+            this.dialog.open(ErrorDialog);
             this.router.navigate([this.router.url + "/summary"]);
         }
     })
@@ -74,6 +76,7 @@ export class GameComponent implements OnInit {
     this.signalrService.hubConnection?.on("InvalidWriteWordInput", data => {
         console.log(data);
         alert(Object.values(data.errorsByCodes));
+        this.dialog.open(ErrorDialog);
         for(let i = 0; i < this.updatedBoardCells.length; i++) {
             this.playerTiles.push(this.updatedBoardCells[i].key)
             this.board[this.updatedBoardCells[i].value.row][this.updatedBoardCells[i].value.column].tile = null;
@@ -84,6 +87,7 @@ export class GameComponent implements OnInit {
     this.signalrService.hubConnection?.on("InvalidExchangeTilesInput", data => {
         console.log(data);
         alert(Object.values(data.errorsByCodes));
+        this.dialog.open(ErrorDialog);
         this.showExchangeField = false;
         this.selectedExchangeTiles = [];
     })
@@ -91,6 +95,7 @@ export class GameComponent implements OnInit {
     this.signalrService.hubConnection?.on("ImpossibleToSkipTurn", data => {
         console.log(data);
         alert(Object.values(data.errorsByCodes));
+        this.dialog.open(ErrorDialog);
     })
   }
 
@@ -363,6 +368,7 @@ export class GameComponent implements OnInit {
   }
 
   writeWord() : void {
+    this.dialog.open(ErrorDialog);
     if(this.updatedBoardCells.length > 0) {
         this.updatedBoardCells = this.updatedBoardCells.filter(item => item.key.tile !== null);
         console.log("WRITING WORD")
@@ -2251,3 +2257,9 @@ export class GameComponent implements OnInit {
     console.log("Tiles Count: " + this.remainingTilesCount)
   }
 }
+
+@Component({
+    selector: 'error-dialog',
+    templateUrl: 'error-dialog.html',
+  })
+export class ErrorDialog {}
