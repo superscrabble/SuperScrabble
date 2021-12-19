@@ -368,7 +368,6 @@ export class GameComponent implements OnInit {
   }
 
   writeWord() : void {
-    this.dialog.open(ErrorDialog);
     if(this.updatedBoardCells.length > 0) {
         this.updatedBoardCells = this.updatedBoardCells.filter(item => item.key.tile !== null);
         console.log("WRITING WORD")
@@ -2262,4 +2261,11 @@ export class GameComponent implements OnInit {
     selector: 'error-dialog',
     templateUrl: 'error-dialog.html',
   })
-export class ErrorDialog {}
+export class ErrorDialog {
+
+    constructor(public dialog: MatDialog) {}
+
+    close() {
+        this.dialog.closeAll();
+    }
+}
