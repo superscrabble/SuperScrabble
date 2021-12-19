@@ -2,6 +2,16 @@
     background-color: #1B4A4B;
 }
 
+.board-tile {
+    position: relative;
+}
+
+.tile-points {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+}
+
 .tile {
     background-color: #E3CFAA;
     box-shadow: 2px 2px 2px black;

@@ -13,16 +13,16 @@
     </div>
     <div class="col-md-6">
         <div class="row d-flex justify-content-center px-5">
-            <table>
+            <table style="table-layout: fixed;">
                 <tr *ngFor="let row of board">
                     <td *ngFor="let cell of row" 
-                        class="border border-dark p-2 text-center cursor-default {{getClassNameByCell(cell)}}"
+                        class="border border-dark px-1 py-2 text-center cursor-default {{getClassNameByCell(cell)}}"
                         (click)="clickOnBoardCell(cell)"
                         (contextmenu)="rightClickOnBoardCell(cell)">
 
-                        <div *ngIf="cell.tile">
-                            {{cell.tile.letter}}
-                            <span style="font-size: 10px">{{cell.tile.points}}</span>
+                        <div *ngIf="cell.tile" class="board-tile">
+                            <span style="font-size: 14px">{{cell.tile.letter}}</span>
+                            <span class="tile-points" style="font-size: 8px">{{cell.tile.points}}</span>
                         </div>
                         <div *ngIf="!cell.tile">
                             {{getValueWhenEmptyByCellType(cell.type)}}

@@ -2211,15 +2211,15 @@ export class GameComponent implements OnInit {
     let tiles =
     [
       {
-          "letter": "ь",
+          "letter": "Ь",
           "points": 10
       },
       {
-          "letter": "Е",
-          "points": 1
+          "letter": "Щ",
+          "points": 10
       },
       {
-        "letter": "Е",
+        "letter": "Ш",
         "points": 2
       },
       {

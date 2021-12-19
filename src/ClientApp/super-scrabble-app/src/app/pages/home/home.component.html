@@ -1,5 +1,11 @@
-<h1 class="display-4">Добре дошли в Супер Скрабъл</h1>
+<h3 class="m-4">Добре дошли в Супер Скрабъл</h3>
 <div *ngIf="hasAccessToken()">
-    <button *ngIf="!isSearchingForGame" (click)="joinRoom()">Search for game</button>
-    <button *ngIf="isSearchingForGame" (click)="leaveQueue()">Stop Searching</button>
+    <button
+        *ngIf="!isSearchingForGame"
+        (click)="joinRoom()"
+        class="btn btn-secondary mx-4">Започни игра</button>
+    <button
+        *ngIf="isSearchingForGame"
+        (click)="leaveQueue()"
+        class="btn btn-secondary mx-4">Отказ</button>
 </div>
