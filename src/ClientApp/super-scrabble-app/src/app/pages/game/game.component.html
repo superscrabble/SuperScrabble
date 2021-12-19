@@ -1,4 +1,4 @@
-<div class="row d-flex justify-content-center flex-nowrap page">
+<div class="d-flex justify-content-center flex-nowrap page">
     <div class="col-md-3">
         <div class="border border-dark rounded scoreboard mt-4">
             <table class="table">
@@ -64,11 +64,15 @@
                 <div class="my-3">
                     <span
                         *ngFor="let tile of playerTiles"
-                        class="mx-1 border tile cursor-default rounded-1 p-2 text-center {{getClassNameIfSelectedExchangeTile(tile)}}"
+                        class="mx-1 border tile cursor-default rounded-1 px-2 py-2 text-center {{getClassNameIfSelectedExchangeTile(tile)}}"
                         (click)="clickOnExchangeTile(tile)">
-                        {{tile.letter}}
-                        <span style="font-size: 10px">
-                            {{tile.points}}
+                        <span>
+                            <strong class="tile-letter py-3">
+                                {{tile.letter}}
+                            </strong>
+                            <span class="tile-points">
+                                {{tile.points}}
+                            </span>
                         </span>
                     </span>
                 </div>

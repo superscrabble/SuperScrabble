@@ -1,1 +1,35 @@
-<p>game-summary works!</p>
+<div class="d-flex justify-content-center page">
+    <div class="col-md-6">
+        <div class="d-flex justify-content-center">
+            <div>
+                <!--FIXME-->
+                <div class="d-flex justify-content-center">
+                    <!--CHECK IF NULL-->
+                    
+                    <h1>{{this.gameOutcomeMessage}}</h1>
+                </div>
+                <div class="d-flex justify-content-center">
+                    <h1>Краен резултат</h1>
+                </div>
+            </div>
+        </div>
+        <div class="border border-dark rounded scoreboard mt-4">
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Играч</th>
+                        <th>Точки</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let pointsByUserName of pointsByUserNames; let i = index">
+                        <td>{{i + 1}}</td>
+                        <td>{{pointsByUserName.key}}</td>
+                        <td>{{pointsByUserName.value}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

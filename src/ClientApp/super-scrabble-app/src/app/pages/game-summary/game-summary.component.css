@@ -1,0 +1,10 @@
+.page {
+    background-color: #1B4A4B;
+    overflow-x: clip;
+    height: 100vh;
+    color: white;
+}
+
+.scoreboard {
+    background-color: #52B788;
+}

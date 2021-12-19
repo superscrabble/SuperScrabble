@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { WebRequestsService } from 'src/app/services/web-requests.service';
+import { ErrorHandler } from 'src/app/services/error-handler';
 
 @Component({
   selector: 'app-game-summary',
@@ -10,7 +11,11 @@ import { WebRequestsService } from 'src/app/services/web-requests.service';
 })
 export class GameSummaryComponent implements OnInit {
 
-  constructor(private router: Router, private webRequestsService: WebRequestsService) { }
+  constructor(private router: Router, private webRequestsService: WebRequestsService, private errorHandler: ErrorHandler) { }
+
+  pointsByUserNames: any[] = new Array();
+  gameOutcomeMessage: string = "";
+  gameOutcomeNumber: number = 0;
 
   ngOnInit(): void {
     const url = window.location.href;
@@ -33,9 +38,19 @@ export class GameSummaryComponent implements OnInit {
   handleLoadGameSummaryResponse(res: HttpResponse<any>): void {
     let summaryModel = JSON.parse(res.body);
     console.log(summaryModel);
+    this.loadScoreBoard(summaryModel.pointsByUserNames);
+    this.gameOutcomeNumber = summaryModel.gameOutcomeNumber;
+    this.gameOutcomeMessage = summaryModel.gameOutcomeMessage;
   }
 
   handleLoadGameSummaryError(error: any): void {
+    this.errorHandler.handle(error.status);
+  }
 
+  loadScoreBoard(pointsByUserNames: any): void {
+    this.pointsByUserNames = [];
+    for(let i = 0; i < pointsByUserNames.length; i++) {
+      this.pointsByUserNames.push({key: pointsByUserNames[i].key, value: pointsByUserNames[i].value});
+    }
   }
 }

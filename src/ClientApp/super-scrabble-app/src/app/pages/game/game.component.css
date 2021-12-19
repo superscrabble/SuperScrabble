@@ -1,5 +1,6 @@
 .page {
     background-color: #1B4A4B;
+    overflow-x: clip;
 }
 
 .board-cell {
