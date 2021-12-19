@@ -20,14 +20,15 @@
         [HttpGet("summary/{id}")]
         public IActionResult GetSummary(string id)
         {
-            var viewModel = this.gamesService.GetSummaryById(id, this.User.Identity.Name);
-
-            if (viewModel == null)
+            try
+            {
+                var viewModel = this.gamesService.GetSummaryById(id, this.User.Identity.Name);
+                return this.Ok(viewModel);
+            }
+            catch (System.Exception)
             {
                 return this.NotFound();
             }
-
-            return this.Ok(viewModel);
         }
     }
 }

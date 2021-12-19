@@ -9,6 +9,6 @@
     {
         Task SaveGameAsync(SaveGameInputModel input);
 
-        EndGameSummaryViewModel GetSummaryById(string id, string userName);
+        GameSummaryViewModel GetSummaryById(string id, string userName);
     }
 }

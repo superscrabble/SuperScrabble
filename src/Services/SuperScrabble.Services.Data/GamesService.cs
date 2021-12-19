@@ -5,24 +5,22 @@
     using System.Collections.Generic;
 
     using SuperScrabble.Models;
+    using SuperScrabble.ViewModels;
     using SuperScrabble.InputModels.Game;
     using SuperScrabble.Data.Repositories;
-    using SuperScrabble.Services.Game.Models;
-    using SuperScrabble.ViewModels;
-    using System;
     using SuperScrabble.LanguageResources;
+    using SuperScrabble.Services.Game.Models;
+    using SuperScrabble.CustomExceptions.Game;
 
     public class GamesService : IGamesService
     {
         private readonly IUsersService usersService;
         private readonly IRepository<Game> gamesRepository;
-        private readonly IRepository<UserGame> usersGamesRepository;
 
-        public GamesService(IUsersService usersService, IRepository<Game> gamesRepository, IRepository<UserGame> usersGamesRepository)
+        public GamesService(IUsersService usersService, IRepository<Game> gamesRepository)
         {
             this.usersService = usersService;
             this.gamesRepository = gamesRepository;
-            this.usersGamesRepository = usersGamesRepository;
         }
 
         public async Task SaveGameAsync(SaveGameInputModel input)
@@ -69,6 +67,39 @@
             await this.gamesRepository.SaveChangesAsync();
         }
 
+        public GameSummaryViewModel GetSummaryById(string id, string userName)
+        {
+            Game game = this.gamesRepository.All().FirstOrDefault(x => x.Id == id)
+                ?? throw new GameNotFoundException();
+
+            var summary = new GameSummaryViewModel
+            {
+                PointsByUserNames = game.Users.OrderByDescending(x => x.Points)
+                    .Select(x => new KeyValuePair<string, int>(x.User.UserName, x.Points))
+            };
+
+            UserGame userGame = game.Users.FirstOrDefault(u => u.User.UserName == userName);
+            var actualGameOutcome = GameOutcome.None;
+
+            if (userGame != null)
+            {
+                actualGameOutcome = userGame.GameOutcome;
+            }
+
+            var gameOutcomeMessages = new Dictionary<GameOutcome, string>
+            {
+                [GameOutcome.None] = string.Empty,
+                [GameOutcome.Loss] = Resource.LossGameOutcome,
+                [GameOutcome.Win] = Resource.WinGameOutcome,
+                [GameOutcome.Draw] = Resource.DrawGameOutcome,
+            };
+
+            summary.GameOutcomeMessage = gameOutcomeMessages[userGame.GameOutcome];
+            summary.GameOutcomeNumber = (int)actualGameOutcome;
+
+            return summary;
+        }
+
         private static bool HasWinner(IOrderedEnumerable<Player> sortedPlayersByPoints)
         {
             Player first = sortedPlayersByPoints.First();
@@ -85,36 +116,6 @@
         private static IEnumerable<Player> GetAllLosers(IOrderedEnumerable<Player> sortedPlayersByPoints, int maxPoints)
         {
             return sortedPlayersByPoints.Where(p => p.Points < maxPoints);
-        }
-
-        public EndGameSummaryViewModel GetSummaryById(string id, string userName)
-        {
-            Game game = this.gamesRepository.All().FirstOrDefault(x => x.Id == id);
-
-            if (game == null)
-            {
-                return null;
-            }
-
-            EndGameSummaryViewModel result = new()
-            {
-                PointsByUserNames = game.Users
-                    .ToList()
-                    .OrderByDescending(x => x.Points)
-                    .Select(x => new KeyValuePair<string, int>(x.User.UserName, x.Points))
-            };
-
-            UserGame userGame = game.Users.FirstOrDefault(u => u.User.UserName == userName);
-
-            var gameOutcomeMessages = new Dictionary<GameOutcome, string>
-            {
-                [GameOutcome.Loss] = Resource.LossGameOutcome,
-                [GameOutcome.Win] = Resource.WinGameOutcome,
-                [GameOutcome.Draw] = Resource.DrawGameOutcome,
-            };
-
-            result.GameOutcome = gameOutcomeMessages[userGame.GameOutcome];
-            return result;
         }
     }
 }
