@@ -100,16 +100,16 @@
                                               .Select(x => new KeyValuePair<string, int>(x.User.UserName, x.Points))
             };
 
-            UserGame userGame = (await this.usersService.GetAsync(userName)).Games.FirstOrDefault(x => x.GameId == id);
+            /*UserGame userGame = (await this.usersService.GetAsync(userName)).Games.FirstOrDefault(x => x.GameId == id);
             //UserGame userGame = game.Users.ToList().First(x => x.User.UserName == userName);
 
             
             if (userGame == null)
             {
                 //TODO: maybe the user is not authorized to see this game
-            }
+            }*/
 
-            result.GameOutcome = userGame.GameOutcome;
+            result.GameOutcome = GameOutcome.Draw;
 
             return result;
         }

@@ -1,4 +1,5 @@
-﻿using SuperScrabble.Common;
+﻿using Microsoft.EntityFrameworkCore;
+using SuperScrabble.Common;
 using SuperScrabble.Data;
 using SuperScrabble.Data.Repositories;
 using SuperScrabble.InputModels.Game;
@@ -16,13 +17,11 @@ namespace SuperScrabble.SandBox
 {
     public class Program
     {
-        public static void Main()
+        public static async Task Main()
         {
-            var player = new Player("sss", 0, "sss");
-            player.AddTile(new Tile('А', 8));
-            Console.WriteLine(player.Tiles.Count);
-            player.RemoveTile(new Tile('А', 8));
-            Console.WriteLine(player.Tiles.Count);
+            var db = new AppDbContext();
+            var ivan = await db.Users.FirstOrDefaultAsync(u => u.UserName == "Ivan2");
+            Console.WriteLine(ivan.Email);
         }
     }
 }

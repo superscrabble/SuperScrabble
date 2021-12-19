@@ -12,11 +12,12 @@ namespace SuperScrabble.WebApi
     using Microsoft.AspNetCore.Authentication.JwtBearer;
 
     using Microsoft.OpenApi.Models;
-    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Options;
-    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.IdentityModel.Tokens;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
 
     using SuperScrabble.Data;
     using SuperScrabble.Common;
@@ -24,13 +25,12 @@ namespace SuperScrabble.WebApi
     using SuperScrabble.WebApi.Hubs;
     using SuperScrabble.Services.Data;
 
-    using static SuperScrabble.Common.ModelValidationConstraints;
-    using SuperScrabble.Services.Game;
     using SuperScrabble.Services;
+    using SuperScrabble.Services.Game;
     using SuperScrabble.Data.Repositories;
-    using SuperScrabble.Data.Seeding;
-    using Microsoft.EntityFrameworkCore;
     using SuperScrabble.Services.Game.TilesProviders;
+
+    using static SuperScrabble.Common.ModelValidationConstraints;
 
     public class Startup
     {
@@ -49,7 +49,6 @@ namespace SuperScrabble.WebApi
             {
                 options.AddDefaultPolicy(builder =>
                 {
-                    //Front-end cors
                     builder
                         .WithOrigins("https://localhost:4200", "http://localhost:4200")
                         .AllowAnyHeader()
@@ -87,21 +86,22 @@ namespace SuperScrabble.WebApi
             AddJwtBearerAuthentication(services);
 
             services.AddScoped(typeof(IRepository<>), typeof(EFRepository<>));
-
-            // TODO: Think about AddSingleton()
             services.AddScoped<IGameStateManager, StaticGameStateManager>();
 
-            //services.AddTransient<IWordsService, WordsService>();
-            services.AddTransient<IWordsService, AlwaysValidWordsService>();
             services.AddTransient<IUsersService, UsersService>();
-            services.AddTransient<IGameService, GameService>();
+            services.AddTransient<IGamesService, GamesService>();
+            services.AddTransient<IWordsService, AlwaysValidWordsService>();
+            //services.AddTransient<IWordsService, WordsService>();
+
             services.AddTransient<IShuffleService, ShuffleService>();
-            services.AddTransient<ITilesProvider, FakeTilesProvider>();
-            //services.AddTransient<ITilesProvider, MyOldBoardTilesProvider>();
+
+            services.AddTransient<IGameService, GameService>();
+            services.AddTransient<IScoringService, ScoringService>();
             services.AddTransient<IBonusCellsProvider, MyOldBoardBonusCellsProvider>();
             services.AddTransient<IGameplayConstantsProvider, StandardGameplayConstantsProvider>();
-            services.AddTransient<IScoringService, ScoringService>();
-            services.AddTransient<IGamesService, GamesService>();
+
+            services.AddTransient<ITilesProvider, FakeTilesProvider>();
+            //services.AddTransient<ITilesProvider, MyOldBoardTilesProvider>();
 
             services.AddControllers();
             services.AddSignalR();
@@ -189,12 +189,11 @@ namespace SuperScrabble.WebApi
                     {
                         var accessToken = context.Request.Query["access_token"];
 
-                        // If the request is for our hub...
                         var path = context.HttpContext.Request.Path;
+
                         if (!string.IsNullOrEmpty(accessToken) &&
                             (path.StartsWithSegments("/gamehub")))
                         {
-                            // Read the token out of the query string
                             context.Token = accessToken;
                         }
                         return Task.CompletedTask;

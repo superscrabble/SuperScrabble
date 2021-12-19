@@ -67,7 +67,7 @@
         }
 
         [Authorize]
-        public async void SkipTurn()
+        public async Task SkipTurn()
         {
             GameOperationResult result = this.gameService.SkipTurn(this.GameState, this.UserName);
 
