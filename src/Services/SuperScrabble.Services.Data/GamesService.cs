@@ -9,6 +9,7 @@
     using SuperScrabble.Data.Repositories;
     using SuperScrabble.Services.Game.Models;
     using SuperScrabble.ViewModels;
+    using System;
 
     public class GamesService : IGamesService
     {
@@ -48,7 +49,7 @@
                 gameOutcomesByUserNames.Add(loser.UserName, GameOutcome.Loss);
             }
 
-            var game = new Game();
+            var game = new Game(input.GameId);
 
             foreach (Player player in sortedPlayersByPoints)
             {
@@ -88,6 +89,8 @@
         public EndGameSummaryViewModel GetSummaryById(string id, string userName)
         {
             Game game = this.gamesRepository.All().FirstOrDefault(x => x.Id == id);
+
+            Console.WriteLine(String.Join("\n", this.gamesRepository.All().Select(x => x.Id)));
 
             if (game == null)
             {

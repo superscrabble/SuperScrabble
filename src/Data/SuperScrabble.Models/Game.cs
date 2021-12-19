@@ -6,9 +6,9 @@
 
     public class Game
     {
-        public Game()
+        public Game(string id)
         {
-            this.Id = Guid.NewGuid().ToString();
+            this.Id = id;
             this.PlayedOn = DateTime.UtcNow;
             this.Users = new HashSet<UserGame>();
         }
