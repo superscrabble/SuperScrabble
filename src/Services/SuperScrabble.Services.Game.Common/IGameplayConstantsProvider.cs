@@ -7,5 +7,7 @@
         int PlayersPerGameCount { get; }
 
         int MinSkipsCountForEachPlayerToEndTheGame { get; }
+
+        char WildcardValue { get; }
     }
 }

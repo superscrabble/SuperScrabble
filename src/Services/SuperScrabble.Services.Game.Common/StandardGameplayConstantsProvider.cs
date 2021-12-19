@@ -7,5 +7,7 @@
         public int PlayersPerGameCount => 2;
 
         public int MinSkipsCountForEachPlayerToEndTheGame => 2;
+
+        public char WildcardValue => '\0';
     }
 }

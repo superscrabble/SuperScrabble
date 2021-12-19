@@ -6,6 +6,13 @@
 
     public class MyOldBoardTilesProvider : ITilesProvider
     {
+        private readonly IGameplayConstantsProvider gameplayConstantsProvider;
+
+        public MyOldBoardTilesProvider(IGameplayConstantsProvider gameplayConstantsProvider)
+        {
+            this.gameplayConstantsProvider = gameplayConstantsProvider;
+        }
+
         public IEnumerable<KeyValuePair<char, TileInfo>> GetTiles()
         {
             return new Dictionary<char, TileInfo>()
@@ -40,7 +47,7 @@
                 ['Ь'] = new(10, 1),
                 ['Ю'] = new(8, 1),
                 ['Я'] = new(5, 2),
-                [GameConstants.Wildcard] = new(0, 2),
+                [this.gameplayConstantsProvider.WildcardValue] = new(0, 2),
             };
         }
     }
