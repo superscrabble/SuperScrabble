@@ -1,11 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { SignalrService } from 'src/app/services/signalr.service';
 import { Tile } from 'src/app/models/tile';
 import { Cell } from 'src/app/models/cell';
 import { CellViewData } from 'src/app/models/cellViewData';
 import { HubConnection, HubConnectionState } from '@microsoft/signalr';
 import { Router } from '@angular/router';
-import {MatDialog} from '@angular/material/dialog';
+import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
+
+export interface ErrorDialogData {
+    message: string;
+}
 
 @Component({
   selector: 'app-game',
@@ -68,7 +72,6 @@ export class GameComponent implements OnInit {
 
         if(data.commonGameState.isGameOver == true) {
             alert("GAME OVER!");
-            this.dialog.open(ErrorDialog);
             this.router.navigate([this.router.url + "/summary"]);
         }
     })
@@ -76,7 +79,7 @@ export class GameComponent implements OnInit {
     this.signalrService.hubConnection?.on("InvalidWriteWordInput", data => {
         console.log(data);
         alert(Object.values(data.errorsByCodes));
-        this.dialog.open(ErrorDialog);
+        this.dialog.open(ErrorDialog, { data: { message: data.errorsByCodes}});
         for(let i = 0; i < this.updatedBoardCells.length; i++) {
             this.playerTiles.push(this.updatedBoardCells[i].key)
             this.board[this.updatedBoardCells[i].value.row][this.updatedBoardCells[i].value.column].tile = null;
@@ -87,7 +90,7 @@ export class GameComponent implements OnInit {
     this.signalrService.hubConnection?.on("InvalidExchangeTilesInput", data => {
         console.log(data);
         alert(Object.values(data.errorsByCodes));
-        this.dialog.open(ErrorDialog);
+        this.dialog.open(ErrorDialog, { data: { message: data.errorsByCodes}});
         this.showExchangeField = false;
         this.selectedExchangeTiles = [];
     })
@@ -95,7 +98,7 @@ export class GameComponent implements OnInit {
     this.signalrService.hubConnection?.on("ImpossibleToSkipTurn", data => {
         console.log(data);
         alert(Object.values(data.errorsByCodes));
-        this.dialog.open(ErrorDialog);
+        this.dialog.open(ErrorDialog, { data: { message: data.errorsByCodes}});
     })
   }
 
@@ -2263,9 +2266,10 @@ export class GameComponent implements OnInit {
   })
 export class ErrorDialog {
 
-    constructor(public dialog: MatDialog) {}
+    constructor(public dialog: MatDialog, public dialogRef: MatDialogRef<ErrorDialog>, 
+                @Inject(MAT_DIALOG_DATA) public data: ErrorDialogData) {}
 
     close() {
-        this.dialog.closeAll();
+        this.dialogRef.close();
     }
 }
