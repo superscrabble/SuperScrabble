@@ -4,6 +4,7 @@
 
     using Microsoft.EntityFrameworkCore;
     using Microsoft.AspNetCore.Identity;
+    using Microsoft.EntityFrameworkCore.Proxies;
     using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
     public class AppDbContext : IdentityDbContext<AppUser, AppRole, string>
@@ -26,7 +27,7 @@
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer(DatabaseConfig.ConnectionString);
+                optionsBuilder.UseLazyLoadingProxies().UseSqlServer(DatabaseConfig.ConnectionString);
             }
 
             base.OnConfiguring(optionsBuilder);

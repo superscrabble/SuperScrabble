@@ -1,14 +1,10 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using SuperScrabble.Services.Data;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace SuperScrabble.WebApi.Controllers
+﻿namespace SuperScrabble.WebApi.Controllers
 {
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Authorization;
+
+    using SuperScrabble.Services.Data;
+
     [Route("api/[controller]")]
     [ApiController]
     public class GamesController : ControllerBase
@@ -25,13 +21,13 @@ namespace SuperScrabble.WebApi.Controllers
         public IActionResult GetSummary(string id)
         {
             var viewModel = this.gamesService.GetSummaryById(id, this.User.Identity.Name);
-            
-            if(viewModel == null)
+
+            if (viewModel == null)
             {
-                return NotFound();
+                return this.NotFound();
             }
 
-            return Ok(viewModel);
+            return this.Ok(viewModel);
         }
     }
 }

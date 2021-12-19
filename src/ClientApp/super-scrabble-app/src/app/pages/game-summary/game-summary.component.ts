@@ -31,7 +31,8 @@ export class GameSummaryComponent implements OnInit {
   }
 
   handleLoadGameSummaryResponse(res: HttpResponse<any>): void {
-    console.log(res);
+    let summaryModel = JSON.parse(res.body);
+    console.log(summaryModel);
   }
 
   handleLoadGameSummaryError(error: any): void {

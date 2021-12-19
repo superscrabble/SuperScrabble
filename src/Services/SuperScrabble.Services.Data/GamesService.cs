@@ -14,11 +14,13 @@
     {
         private readonly IUsersService usersService;
         private readonly IRepository<Game> gamesRepository;
+        private readonly IRepository<UserGame> usersGamesRepository;
 
-        public GamesService(IUsersService usersService, IRepository<Game> gamesRepository)
+        public GamesService(IUsersService usersService, IRepository<Game> gamesRepository, IRepository<UserGame> usersGamesRepository)
         {
             this.usersService = usersService;
             this.gamesRepository = gamesRepository;
+            this.usersGamesRepository = usersGamesRepository;
         }
 
         public async Task SaveGameAsync(SaveGameInputModel input)
@@ -83,7 +85,7 @@
             return sortedPlayersByPoints.Where(p => p.Points < maxPoints);
         }
 
-        public async Task<EndGameSummaryViewModel> GetSummaryById(string id, string userName)
+        public EndGameSummaryViewModel GetSummaryById(string id, string userName)
         {
             Game game = this.gamesRepository.All().FirstOrDefault(x => x.Id == id);
 
@@ -92,25 +94,17 @@
                 return null;
             }
 
-            var users = game.Users.OrderByDescending(x => x.Points);
-
             EndGameSummaryViewModel result = new()
             {
-                PointsByUserNames = game.Users.OrderByDescending(x => x.Points)
-                                              .Select(x => new KeyValuePair<string, int>(x.User.UserName, x.Points))
+                PointsByUserNames = game.Users
+                    .ToList()
+                    .OrderByDescending(x => x.Points)
+                    .Select(x => new KeyValuePair<string, int>(x.User.UserName, x.Points))
             };
 
-            /*UserGame userGame = (await this.usersService.GetAsync(userName)).Games.FirstOrDefault(x => x.GameId == id);
-            //UserGame userGame = game.Users.ToList().First(x => x.User.UserName == userName);
+            UserGame userGame = game.Users.FirstOrDefault(u => u.User.UserName == userName);
 
-            
-            if (userGame == null)
-            {
-                //TODO: maybe the user is not authorized to see this game
-            }*/
-
-            result.GameOutcome = GameOutcome.Draw;
-
+            result.GameOutcome = userGame.GameOutcome;
             return result;
         }
     }
