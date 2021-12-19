@@ -2223,8 +2223,8 @@ export class GameComponent implements OnInit {
         "points": 2
       },
       {
-          "letter": "И",
-          "points": 1
+          "letter": "Ф",
+          "points": 10
       },
       {
           "letter": "З",

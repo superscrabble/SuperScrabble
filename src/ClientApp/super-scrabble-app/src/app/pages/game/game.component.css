@@ -2,14 +2,16 @@
     background-color: #1B4A4B;
 }
 
-.board-tile {
+.board-cell {
     position: relative;
 }
 
 .tile-points {
-    position: absolute;
-    right: 0;
-    bottom: 0;
+    font-size: 9px;
+}
+
+.tile-letter {
+    font-size: 14px;
 }
 
 .tile {

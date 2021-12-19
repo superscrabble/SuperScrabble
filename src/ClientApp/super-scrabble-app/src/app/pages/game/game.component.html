@@ -16,13 +16,19 @@
             <table style="table-layout: fixed;">
                 <tr *ngFor="let row of board">
                     <td *ngFor="let cell of row" 
-                        class="border border-dark px-1 py-2 text-center cursor-default {{getClassNameByCell(cell)}}"
                         (click)="clickOnBoardCell(cell)"
+                        class="border border-dark px-1 py-2 text-center cursor-default {{getClassNameByCell(cell)}}"
                         (contextmenu)="rightClickOnBoardCell(cell)">
 
-                        <div *ngIf="cell.tile" class="board-tile">
-                            <span style="font-size: 14px">{{cell.tile.letter}}</span>
-                            <span class="tile-points" style="font-size: 8px">{{cell.tile.points}}</span>
+                        <div *ngIf="cell.tile" class="board-cell">
+                            <span>
+                                <strong class="tile-letter py-3">
+                                    {{cell.tile.letter}}
+                                </strong>
+                                <span class="tile-points">
+                                    {{cell.tile.points}}
+                                </span>
+                            </span>
                         </div>
                         <div *ngIf="!cell.tile">
                             {{getValueWhenEmptyByCellType(cell.type)}}
