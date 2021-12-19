@@ -32,7 +32,10 @@ export class GameComponent implements OnInit {
   selectedExchangeTiles: Tile[] = new Array();
   isTileExchangePossible: boolean = true;
 
-  constructor(private signalrService: SignalrService, private router: Router, public dialog: MatDialog) {}
+  constructor(
+      private signalrService: SignalrService,
+      private router: Router,
+      public dialog: MatDialog) {}
 
   ngOnInit(): void {
     //verify connection presence
@@ -71,7 +74,6 @@ export class GameComponent implements OnInit {
         this.updatedBoardCells = [];
 
         if(data.commonGameState.isGameOver == true) {
-            alert("GAME OVER!");
             this.router.navigate([this.router.url + "/summary"]);
         }
     })
@@ -185,12 +187,12 @@ export class GameComponent implements OnInit {
     return this.cellViewDataByType.get(type)?.valueWhenEmpty;
   }
 
-  clickOnPlayerTile(playerTile: Tile | any) { //either with index
+  clickOnPlayerTile(playerTile: Tile | any) {
       if(playerTile != null) {
         if(playerTile == this.selectedPlayerTile) {
             this.selectedPlayerTile = null;
             return;
-        }  
+        }
         //Check whether the player has the tile
         for(let i = 0; i < this.playerTiles.length; i++) {
           if(this.playerTiles[i] == playerTile) {

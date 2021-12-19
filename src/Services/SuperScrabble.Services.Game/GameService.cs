@@ -458,9 +458,11 @@
                 return wordBuilders;
             }
 
-            if ((wordBuilders.Count <= 1
+            bool isNewTileDisonnectedFromTheOldTiles = (wordBuilders.Count <= 1
                 && sortedPositionsByTiles.Count() == wordBuilders.FirstOrDefault()?.PositionsByTiles.Count)
-                || wordBuilders.Count <= 0)
+                || wordBuilders.Count <= 0;
+
+            if (isNewTileDisonnectedFromTheOldTiles)
             {
                 throw new ValidationFailedException(
                     nameof(Resource.NewTilesNotConnectedToTheOldOnes), Resource.NewTilesNotConnectedToTheOldOnes);
