@@ -25,6 +25,18 @@
 
         public IReadOnlyCollection<Tile> Tiles => this.tiles.AsReadOnly();
 
+        public void SubtractRemainingTilesPoints()
+        {
+            int pointsToSubtract = 0;
+
+            foreach (Tile tile in this.Tiles)
+            {
+                pointsToSubtract += tile.Points;
+            }
+
+            this.Points -= pointsToSubtract;
+        }
+
         public void AddTile(Tile tile)
         {
             this.tiles.Add(tile);

@@ -69,6 +69,11 @@
         public void EndGame()
         {
             this.IsGameOver = true;
+
+            foreach (Player player in this.Players)
+            {
+                player.SubtractRemainingTilesPoints();
+            }
         }
     }
 }
