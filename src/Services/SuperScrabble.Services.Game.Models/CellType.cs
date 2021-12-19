@@ -14,20 +14,25 @@
 
     public static class CellTypeExtensions
     {
-        public static bool IsWordBonus(this CellType cellType) =>
-            cellType == CellType.DoubleWord || cellType == CellType.TripleWord;
+        public static bool IsWordBonus(this CellType cellType)
+        {
+            return cellType == CellType.DoubleWord || cellType == CellType.TripleWord || cellType == CellType.Center;
 
-        public static bool IsLetterBonus(this CellType cellType) =>
-            cellType == CellType.DoubleLetter || cellType == CellType.TripleLetter;
+        }
+
+        public static bool IsLetterBonus(this CellType cellType)
+        {
+            return cellType == CellType.DoubleLetter || cellType == CellType.TripleLetter;
+        }
 
         public static int GetPointsMultiplier(this CellType cellType)
         {
-            if (cellType == CellType.Basic || cellType == CellType.Center)
+            if (cellType == CellType.Basic)
             {
                 return 1;
             }
 
-            if (cellType == CellType.DoubleLetter || cellType == CellType.DoubleWord)
+            if (cellType == CellType.DoubleLetter || cellType == CellType.DoubleWord || cellType == CellType.Center)
             {
                 return 2;
             }

@@ -8,6 +8,8 @@
 
         int MinSkipsCountForEachPlayerToEndTheGame { get; }
 
+        int BonusPointsForUsingAllTiles { get; }
+
         char WildcardValue { get; }
     }
 }

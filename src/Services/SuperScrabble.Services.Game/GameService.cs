@@ -129,11 +129,16 @@
 
                 foreach (var positionByTile in input.PositionsByTiles)
                 {
-                    gameState.GetPlayer(authorUserName).RemoveTile(positionByTile.Key);
+                    author.RemoveTile(positionByTile.Key);
                 }
 
                 int newPoints = this.scoringService
                     .CalculatePointsFromPlayerInput(input, gameState.Board, wordBuilders);
+
+                if (input.PositionsByTiles.Count() == this.gameplayConstantsProvider.PlayerTilesCount)
+                {
+                    newPoints += this.gameplayConstantsProvider.BonusPointsForUsingAllTiles;
+                }
 
                 author.Points += newPoints;
 

@@ -9,5 +9,7 @@
         public int MinSkipsCountForEachPlayerToEndTheGame => 2;
 
         public char WildcardValue => '\0';
+
+        public int BonusPointsForUsingAllTiles => 50;
     }
 }
