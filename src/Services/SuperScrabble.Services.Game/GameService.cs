@@ -130,7 +130,7 @@
             try
             {
                 Player author = gameState.GetPlayer(authorUserName);
-                var wordBuilders = ValidateInputTilesAndExtractNewWords(input, gameState, author);
+                var wordBuilders = this.ValidateInputTilesAndExtractNewWords(input, gameState, author);
 
                 foreach (var positionByTile in input.PositionsByTiles)
                 {
@@ -176,7 +176,7 @@
             {
                 Player exchanger = gameState.GetPlayer(exchangerUserName);
 
-                ValidateExchangeTiles(gameState, input, exchanger);
+                this.ValidateExchangeTiles(gameState, input, exchanger);
 
                 var newTiles = new List<Tile>();
 
@@ -219,6 +219,7 @@
 
                 Player player = gameState.GetPlayer(skipperUserName);
                 player.ConsecutiveSkipsCount++;
+
                 bool isGameOver = gameState.Players.All(p => p.ConsecutiveSkipsCount >= 2);
 
                 if (isGameOver)
@@ -252,7 +253,7 @@
                     nameof(Resource.InvalidInputTilesCount), Resource.InvalidInputTilesCount);
             }
 
-            ValidateWhetherPlayerHasSubmittedTilesThatHeDoesOwn(player, input.PositionsByTiles.Select(x => x.Key));
+            this.ValidateWhetherPlayerHasSubmittedTilesThatHeDoesOwn(player, input.PositionsByTiles.Select(x => x.Key));
 
             var uniqueRows = new HashSet<int>();
             var uniqueColumns = new HashSet<int>();
@@ -321,11 +322,11 @@
             var words = GetAllNewWords(
                 board, sortedPositionsByTiles, areTilesAllignedVertically, goesThroughCenter);
 
-            ValidateWhetherTheWordsDoExist(words);
+            this.ValidateWhetherTheWordsDoExist(words);
             return words;
         }
 
-        private static void ValidateExchangeTiles(GameState gameState, ExchangeTilesInputModel input, Player exchanger)
+        private void ValidateExchangeTiles(GameState gameState, ExchangeTilesInputModel input, Player exchanger)
         {
             ValidateWhetherThePlayerIsOnTurn(gameState, exchanger.UserName);
 
@@ -335,17 +336,27 @@
                     nameof(Resource.ImpossibleTileExchange), Resource.ImpossibleTileExchange);
             }
 
-            ValidateWhetherPlayerHasSubmittedTilesThatHeDoesOwn(exchanger, input.TilesToExchange);
+            this.ValidateWhetherPlayerHasSubmittedTilesThatHeDoesOwn(exchanger, input.TilesToExchange);
         }
 
-        private static bool IsInputTilesCountValid(WriteWordInputModel input, Player player, bool isBoardEmpty)
+        private void ValidateWhetherPlayerHasSubmittedTilesThatHeDoesOwn(Player player, IEnumerable<Tile> tiles)
         {
-            if (isBoardEmpty && input.PositionsByTiles.Count() < 2)
+            var playerTilesCopy = player.Tiles.ToList();
+
+            foreach (Tile tile in tiles)
             {
-                return false;
-            }
-            
-            return input.PositionsByTiles.Any() && input.PositionsByTiles.Count() <= player.Tiles.Count;
+                Tile playerTile = playerTilesCopy.FirstOrDefault(
+                    x => x.Equals(tile) || (tile?.Points == 0 &&
+                    x.Letter == this.gameplayConstantsProvider.WildcardValue && x.Points == 0));
+
+                if (playerTile == null)
+                {
+                    throw new ValidationFailedException(
+                        nameof(Resource.UnexistingPlayerTile), Resource.UnexistingPlayerTile);
+                }
+
+                playerTilesCopy.Remove(tile);
+            }   
         }
 
         private void ValidateWhetherTheWordsDoExist(IEnumerable<WordBuilder> wordsToValidate)
@@ -365,6 +376,16 @@
                 throw new ValidationFailedException(
                     nameof(Resource.WordDoesNotExist), Resource.WordDoesNotExist);
             }
+        }
+
+        private static bool IsInputTilesCountValid(WriteWordInputModel input, Player player, bool isBoardEmpty)
+        {
+            if (isBoardEmpty && input.PositionsByTiles.Count() < 2)
+            {
+                return false;
+            }
+
+            return input.PositionsByTiles.Any() && input.PositionsByTiles.Count() <= player.Tiles.Count;
         }
 
         private static void ValidateGapsBetweenTiles(
@@ -479,15 +500,6 @@
             }
 
             return wordBuilders;
-        }
-
-        private static void ValidateWhetherPlayerHasSubmittedTilesThatHeDoesOwn(Player player, IEnumerable<Tile> tiles)
-        {
-            if (!player.OwnsAllTiles(tiles))
-            {
-                throw new ValidationFailedException(
-                        nameof(Resource.UnexistingPlayerTile), Resource.UnexistingPlayerTile);
-            }
         }
 
         private static void ValidateWhetherThePlayerIsOnTurn(GameState gameState, string userName)
