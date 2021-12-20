@@ -205,6 +205,7 @@
                 if (gameState.IsGameOver)
                 {
                     this.gameStateManager.RemoveUserFromGroup(player.UserName);
+                    await this.Groups.RemoveFromGroupAsync(player.ConnectionId, groupName);
                 }
             }
 
