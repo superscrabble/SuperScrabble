@@ -13,6 +13,7 @@
     using SuperScrabble.InputModels.Game;
     using SuperScrabble.Services.Game.Models;
     using SuperScrabble.Services.Game.TilesProviders;
+    using SuperScrabble.Services.Game.GameStateManagers;
 
     public class GameHub : Hub
     {

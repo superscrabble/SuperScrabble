@@ -1,4 +1,4 @@
-﻿namespace SuperScrabble.Services.Game
+﻿namespace SuperScrabble.Services.Game.GameStateManagers
 {
     using System;
     using System.Collections.Generic;

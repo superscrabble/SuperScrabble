@@ -5,14 +5,18 @@
     using System.Collections.Generic;
 
     using SuperScrabble.Common;
+    using SuperScrabble.CustomExceptions.Game;
+
     using SuperScrabble.ViewModels;
-    using SuperScrabble.Services.Data;
     using SuperScrabble.InputModels.Game;
     using SuperScrabble.LanguageResources;
+
+    using SuperScrabble.Services.Data.Words;
+
     using SuperScrabble.Services.Game.Models;
-    using SuperScrabble.CustomExceptions.Game;
+    using SuperScrabble.Services.Game.Scoring;
     using SuperScrabble.Services.Game.TilesProviders;
-    using System.Text;
+    using SuperScrabble.Services.Game.BonusCellsProviders;
 
     public class GameService : IGameService
     {

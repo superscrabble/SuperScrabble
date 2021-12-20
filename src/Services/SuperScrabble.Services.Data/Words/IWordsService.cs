@@ -1,4 +1,4 @@
-﻿namespace SuperScrabble.Services.Data
+﻿namespace SuperScrabble.Services.Data.Words
 {
     using System.Collections.Generic;
 

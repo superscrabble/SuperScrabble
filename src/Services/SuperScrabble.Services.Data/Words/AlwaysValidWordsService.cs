@@ -1,8 +1,6 @@
-﻿namespace SuperScrabble.Services.Game
+﻿namespace SuperScrabble.Services.Data.Words
 {
     using System.Collections.Generic;
-
-    using SuperScrabble.Services.Data;
 
     public class AlwaysValidWordsService : IWordsService
     {

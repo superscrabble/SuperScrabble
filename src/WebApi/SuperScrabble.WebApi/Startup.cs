@@ -20,15 +20,23 @@ namespace SuperScrabble.WebApi
     using Microsoft.Extensions.DependencyInjection;
 
     using SuperScrabble.Data;
+    using SuperScrabble.Data.Repositories;
+
     using SuperScrabble.Common;
     using SuperScrabble.Models;
+
     using SuperScrabble.WebApi.Hubs;
-    using SuperScrabble.Services.Data;
 
     using SuperScrabble.Services;
+    using SuperScrabble.Services.Data;
+
+    using SuperScrabble.Services.Data.Words;
+
     using SuperScrabble.Services.Game;
-    using SuperScrabble.Data.Repositories;
+    using SuperScrabble.Services.Game.Scoring;
     using SuperScrabble.Services.Game.TilesProviders;
+    using SuperScrabble.Services.Game.GameStateManagers;
+    using SuperScrabble.Services.Game.BonusCellsProviders;
 
     using static SuperScrabble.Common.ModelValidationConstraints;
 
