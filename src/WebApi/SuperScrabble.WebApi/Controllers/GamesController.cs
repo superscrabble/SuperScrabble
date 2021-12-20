@@ -4,6 +4,7 @@
     using Microsoft.AspNetCore.Authorization;
 
     using SuperScrabble.Services.Data;
+    using SuperScrabble.CustomExceptions.Game;
 
     [Route("api/[controller]")]
     [ApiController]
@@ -25,7 +26,7 @@
                 var viewModel = this.gamesService.GetSummaryById(id, this.User.Identity.Name);
                 return this.Ok(viewModel);
             }
-            catch (System.Exception)
+            catch (GameNotFoundException)
             {
                 return this.NotFound();
             }

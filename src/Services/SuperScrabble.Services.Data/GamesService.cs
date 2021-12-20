@@ -94,7 +94,7 @@
                 [GameOutcome.Draw] = Resource.DrawGameOutcome,
             };
 
-            summary.GameOutcomeMessage = gameOutcomeMessages[userGame.GameOutcome];
+            summary.GameOutcomeMessage = gameOutcomeMessages[actualGameOutcome];
             summary.GameOutcomeNumber = (int)actualGameOutcome;
 
             return summary;
