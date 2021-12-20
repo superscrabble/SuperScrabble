@@ -9,6 +9,12 @@ namespace SuperScrabble.Services.Game.TilesProviders
 {
     public class FakeTilesProvider : ITilesProvider
     {
+        private readonly IGameplayConstantsProvider gameplayConstantsProvider;
+
+        public FakeTilesProvider(IGameplayConstantsProvider gameplayConstantsProvider)
+        {
+            this.gameplayConstantsProvider = gameplayConstantsProvider;
+        }
         public IEnumerable<KeyValuePair<char, TileInfo>> GetTiles()
         {
             return new Dictionary<char, TileInfo>()
@@ -28,6 +34,7 @@ namespace SuperScrabble.Services.Game.TilesProviders
                 ['М'] = new(2, 2),
                 ['Н'] = new(1, 2),
                 ['О'] = new(1, 2),
+                [this.gameplayConstantsProvider.WildcardValue] = new(0, 10),
             };
         }
     }

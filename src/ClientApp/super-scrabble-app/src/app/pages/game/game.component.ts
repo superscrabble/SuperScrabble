@@ -375,6 +375,14 @@ export class GameComponent implements OnInit {
         console.log("WRITING WORD")
         console.log(this.updatedBoardCells);
         this.updatedBoardCells = this.updatedBoardCells.map(item => ({key: item.key.tile, value: item.value}))
+
+        /*for(let i = 0; i < this.updatedBoardCells.length; i++) {
+            console.log(this.updatedBoardCells[i].key.letter);
+            if(this.updatedBoardCells[i].key.letter == "\u0000") {
+                
+            }
+        }*/
+
         try {
             this.signalrService.writeWord(this.updatedBoardCells);
         }
@@ -384,6 +392,12 @@ export class GameComponent implements OnInit {
         }
     }
     console.log("AFTER WRITING WORD")
+  }
+
+  changeWildCard() {
+      //this.signalrService.getAllWildcardOptions();
+      //popup with options
+      //change the card
   }
 
   loadMockData(): void {

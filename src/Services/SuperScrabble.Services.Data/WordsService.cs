@@ -30,8 +30,7 @@
 
         public bool IsWordValid(string word)
         {
-            word = word.ToLower();
-            return this.wordsRepository.All().FirstOrDefault(w => w.Value.ToLower() == word) != null;
+            return this.wordsRepository.All().FirstOrDefault(w => w.Value == word) != null;
         }
     }
 }

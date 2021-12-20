@@ -12,6 +12,7 @@
     using SuperScrabble.Services.Game.Models;
     using SuperScrabble.CustomExceptions.Game;
     using SuperScrabble.Services.Game.TilesProviders;
+    using System.Text;
 
     public class GameService : IGameService
     {
@@ -349,7 +350,7 @@
 
             foreach (WordBuilder wordToValidate in wordsToValidate)
             {
-                if (!this.wordsService.IsWordValid(wordsToValidate.ToString().ToLower()))
+                if (!this.wordsService.IsWordValid(wordToValidate.ToString()))
                 {
                     notExistingWords.Add(wordToValidate);
                 }
