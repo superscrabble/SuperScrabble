@@ -12,6 +12,8 @@
 
         string GetGroupName(string userName);
 
+        void RemoveUserFromGroup(string userName);
+
         bool IsUserAlreadyWaiting(string userName, string connectionId);
 
         bool IsUserAlreadyInsideGame(string userName);
@@ -33,6 +35,8 @@
         void AddGameStateToGroup(GameState gameState, string groupName);
 
         void RemoveUserFromWaitingQueue(string userName);
+
+        void RemoveGameState(string groupName);
 
         IEnumerable<KeyValuePair<string, string>> GetWaitingPlayers(string groupName);
     }

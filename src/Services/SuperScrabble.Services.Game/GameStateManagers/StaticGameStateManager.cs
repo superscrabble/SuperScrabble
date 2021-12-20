@@ -123,6 +123,16 @@
             return groupName == actualGroupName;
         }
 
+        public void RemoveGameState(string groupName)
+        {
+            gamesByGroupName.Remove(groupName);
+        }
+
+        public void RemoveUserFromGroup(string userName)
+        {
+            groupsByUserName.Remove(userName);
+        }
+
         public void RemoveUserFromWaitingQueue(string userName)
         {
             waitingConnectionIdsByUserName.Remove(userName);

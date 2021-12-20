@@ -39,6 +39,7 @@ namespace SuperScrabble.WebApi
     using SuperScrabble.Services.Game.BonusCellsProviders;
 
     using static SuperScrabble.Common.ModelValidationConstraints;
+    using SuperScrabble.Data.Seeding;
 
     public class Startup
     {

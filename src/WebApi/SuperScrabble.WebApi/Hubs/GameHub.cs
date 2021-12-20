@@ -201,6 +201,16 @@
             {
                 var viewModel = this.gameService.MapFromGameState(gameState, player.UserName);
                 await this.Clients.Client(player.ConnectionId).SendAsync(UpdateGameStateMethodName, viewModel);
+
+                if (gameState.IsGameOver)
+                {
+                    this.gameStateManager.RemoveUserFromGroup(player.UserName);
+                }
+            }
+
+            if (gameState.IsGameOver)
+            {
+                this.gameStateManager.RemoveGameState(groupName);
             }
         }
 

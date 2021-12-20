@@ -356,7 +356,7 @@
                 }
 
                 playerTilesCopy.Remove(tile);
-            }   
+            }
         }
 
         private void ValidateWhetherTheWordsDoExist(IEnumerable<WordBuilder> wordsToValidate)
