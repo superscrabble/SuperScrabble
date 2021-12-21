@@ -74,7 +74,7 @@
                 await this.SendValidationErrorMessageAsync("InvalidExchangeTilesInput", result);
                 return;
             }
-            
+
             await this.UpdateGameStateAsync(this.GroupName);
         }
 
@@ -164,6 +164,23 @@
             if (this.UserName != null)
             {
                 this.gameStateManager.RemoveUserFromWaitingQueue(this.UserName);
+            }
+
+            return Task.CompletedTask;
+        }
+
+        public override Task OnConnectedAsync()
+        {
+            GameState gameState = this.gameStateManager.GetGameState(this.UserName);
+
+            if (gameState != null)
+            {
+                Player player = gameState.GetPlayer(this.UserName);
+
+                if (player.ConnectionId != this.ConnectionId)
+                {
+                    player.ConnectionId = this.ConnectionId;
+                }
             }
 
             return Task.CompletedTask;
