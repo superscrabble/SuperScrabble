@@ -147,6 +147,9 @@
   <data name="InvalidInputTilesCount" xml:space="preserve">
     <value>You submitted invalid number of tiles</value>
   </data>
+  <data name="InvalidWildcardValue" xml:space="preserve">
+    <value>You are trying to submit invalid letter for the wildcard tile</value>
+  </data>
   <data name="LossGameOutcome" xml:space="preserve">
     <value>Loss</value>
   </data>

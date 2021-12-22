@@ -147,6 +147,9 @@
   <data name="InvalidInputTilesCount" xml:space="preserve">
     <value>Поставили сте невалиден брой букви</value>
   </data>
+  <data name="InvalidWildcardValue" xml:space="preserve">
+    <value>Опитвате се да въведете невалидна буква на празната плочка</value>
+  </data>
   <data name="LossGameOutcome" xml:space="preserve">
     <value>Загуба</value>
   </data>

@@ -61,7 +61,7 @@
 
         public GameState GetGameState(string userName)
         {
-            if (!groupsByUserName.ContainsKey(userName))
+            if ((userName == null) || !groupsByUserName.ContainsKey(userName))
             {
                 return null;
             }
