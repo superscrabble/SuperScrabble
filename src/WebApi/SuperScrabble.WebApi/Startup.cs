@@ -127,7 +127,7 @@ namespace SuperScrabble.WebApi
             {
                 AppDbContext dbContext = serviceScope.ServiceProvider.GetRequiredService<AppDbContext>();
                 dbContext.Database.Migrate();
-                //new AppSeeder().SeedAsync(dbContext, serviceScope.ServiceProvider).GetAwaiter().GetResult();
+                new AppSeeder().SeedAsync(dbContext, serviceScope.ServiceProvider).GetAwaiter().GetResult();
             }
 
             if (env.IsDevelopment())
@@ -177,7 +177,7 @@ namespace SuperScrabble.WebApi
 
                 options.SupportedCultures = supportedCultures;
                 options.SupportedUICultures = supportedCultures;
-                options.DefaultRequestCulture = new RequestCulture(culture: English, uiCulture: English);
+                options.DefaultRequestCulture = new RequestCulture(culture: Bulgarian, uiCulture: Bulgarian);
             });
         }
 
@@ -205,6 +205,7 @@ namespace SuperScrabble.WebApi
                         {
                             context.Token = accessToken;
                         }
+
                         return Task.CompletedTask;
                     },
                     OnTokenValidated = context =>

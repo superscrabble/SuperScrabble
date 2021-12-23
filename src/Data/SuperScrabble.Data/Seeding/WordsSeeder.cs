@@ -10,7 +10,7 @@
     {
         public async Task SeedAsync(AppDbContext dbContext, IServiceProvider serviceProvider)
         {
-            string[] arr = Directory.GetFiles("../../../resources/words", "*.txt");
+            string[] arr = Directory.GetFiles("../../../resources/final-list/all", "*.txt");
             string[] lines;
 
             foreach (string file in arr)
@@ -25,7 +25,6 @@
             foreach (string word in words)
             {
                 string trimmedWord = word.Trim();
-                Console.WriteLine(trimmedWord);
                 await dbContext.Words.AddAsync(new Word() { Value = trimmedWord });
             }
 
