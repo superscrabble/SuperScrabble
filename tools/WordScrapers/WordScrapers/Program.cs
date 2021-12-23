@@ -1,37 +1,79 @@
 ﻿using AngleSharp;
+using WordScrapers.Slovored;
 
-/*const string domain = "slovored.com";
-const string path = "sitemap/pravopisen-rechnik/letter";
+//var mainWordForms = await slovoredScraper.ScrapeMainWordFormsAsync();
 
-var config = Configuration.Default.WithDefaultLoader();
-var context = BrowsingContext.New(config);
+var mainWordForms = await File.ReadAllLinesAsync("./Resources/remaining-main-word-forms.txt");
+var wordsByStartingLetters = mainWordForms.GroupBy(x => x.First()).ToDictionary(x => x.Key, x => x.ToList());
 
-const char start = 'а', end = 'я';
+var tasks = new List<Task>();
 
-var mainWordForms = new List<string>();
+int counter = 0;
 
-for (char first = start; first <= end; first++)
+foreach (var wordsByStartingLetter in wordsByStartingLetters)
 {
-    if (first == 'ь' || first == 'ы' || first == 'э')
+    var task = new Task(async () =>
+    {
+        var config = Configuration.Default.WithDefaultLoader();
+        var browsingContext = BrowsingContext.New(config);
+
+        var wordChecker = new BulgarianWordChecker();
+        var slovoredScraper = new SlovoredScraper(browsingContext, wordChecker);
+
+        var list = new List<string>();
+
+        foreach (string word in wordsByStartingLetter.Value)
+        {
+            var subforms = await slovoredScraper.ScrapeWordSubformsAsync(word);
+            list.AddRange(subforms);
+
+            if (list.Count >= 100)
+            {
+                counter += list.Count;
+                global::System.Console.WriteLine(counter);
+                await File.AppendAllLinesAsync($"./Resources/words-with-{wordsByStartingLetter.Key}.txt", list);
+                list.Clear();
+            }
+        }
+    });
+
+    tasks.Add(task);
+    task.Start();
+}
+
+while (tasks.Any())
+{
+    var completedTask = await Task.WhenAny(tasks);
+    tasks.Remove(completedTask);
+}
+
+Console.ReadLine();
+
+/*var mainWordForms = (await File.ReadAllLinesAsync("../../../../../../resources/new-words/main-word-forms.txt")).ToHashSet();
+
+var files = Directory.GetFiles("../../../../../../resources/new-words");
+
+Console.WriteLine(mainWordForms.Count);
+
+var allUniqueWords = new HashSet<string>();
+
+foreach (string file in files)
+{
+    if (file.EndsWith("main-word-forms.txt"))
     {
         continue;
     }
 
-    for (char second = start; second <= end; second++)
+    Console.WriteLine(file);
+    Console.WriteLine(mainWordForms.Count);
+    var fileLines = (await File.ReadAllLinesAsync(file)).ToHashSet();
+
+    foreach (var line in fileLines)
     {
-        string url = $"https://{domain}/{path}/{first}/{first}{second}";
-        var document = await context.OpenAsync(url);
-
-        var words = document.QuerySelectorAll("div.words > a")
-            .Select(a => a?.TextContent.Trim()).Where(w => w != null);
-
-        mainWordForms.AddRange(words);
+        allUniqueWords.Add(line);
+        mainWordForms.Remove(line);
     }
-
-    await File.AppendAllLinesAsync("./Resources/main-word-forms.txt", mainWordForms);
-    mainWordForms.Clear();
-    Console.WriteLine(first);
 }
-*/
-var lines = await File.ReadAllLinesAsync("./Resources/main-word-forms.txt");
-Console.WriteLine(lines.Length);
+Console.WriteLine(allUniqueWords.Count);
+Console.WriteLine(mainWordForms.Count);
+await File.WriteAllLinesAsync("./Resources/Output/remaining-main-word-forms.txt", mainWordForms);*/
