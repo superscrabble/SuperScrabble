@@ -82,7 +82,7 @@
         public async Task SkipTurn()
         {
             GameOperationResult result = this.gameService.SkipTurn(this.GameState, this.UserName);
-
+            
             if (!result.IsSucceeded)
             {
                 await this.SendValidationErrorMessageAsync("ImpossibleToSkipTurn", result);

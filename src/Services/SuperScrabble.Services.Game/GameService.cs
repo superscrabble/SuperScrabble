@@ -336,19 +336,30 @@
                     nameof(Resource.ImpossibleTileExchange), Resource.ImpossibleTileExchange);
             }
 
-            this.ValidateWhetherPlayerHasSubmittedTilesThatHeDoesOwn(exchanger, input.TilesToExchange);
+            this.ValidateWhetherPlayerHasSubmittedTilesThatHeDoesOwn(
+                exchanger, input.TilesToExchange, whenExchangingTiles: true);
         }
 
-        private void ValidateWhetherPlayerHasSubmittedTilesThatHeDoesOwn(Player player, IEnumerable<Tile> tiles)
+        private void ValidateWhetherPlayerHasSubmittedTilesThatHeDoesOwn(Player player, IEnumerable<Tile> tiles, bool whenExchangingTiles = false)
         {
+            bool playerTileWriteWordSelector(Tile inputTile, Tile playerTile) => playerTile.Equals(inputTile);
+
+            bool playerTileExchangeTilesSelector(Tile inputTile, Tile playerTile)
+            {
+                return playerTile.Equals(inputTile) || (inputTile?.Points == 0
+                && playerTile.Letter == this.gameplayConstantsProvider.WildcardValue
+                && playerTile.Points == 0);
+            }
+
+            Func<Tile, Tile, bool> playerTileSelector = whenExchangingTiles
+                ? playerTileExchangeTilesSelector : playerTileWriteWordSelector;
+
             var wildcardOptions = this.tilesProvider.GetAllWildcardOptions();
             var playerTilesCopy = player.Tiles.ToList();
 
             foreach (Tile tile in tiles)
             {
-                Tile playerTile = playerTilesCopy.FirstOrDefault(
-                    x => x.Equals(tile) || (tile?.Points == 0 &&
-                    x.Letter == this.gameplayConstantsProvider.WildcardValue && x.Points == 0));
+                Tile playerTile = playerTilesCopy.FirstOrDefault(x => playerTileSelector(tile, x));
 
                 if (playerTile == null)
                 {
@@ -356,7 +367,7 @@
                         nameof(Resource.UnexistingPlayerTile), Resource.UnexistingPlayerTile);
                 }
 
-                if (playerTile.Letter == gameplayConstantsProvider.WildcardValue)
+                if (playerTile.Letter == gameplayConstantsProvider.WildcardValue && !whenExchangingTiles)
                 {
                     if (wildcardOptions.FirstOrDefault(x => x.Letter == tile.Letter) == null)
                     {

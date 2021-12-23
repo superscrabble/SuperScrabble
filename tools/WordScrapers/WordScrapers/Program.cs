@@ -79,10 +79,11 @@ Console.WriteLine(mainWordForms.Count);
 await File.WriteAllLinesAsync("./Resources/Output/remaining-main-word-forms.txt", mainWordForms);*/
 
 var first = await GetAllUniqueWordsAsync("../../../../../../resources/final-list/all");
-var second = await GetAllUniqueWordsAsync("../../../../../../resources/words/");
 
-Console.WriteLine("All first: " + first.Count());
-Console.WriteLine("All second: " + second.Count());
+//var second = await GetAllUniqueWordsAsync("../../../../../../resources/words/");
+
+Console.WriteLine("All first: " + first.Distinct().Count());
+/*Console.WriteLine("All second: " + second.Count());
 
 var uniqueFirst = first.Distinct().ToHashSet();
 var uniqueSecond = second.Distinct().ToHashSet();
