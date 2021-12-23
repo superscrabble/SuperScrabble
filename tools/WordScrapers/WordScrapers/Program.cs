@@ -78,11 +78,23 @@ Console.WriteLine(allUniqueWords.Count);
 Console.WriteLine(mainWordForms.Count);
 await File.WriteAllLinesAsync("./Resources/Output/remaining-main-word-forms.txt", mainWordForms);*/
 
-var newWords = await GetAllUniqueWordsAsync("../../../../../../resources/new-words", "main-word-forms.txt");
-Console.WriteLine("new: " + newWords.Count());
-var distinct = newWords.Distinct();
+var first = await GetAllUniqueWordsAsync("../../../../../../resources/final-list/first-batch");
+var second = await GetAllUniqueWordsAsync("../../../../../../resources/final-list/second-batch");
 
-var groups = distinct.GroupBy(x => x.First()).ToDictionary(x => x.Key, x => x.ToList());
+Console.WriteLine("All first: " + first.Count());
+Console.WriteLine("All second: " + second.Count());
+
+var uniqueFirst = first.Distinct().ToHashSet();
+var uniqueSecond = second.Distinct().ToHashSet();
+
+Console.WriteLine("Unique first: " + uniqueFirst.Count());
+Console.WriteLine("Unique second: " + uniqueSecond.Count());
+
+uniqueFirst.UnionWith(uniqueSecond);
+
+Console.WriteLine("All unique words: " + uniqueFirst.Count);
+
+var groups = uniqueFirst.GroupBy(x => x.First()).ToDictionary(x => x.Key, x => x.ToList());
 Console.WriteLine(groups.Count);
 
 int sum = 0;
@@ -91,12 +103,11 @@ foreach (var group in groups)
 {
     Console.WriteLine(group.Key + " -> " + group.Value.Count);
 
-    await File.WriteAllLinesAsync($"./res/words-with-{group.Key}_{group.Value.Count}.txt", group.Value);
+    await File.WriteAllLinesAsync($"./res/total-of-{group.Value.Count}-words-with-{group.Key}.txt", group.Value);
 
     sum += group.Value.Count;
 }
 
-Console.WriteLine("Distinct: " + distinct.Count());
 Console.WriteLine("Sum " + sum);
 
 /*var finalList = await GetAllUniqueWordsAsync("../../../../../../resources/final-list", "main-word-forms.txt", "remaining-main-word-forms.txt");
@@ -114,18 +125,13 @@ foreach (var item in uniqueWords)
 
 Console.WriteLine("total: " + total);*/
 
-static async Task<IEnumerable<string>> GetAllUniqueWordsAsync(string directory, params string[] directoriesToExclude)
+static async Task<IEnumerable<string>> GetAllUniqueWordsAsync(string directory)
 {
     var uniqueWords = new List<string>();
     string[] files = Directory.GetFiles(directory);
 
     foreach (string file in files)
     {
-        if (directoriesToExclude.Any(x => x.EndsWith(file)))
-        {
-            continue;
-        }
-
         string[] words = await File.ReadAllLinesAsync(file);
         Console.WriteLine(words.Length);
         foreach (string word in words)
