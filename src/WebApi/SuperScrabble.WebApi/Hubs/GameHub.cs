@@ -96,10 +96,7 @@
         [Authorize]
         public async Task GetAllWildcardOptions()
         {
-            var options = this.tilesProvider.GetTiles()
-                .Where(x => x.Key != this.gameplayConstantsProvider.WildcardValue)
-                .Select(x => new Tile(x.Key, x.Value.Points));
-
+            var options = this.tilesProvider.GetAllWildcardOptions();
             await this.Clients.Caller.SendAsync("ReceiveAllWildcardOptions", options);
         }
 

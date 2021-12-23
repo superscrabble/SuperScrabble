@@ -341,6 +341,7 @@
 
         private void ValidateWhetherPlayerHasSubmittedTilesThatHeDoesOwn(Player player, IEnumerable<Tile> tiles)
         {
+            var wildcardOptions = this.tilesProvider.GetAllWildcardOptions();
             var playerTilesCopy = player.Tiles.ToList();
 
             foreach (Tile tile in tiles)
@@ -353,6 +354,15 @@
                 {
                     throw new ValidationFailedException(
                         nameof(Resource.UnexistingPlayerTile), Resource.UnexistingPlayerTile);
+                }
+
+                if (playerTile.Letter == gameplayConstantsProvider.WildcardValue)
+                {
+                    if (wildcardOptions.FirstOrDefault(x => x.Letter == tile.Letter) == null)
+                    {
+                        throw new ValidationFailedException(
+                            nameof(Resource.InvalidWildcardValue), Resource.InvalidWildcardValue);
+                    }
                 }
 
                 playerTilesCopy.Remove(tile);

@@ -7,15 +7,14 @@ using System.Threading.Tasks;
 
 namespace SuperScrabble.Services.Game.TilesProviders
 {
-    public class FakeTilesProvider : ITilesProvider
+    public class FakeTilesProvider : BaseTileProvider
     {
-        private readonly IGameplayConstantsProvider gameplayConstantsProvider;
-
-        public FakeTilesProvider(IGameplayConstantsProvider gameplayConstantsProvider)
+        public FakeTilesProvider(IGameplayConstantsProvider gameplayConstantsProvider) 
+                : base(gameplayConstantsProvider)
         {
-            this.gameplayConstantsProvider = gameplayConstantsProvider;
         }
-        public IEnumerable<KeyValuePair<char, TileInfo>> GetTiles()
+
+        public override IEnumerable<KeyValuePair<char, TileInfo>> GetTiles()
         {
             return new Dictionary<char, TileInfo>()
             {

@@ -1,19 +1,17 @@
 ﻿namespace SuperScrabble.Services.Game.TilesProviders
 {
     using System.Collections.Generic;
-
+    using System.Linq;
     using SuperScrabble.Services.Game.Models;
 
-    public class MyOldBoardTilesProvider : ITilesProvider
+    public class MyOldBoardTilesProvider : BaseTileProvider
     {
-        private readonly IGameplayConstantsProvider gameplayConstantsProvider;
-
         public MyOldBoardTilesProvider(IGameplayConstantsProvider gameplayConstantsProvider)
+                : base(gameplayConstantsProvider)
         {
-            this.gameplayConstantsProvider = gameplayConstantsProvider;
         }
 
-        public IEnumerable<KeyValuePair<char, TileInfo>> GetTiles()
+        public override IEnumerable<KeyValuePair<char, TileInfo>> GetTiles()
         {
             return new Dictionary<char, TileInfo>()
             {

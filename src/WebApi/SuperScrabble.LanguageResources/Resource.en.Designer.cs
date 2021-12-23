@@ -168,5 +168,8 @@
 
         public static string DrawGameOutcome
             => ResourceManager.GetString(nameof(DrawGameOutcome), resourceCulture);
+
+        public static string InvalidWildcardValue
+            => ResourceManager.GetString(nameof(InvalidWildcardValue), resourceCulture);
     }
 }

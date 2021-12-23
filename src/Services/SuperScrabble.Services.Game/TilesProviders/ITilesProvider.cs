@@ -7,5 +7,7 @@
     public interface ITilesProvider
     {
         IEnumerable<KeyValuePair<char, TileInfo>> GetTiles();
+
+        IEnumerable<Tile> GetAllWildcardOptions();
     }
 }
