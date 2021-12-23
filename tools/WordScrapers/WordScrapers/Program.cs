@@ -3,7 +3,7 @@ using WordScrapers.Slovored;
 
 //var mainWordForms = await slovoredScraper.ScrapeMainWordFormsAsync();
 
-var mainWordForms = await File.ReadAllLinesAsync("./Resources/remaining-main-word-forms.txt");
+/*var mainWordForms = await File.ReadAllLinesAsync("./Resources/remaining-main-word-forms.txt");
 var wordsByStartingLetters = mainWordForms.GroupBy(x => x.First()).ToDictionary(x => x.Key, x => x.ToList());
 
 var tasks = new List<Task>();
@@ -49,7 +49,7 @@ while (tasks.Any())
 
 Console.ReadLine();
 
-/*var mainWordForms = (await File.ReadAllLinesAsync("../../../../../../resources/new-words/main-word-forms.txt")).ToHashSet();
+var mainWordForms = (await File.ReadAllLinesAsync("../../../../../../resources/new-words/main-word-forms.txt")).ToHashSet();
 
 var files = Directory.GetFiles("../../../../../../resources/new-words");
 
@@ -77,3 +77,62 @@ foreach (string file in files)
 Console.WriteLine(allUniqueWords.Count);
 Console.WriteLine(mainWordForms.Count);
 await File.WriteAllLinesAsync("./Resources/Output/remaining-main-word-forms.txt", mainWordForms);*/
+
+var newWords = await GetAllUniqueWordsAsync("../../../../../../resources/new-words", "main-word-forms.txt");
+Console.WriteLine("new: " + newWords.Count());
+var distinct = newWords.Distinct();
+
+var groups = distinct.GroupBy(x => x.First()).ToDictionary(x => x.Key, x => x.ToList());
+Console.WriteLine(groups.Count);
+
+int sum = 0;
+
+foreach (var group in groups)
+{
+    Console.WriteLine(group.Key + " -> " + group.Value.Count);
+
+    await File.WriteAllLinesAsync($"./res/words-with-{group.Key}_{group.Value.Count}.txt", group.Value);
+
+    sum += group.Value.Count;
+}
+
+Console.WriteLine("Distinct: " + distinct.Count());
+Console.WriteLine("Sum " + sum);
+
+/*var finalList = await GetAllUniqueWordsAsync("../../../../../../resources/final-list", "main-word-forms.txt", "remaining-main-word-forms.txt");
+
+newWords.UnionWith(finalList);
+
+var uniqueWords = newWords.GroupBy(x => x.First()).ToDictionary(x => x.Key, x => x.ToList());
+int total = 0;
+
+foreach (var item in uniqueWords)
+{
+    await File.WriteAllLinesAsync($"./res/words-with-{item.Key}.txt", item.Value);
+    total += item.Value.Count;
+}
+
+Console.WriteLine("total: " + total);*/
+
+static async Task<IEnumerable<string>> GetAllUniqueWordsAsync(string directory, params string[] directoriesToExclude)
+{
+    var uniqueWords = new List<string>();
+    string[] files = Directory.GetFiles(directory);
+
+    foreach (string file in files)
+    {
+        if (directoriesToExclude.Any(x => x.EndsWith(file)))
+        {
+            continue;
+        }
+
+        string[] words = await File.ReadAllLinesAsync(file);
+        Console.WriteLine(words.Length);
+        foreach (string word in words)
+        {
+            uniqueWords.Add(word);
+        }
+    }
+
+    return uniqueWords;
+}
