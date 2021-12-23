@@ -342,9 +342,9 @@
 
         private void ValidateWhetherPlayerHasSubmittedTilesThatHeDoesOwn(Player player, IEnumerable<Tile> tiles, bool whenExchangingTiles = false)
         {
-            bool playerTileWriteWordSelector(Tile inputTile, Tile playerTile) => playerTile.Equals(inputTile);
+            bool playerTileExchangeTilesSelector(Tile inputTile, Tile playerTile) => playerTile.Equals(inputTile);
 
-            bool playerTileExchangeTilesSelector(Tile inputTile, Tile playerTile)
+            bool playerTileWriteWordSelector(Tile inputTile, Tile playerTile)
             {
                 return playerTile.Equals(inputTile) || (inputTile?.Points == 0
                 && playerTile.Letter == this.gameplayConstantsProvider.WildcardValue

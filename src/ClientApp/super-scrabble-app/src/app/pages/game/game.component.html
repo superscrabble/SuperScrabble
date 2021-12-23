@@ -17,6 +17,7 @@
                 <tr *ngFor="let row of board">
                     <td *ngFor="let cell of row" 
                         (click)="clickOnBoardCell(cell)"
+                        (dblclick)="doubleClickOnBoardCell(cell)"
                         class="border border-dark px-1 py-2 text-center cursor-default {{getClassNameByCell(cell)}}"
                         (contextmenu)="rightClickOnBoardCell(cell)">
 
@@ -42,7 +43,8 @@
                 cdkDrag
                 *ngFor="let playerTile of playerTiles"
                 class="mx-2 border tile cursor-default rounded-1 p-2 text-center {{getClassNameIfSelected(playerTile)}}"
-                (click)="clickOnPlayerTile(playerTile)">
+                (click)="clickOnPlayerTile(playerTile)"
+                (dblclick)="doubleClickOnPlayerTile(playerTile)">
                 {{playerTile.letter}}
                 <span style="font-size: 10px">
                     {{playerTile.points}}

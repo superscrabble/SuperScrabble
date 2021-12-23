@@ -1,14 +1,20 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, Inject, NgZone } from '@angular/core';
 import { SignalrService } from 'src/app/services/signalr.service';
 import { Tile } from 'src/app/models/tile';
 import { Cell } from 'src/app/models/cell';
 import { CellViewData } from 'src/app/models/cellViewData';
 import { HubConnection, HubConnectionState } from '@microsoft/signalr';
 import { Router } from '@angular/router';
-import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
+import {MatDialog, MatDialogRef, MatDialogState, MAT_DIALOG_DATA} from '@angular/material/dialog';
 
 export interface ErrorDialogData {
     message: string;
+}
+
+export interface ChangeWildcardDialogData {
+    tiles: Tile[];
+    writeWordInput: any[];
+    tile: Tile;
 }
 
 @Component({
@@ -22,7 +28,7 @@ export class GameComponent implements OnInit {
   playerTiles: Tile[] = new Array();
   cellViewDataByType: Map<number, CellViewData> = new Map();
   remainingTilesCount: number = 0;
-  pointsByUserNames: any[] = new Array();// Map<string, number> = new Map();
+  pointsByUserNames: any[] = new Array();
   selectedPlayerTile: Tile | null = null;
   updatedBoardCells: any[] = new Array();
   selectedBoardCell: Cell | null = null;
@@ -31,6 +37,9 @@ export class GameComponent implements OnInit {
   showExchangeField: boolean = false;
   selectedExchangeTiles: Tile[] = new Array();
   isTileExchangePossible: boolean = true;
+  wildcardOptions: Tile[] = new Array();
+  //TODO: move this constant in a global file
+  WILDCARD_SYMBOL: string = "\u0000";
 
   constructor(
       private signalrService: SignalrService,
@@ -38,7 +47,6 @@ export class GameComponent implements OnInit {
       public dialog: MatDialog) {}
 
   ngOnInit(): void {
-    //verify connection presence
     this.signalrService.startConnection();
 
     const url = window.location.href;
@@ -49,11 +57,13 @@ export class GameComponent implements OnInit {
         && this.signalrService.hubConnection.state == HubConnectionState.Connected) {
             this.attachGameListeners();
             this.signalrService.loadGame(id);
+            this.signalrService.getAllWildcardOptions();
     } else {
         //TODO: Handle slow connection/loading -> showing loading screen
         this.signalrService.hubConnectionStartPromise?.then( () => {
             this.attachGameListeners();
             this.signalrService.loadGame(id);
+            this.signalrService.getAllWildcardOptions();
         })
     }
 
@@ -79,10 +89,13 @@ export class GameComponent implements OnInit {
     })
   
     this.signalrService.hubConnection?.on("InvalidWriteWordInput", data => {
+        console.log("Invalid Write Word Input");
         console.log(data);
+        //BUG: not opening an ErrorDialog for "InvalidWildcardValue"
+        //TODO: Return all wildcards to their normal state
         this.dialog.open(ErrorDialog, { data: { message: Object.values(data.errorsByCodes)}});
         for(let i = 0; i < this.updatedBoardCells.length; i++) {
-            this.playerTiles.push(this.updatedBoardCells[i].key)
+            this.playerTiles.push(this.updatedBoardCells[i].key.tile)
             this.board[this.updatedBoardCells[i].value.row][this.updatedBoardCells[i].value.column].tile = null;
         }
         this.updatedBoardCells = [];
@@ -98,6 +111,12 @@ export class GameComponent implements OnInit {
     this.signalrService.hubConnection?.on("ImpossibleToSkipTurn", data => {
         console.log(data);
         this.dialog.open(ErrorDialog, { data: { message: Object.values(data.errorsByCodes)}});
+    })
+
+    this.signalrService.hubConnection?.on("ReceiveAllWildcardOptions", data => {
+        console.log("Wildcard Options: ");
+        console.log(data);
+        this.wildcardOptions = data;
     })
   }
 
@@ -203,6 +222,15 @@ export class GameComponent implements OnInit {
       }
   }
 
+  doubleClickOnPlayerTile(playerTile: Tile) {
+    if((playerTile.letter == this.WILDCARD_SYMBOL
+        || playerTile.points == 0)
+        && this.playerTiles.find(item => item == playerTile)) {
+        this.dialog.open(ChangeWildcardDialog, { data: { tiles: this.wildcardOptions, 
+            tile: playerTile, writeWordInput: null}});
+    }
+  }
+
   clickExchangeBtn() {
     this.showExchangeField = !this.showExchangeField
   }
@@ -288,7 +316,9 @@ export class GameComponent implements OnInit {
         }
 
         for(let i = 0; i < this.updatedBoardCells.length; i++) {
-            if(this.updatedBoardCells[i].key == cell) {
+            //TODO: check for posible bugs with the second condition
+            if(this.updatedBoardCells[i].key == cell
+                || this.updatedBoardCells[i].key == cell.tile) {
                 this.selectedBoardCell = cell;
                 return;
             }
@@ -311,6 +341,15 @@ export class GameComponent implements OnInit {
         return;
     }
   }
+
+  doubleClickOnBoardCell(cell: Cell) {
+    if((cell.tile?.letter == this.WILDCARD_SYMBOL
+        || cell.tile?.points == 0)
+        && this.updatedBoardCells.find(item => item.key == cell)) {
+        this.dialog.open(ChangeWildcardDialog, { data: { tiles: this.wildcardOptions, 
+            tile: cell.tile, writeWordInput: null}});
+    }
+  }  
 
   removeTileFromPlayerTiles(playerTile: Tile) {
       if(playerTile) {
@@ -370,34 +409,42 @@ export class GameComponent implements OnInit {
   }
 
   writeWord() : void {
-    if(this.updatedBoardCells.length > 0) {
-        this.updatedBoardCells = this.updatedBoardCells.filter(item => item.key.tile !== null);
-        console.log("WRITING WORD")
-        console.log(this.updatedBoardCells);
-        this.updatedBoardCells = this.updatedBoardCells.map(item => ({key: item.key.tile, value: item.value}))
+    if(this.updatedBoardCells.length <= 0) {
+        return;
+    }
+    
+    //Check for null tiles
+    this.updatedBoardCells = this.updatedBoardCells.filter(item => item.key.tile !== null);
+    console.log("WRITING WORD")
+    console.log(this.updatedBoardCells);
+    let writeWordInput = this.updatedBoardCells.map(item => ({key: item.key.tile, value: item.value}))
 
-        /*for(let i = 0; i < this.updatedBoardCells.length; i++) {
-            console.log(this.updatedBoardCells[i].key.letter);
-            if(this.updatedBoardCells[i].key.letter == "\u0000") {
-                
-            }
-        }*/
-
+    if(!this.checkForWildcards(writeWordInput.map(item => (item.key)))) {
         try {
-            this.signalrService.writeWord(this.updatedBoardCells);
+            this.signalrService.writeWord(writeWordInput);
         }
         catch (ex) {
             console.log("ERROR");
             console.log(ex);
         }
+        return;
     }
-    console.log("AFTER WRITING WORD")
+
+    for(let i = writeWordInput.length - 1; i >= 0; i--) {
+        if(writeWordInput[i].key.letter == this.WILDCARD_SYMBOL) {    
+            this.dialog.open(ChangeWildcardDialog, { data: { tiles: this.wildcardOptions, 
+                    tile: this.updatedBoardCells[i].key.tile, writeWordInput: writeWordInput}});
+        }
+    }
   }
 
-  changeWildCard() {
-      //this.signalrService.getAllWildcardOptions();
-      //popup with options
-      //change the card
+  checkForWildcards(tiles: Tile[]) : boolean {
+    for(let i = 0; i < tiles.length; i++) {
+        if(tiles[i].letter == this.WILDCARD_SYMBOL) {
+            return true;
+        }
+    }
+    return false;
   }
 
   loadMockData(): void {
@@ -2279,10 +2326,72 @@ export class GameComponent implements OnInit {
   })
 export class ErrorDialog {
 
-    constructor(public dialog: MatDialog, public dialogRef: MatDialogRef<ErrorDialog>, 
+    constructor(public dialogRef: MatDialogRef<ErrorDialog>, 
                 @Inject(MAT_DIALOG_DATA) public data: ErrorDialogData) {}
 
-    close() {
+    /*close() {
         this.dialogRef.close();
+    }*/
+}
+
+@Component({
+    selector: 'change-wildcard-dialog',
+    templateUrl: 'change-wildcard-dialog.html',
+    styleUrls: ['./game.component.css']
+  })
+export class ChangeWildcardDialog {
+
+    selectedTile: Tile | null = null;
+    tiles: any[] = new Array();
+    WILDCARD_SYMBOL: string = "\u0000";
+
+    constructor(public dialogRef: MatDialogRef<ChangeWildcardDialog>, 
+                @Inject(MAT_DIALOG_DATA) public data: ChangeWildcardDialogData,
+                public signalrService: SignalrService) {
+                    this.tiles = data.tiles;
+                }
+
+    getClassNameIfSelected(tile: Tile) {
+        if(tile == this.selectedTile) {
+            return "selected-tile";
+        }
+        return "";
+    }
+
+    clickOnTile(tile: Tile) {
+        if(tile) {
+            if(tile == this.selectedTile) {
+                this.selectedTile = null;
+                return;
+            }
+            this.selectedTile = tile;
+        }
+    }
+
+    close() {
+        if(this.selectedTile) {
+            this.data.tile.letter = this.selectedTile.letter
+        }
+        if(this.data.writeWordInput) {
+            //check whether all wildcards are not empty
+            if(!this.checkForEmptyWildcards(this.data.writeWordInput)) {
+                try {
+                    this.signalrService.writeWord(this.data.writeWordInput);
+                }
+                catch (ex) {
+                    console.log("ERROR");
+                    console.log(ex);
+                } 
+            }
+        }
+    }
+
+    checkForEmptyWildcards(tiles: any[]) : boolean {
+        for(let i = 0; i < tiles.length; i++) {
+            if(tiles[i].key.letter == this.WILDCARD_SYMBOL) {
+                return true;
+            }
+        }
+        return false;
     }
 }

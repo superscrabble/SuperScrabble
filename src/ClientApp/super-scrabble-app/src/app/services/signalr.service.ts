@@ -73,7 +73,6 @@ export class SignalrService {
 
   public loadGame(groupName: string) {
     if(this.hubConnection?.state == signalR.HubConnectionState.Connected) {
-      console.log("Call Load Game in SignalR")
       this.hubConnection?.invoke("LoadGame", groupName);
     }
   }
@@ -98,5 +97,9 @@ export class SignalrService {
 
   public skipTurn() {
     this.hubConnection?.invoke("SkipTurn");
+  }
+
+  public getAllWildcardOptions() {
+    this.hubConnection?.invoke("GetAllWildcardOptions");
   }
 }
