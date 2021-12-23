@@ -10,7 +10,7 @@
     {
         public async Task SeedAsync(AppDbContext dbContext, IServiceProvider serviceProvider)
         {
-            string[] arr = Directory.GetFiles("../../../resources/words", "*.txt");
+            string[] arr = Directory.GetFiles("../../../resources/final-list/all", "*.txt");
             string[] lines;
 
             foreach (string file in arr)
