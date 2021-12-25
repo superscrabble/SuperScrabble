@@ -57,6 +57,10 @@
                 .WithMany(user => user.Games)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            builder
+                .Entity<Word>()
+                .HasIndex(word => word.Value);
+
             RenameDefaultIdentityModels(builder);
         }
 
