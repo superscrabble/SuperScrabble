@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\WebApi\SuperScrabble.LanguageResources\SuperScrabble.LanguageResources.csproj" />
     <ProjectReference Include="..\..\WebApi\SuperScrabble.ViewModels\SuperScrabble.ViewModels.csproj" />
   </ItemGroup>
 

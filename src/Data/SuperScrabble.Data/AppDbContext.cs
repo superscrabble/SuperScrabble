@@ -59,7 +59,8 @@
 
             builder
                 .Entity<Word>()
-                .HasIndex(word => word.Value);
+                .HasIndex(word => word.Value)
+                .IsUnique();
 
             RenameDefaultIdentityModels(builder);
         }

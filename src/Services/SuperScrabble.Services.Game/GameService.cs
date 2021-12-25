@@ -166,6 +166,13 @@
                 var result = new GameOperationResult { IsSucceeded = false };
 
                 result.ErrorsByCodes.Add(ex.ErrorCode, ex.ErrorMessage);
+
+                if (ex is UnexistingWordsException)
+                {
+                    var unexistingWordsException = ex as UnexistingWordsException;
+                    result.UnexistingWords.AddRange(unexistingWordsException.UnexistingWords);
+                }
+
                 return result;
             }
         }
@@ -322,7 +329,7 @@
             var words = GetAllNewWords(
                 board, sortedPositionsByTiles, areTilesAllignedVertically, goesThroughCenter);
 
-            this.ValidateWhetherTheWordsDoExist(words);
+            this.ValidateWhetherTheWordsExist(words);
             return words;
         }
 
@@ -380,22 +387,21 @@
             }
         }
 
-        private void ValidateWhetherTheWordsDoExist(IEnumerable<WordBuilder> wordsToValidate)
+        private void ValidateWhetherTheWordsExist(IEnumerable<WordBuilder> wordsToValidate)
         {
-            var notExistingWords = new List<WordBuilder>();
+            var unexistingWords = new List<WordBuilder>();
 
             foreach (WordBuilder wordToValidate in wordsToValidate)
             {
                 if (!this.wordsService.IsWordValid(wordToValidate.ToString()))
                 {
-                    notExistingWords.Add(wordToValidate);
+                    unexistingWords.Add(wordToValidate);
                 }
             }
 
-            if (notExistingWords.Count > 0)
+            if (unexistingWords.Count > 0)
             {
-                throw new ValidationFailedException(
-                    nameof(Resource.WordDoesNotExist), Resource.WordDoesNotExist);
+                throw new UnexistingWordsException(unexistingWords.Select(x => x.ToString()));
             }
         }
 
