@@ -2,6 +2,7 @@
 {
     using System;
     using System.IO;
+    using System.Linq;
     using System.Threading.Tasks;
 
     using SuperScrabble.Models;
@@ -12,6 +13,8 @@
         {
             string[] arr = Directory.GetFiles("../../../resources/final-list/all", "*.txt");
             string[] lines;
+
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
 
             foreach (string file in arr)
             {
@@ -25,10 +28,24 @@
             foreach (string word in words)
             {
                 string trimmedWord = word.Trim();
+                
+                var doesWordExist = dbContext.Words.FirstOrDefault(x => x.Value == trimmedWord) != null;
+                
+                if(doesWordExist)
+                {
+                    continue;
+                }
                 await dbContext.Words.AddAsync(new Word() { Value = trimmedWord });
             }
 
-            await dbContext.SaveChangesAsync();
+            try
+            {
+                await dbContext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
         }
     }
 }

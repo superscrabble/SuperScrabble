@@ -40,6 +40,7 @@ namespace SuperScrabble.WebApi
 
     using static SuperScrabble.Common.ModelValidationConstraints;
     using SuperScrabble.Data.Seeding;
+    using System.Linq;
 
     public class Startup
     {
@@ -127,7 +128,10 @@ namespace SuperScrabble.WebApi
             {
                 AppDbContext dbContext = serviceScope.ServiceProvider.GetRequiredService<AppDbContext>();
                 dbContext.Database.Migrate();
-                new AppSeeder().SeedAsync(dbContext, serviceScope.ServiceProvider).GetAwaiter().GetResult();
+                if(dbContext.Words.Count() < 865809)
+                {
+                    new AppSeeder().SeedAsync(dbContext, serviceScope.ServiceProvider).GetAwaiter().GetResult();
+                }
             }
 
             if (env.IsDevelopment())
