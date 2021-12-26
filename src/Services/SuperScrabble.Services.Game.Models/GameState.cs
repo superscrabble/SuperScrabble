@@ -16,7 +16,7 @@
         {
             foreach (var user in connectionIdsByUserNames)
             {
-                this.players.Add(new Player(user.Key, 0, user.Value));
+                this.players.Add(new Player(user.Key, 0, user.Value, gameplayConstantsProvider));
             }
 
             this.TilesBag = tilesBag;

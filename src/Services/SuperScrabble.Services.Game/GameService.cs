@@ -101,7 +101,7 @@
             {
                 Cells = cellViewModels,
                 Width = gameState.Board.Width,
-                Height = gameState.Board.Height
+                Height = gameState.Board.Height,
             };
 
             var commonViewModel = new CommonGameStateViewModel
@@ -356,7 +356,8 @@
                 exchanger, input.TilesToExchange, whenExchangingTiles: true);
         }
 
-        private void ValidateWhetherPlayerHasSubmittedTilesThatHeDoesOwn(Player player, IEnumerable<Tile> tiles, bool whenExchangingTiles = false)
+        private void ValidateWhetherPlayerHasSubmittedTilesThatHeDoesOwn(
+            Player player, IEnumerable<Tile> tiles, bool whenExchangingTiles = false)
         {
             bool playerTileExchangeTilesSelector(Tile inputTile, Tile playerTile) => playerTile.Equals(inputTile);
 

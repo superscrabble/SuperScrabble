@@ -1,16 +1,19 @@
 ﻿namespace SuperScrabble.Services.Game.Models
 {
+    using System.Linq;
     using System.Collections.Generic;
 
     public class Player
     {
         private readonly List<Tile> tiles = new();
+        private readonly IGameplayConstantsProvider gameplayConstantsProvider;
 
-        public Player(string userName, int points, string connectionId)
+        public Player(string userName, int points, string connectionId, IGameplayConstantsProvider gameplayConstantsProvider)
         {
             this.UserName = userName;
             this.Points = points;
             this.ConnectionId = connectionId;
+            this.gameplayConstantsProvider = gameplayConstantsProvider;
             this.ConsecutiveSkipsCount = 0;
             this.HasLeftTheGame = false;
         }
@@ -46,7 +49,15 @@
 
         public void RemoveTile(Tile tile)
         {
-            this.tiles.Remove(tile);
+            Tile tileToRemove = this.tiles.FirstOrDefault(playerTile => 
+                playerTile.Equals(tile) || (tile?.Points == 0
+                && playerTile.Letter == this.gameplayConstantsProvider.WildcardValue
+                && playerTile.Points == 0));
+
+            if (tileToRemove != null)
+            {
+                this.tiles.Remove(tileToRemove);
+            }
         }
 
         public Tile GetTile(int index)
