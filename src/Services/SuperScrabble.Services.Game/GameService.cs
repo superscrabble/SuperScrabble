@@ -117,7 +117,7 @@
                 IsGameOver = gameState.IsGameOver,
 
                 PointsByUserNames = gameState.Players
-                    .OrderBy(p => !p.HasLeftTheGame)
+                    .OrderByDescending(p => !p.HasLeftTheGame)
                     .ThenByDescending(p => p.Points)
                     .ToDictionary(p => p.UserName, p => p.Points),
 
