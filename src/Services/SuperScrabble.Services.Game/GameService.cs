@@ -170,7 +170,10 @@
             }
             catch (ValidationFailedException ex)
             {
-                RestorePreviousBoardState(gameState.Board, input);
+                if (ex is ValidationFailedAfterInputTilesHaveBeenPlacedException)
+                {
+                    RestorePreviousBoardState(gameState.Board, input);
+                }
 
                 var result = new GameOperationResult { IsSucceeded = false };
 
@@ -455,7 +458,7 @@
 
             if (passedPlayerTiles != sortedPositionsByTiles.Count())
             {
-                throw new ValidationFailedException(
+                throw new ValidationFailedAfterInputTilesHaveBeenPlacedException(
                     nameof(Resource.GapsBetweenInputTilesNotAllowed), Resource.GapsBetweenInputTilesNotAllowed);
             }
         }
@@ -532,7 +535,7 @@
 
             if (isNewTileDisonnectedFromTheOldTiles)
             {
-                throw new ValidationFailedException(
+                throw new ValidationFailedAfterInputTilesHaveBeenPlacedException(
                     nameof(Resource.NewTilesNotConnectedToTheOldOnes), Resource.NewTilesNotConnectedToTheOldOnes);
             }
 
