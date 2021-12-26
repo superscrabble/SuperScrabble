@@ -25,29 +25,26 @@
         private readonly IGameStateManager gameStateManager;
         private readonly IGamesService gamesService;
         private readonly ITilesProvider tilesProvider;
-        private readonly IGameplayConstantsProvider gameplayConstantsProvider;
 
         public GameHub(
             IGameService gameService,
             IGameStateManager gameStateManager,
             IGamesService gamesService,
-            ITilesProvider tilesProvider,
-            IGameplayConstantsProvider gameplayConstantsProvider)
+            ITilesProvider tilesProvider)
         {
             this.gameService = gameService;
             this.gameStateManager = gameStateManager;
             this.gamesService = gamesService;
             this.tilesProvider = tilesProvider;
-            this.gameplayConstantsProvider = gameplayConstantsProvider;
         }
+
+        public string ConnectionId => this.Context.ConnectionId;
 
         public string UserName => this.Context.User.Identity.Name;
 
-        public GameState GameState => this.gameStateManager.GetGameState(this.UserName);
-
         public string GroupName => this.gameStateManager.GetGroupName(this.UserName);
 
-        public string ConnectionId => this.Context.ConnectionId;
+        public GameState GameState => this.gameStateManager.GetGameState(this.UserName);
 
         [Authorize]
         public async Task WriteWord(WriteWordInputModel input)
@@ -112,7 +109,7 @@
 
             if (this.gameStateManager.IsUserAlreadyInsideGame(this.UserName))
             {
-                await this.Clients.Client(this.ConnectionId).SendAsync(UserAlreadyInsideGameMethodName, this.GroupName);
+                await this.Clients.Caller.SendAsync(UserAlreadyInsideGameMethodName, this.GroupName);
                 return;
             }
 
@@ -193,9 +190,7 @@
                 }
             }
 
-            this.Clients.Client(this.ConnectionId)
-                .SendAsync(UserAlreadyInsideGameMethodName, this.GroupName).GetAwaiter().GetResult();
-
+            this.Clients.Caller.SendAsync(UserAlreadyInsideGameMethodName, this.GroupName).GetAwaiter().GetResult();
             return Task.CompletedTask;
         }
 
@@ -215,7 +210,7 @@
 
         private async Task SendValidationErrorMessageAsync(string methodName, GameOperationResult result)
         {
-            await this.Clients.Client(this.Context.ConnectionId).SendAsync(methodName, result);
+            await this.Clients.Caller.SendAsync(methodName, result);
         }
 
         private async Task UpdateGameStateAsync(string groupName)
@@ -249,8 +244,7 @@
 
         private async Task SendNeededPlayersCountAsync(string groupName)
         {
-            await this.Clients.Groups(groupName)
-                .SendAsync("WaitingForMorePlayers", this.gameStateManager.NeededPlayersCount);
+            await this.Clients.Groups(groupName).SendAsync("WaitingForMorePlayers", this.gameStateManager.NeededPlayersCount);
         }
     }
 }

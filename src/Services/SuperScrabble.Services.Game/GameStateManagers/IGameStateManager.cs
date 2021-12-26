@@ -6,10 +6,25 @@
 
     public interface IGameStateManager
     {
+        /// <summary>
+        /// Gets the game state of the given user
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <returns>The game state of the given user or null if the username is not valid</returns>
         GameState GetGameState(string userName);
 
+        /// <summary>
+        /// Gets the game state of the given group
+        /// </summary>
+        /// <param name="groupName"></param>
+        /// <returns>The game state of the given group or null if the group name is not valid</returns>
         GameState GetGameStateByGroupName(string groupName);
 
+        /// <summary>
+        /// Gets the group name of the given user
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <returns>The group name of the given user or null if the username is not valid</returns>
         string GetGroupName(string userName);
 
         void RemoveUserFromGroup(string userName);
