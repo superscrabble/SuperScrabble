@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.0.31903.59
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31829.152
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{7A7F1A7A-46AE-422D-852F-A15EF562F43D}"
 EndProject
@@ -49,7 +49,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SuperScrabble.Services.Data
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SuperScrabble.Services.Game.Models", "Services\SuperScrabble.Services.Game.Models\SuperScrabble.Services.Game.Models.csproj", "{64C11CF6-87C7-4EF4-A4D7-9FF86FD8163D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SuperScrabble.Services.Game.Common", "Services\SuperScrabble.Services.Game.Common\SuperScrabble.Services.Game.Common.csproj", "{5E219129-9007-4666-84F3-9035C7FA9C03}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SuperScrabble.Services.Game.Common", "Services\SuperScrabble.Services.Game.Common\SuperScrabble.Services.Game.Common.csproj", "{5E219129-9007-4666-84F3-9035C7FA9C03}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SuperScrabble.Data.Common", "Data\SuperScrabble.Data.Common\SuperScrabble.Data.Common.csproj", "{8776882D-0CC1-4479-8230-C947F6B6D169}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -129,6 +131,10 @@ Global
 		{5E219129-9007-4666-84F3-9035C7FA9C03}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5E219129-9007-4666-84F3-9035C7FA9C03}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5E219129-9007-4666-84F3-9035C7FA9C03}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8776882D-0CC1-4479-8230-C947F6B6D169}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8776882D-0CC1-4479-8230-C947F6B6D169}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8776882D-0CC1-4479-8230-C947F6B6D169}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8776882D-0CC1-4479-8230-C947F6B6D169}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -152,6 +158,7 @@ Global
 		{D07DDCB1-73A2-4E14-AAE5-5345B22E6966} = {B825F5F0-F879-47D2-81F5-88AA7944B9A3}
 		{64C11CF6-87C7-4EF4-A4D7-9FF86FD8163D} = {B825F5F0-F879-47D2-81F5-88AA7944B9A3}
 		{5E219129-9007-4666-84F3-9035C7FA9C03} = {B825F5F0-F879-47D2-81F5-88AA7944B9A3}
+		{8776882D-0CC1-4479-8230-C947F6B6D169} = {7A7F1A7A-46AE-422D-852F-A15EF562F43D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F9BC309A-4B7E-4CE1-B09E-AEC8E61A0750}

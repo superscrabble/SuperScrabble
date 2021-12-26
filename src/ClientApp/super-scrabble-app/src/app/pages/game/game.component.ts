@@ -9,6 +9,7 @@ import {MatDialog, MatDialogRef, MatDialogState, MAT_DIALOG_DATA} from '@angular
 
 export interface ErrorDialogData {
     message: string;
+    unexistingWords: string[] | null;
 }
 
 export interface ChangeWildcardDialogData {
@@ -91,13 +92,17 @@ export class GameComponent implements OnInit {
     this.signalrService.hubConnection?.on("InvalidWriteWordInput", data => {
         console.log("Invalid Write Word Input");
         console.log(data);
-        //BUG: not opening an ErrorDialog for "InvalidWildcardValue"
         //TODO: Return all wildcards to their normal state
-        this.dialog.open(ErrorDialog, { data: { message: Object.values(data.errorsByCodes)}});
+        let dialogData: ErrorDialogData = { message: Object.values(data.errorsByCodes).toString(), unexistingWords: null };
+        if(data.unexistingWords || data.unexistingWords.length > 0) {
+            dialogData.unexistingWords = data.unexistingWords;
+        }
+        this.dialog.open(ErrorDialog, { data: dialogData});
         for(let i = 0; i < this.updatedBoardCells.length; i++) {
             this.playerTiles.push(this.updatedBoardCells[i].key.tile)
             this.board[this.updatedBoardCells[i].value.row][this.updatedBoardCells[i].value.column].tile = null;
         }
+        this.selectedBoardCell = null;
         this.updatedBoardCells = [];
     })
 

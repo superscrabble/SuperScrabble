@@ -40,6 +40,7 @@ namespace SuperScrabble.WebApi
 
     using static SuperScrabble.Common.ModelValidationConstraints;
     using SuperScrabble.Data.Seeding;
+    using System.Linq;
 
     public class Startup
     {
