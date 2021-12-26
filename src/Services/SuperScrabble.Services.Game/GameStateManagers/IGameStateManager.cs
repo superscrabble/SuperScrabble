@@ -38,6 +38,6 @@
 
         void RemoveGameState(string groupName);
 
-        IEnumerable<KeyValuePair<string, string>> GetWaitingPlayers(string groupName);
+        IEnumerable<KeyValuePair<string, string>> GetWaitingPlayers();
     }
 }

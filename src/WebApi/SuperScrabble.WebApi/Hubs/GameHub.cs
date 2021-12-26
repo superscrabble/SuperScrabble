@@ -1,7 +1,6 @@
 ﻿namespace SuperScrabble.WebApi.Hubs
 {
     using System;
-    using System.Linq;
     using System.Threading.Tasks;
 
     using Microsoft.AspNetCore.SignalR;
@@ -20,6 +19,7 @@
         public const string WaitingPlayersQueueGroupName = "WaitingPlayerQueue";
         public const string StartGameMethodName = "StartGame";
         public const string UpdateGameStateMethodName = "UpdateGameState";
+        public const string UserAlreadyInsideGameMethodName = "UserAlreadyInsideGame";
 
         private readonly IGameService gameService;
         private readonly IGameStateManager gameStateManager;
@@ -100,12 +100,19 @@
             await this.Clients.Caller.SendAsync("ReceiveAllWildcardOptions", options);
         }
 
+        // Refactor gamestatemanager methods to return null and check for null input
+
         [Authorize]
         public async Task JoinRoom()
         {
-            if (this.gameStateManager.IsUserAlreadyWaiting(this.UserName, this.ConnectionId)
-                || this.gameStateManager.IsUserAlreadyInsideGame(this.UserName))
+            if (this.gameStateManager.IsUserAlreadyWaiting(this.UserName, this.ConnectionId))
             {
+                return;
+            }
+
+            if (this.gameStateManager.IsUserAlreadyInsideGame(this.UserName))
+            {
+                await this.Clients.Client(this.ConnectionId).SendAsync(UserAlreadyInsideGameMethodName, this.GroupName);
                 return;
             }
 
@@ -119,7 +126,7 @@
             }
 
             string groupName = this.gameStateManager.CreateGroupFromWaitingPlayers();
-            var waitingPlayers = this.gameStateManager.GetWaitingPlayers(groupName);
+            var waitingPlayers = this.gameStateManager.GetWaitingPlayers();
 
             foreach (var waitingPlayer in waitingPlayers)
             {
@@ -166,8 +173,14 @@
             return Task.CompletedTask;
         }
 
+        [Authorize]
         public override Task OnConnectedAsync()
         {
+            if (!this.gameStateManager.IsUserAlreadyInsideGame(this.UserName))
+            {
+                return Task.CompletedTask;
+            }
+
             GameState gameState = this.gameStateManager.GetGameState(this.UserName);
 
             if (gameState != null)
@@ -179,6 +192,9 @@
                     player.ConnectionId = this.ConnectionId;
                 }
             }
+
+            this.Clients.Client(this.ConnectionId)
+                .SendAsync(UserAlreadyInsideGameMethodName, this.GroupName).GetAwaiter().GetResult();
 
             return Task.CompletedTask;
         }
@@ -206,26 +222,28 @@
         {
             GameState gameState = this.gameStateManager.GetGameStateByGroupName(groupName);
 
-            foreach (Player player in gameState.Players)
+            if (gameState.IsGameOver)
             {
-                this.gameService.FillPlayerTiles(gameState, player.UserName);
-            }
-
-            foreach (Player player in gameState.Players)
-            {
-                var viewModel = this.gameService.MapFromGameState(gameState, player.UserName);
-                await this.Clients.Client(player.ConnectionId).SendAsync(UpdateGameStateMethodName, viewModel);
-
-                if (gameState.IsGameOver)
+                foreach (Player player in gameState.Players)
                 {
                     this.gameStateManager.RemoveUserFromGroup(player.UserName);
                     await this.Groups.RemoveFromGroupAsync(player.ConnectionId, groupName);
                 }
-            }
 
-            if (gameState.IsGameOver)
-            {
                 this.gameStateManager.RemoveGameState(groupName);
+            }
+            else
+            {
+                foreach (Player player in gameState.Players)
+                {
+                    this.gameService.FillPlayerTiles(gameState, player.UserName);
+                }
+
+                foreach (Player player in gameState.Players)
+                {
+                    var viewModel = this.gameService.MapFromGameState(gameState, player.UserName);
+                    await this.Clients.Client(player.ConnectionId).SendAsync(UpdateGameStateMethodName, viewModel);
+                }
             }
         }
 

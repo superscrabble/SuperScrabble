@@ -88,15 +88,15 @@
 
         public string GetGroupName(string userName)
         {
-            if (!groupsByUserName.ContainsKey(userName))
+            if (userName == null || !groupsByUserName.ContainsKey(userName))
             {
-                throw new ArgumentException("No group was found for the given username");
+                return null;
             }
 
             return groupsByUserName[userName];
         }
 
-        public IEnumerable<KeyValuePair<string, string>> GetWaitingPlayers(string groupName)
+        public IEnumerable<KeyValuePair<string, string>> GetWaitingPlayers()
         {
             return waitingConnectionIdsByUserName;
         }
