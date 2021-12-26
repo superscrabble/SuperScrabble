@@ -34,7 +34,7 @@ export class GameComponent implements OnInit {
   updatedBoardCells: any[] = new Array();
   selectedBoardCell: Cell | null = null;
   playerNameOnTurn: string = "";
-  myUserName: string = "";
+  currentUserName: string = "";
   showExchangeField: boolean = false;
   selectedExchangeTiles: Tile[] = new Array();
   isTileExchangePossible: boolean = true;
@@ -79,7 +79,7 @@ export class GameComponent implements OnInit {
         this.loadPlayerTiles(data.tiles);
         this.remainingTilesCount = data.commonGameState.remainingTilesCount;
         this.playerNameOnTurn = data.commonGameState.playerOnTurnUserName;
-        this.myUserName = data.myUserName; //Can be moved into localStorage
+        this.currentUserName = data.myUserName; //Can be moved into localStorage
         this.isTileExchangePossible = data.commonGameState.isTileExchangePossible;
         this.loadScoreBoard(data.commonGameState.pointsByUserNames)
         this.updatedBoardCells = [];
@@ -193,7 +193,7 @@ export class GameComponent implements OnInit {
   }
 
   modifyCurrentUserName(playerName: string) {
-      return playerName == this.myUserName ? playerName + " (аз)" : playerName;
+      return playerName == this.currentUserName ? playerName + " (аз)" : playerName;
   }
 
   getClassNameIfCellIsTaken(cell: Cell) {
@@ -209,6 +209,10 @@ export class GameComponent implements OnInit {
 
   getValueWhenEmptyByCellType(type: number) {
     return this.cellViewDataByType.get(type)?.valueWhenEmpty;
+  }
+
+  isCurrentPlayerOnTurn() : boolean {
+      return this.currentUserName == this.playerNameOnTurn;
   }
 
   clickOnPlayerTile(playerTile: Tile | any) {
