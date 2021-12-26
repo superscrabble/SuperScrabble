@@ -4,7 +4,7 @@
 
     using SuperScrabble.Services.Game.Models;
 
-    public class MyOldBoardTilesProvider : BaseTileProvider
+    public class MyOldBoardTilesProvider : BaseTilesProvider
     {
         public MyOldBoardTilesProvider(IGameplayConstantsProvider gameplayConstantsProvider)
                 : base(gameplayConstantsProvider)

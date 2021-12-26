@@ -33,12 +33,84 @@
             new(SecondUserName, "0987654321"),
         };
 
-        // input -> positions by tiles
-        // invalid tiles count (0, 100, 8, 6)
-        // tiles which the user does not own (wildcards)
-        // repeating tile positions (already taken, outside the board)
-        // gaps
-        // horizontal and vertical allignment
+        [Test]
+        public void WriteWord_ValidInput_Should_ReturnCorrectResult()
+        {
+        }
+
+        [Test]
+        public void WriteWord_BoardCellAlreadyTakenAtAnyOfTheInputTilesPositions_Should_ReturnCorrectResult()
+        {
+            Assert.Fail();
+        }
+
+        [Test]
+        public void WriteWord_InputTilesPositionsOutsideTheBoardRange_Should_ReturnCorrectResult()
+        {
+            Assert.Fail();
+        }
+
+        [Test]
+        public void WriteWord_InputTilesOnDuplicatePositions_Should_ReturnCorrectResult()
+        {
+            Assert.Fail();
+        }
+
+        [Test]
+        public void WriteWord_InputTilesAreNotPlacedOnTheSameLine_Should_ReturnCorrectResult()
+        {
+            Assert.Fail();
+        }
+
+        [Test]
+        public void WriteWord_InputTilesWithGapsBetweenThePositions_Should_ReturnCorrectResult()
+        {
+            Assert.Fail();
+        }
+
+        [Test]
+        public void WriteWord_InvalidInputTilesWildcardValue_Should_ReturnCorrectResult()
+        {
+            Assert.Fail();
+        }
+
+        [Test]
+        public void WriteWord_TilesWhichUserDoesNotOwn_Should_ReturnCorrectResult()
+        {
+            var gameplayConstantsProvider = new StandardGameplayConstantsProvider();
+
+            var gameService = new GameService(
+                new FakeShuffleService(),
+                new FakeTilesProvider(gameplayConstantsProvider),
+                new MyOldBoardBonusCellsProvider(),
+                gameplayConstantsProvider,
+                new AlwaysValidWordsService(),
+                new FakeScoringService());
+
+            GameState gameState = gameService.CreateGame(this.twoValidConnectionIdsByUserNames);
+
+            gameService.FillPlayerTiles(gameState, gameState.CurrentPlayer.UserName);
+
+            var invalidInputTiles = new List<KeyValuePair<Tile, Position>>();
+
+            for (int i = 0; i < 3; i++)
+            {
+                invalidInputTiles.Add(new(gameState.CurrentPlayer.GetTile(i), new Position(0, i)));
+            }
+
+            invalidInputTiles.Add(new(gameState.TilesBag.DrawTile(), new Position(0, 3)));
+
+            var input = new WriteWordInputModel
+            {
+                PositionsByTiles = invalidInputTiles
+            };
+
+            GameOperationResult result = gameService.WriteWord(gameState, input, gameState.CurrentPlayer.UserName);
+
+            Assert.IsFalse(result.IsSucceeded);
+            Assert.AreEqual(1, result.ErrorsByCodes.Count);
+            Assert.AreEqual(nameof(Resource.UnexistingPlayerTile), result.ErrorsByCodes.First().Key);
+        }
 
         [TestCase(FirstUserName, SecondUserName)]
         [TestCase(FirstUserName, SecondUserName, ThirdUserName)]
@@ -144,6 +216,52 @@
             WriteWordInputModel input, IBoard board, IEnumerable<WordBuilder> words)
         {
             return 0;
+        }
+    }
+
+    public class FakeTilesProvider : BaseTilesProvider
+    {
+        public FakeTilesProvider(IGameplayConstantsProvider gameplayConstantsProvider)
+            : base(gameplayConstantsProvider)
+        {
+        }
+
+        public override IEnumerable<KeyValuePair<char, TileInfo>> GetTiles()
+        {
+            return new Dictionary<char, TileInfo>()
+            {
+                ['А'] = new(1, 1),
+                ['Б'] = new(2, 1),
+                ['В'] = new(2, 1),
+                ['Г'] = new(3, 1),
+                ['Д'] = new(2, 1),
+                ['Е'] = new(1, 1),
+                ['Ж'] = new(4, 1),
+                ['З'] = new(4, 1),
+                ['И'] = new(1, 1),
+                ['Й'] = new(5, 1),
+                ['К'] = new(2, 1),
+                ['Л'] = new(2, 1),
+                ['М'] = new(2, 1),
+                ['Н'] = new(1, 1),
+                ['О'] = new(1, 1),
+                ['П'] = new(1, 1),
+                ['Р'] = new(1, 1),
+                ['С'] = new(1, 1),
+                ['Т'] = new(1, 1),
+                ['У'] = new(5, 1),
+                ['Ф'] = new(10,11),
+                ['Х'] = new(5, 1),
+                ['Ц'] = new(8, 1),
+                ['Ч'] = new(5, 1),
+                ['Ш'] = new(8, 1),
+                ['Щ'] = new(10, 1),
+                ['Ъ'] = new(3, 1),
+                ['Ь'] = new(10, 1),
+                ['Ю'] = new(8, 1),
+                ['Я'] = new(5, 1),
+                [this.gameplayConstantsProvider.WildcardValue] = new(0, 1),
+            };
         }
     }
 }
