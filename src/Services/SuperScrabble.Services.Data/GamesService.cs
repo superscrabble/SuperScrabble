@@ -60,6 +60,7 @@
                     GameId = game.Id,
                     Points = player.Points,
                     GameOutcome = gameOutcomesByUserNames[player.UserName],
+                    HasLeft = player.HasLeftTheGame,
                 });
             }
 
@@ -74,7 +75,9 @@
 
             var summary = new GameSummaryViewModel
             {
-                PointsByUserNames = game.Users.OrderByDescending(x => x.Points)
+                PointsByUserNames = game.Users
+                    .OrderByDescending(x => !x.HasLeft)
+                    .ThenByDescending(x => x.Points)
                     .Select(x => new KeyValuePair<string, int>(x.User.UserName, x.Points))
             };
 

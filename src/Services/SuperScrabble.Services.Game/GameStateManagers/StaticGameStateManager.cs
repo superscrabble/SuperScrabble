@@ -39,10 +39,7 @@
 
         public void AddUserToWaitingList(string userName, string connectionId)
         {
-            if (!this.IsUserAlreadyWaiting(userName, connectionId))
-            {
-                waitingConnectionIdsByUserName.Add(userName, connectionId);
-            }
+            waitingConnectionIdsByUserName.Add(userName, connectionId);
         }
 
         public void ClearWaitingQueue()
