@@ -240,6 +240,16 @@ export class GameComponent implements OnInit {
     }
   }
 
+  leaveGame() {
+      let dialogRef = this.dialog.open(LeaveGameDialog)
+      dialogRef.afterClosed().subscribe(result => {
+        if(result) {
+            this.signalrService.leaveGame();
+            this.router.navigate(["/"]);
+        }
+      })
+  }
+
   clickExchangeBtn() {
     this.showExchangeField = !this.showExchangeField
   }
@@ -2337,10 +2347,17 @@ export class ErrorDialog {
 
     constructor(public dialogRef: MatDialogRef<ErrorDialog>, 
                 @Inject(MAT_DIALOG_DATA) public data: ErrorDialogData) {}
+}
 
-    /*close() {
-        this.dialogRef.close();
-    }*/
+@Component({
+    selector: 'leave-game-dialog',
+    templateUrl: 'leave-game-dialog.html',
+    styleUrls: ['./game.component.css']
+  })
+export class LeaveGameDialog {
+
+    constructor(public dialogRef: MatDialogRef<ErrorDialog>, 
+                @Inject(MAT_DIALOG_DATA) public data: ErrorDialogData) {}
 }
 
 @Component({

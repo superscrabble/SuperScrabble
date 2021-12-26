@@ -58,6 +58,7 @@
                 <span>Оставащи букви - </span>
                 <b>{{remainingTilesCount}}</b>
             </span>
+            <button class="btn btn-danger mb-2" (click)="leaveGame()">Напусни играта</button>
         </div>
         <div class="d-flex flex-column">
             <button [disabled]="!isCurrentPlayerOnTurn()" class="btn normal-btn mb-2" (click)="skipTurn()">Пропусни ход</button>
