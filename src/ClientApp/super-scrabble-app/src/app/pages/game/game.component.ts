@@ -41,6 +41,7 @@ export class GameComponent implements OnInit {
   wildcardOptions: Tile[] = new Array();
   //TODO: move this constant in a global file
   WILDCARD_SYMBOL: string = "\u0000";
+  userNamesOfPlayersWhoHaveLeftTheGame: string[] = [];
 
   constructor(
       private signalrService: SignalrService,
@@ -83,6 +84,10 @@ export class GameComponent implements OnInit {
         this.isTileExchangePossible = data.commonGameState.isTileExchangePossible;
         this.loadScoreBoard(data.commonGameState.pointsByUserNames)
         this.updatedBoardCells = [];
+
+        if(data.commonGameState.userNamesOfPlayersWhoHaveLeftTheGame) {
+            this.userNamesOfPlayersWhoHaveLeftTheGame = data.commonGameState.userNamesOfPlayersWhoHaveLeftTheGame;
+        }
 
         if(data.commonGameState.isGameOver == true) {
             this.router.navigate([this.router.url + "/summary"]);
@@ -193,7 +198,18 @@ export class GameComponent implements OnInit {
   }
 
   modifyCurrentUserName(playerName: string) {
-      return playerName == this.currentUserName ? playerName + " (аз)" : playerName;
+      let result = playerName
+      if(playerName == this.currentUserName) {
+        result += " (аз)"; 
+        return result;
+      } 
+      
+      if(this.userNamesOfPlayersWhoHaveLeftTheGame.find(x => x == playerName)) {
+          result += " (напуснал)";
+          return result;
+      }
+
+      return result;
   }
 
   getClassNameIfCellIsTaken(cell: Cell) {
