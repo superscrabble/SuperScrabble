@@ -1,7 +1,6 @@
 ﻿namespace SuperScrabble.Services.Game.Models
 {
     using System.Collections.Generic;
-    using System.Linq;
 
     public class Player
     {
@@ -13,6 +12,7 @@
             this.Points = points;
             this.ConnectionId = connectionId;
             this.ConsecutiveSkipsCount = 0;
+            this.HasLeftTheGame = false;
         }
 
         public int ConsecutiveSkipsCount { get; set; }
@@ -22,6 +22,8 @@
         public int Points { get; set; }
 
         public string ConnectionId { get; set; }
+
+        public bool HasLeftTheGame { get; private set; }
 
         public IReadOnlyCollection<Tile> Tiles => this.tiles.AsReadOnly();
 
@@ -57,23 +59,9 @@
             return this.tiles[index];
         }
 
-        public bool OwnsAllTiles(IEnumerable<Tile> tilesToCheck)
+        public void LeaveGame()
         {
-            var playerTilesCopy = this.Tiles.ToList();
-
-            foreach (Tile tile in tilesToCheck)
-            {
-                Tile playerTile = playerTilesCopy.FirstOrDefault(x => x.Equals(tile));
-
-                if (playerTile == null)
-                {
-                    return false;
-                }
-
-                playerTilesCopy.Remove(tile);
-            }
-
-            return true;
+            this.HasLeftTheGame = true;
         }
     }
 }

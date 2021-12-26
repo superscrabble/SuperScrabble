@@ -107,12 +107,21 @@
             var commonViewModel = new CommonGameStateViewModel
             {
                 RemainingTilesCount = gameState.TilesCount,
+
                 Board = boardViewModel,
+
                 PlayerOnTurnUserName = gameState.CurrentPlayer.UserName,
+
                 IsTileExchangePossible = gameState.IsTileExchangePossible,
+
                 IsGameOver = gameState.IsGameOver,
-                PointsByUserNames = gameState.Players.ToDictionary(
-                    p => p.UserName, p => p.Points).OrderByDescending(pbu => pbu.Value),
+
+                PointsByUserNames = gameState.Players
+                    .OrderBy(p => !p.HasLeftTheGame)
+                    .ThenByDescending(p => p.Points)
+                    .ToDictionary(p => p.UserName, p => p.Points),
+
+                UserNamesOfPlayersWhoHaveLeftTheGame = gameState.Players.Where(p => p.HasLeftTheGame).Select(p => p.UserName),
             };
 
             var playerViewModel = new PlayerGameStateViewModel

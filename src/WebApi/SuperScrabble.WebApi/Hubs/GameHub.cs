@@ -47,6 +47,24 @@
         public GameState GameState => this.gameStateManager.GetGameState(this.UserName);
 
         [Authorize]
+        public async Task LeaveGame()
+        {
+            if (this.GameState == null)
+            {
+                return;
+            }
+
+            Player rageQuitter = this.GameState.GetPlayer(this.UserName);
+            rageQuitter.LeaveGame();
+
+            this.GameState.CheckForGameEnd();
+            this.GameState.NextPlayer();
+
+            await this.SaveGameIfTheGameIsOverAsync();
+            await this.UpdateGameStateAsync(this.GroupName);
+        }
+
+        [Authorize]
         public async Task WriteWord(WriteWordInputModel input)
         {
             GameOperationResult result = this.gameService.WriteWord(this.GameState, input, this.UserName);
