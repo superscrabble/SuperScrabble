@@ -6,6 +6,12 @@
 
     public interface IGameStateManager
     {
+        int WaitingPlayersCount { get; }
+
+        bool IsWaitingQueueFull { get; }
+
+        int NeededPlayersCount { get; }
+
         /// <summary>
         /// Gets the game state of the given user
         /// </summary>
@@ -27,31 +33,25 @@
         /// <returns>The group name of the given user or null if the username is not valid</returns>
         string GetGroupName(string userName);
 
-        void RemoveUserFromGroup(string userName);
-
-        bool IsUserAlreadyWaiting(string userName, string connectionId);
-
-        bool IsUserAlreadyInsideGame(string userName);
-
-        void AddUserToWaitingList(string userName, string connectionId);
-
-        bool IsUserInsideGroup(string userName, string groupName);
-
         string CreateGroupFromWaitingPlayers();
 
-        int WaitingPlayersCount { get; }
-
-        bool IsWaitingQueueFull { get; }
+        void RemoveUserFromGroup(string userName);
 
         void ClearWaitingQueue();
 
-        int NeededPlayersCount { get; }
+        void AddUserToWaitingList(string userName, string connectionId);
 
         void AddGameStateToGroup(GameState gameState, string groupName);
 
         void RemoveUserFromWaitingQueue(string userName);
 
         void RemoveGameState(string groupName);
+
+        bool IsUserInsideGroup(string userName, string groupName);
+
+        bool IsUserAlreadyWaiting(string userName, string connectionId);
+
+        bool IsUserAlreadyInsideGame(string userName);
 
         IEnumerable<KeyValuePair<string, string>> GetWaitingPlayers();
     }

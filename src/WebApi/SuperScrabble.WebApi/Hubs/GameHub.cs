@@ -97,8 +97,6 @@
             await this.Clients.Caller.SendAsync("ReceiveAllWildcardOptions", options);
         }
 
-        // Refactor gamestatemanager methods to return null and check for null input
-
         [Authorize]
         public async Task JoinRoom()
         {
@@ -217,28 +215,26 @@
         {
             GameState gameState = this.gameStateManager.GetGameStateByGroupName(groupName);
 
-            if (gameState.IsGameOver)
+            foreach (Player player in gameState.Players)
             {
-                foreach (Player player in gameState.Players)
+                this.gameService.FillPlayerTiles(gameState, player.UserName);
+            }
+
+            foreach (Player player in gameState.Players)
+            {
+                var viewModel = this.gameService.MapFromGameState(gameState, player.UserName);
+                await this.Clients.Client(player.ConnectionId).SendAsync(UpdateGameStateMethodName, viewModel);
+
+                if (gameState.IsGameOver)
                 {
                     this.gameStateManager.RemoveUserFromGroup(player.UserName);
                     await this.Groups.RemoveFromGroupAsync(player.ConnectionId, groupName);
                 }
-
-                this.gameStateManager.RemoveGameState(groupName);
             }
-            else
-            {
-                foreach (Player player in gameState.Players)
-                {
-                    this.gameService.FillPlayerTiles(gameState, player.UserName);
-                }
 
-                foreach (Player player in gameState.Players)
-                {
-                    var viewModel = this.gameService.MapFromGameState(gameState, player.UserName);
-                    await this.Clients.Client(player.ConnectionId).SendAsync(UpdateGameStateMethodName, viewModel);
-                }
+            if (gameState.IsGameOver)
+            {
+                this.gameStateManager.RemoveGameState(groupName);
             }
         }
 
