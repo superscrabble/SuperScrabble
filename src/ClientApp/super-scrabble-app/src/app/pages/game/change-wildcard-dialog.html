@@ -1,13 +1,15 @@
 <h1 mat-dialog-title class="text">Избери буква</h1>
-<span
-    *ngFor="let tile of tiles"
-    class="mx-2 border tile cursor-default rounded-1 p-2 text-center {{getClassNameIfSelected(tile)}}"
-    (click)="clickOnTile(tile)">
-    {{tile.letter}}
-    <span style="font-size: 10px">
-        {{tile.points}}
+<div class="d-flex flex-wrap">
+    <span
+        *ngFor="let tile of tiles"
+        class="mx-2 border tile cursor-default rounded-1 my-2 p-2 text-center {{getClassNameIfSelected(tile)}}"
+        (click)="clickOnTile(tile)">
+        {{tile.letter}}
+        <span style="font-size: 10px">
+            {{tile.points}}
+        </span>
     </span>
-</span>
+</div>
 <div mat-dialog-actions>
     <button mat-button (click)="close()" [mat-dialog-close] class="btn btn-danger mt-4">Ок</button>
   </div>
