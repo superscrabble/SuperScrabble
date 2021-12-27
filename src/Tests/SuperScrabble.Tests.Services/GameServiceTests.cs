@@ -38,10 +38,15 @@
         {
         }
 
-        //Different number of taken tiles
+        //TODO: probably add isVertical parameter
         [Test]
-        public void WriteWord_BoardCellAlreadyTakenAtAnyOfTheInputTilesPositions_Should_ReturnCorrectResult()
+        [TestCase(7, 2, 3)]
+        [TestCase(7, 4, 7)]
+        [TestCase(7, 10, 1)]
+        [TestCase(7, 10, 2)]
+        public void WriteWord_BoardCellAlreadyTakenAtAnyOfTheInputTilesPositions_Should_ReturnCorrectResult(int startingRow, int startingCol, int tilesCount)
         {
+            
             var gameplayConstantsProvider = new StandardGameplayConstantsProvider();
 
             var gameService = new GameService(
@@ -56,19 +61,20 @@
 
             gameService.FillPlayerTiles(gameState, gameState.CurrentPlayer.UserName);
 
-            var tileA = new Tile('А', 1);
-            var tileB = new Tile('Б', 2);
-            var tileC = new Tile('В', 2);
+            var tilesPlacedOnBoard = new List<Tile>();
 
-            gameState.Board[7, 7].Tile = tileA;
-            gameState.Board[7, 8].Tile = tileB;
-            gameState.Board[7, 9].Tile = tileC;
+            for(int i = 0; i < 7; i++)
+            {
+                var tempTile = gameState.TilesBag.DrawTile();
+                tilesPlacedOnBoard.Add(tempTile);
+                gameState.Board[7, 4 + i].Tile = tempTile;
+            }
 
             var invalidInputTiles = new List<KeyValuePair<Tile, Position>>();
 
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < tilesCount; i++)
             {
-                invalidInputTiles.Add(new(gameState.CurrentPlayer.GetTile(i), new Position(7, 7 + i)));
+                invalidInputTiles.Add(new(gameState.CurrentPlayer.GetTile(i), new Position(startingRow, startingCol + i)));
             }
 
             var input = new WriteWordInputModel
@@ -82,9 +88,10 @@
             Assert.AreEqual(1, result.ErrorsByCodes.Count);
             Assert.AreEqual(nameof(Resource.TilePositionAlreadyTaken), result.ErrorsByCodes.First().Key);
 
-            Assert.AreEqual(gameState.Board[7, 7].Tile, tileA);
-            Assert.AreEqual(gameState.Board[7, 8].Tile, tileB);
-            Assert.AreEqual(gameState.Board[7, 9].Tile, tileC);
+            for (int i = 0; i < tilesPlacedOnBoard.Count; i++)
+            {
+                Assert.AreEqual(gameState.Board[7, 4 + i].Tile, tilesPlacedOnBoard[i]);
+            }
         }
 
         [Test]
