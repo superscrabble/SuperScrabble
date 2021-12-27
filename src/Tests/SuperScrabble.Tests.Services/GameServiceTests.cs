@@ -38,27 +38,104 @@
         {
         }
 
+        //Different number of taken tiles
         [Test]
         public void WriteWord_BoardCellAlreadyTakenAtAnyOfTheInputTilesPositions_Should_ReturnCorrectResult()
         {
-            Assert.Fail();
+            var gameplayConstantsProvider = new StandardGameplayConstantsProvider();
+
+            var gameService = new GameService(
+                new FakeShuffleService(),
+                new FakeTilesProvider(gameplayConstantsProvider),
+                new MyOldBoardBonusCellsProvider(),
+                gameplayConstantsProvider,
+                new AlwaysValidWordsService(),
+                new FakeScoringService());
+
+            GameState gameState = gameService.CreateGame(this.twoValidConnectionIdsByUserNames);
+
+            gameService.FillPlayerTiles(gameState, gameState.CurrentPlayer.UserName);
+
+            var tileA = new Tile('А', 1);
+            var tileB = new Tile('Б', 2);
+            var tileC = new Tile('В', 2);
+
+            gameState.Board[7, 7].Tile = tileA;
+            gameState.Board[7, 8].Tile = tileB;
+            gameState.Board[7, 9].Tile = tileC;
+
+            var invalidInputTiles = new List<KeyValuePair<Tile, Position>>();
+
+            for (int i = 0; i < 3; i++)
+            {
+                invalidInputTiles.Add(new(gameState.CurrentPlayer.GetTile(i), new Position(7, 7 + i)));
+            }
+
+            var input = new WriteWordInputModel
+            {
+                PositionsByTiles = invalidInputTiles
+            };
+
+            GameOperationResult result = gameService.WriteWord(gameState, input, gameState.CurrentPlayer.UserName);
+
+            Assert.IsFalse(result.IsSucceeded);
+            Assert.AreEqual(1, result.ErrorsByCodes.Count);
+            Assert.AreEqual(nameof(Resource.TilePositionAlreadyTaken), result.ErrorsByCodes.First().Key);
+
+            Assert.AreEqual(gameState.Board[7, 7].Tile, tileA);
+            Assert.AreEqual(gameState.Board[7, 8].Tile, tileB);
+            Assert.AreEqual(gameState.Board[7, 9].Tile, tileC);
         }
 
         [Test]
         public void WriteWord_InputTilesPositionsOutsideTheBoardRange_Should_ReturnCorrectResult()
         {
+            //TilePositionOutsideBoardRange
             Assert.Fail();
         }
 
         [Test]
         public void WriteWord_InputTilesOnDuplicatePositions_Should_ReturnCorrectResult()
         {
-            Assert.Fail();
+            var gameplayConstantsProvider = new StandardGameplayConstantsProvider();
+
+            var gameService = new GameService(
+                new FakeShuffleService(),
+                new FakeTilesProvider(gameplayConstantsProvider),
+                new MyOldBoardBonusCellsProvider(),
+                gameplayConstantsProvider,
+                new AlwaysValidWordsService(),
+                new FakeScoringService());
+
+            GameState gameState = gameService.CreateGame(this.twoValidConnectionIdsByUserNames);
+
+            gameService.FillPlayerTiles(gameState, gameState.CurrentPlayer.UserName);
+
+            var invalidInputTiles = new List<KeyValuePair<Tile, Position>>();
+
+            for (int i = 0; i < 3; i++)
+            {
+                invalidInputTiles.Add(new(gameState.CurrentPlayer.GetTile(i), new Position(0, i)));
+            }
+
+            invalidInputTiles.Add(new(gameState.CurrentPlayer.GetTile(3), new Position(0, 1)));
+
+            var input = new WriteWordInputModel
+            {
+                PositionsByTiles = invalidInputTiles
+            };
+
+            GameOperationResult result = gameService.WriteWord(gameState, input, gameState.CurrentPlayer.UserName);
+
+            Assert.IsFalse(result.IsSucceeded);
+            Assert.AreEqual(1, result.ErrorsByCodes.Count);
+            Assert.AreEqual(nameof(Resource.InputTilesPositionsCollide), result.ErrorsByCodes.First().Key);
         }
 
         [Test]
         public void WriteWord_InputTilesAreNotPlacedOnTheSameLine_Should_ReturnCorrectResult()
         {
+            //TilesNotOnTheSameLine
             Assert.Fail();
         }
 
