@@ -272,7 +272,7 @@
                     nameof(Resource.InvalidInputTilesCount), Resource.InvalidInputTilesCount);
             }
 
-            this.ValidateWhetherPlayerHasSubmittedTilesThatHeDoesOwn(player, input.PositionsByTiles.Select(x => x.Key));
+            this.ValidateWhetherPlayerHasSubmittedTilesWhichHeOwns(player, input.PositionsByTiles.Select(x => x.Key));
 
             var uniqueRows = new HashSet<int>();
             var uniqueColumns = new HashSet<int>();
@@ -355,11 +355,11 @@
                     nameof(Resource.ImpossibleTileExchange), Resource.ImpossibleTileExchange);
             }
 
-            this.ValidateWhetherPlayerHasSubmittedTilesThatHeDoesOwn(
+            this.ValidateWhetherPlayerHasSubmittedTilesWhichHeOwns(
                 exchanger, input.TilesToExchange, whenExchangingTiles: true);
         }
 
-        private void ValidateWhetherPlayerHasSubmittedTilesThatHeDoesOwn(
+        private void ValidateWhetherPlayerHasSubmittedTilesWhichHeOwns(
             Player player, IEnumerable<Tile> tiles, bool whenExchangingTiles = false)
         {
             bool playerTileExchangeTilesSelector(Tile inputTile, Tile playerTile) => playerTile.Equals(inputTile);
