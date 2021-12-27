@@ -39,6 +39,7 @@ namespace SuperScrabble.WebApi
     using SuperScrabble.Services.Game.BonusCellsProviders;
 
     using static SuperScrabble.Common.ModelValidationConstraints;
+    using SuperScrabble.Data.Seeding;
 
     public class Startup
     {
@@ -126,7 +127,7 @@ namespace SuperScrabble.WebApi
             {
                 AppDbContext dbContext = serviceScope.ServiceProvider.GetRequiredService<AppDbContext>();
                 dbContext.Database.Migrate();
-                //new AppSeeder().SeedAsync(dbContext, serviceScope.ServiceProvider).GetAwaiter().GetResult();
+                new AppSeeder().SeedAsync(dbContext, serviceScope.ServiceProvider).GetAwaiter().GetResult();
             }
 
             if (env.IsDevelopment())
