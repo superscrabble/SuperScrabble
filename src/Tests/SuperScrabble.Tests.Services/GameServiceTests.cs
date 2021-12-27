@@ -180,7 +180,42 @@
         public void WriteWord_InputTilesAreNotPlacedOnTheSameLine_Should_ReturnCorrectResult()
         {
             //TilesNotOnTheSameLine
-            Assert.Fail();
+            var gameplayConstantsProvider = new StandardGameplayConstantsProvider();
+
+            var gameService = new GameService(
+                new FakeShuffleService(),
+                new FakeTilesProvider(gameplayConstantsProvider),
+                new MyOldBoardBonusCellsProvider(),
+                gameplayConstantsProvider,
+                new AlwaysValidWordsService(),
+                new FakeScoringService());
+
+            GameState gameState = gameService.CreateGame(this.twoValidConnectionIdsByUserNames);
+
+            gameService.FillPlayerTiles(gameState, gameState.CurrentPlayer.UserName);
+
+            var invalidInputTiles = new List<KeyValuePair<Tile, Position>>();
+
+            for (int i = 0; i < 3; i++)
+            {
+                invalidInputTiles.Add(new(gameState.CurrentPlayer.GetTile(i), new Position(0, i)));
+            }
+
+            for (int i = 0; i < 3; i++)
+            {
+                invalidInputTiles.Add(new(gameState.CurrentPlayer.GetTile(3 + i), new Position(1 + i, 0)));
+            }
+
+            var input = new WriteWordInputModel
+            {
+                PositionsByTiles = invalidInputTiles
+            };
+
+            GameOperationResult result = gameService.WriteWord(gameState, input, gameState.CurrentPlayer.UserName);
+
+            Assert.IsFalse(result.IsSucceeded);
+            Assert.AreEqual(1, result.ErrorsByCodes.Count);
+            Assert.AreEqual(nameof(Resource.TilesNotOnTheSameLine), result.ErrorsByCodes.First().Key);
         }
 
         [Test]
