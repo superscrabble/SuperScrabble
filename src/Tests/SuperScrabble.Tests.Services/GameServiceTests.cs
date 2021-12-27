@@ -16,7 +16,8 @@
     using SuperScrabble.Services.Game.Scoring;
     using SuperScrabble.Services.Game.TilesProviders;
     using SuperScrabble.ViewModels;
-    
+    using System;
+
     [TestFixture]
     public class GameServiceTests
     {
@@ -46,7 +47,6 @@
         [TestCase(7, 10, 2)]
         public void WriteWord_BoardCellAlreadyTakenAtAnyOfTheInputTilesPositions_Should_ReturnCorrectResult(int startingRow, int startingCol, int tilesCount)
         {
-            
             var gameplayConstantsProvider = new StandardGameplayConstantsProvider();
 
             var gameService = new GameService(
@@ -63,7 +63,7 @@
 
             var tilesPlacedOnBoard = new List<Tile>();
 
-            for(int i = 0; i < 7; i++)
+            for (int i = 0; i < 7; i++)
             {
                 var tempTile = gameState.TilesBag.DrawTile();
                 tilesPlacedOnBoard.Add(tempTile);
@@ -94,11 +94,48 @@
             }
         }
 
+        //TODO: pass invalid positions
         [Test]
+        //public void WriteWord_InputTilesPositionsOutsideTheBoardRange_Should_ReturnCorrectResult(params Position[] invalidPositions)
         public void WriteWord_InputTilesPositionsOutsideTheBoardRange_Should_ReturnCorrectResult()
         {
-            //TilePositionOutsideBoardRange
-            Assert.Fail();
+            var invalidPositions = new Position[4];
+            invalidPositions[0] = new Position(-1, 2);
+            invalidPositions[0] = new Position(-1, -2);
+            invalidPositions[0] = new Position(50, -2);
+            invalidPositions[0] = new Position(230, 2);
+
+            var gameplayConstantsProvider = new StandardGameplayConstantsProvider();
+
+            var gameService = new GameService(
+                new FakeShuffleService(),
+                new FakeTilesProvider(gameplayConstantsProvider),
+                new MyOldBoardBonusCellsProvider(),
+                gameplayConstantsProvider,
+                new AlwaysValidWordsService(),
+                new FakeScoringService());
+
+            GameState gameState = gameService.CreateGame(this.twoValidConnectionIdsByUserNames);
+
+            gameService.FillPlayerTiles(gameState, gameState.CurrentPlayer.UserName);
+
+            var invalidInputTiles = new List<KeyValuePair<Tile, Position>>();
+
+            for (int i = 0; i < invalidPositions.Count(); i++)
+            {
+                invalidInputTiles.Add(new(gameState.CurrentPlayer.GetTile(i), invalidPositions[i]));
+            }
+
+            var input = new WriteWordInputModel
+            {
+                PositionsByTiles = invalidInputTiles
+            };
+
+            GameOperationResult result = gameService.WriteWord(gameState, input, gameState.CurrentPlayer.UserName);
+
+            Assert.IsFalse(result.IsSucceeded);
+            Assert.AreEqual(1, result.ErrorsByCodes.Count);
+            Assert.AreEqual(nameof(Resource.TilePositionOutsideBoardRange), result.ErrorsByCodes.First().Key);
         }
 
         [Test]
