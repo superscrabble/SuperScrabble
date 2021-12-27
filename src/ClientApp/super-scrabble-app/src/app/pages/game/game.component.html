@@ -67,7 +67,7 @@
                 <div class="my-3 d-flex flex-wrap">
                     <span
                         *ngFor="let tile of playerTiles"
-                        class="mx-1 border tile cursor-default rounded-1 px-2 py-2 text-center {{getClassNameIfSelectedExchangeTile(tile)}}"
+                        class="mx-1 my-1 border tile cursor-default rounded-1 px-2 py-2 text-center {{getClassNameIfSelectedExchangeTile(tile)}}"
                         (click)="clickOnExchangeTile(tile)">
                         <span>
                             <strong class="tile-letter py-3">
