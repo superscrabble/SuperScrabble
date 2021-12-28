@@ -281,7 +281,7 @@
                 player.ConsecutiveSkipsCount++;
 
                 bool isGameOver = gameState.Players.All(
-                    p => p.ConsecutiveSkipsCount >= this.gameplayConstantsProvider.MinConsecutiveSkipsCountToEndTheGame);
+                    p => p.ConsecutiveSkipsCount >= this.gameplayConstantsProvider.MinSkipsCountForEachPlayerToEndTheGame);
 
                 if (isGameOver)
                 {

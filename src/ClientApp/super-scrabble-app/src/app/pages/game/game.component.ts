@@ -2322,12 +2322,16 @@ export class GameComponent implements OnInit {
           "points": 10
       },
       {
+        "letter": "Щ",
+        "points": 10
+    },
+      {
         "letter": "Ш",
         "points": 2
       },
       {
-          "letter": "Ф",
-          "points": 10
+          "letter": "А",
+          "points": 1
       },
       {
           "letter": "З",
@@ -2337,14 +2341,6 @@ export class GameComponent implements OnInit {
           "letter": "Т",
           "points": 1
       },
-      {
-          "letter": "К",
-          "points": 2
-      },
-      {
-          "letter": "П",
-          "points": 1
-      }
   ]
 
     this.loadBoard(data.board);
