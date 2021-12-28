@@ -16,7 +16,8 @@
     using SuperScrabble.Services.Game.Scoring;
     using SuperScrabble.Services.Game.TilesProviders;
     using SuperScrabble.ViewModels;
-    
+    using System;
+
     [TestFixture]
     public class GameServiceTests
     {
@@ -38,40 +39,237 @@
         {
         }
 
+        //Tests for:
+        //First player not placing on the center or placing 1 tile
+
+        //TODO: probably add isVertical parameter
         [Test]
-        public void WriteWord_BoardCellAlreadyTakenAtAnyOfTheInputTilesPositions_Should_ReturnCorrectResult()
+        [TestCase(7, 2, 3)]
+        [TestCase(7, 4, 7)]
+        [TestCase(7, 10, 1)]
+        [TestCase(7, 10, 2)]
+        public void WriteWord_BoardCellAlreadyTakenAtAnyOfTheInputTilesPositions_Should_ReturnCorrectResult(int startingRow, int startingCol, int tilesCount)
         {
-            Assert.Fail();
+            var gameplayConstantsProvider = new StandardGameplayConstantsProvider();
+
+            var gameService = new GameService(
+                new FakeShuffleService(),
+                new FakeTilesProvider(gameplayConstantsProvider),
+                new MyOldBoardBonusCellsProvider(),
+                gameplayConstantsProvider,
+                new AlwaysValidWordsService(),
+                new FakeScoringService());
+
+            GameState gameState = gameService.CreateGame(this.twoValidConnectionIdsByUserNames);
+
+            gameService.FillPlayerTiles(gameState, gameState.CurrentPlayer.UserName);
+
+            var tilesPlacedOnBoard = new List<Tile>();
+
+            for (int i = 0; i < 7; i++)
+            {
+                var tempTile = gameState.TilesBag.DrawTile();
+                tilesPlacedOnBoard.Add(tempTile);
+                gameState.Board[7, 4 + i].Tile = tempTile;
+            }
+
+            var invalidInputTiles = new List<KeyValuePair<Tile, Position>>();
+
+            for (int i = 0; i < tilesCount; i++)
+            {
+                invalidInputTiles.Add(new(gameState.CurrentPlayer.GetTile(i), new Position(startingRow, startingCol + i)));
+            }
+
+            var input = new WriteWordInputModel
+            {
+                PositionsByTiles = invalidInputTiles
+            };
+
+            GameOperationResult result = gameService.WriteWord(gameState, input, gameState.CurrentPlayer.UserName);
+
+            Assert.IsFalse(result.IsSucceeded);
+            Assert.AreEqual(1, result.ErrorsByCodes.Count);
+            Assert.AreEqual(nameof(Resource.TilePositionAlreadyTaken), result.ErrorsByCodes.First().Key);
+
+            for (int i = 0; i < tilesPlacedOnBoard.Count; i++)
+            {
+                Assert.AreEqual(gameState.Board[7, 4 + i].Tile, tilesPlacedOnBoard[i]);
+            }
         }
 
+        //TODO: pass invalid positions
         [Test]
+        //public void WriteWord_InputTilesPositionsOutsideTheBoardRange_Should_ReturnCorrectResult(params Position[] invalidPositions)
         public void WriteWord_InputTilesPositionsOutsideTheBoardRange_Should_ReturnCorrectResult()
         {
-            Assert.Fail();
+            var invalidPositions = new Position[4];
+            invalidPositions[0] = new Position(-1, 2);
+            invalidPositions[0] = new Position(-1, -2);
+            invalidPositions[0] = new Position(50, -2);
+            invalidPositions[0] = new Position(230, 2);
+
+            var gameplayConstantsProvider = new StandardGameplayConstantsProvider();
+
+            var gameService = new GameService(
+                new FakeShuffleService(),
+                new FakeTilesProvider(gameplayConstantsProvider),
+                new MyOldBoardBonusCellsProvider(),
+                gameplayConstantsProvider,
+                new AlwaysValidWordsService(),
+                new FakeScoringService());
+
+            GameState gameState = gameService.CreateGame(this.twoValidConnectionIdsByUserNames);
+
+            gameService.FillPlayerTiles(gameState, gameState.CurrentPlayer.UserName);
+
+            var invalidInputTiles = new List<KeyValuePair<Tile, Position>>();
+
+            for (int i = 0; i < invalidPositions.Count(); i++)
+            {
+                invalidInputTiles.Add(new(gameState.CurrentPlayer.GetTile(i), invalidPositions[i]));
+            }
+
+            var input = new WriteWordInputModel
+            {
+                PositionsByTiles = invalidInputTiles
+            };
+
+            GameOperationResult result = gameService.WriteWord(gameState, input, gameState.CurrentPlayer.UserName);
+
+            Assert.IsFalse(result.IsSucceeded);
+            Assert.AreEqual(1, result.ErrorsByCodes.Count);
+            Assert.AreEqual(nameof(Resource.TilePositionOutsideBoardRange), result.ErrorsByCodes.First().Key);
         }
 
         [Test]
         public void WriteWord_InputTilesOnDuplicatePositions_Should_ReturnCorrectResult()
         {
-            Assert.Fail();
+            var gameplayConstantsProvider = new StandardGameplayConstantsProvider();
+
+            var gameService = new GameService(
+                new FakeShuffleService(),
+                new FakeTilesProvider(gameplayConstantsProvider),
+                new MyOldBoardBonusCellsProvider(),
+                gameplayConstantsProvider,
+                new AlwaysValidWordsService(),
+                new FakeScoringService());
+
+            GameState gameState = gameService.CreateGame(this.twoValidConnectionIdsByUserNames);
+
+            gameService.FillPlayerTiles(gameState, gameState.CurrentPlayer.UserName);
+
+            var invalidInputTiles = new List<KeyValuePair<Tile, Position>>();
+
+            for (int i = 0; i < 3; i++)
+            {
+                invalidInputTiles.Add(new(gameState.CurrentPlayer.GetTile(i), new Position(0, i)));
+            }
+
+            invalidInputTiles.Add(new(gameState.CurrentPlayer.GetTile(3), new Position(0, 1)));
+
+            var input = new WriteWordInputModel
+            {
+                PositionsByTiles = invalidInputTiles
+            };
+
+            GameOperationResult result = gameService.WriteWord(gameState, input, gameState.CurrentPlayer.UserName);
+
+            Assert.IsFalse(result.IsSucceeded);
+            Assert.AreEqual(1, result.ErrorsByCodes.Count);
+            Assert.AreEqual(nameof(Resource.InputTilesPositionsCollide), result.ErrorsByCodes.First().Key);
         }
 
+
+        //TODO: Probably needs more TestCases
         [Test]
         public void WriteWord_InputTilesAreNotPlacedOnTheSameLine_Should_ReturnCorrectResult()
         {
-            Assert.Fail();
+            var gameplayConstantsProvider = new StandardGameplayConstantsProvider();
+
+            var gameService = new GameService(
+                new FakeShuffleService(),
+                new FakeTilesProvider(gameplayConstantsProvider),
+                new MyOldBoardBonusCellsProvider(),
+                gameplayConstantsProvider,
+                new AlwaysValidWordsService(),
+                new FakeScoringService());
+
+            GameState gameState = gameService.CreateGame(this.twoValidConnectionIdsByUserNames);
+
+            gameService.FillPlayerTiles(gameState, gameState.CurrentPlayer.UserName);
+
+            var invalidInputTiles = new List<KeyValuePair<Tile, Position>>();
+
+            for (int i = 0; i < 3; i++)
+            {
+                invalidInputTiles.Add(new(gameState.CurrentPlayer.GetTile(i), new Position(0, i)));
+            }
+
+            for (int i = 0; i < 3; i++)
+            {
+                invalidInputTiles.Add(new(gameState.CurrentPlayer.GetTile(3 + i), new Position(1 + i, 0)));
+            }
+
+            var input = new WriteWordInputModel
+            {
+                PositionsByTiles = invalidInputTiles
+            };
+
+            GameOperationResult result = gameService.WriteWord(gameState, input, gameState.CurrentPlayer.UserName);
+
+            Assert.IsFalse(result.IsSucceeded);
+            Assert.AreEqual(1, result.ErrorsByCodes.Count);
+            Assert.AreEqual(nameof(Resource.TilesNotOnTheSameLine), result.ErrorsByCodes.First().Key);
         }
 
+        //TODO: Add TestCases and remove the "magic" numbers
         [Test]
         public void WriteWord_InputTilesWithGapsBetweenThePositions_Should_ReturnCorrectResult()
         {
-            Assert.Fail();
+            var gameplayConstantsProvider = new StandardGameplayConstantsProvider();
+
+            var gameService = new GameService(
+                new FakeShuffleService(),
+                new FakeTilesProvider(gameplayConstantsProvider),
+                new MyOldBoardBonusCellsProvider(),
+                gameplayConstantsProvider,
+                new AlwaysValidWordsService(),
+                new FakeScoringService());
+
+            GameState gameState = gameService.CreateGame(this.twoValidConnectionIdsByUserNames);
+
+            gameService.FillPlayerTiles(gameState, gameState.CurrentPlayer.UserName);
+
+            var invalidInputTiles = new List<KeyValuePair<Tile, Position>>();
+
+            for (int i = 0; i < 3; i++)
+            {
+                invalidInputTiles.Add(new(gameState.CurrentPlayer.GetTile(i), new Position(7, 6 + i)));
+            }
+
+            for (int i = 0; i < 2; i++)
+            {
+                invalidInputTiles.Add(new(gameState.CurrentPlayer.GetTile(3 + i), new Position(7, 10 + i)));
+            }
+
+            var input = new WriteWordInputModel
+            {
+                PositionsByTiles = invalidInputTiles
+            };
+
+            GameOperationResult result = gameService.WriteWord(gameState, input, gameState.CurrentPlayer.UserName);
+
+            Assert.IsFalse(result.IsSucceeded);
+            Assert.AreEqual(1, result.ErrorsByCodes.Count);
+            Assert.AreEqual(nameof(Resource.GapsBetweenInputTilesNotAllowed), result.ErrorsByCodes.First().Key);
         }
 
+        //Pass incorrect character (e.x Chinese symbol, English one etc)
+        //Pass empty wildcard
         [Test]
         public void WriteWord_InvalidInputTilesWildcardValue_Should_ReturnCorrectResult()
         {
-            Assert.Fail();
+            //Verify that the user has a wildcard
         }
 
         [Test]

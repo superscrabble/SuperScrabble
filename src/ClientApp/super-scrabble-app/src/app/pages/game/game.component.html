@@ -64,10 +64,10 @@
             <button [disabled]="!isCurrentPlayerOnTurn()" class="btn normal-btn mb-2" (click)="skipTurn()">Пропусни ход</button>
             <button class="btn normal-btn mb-2" [disabled]="!isTileExchangePossible || !isCurrentPlayerOnTurn()" (click)="clickExchangeBtn()">Замени буква</button>
             <div *ngIf="showExchangeField" class="">
-                <div class="my-3">
+                <div class="my-3 d-flex flex-wrap">
                     <span
                         *ngFor="let tile of playerTiles"
-                        class="mx-1 border tile cursor-default rounded-1 px-2 py-2 text-center {{getClassNameIfSelectedExchangeTile(tile)}}"
+                        class="mx-1 my-1 border tile cursor-default rounded-1 px-2 py-2 text-center {{getClassNameIfSelectedExchangeTile(tile)}}"
                         (click)="clickOnExchangeTile(tile)">
                         <span>
                             <strong class="tile-letter py-3">
