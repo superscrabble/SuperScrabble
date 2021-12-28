@@ -34,13 +34,14 @@ export class GameComponent implements OnInit {
   updatedBoardCells: any[] = new Array();
   selectedBoardCell: Cell | null = null;
   playerNameOnTurn: string = "";
-  myUserName: string = "";
+  currentUserName: string = "";
   showExchangeField: boolean = false;
   selectedExchangeTiles: Tile[] = new Array();
   isTileExchangePossible: boolean = true;
   wildcardOptions: Tile[] = new Array();
   //TODO: move this constant in a global file
   WILDCARD_SYMBOL: string = "\u0000";
+  userNamesOfPlayersWhoHaveLeftTheGame: string[] = [];
 
   constructor(
       private signalrService: SignalrService,
@@ -79,10 +80,14 @@ export class GameComponent implements OnInit {
         this.loadPlayerTiles(data.tiles);
         this.remainingTilesCount = data.commonGameState.remainingTilesCount;
         this.playerNameOnTurn = data.commonGameState.playerOnTurnUserName;
-        this.myUserName = data.myUserName; //Can be moved into localStorage
+        this.currentUserName = data.myUserName; //Can be moved into localStorage
         this.isTileExchangePossible = data.commonGameState.isTileExchangePossible;
         this.loadScoreBoard(data.commonGameState.pointsByUserNames)
         this.updatedBoardCells = [];
+
+        if(data.commonGameState.userNamesOfPlayersWhoHaveLeftTheGame) {
+            this.userNamesOfPlayersWhoHaveLeftTheGame = data.commonGameState.userNamesOfPlayersWhoHaveLeftTheGame;
+        }
 
         if(data.commonGameState.isGameOver == true) {
             this.router.navigate([this.router.url + "/summary"]);
@@ -193,7 +198,18 @@ export class GameComponent implements OnInit {
   }
 
   modifyCurrentUserName(playerName: string) {
-      return playerName == this.myUserName ? playerName + " (аз)" : playerName;
+      let result = playerName
+      if(playerName == this.currentUserName) {
+        result += " (аз)"; 
+        return result;
+      } 
+      
+      if(this.userNamesOfPlayersWhoHaveLeftTheGame.find(x => x == playerName)) {
+          result += " (напуснал)";
+          return result;
+      }
+
+      return result;
   }
 
   getClassNameIfCellIsTaken(cell: Cell) {
@@ -209,6 +225,10 @@ export class GameComponent implements OnInit {
 
   getValueWhenEmptyByCellType(type: number) {
     return this.cellViewDataByType.get(type)?.valueWhenEmpty;
+  }
+
+  isCurrentPlayerOnTurn() : boolean {
+      return this.currentUserName == this.playerNameOnTurn;
   }
 
   clickOnPlayerTile(playerTile: Tile | any) {
@@ -234,6 +254,16 @@ export class GameComponent implements OnInit {
         this.dialog.open(ChangeWildcardDialog, { data: { tiles: this.wildcardOptions, 
             tile: playerTile, writeWordInput: null}});
     }
+  }
+
+  leaveGame() {
+      let dialogRef = this.dialog.open(LeaveGameDialog)
+      dialogRef.afterClosed().subscribe(result => {
+        if(result) {
+            this.signalrService.leaveGame();
+            this.router.navigate(["/"]);
+        }
+      })
   }
 
   clickExchangeBtn() {
@@ -2333,10 +2363,17 @@ export class ErrorDialog {
 
     constructor(public dialogRef: MatDialogRef<ErrorDialog>, 
                 @Inject(MAT_DIALOG_DATA) public data: ErrorDialogData) {}
+}
 
-    /*close() {
-        this.dialogRef.close();
-    }*/
+@Component({
+    selector: 'leave-game-dialog',
+    templateUrl: 'leave-game-dialog.html',
+    styleUrls: ['./game.component.css']
+  })
+export class LeaveGameDialog {
+
+    constructor(public dialogRef: MatDialogRef<ErrorDialog>, 
+                @Inject(MAT_DIALOG_DATA) public data: ErrorDialogData) {}
 }
 
 @Component({

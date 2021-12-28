@@ -1,10 +1,10 @@
 ﻿namespace SuperScrabble.Services.Game.TilesProviders
 {
     using System.Collections.Generic;
-    using System.Linq;
+
     using SuperScrabble.Services.Game.Models;
 
-    public class MyOldBoardTilesProvider : BaseTileProvider
+    public class MyOldBoardTilesProvider : BaseTilesProvider
     {
         public MyOldBoardTilesProvider(IGameplayConstantsProvider gameplayConstantsProvider)
                 : base(gameplayConstantsProvider)

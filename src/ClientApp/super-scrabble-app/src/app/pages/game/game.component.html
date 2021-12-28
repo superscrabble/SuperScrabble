@@ -1,4 +1,4 @@
-<div class="d-flex justify-content-center flex-nowrap page">
+<div class="d-flex justify-content-center fill page">
     <div class="col-md-3">
         <div class="border border-dark rounded scoreboard mt-4">
             <table class="table">
@@ -11,7 +11,7 @@
             </table>
         </div>
     </div>
-    <div class="col-md-6">
+    <div class="col-md-6 align-self-center">
         <div class="row d-flex justify-content-center px-5">
             <table style="table-layout: fixed;">
                 <tr *ngFor="let row of board">
@@ -58,15 +58,16 @@
                 <span>Оставащи букви - </span>
                 <b>{{remainingTilesCount}}</b>
             </span>
+            <button class="btn btn-danger mb-2" (click)="leaveGame()">Напусни играта</button>
         </div>
         <div class="d-flex flex-column">
-            <button class="btn normal-btn mb-2" (click)="skipTurn()">Пропусни ход</button>
-            <button class="btn normal-btn mb-2" [disabled]="!isTileExchangePossible" (click)="clickExchangeBtn()">Замени буква</button>
+            <button [disabled]="!isCurrentPlayerOnTurn()" class="btn normal-btn mb-2" (click)="skipTurn()">Пропусни ход</button>
+            <button class="btn normal-btn mb-2" [disabled]="!isTileExchangePossible || !isCurrentPlayerOnTurn()" (click)="clickExchangeBtn()">Замени буква</button>
             <div *ngIf="showExchangeField" class="">
-                <div class="my-3">
+                <div class="my-3 d-flex flex-wrap">
                     <span
                         *ngFor="let tile of playerTiles"
-                        class="mx-1 border tile cursor-default rounded-1 px-2 py-2 text-center {{getClassNameIfSelectedExchangeTile(tile)}}"
+                        class="mx-1 my-1 border tile cursor-default rounded-1 px-2 py-2 text-center {{getClassNameIfSelectedExchangeTile(tile)}}"
                         (click)="clickOnExchangeTile(tile)">
                         <span>
                             <strong class="tile-letter py-3">
@@ -80,7 +81,7 @@
                 </div>
                 <button class="btn btn-danger my-2" (click)="exchangeSelectedTiles()">Замени</button>
             </div>
-            <button class="btn btn-danger" (click)="writeWord()">Напиши дума</button>
+            <button [disabled]="!isCurrentPlayerOnTurn()" class="btn btn-danger" (click)="writeWord()">Напиши дума</button>
         </div>
     </div>
 </div>

@@ -1,18 +1,21 @@
 ﻿namespace SuperScrabble.Services.Game.Models
 {
-    using System.Collections.Generic;
     using System.Linq;
+    using System.Collections.Generic;
 
     public class Player
     {
         private readonly List<Tile> tiles = new();
+        private readonly IGameplayConstantsProvider gameplayConstantsProvider;
 
-        public Player(string userName, int points, string connectionId)
+        public Player(string userName, int points, string connectionId, IGameplayConstantsProvider gameplayConstantsProvider)
         {
             this.UserName = userName;
             this.Points = points;
             this.ConnectionId = connectionId;
+            this.gameplayConstantsProvider = gameplayConstantsProvider;
             this.ConsecutiveSkipsCount = 0;
+            this.HasLeftTheGame = false;
         }
 
         public int ConsecutiveSkipsCount { get; set; }
@@ -22,6 +25,8 @@
         public int Points { get; set; }
 
         public string ConnectionId { get; set; }
+
+        public bool HasLeftTheGame { get; private set; }
 
         public IReadOnlyCollection<Tile> Tiles => this.tiles.AsReadOnly();
 
@@ -44,7 +49,15 @@
 
         public void RemoveTile(Tile tile)
         {
-            this.tiles.Remove(tile);
+            Tile tileToRemove = this.tiles.FirstOrDefault(playerTile => 
+                playerTile.Equals(tile) || (tile?.Points == 0
+                && playerTile.Letter == this.gameplayConstantsProvider.WildcardValue
+                && playerTile.Points == 0));
+
+            if (tileToRemove != null)
+            {
+                this.tiles.Remove(tileToRemove);
+            }
         }
 
         public Tile GetTile(int index)
@@ -57,23 +70,25 @@
             return this.tiles[index];
         }
 
-        public bool OwnsAllTiles(IEnumerable<Tile> tilesToCheck)
+        public void LeaveGame()
         {
-            var playerTilesCopy = this.Tiles.ToList();
+            this.HasLeftTheGame = true;
+        }
 
-            foreach (Tile tile in tilesToCheck)
+        public void RemoveTiles(IEnumerable<Tile> tiles)
+        {
+            foreach (Tile tile in tiles)
             {
-                Tile playerTile = playerTilesCopy.FirstOrDefault(x => x.Equals(tile));
-
-                if (playerTile == null)
-                {
-                    return false;
-                }
-
-                playerTilesCopy.Remove(tile);
+                this.RemoveTile(tile);
             }
+        }
 
-            return true;
+        public void AddTiles(IEnumerable<Tile> tiles)
+        {
+            foreach (Tile tile in tiles)
+            {
+                this.AddTile(tile);
+            }
         }
     }
 }

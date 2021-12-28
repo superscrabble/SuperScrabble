@@ -1,7 +1,6 @@
 ﻿namespace SuperScrabble.WebApi.Hubs
 {
     using System;
-    using System.Linq;
     using System.Threading.Tasks;
 
     using Microsoft.AspNetCore.SignalR;
@@ -20,34 +19,50 @@
         public const string WaitingPlayersQueueGroupName = "WaitingPlayerQueue";
         public const string StartGameMethodName = "StartGame";
         public const string UpdateGameStateMethodName = "UpdateGameState";
+        public const string UserAlreadyInsideGameMethodName = "UserAlreadyInsideGame";
 
         private readonly IGameService gameService;
         private readonly IGameStateManager gameStateManager;
         private readonly IGamesService gamesService;
         private readonly ITilesProvider tilesProvider;
-        private readonly IGameplayConstantsProvider gameplayConstantsProvider;
 
         public GameHub(
             IGameService gameService,
             IGameStateManager gameStateManager,
             IGamesService gamesService,
-            ITilesProvider tilesProvider,
-            IGameplayConstantsProvider gameplayConstantsProvider)
+            ITilesProvider tilesProvider)
         {
             this.gameService = gameService;
             this.gameStateManager = gameStateManager;
             this.gamesService = gamesService;
             this.tilesProvider = tilesProvider;
-            this.gameplayConstantsProvider = gameplayConstantsProvider;
         }
+
+        public string ConnectionId => this.Context.ConnectionId;
 
         public string UserName => this.Context.User.Identity.Name;
 
-        public GameState GameState => this.gameStateManager.GetGameState(this.UserName);
-
         public string GroupName => this.gameStateManager.GetGroupName(this.UserName);
 
-        public string ConnectionId => this.Context.ConnectionId;
+        public GameState GameState => this.gameStateManager.GetGameState(this.UserName);
+
+        [Authorize]
+        public async Task LeaveGame()
+        {
+            if (this.GameState == null)
+            {
+                return;
+            }
+
+            Player rageQuitter = this.GameState.GetPlayer(this.UserName);
+            rageQuitter.LeaveGame();
+
+            this.GameState.CheckForGameEnd();
+            this.GameState.NextPlayer();
+
+            await this.SaveGameIfTheGameIsOverAsync();
+            await this.UpdateGameStateAsync(this.GroupName);
+        }
 
         [Authorize]
         public async Task WriteWord(WriteWordInputModel input)
@@ -103,9 +118,14 @@
         [Authorize]
         public async Task JoinRoom()
         {
-            if (this.gameStateManager.IsUserAlreadyWaiting(this.UserName, this.ConnectionId)
-                || this.gameStateManager.IsUserAlreadyInsideGame(this.UserName))
+            if (this.gameStateManager.IsUserAlreadyWaiting(this.UserName, this.ConnectionId))
             {
+                return;
+            }
+
+            if (this.gameStateManager.IsUserAlreadyInsideGame(this.UserName))
+            {
+                await this.Clients.Caller.SendAsync(UserAlreadyInsideGameMethodName, this.GroupName);
                 return;
             }
 
@@ -119,7 +139,7 @@
             }
 
             string groupName = this.gameStateManager.CreateGroupFromWaitingPlayers();
-            var waitingPlayers = this.gameStateManager.GetWaitingPlayers(groupName);
+            var waitingPlayers = this.gameStateManager.GetWaitingPlayers();
 
             foreach (var waitingPlayer in waitingPlayers)
             {
@@ -166,8 +186,14 @@
             return Task.CompletedTask;
         }
 
+        [Authorize]
         public override Task OnConnectedAsync()
         {
+            if (!this.gameStateManager.IsUserAlreadyInsideGame(this.UserName))
+            {
+                return Task.CompletedTask;
+            }
+
             GameState gameState = this.gameStateManager.GetGameState(this.UserName);
 
             if (gameState != null)
@@ -180,6 +206,7 @@
                 }
             }
 
+            this.Clients.Caller.SendAsync(UserAlreadyInsideGameMethodName, this.GroupName).GetAwaiter().GetResult();
             return Task.CompletedTask;
         }
 
@@ -199,7 +226,7 @@
 
         private async Task SendValidationErrorMessageAsync(string methodName, GameOperationResult result)
         {
-            await this.Clients.Client(this.Context.ConnectionId).SendAsync(methodName, result);
+            await this.Clients.Caller.SendAsync(methodName, result);
         }
 
         private async Task UpdateGameStateAsync(string groupName)
@@ -231,8 +258,7 @@
 
         private async Task SendNeededPlayersCountAsync(string groupName)
         {
-            await this.Clients.Groups(groupName)
-                .SendAsync("WaitingForMorePlayers", this.gameStateManager.NeededPlayersCount);
+            await this.Clients.Groups(groupName).SendAsync("WaitingForMorePlayers", this.gameStateManager.NeededPlayersCount);
         }
     }
 }

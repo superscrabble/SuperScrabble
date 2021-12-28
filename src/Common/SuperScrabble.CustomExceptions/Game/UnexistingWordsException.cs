@@ -1,15 +1,13 @@
-﻿using SuperScrabble.LanguageResources;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SuperScrabble.CustomExceptions.Game
+﻿namespace SuperScrabble.CustomExceptions.Game
 {
-    public class UnexistingWordsException : ValidationFailedException
+    using System.Collections.Generic;
+
+    using SuperScrabble.LanguageResources;
+
+    public class UnexistingWordsException : ValidationFailedAfterInputTilesHaveBeenPlacedException
     {
-        public UnexistingWordsException(IEnumerable<string> unexistingWords) : base(nameof(Resource.WordDoesNotExist), Resource.WordDoesNotExist)
+        public UnexistingWordsException(IEnumerable<string> unexistingWords)
+            : base(nameof(Resource.WordDoesNotExist), Resource.WordDoesNotExist)
         {
             this.UnexistingWords = new List<string>(unexistingWords);
         }

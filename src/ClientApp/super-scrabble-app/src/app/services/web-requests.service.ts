@@ -23,7 +23,7 @@ export class WebRequestsService {
   getAuthorized(url: string) {
     return this.http.get(`${this.ROOT_URL}/${url}`, { headers: { 'Accept-Language': 'bg-BG', 'Authorization': 'Bearer ' + localStorage.getItem('access_token') }, observe: 'response', responseType: 'text' });
   }
-  
+
   post(url: string, payload: object) {
     return this.http.post(`${this.ROOT_URL}/${url}`, payload, { headers: { 'Accept-Language': 'bg-BG', "Content-Type": "application/json"}, observe: 'response', responseType: 'text' });
   }

@@ -1,5 +1,5 @@
 <h3 class="m-4">Добре дошли в Супер Скрабъл</h3>
-<div *ngIf="hasAccessToken()">
+<div *ngIf="hasAccessToken() && !currentGameGroupName">
     <button
         *ngIf="!isSearchingForGame"
         (click)="joinRoom()"
@@ -8,4 +8,9 @@
         *ngIf="isSearchingForGame"
         (click)="leaveQueue()"
         class="btn btn-secondary mx-4">Отказ</button>
+</div>
+<div *ngIf="currentGameGroupName">
+    <button 
+        (click)="redirectToCurrentGame()"
+        class="btn btn-secondary mx-4">Продължи игра</button>
 </div>

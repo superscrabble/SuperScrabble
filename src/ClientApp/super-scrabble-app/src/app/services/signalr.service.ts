@@ -102,4 +102,8 @@ export class SignalrService {
   public getAllWildcardOptions() {
     this.hubConnection?.invoke("GetAllWildcardOptions");
   }
+
+  public leaveGame() {
+    this.hubConnection?.invoke("LeaveGame");
+  }
 }

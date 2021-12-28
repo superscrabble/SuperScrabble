@@ -239,6 +239,9 @@ namespace SuperScrabble.Data.Migrations
                     b.Property<int>("GameOutcome")
                         .HasColumnType("int");
 
+                    b.Property<bool>("HasLeft")
+                        .HasColumnType("bit");
+
                     b.Property<int>("Points")
                         .HasColumnType("int");
 

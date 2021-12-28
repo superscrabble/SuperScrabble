@@ -16,7 +16,7 @@
         {
             foreach (var user in connectionIdsByUserNames)
             {
-                this.players.Add(new Player(user.Key, 0, user.Value));
+                this.players.Add(new Player(user.Key, 0, user.Value, gameplayConstantsProvider));
             }
 
             this.TilesBag = tilesBag;
@@ -43,6 +43,24 @@
         public bool IsTileExchangePossible =>
             this.TilesCount >= this.gameplayConstantsProvider.PlayerTilesCount;
 
+        public void CheckForGameEnd()
+        {
+            int playersStillPlayingCount = 0;
+
+            foreach (Player player in this.Players)
+            {
+                if (!player.HasLeftTheGame)
+                {
+                    playersStillPlayingCount++;
+                }
+            }
+
+            if (playersStillPlayingCount <= 1)
+            {
+                this.EndGame();
+            }
+        }
+
         public Player GetPlayer(string userName)
         {
             return this.players.FirstOrDefault(p => p.UserName == userName);
@@ -58,11 +76,19 @@
 
         public void NextPlayer()
         {
-            this.PlayerIndex++;
-
-            if (this.PlayerIndex >= this.Players.Count)
+            while (this.Players.Count > 1)
             {
-                this.PlayerIndex = 0;
+                this.PlayerIndex++;
+
+                if (this.PlayerIndex >= this.Players.Count)
+                {
+                    this.PlayerIndex = 0;
+                }
+
+                if (!this.CurrentPlayer.HasLeftTheGame)
+                {
+                    break;
+                }
             }
         }
 

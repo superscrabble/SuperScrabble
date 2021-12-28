@@ -17,5 +17,7 @@
         public int Points { get; set; }
 
         public GameOutcome GameOutcome { get; set; }
+
+        public bool HasLeft { get; set; }
     }
 }

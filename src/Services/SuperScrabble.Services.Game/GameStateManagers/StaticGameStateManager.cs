@@ -31,15 +31,15 @@
 
         public void AddGameStateToGroup(GameState gameState, string groupName)
         {
-            gamesByGroupName[groupName] = gameState;
+            if (gameState != null && groupName != null)
+            {
+                gamesByGroupName[groupName] = gameState;
+            }
         }
 
         public void AddUserToWaitingList(string userName, string connectionId)
         {
-            if (!IsUserAlreadyWaiting(userName, connectionId))
-            {
-                waitingConnectionIdsByUserName.Add(userName, connectionId);
-            }
+            waitingConnectionIdsByUserName.Add(userName, connectionId);
         }
 
         public void ClearWaitingQueue()
@@ -61,7 +61,7 @@
 
         public GameState GetGameState(string userName)
         {
-            if ((userName == null) || !groupsByUserName.ContainsKey(userName))
+            if (userName == null || !groupsByUserName.ContainsKey(userName))
             {
                 return null;
             }
@@ -78,7 +78,7 @@
 
         public GameState GetGameStateByGroupName(string groupName)
         {
-            if (!gamesByGroupName.ContainsKey(groupName))
+            if (groupName == null || !gamesByGroupName.ContainsKey(groupName))
             {
                 return null;
             }
@@ -88,54 +88,63 @@
 
         public string GetGroupName(string userName)
         {
-            if (!groupsByUserName.ContainsKey(userName))
+            if (userName == null || !groupsByUserName.ContainsKey(userName))
             {
-                throw new ArgumentException("No group was found for the given username");
+                return null;
             }
 
             return groupsByUserName[userName];
         }
 
-        public IEnumerable<KeyValuePair<string, string>> GetWaitingPlayers(string groupName)
+        public IEnumerable<KeyValuePair<string, string>> GetWaitingPlayers()
         {
             return waitingConnectionIdsByUserName;
         }
 
         public bool IsUserAlreadyInsideGame(string userName)
         {
-            return groupsByUserName.ContainsKey(userName);
+            return userName != null && groupsByUserName.ContainsKey(userName);
         }
 
         public bool IsUserAlreadyWaiting(string userName, string connectionId)
         {
-            return waitingConnectionIdsByUserName.ContainsKey(userName)
+            return userName != null && connectionId != null
+                && waitingConnectionIdsByUserName.ContainsKey(userName)
                 && waitingConnectionIdsByUserName[userName] == connectionId;
         }
 
         public bool IsUserInsideGroup(string userName, string groupName)
         {
-            if (!groupsByUserName.ContainsKey(userName))
+            if (userName == null || !groupsByUserName.ContainsKey(userName))
             {
                 return false;
             }
 
-            string actualGroupName = groupsByUserName[userName];
-            return groupName == actualGroupName;
+            return groupName == groupsByUserName[userName];
         }
 
         public void RemoveGameState(string groupName)
         {
-            gamesByGroupName.Remove(groupName);
+            if (groupName != null)
+            {
+                _ = gamesByGroupName.Remove(groupName);
+            }
         }
 
         public void RemoveUserFromGroup(string userName)
         {
-            groupsByUserName.Remove(userName);
+            if (userName != null)
+            {
+                _ = groupsByUserName.Remove(userName);
+            }
         }
 
         public void RemoveUserFromWaitingQueue(string userName)
         {
-            waitingConnectionIdsByUserName.Remove(userName);
+            if (userName != null)
+            {
+                _ = waitingConnectionIdsByUserName.Remove(userName);
+            }
         }
     }
 }

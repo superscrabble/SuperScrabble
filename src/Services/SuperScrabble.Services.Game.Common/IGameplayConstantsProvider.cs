@@ -11,5 +11,7 @@
         int BonusPointsForUsingAllTiles { get; }
 
         char WildcardValue { get; }
+
+        int MinConsecutiveSkipsCountToEndTheGame { get; }
     }
 }
