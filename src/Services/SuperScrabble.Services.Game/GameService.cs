@@ -1,6 +1,5 @@
 ﻿namespace SuperScrabble.Services.Game
 {
-    using System;
     using System.Linq;
     using System.Collections.Generic;
 
@@ -11,13 +10,11 @@
     using SuperScrabble.InputModels.Game;
     using SuperScrabble.LanguageResources;
 
-    using SuperScrabble.Services.Data.Words;
-
     using SuperScrabble.Services.Game.Models;
     using SuperScrabble.Services.Game.Scoring;
+    using SuperScrabble.Services.Game.Validation;
     using SuperScrabble.Services.Game.TilesProviders;
     using SuperScrabble.Services.Game.BonusCellsProviders;
-    using SuperScrabble.Services.Game.Validation;
 
     public class GameService : IGameService
     {
@@ -25,7 +22,6 @@
         private readonly ITilesProvider tilesProvider;
         private readonly IBonusCellsProvider bonusCellsProvider;
         private readonly IGameplayConstantsProvider gameplayConstantsProvider;
-        private readonly IWordsService wordsService;
         private readonly IScoringService scoringService;
         private readonly IGameValidator gameValidator;
 
@@ -34,7 +30,6 @@
             ITilesProvider tilesProvider,
             IBonusCellsProvider bonusCellsProvider,
             IGameplayConstantsProvider gameplayConstantsProvider,
-            IWordsService wordsService,
             IScoringService scoringService,
             IGameValidator gameValidator)
         {
@@ -42,7 +37,6 @@
             this.tilesProvider = tilesProvider;
             this.bonusCellsProvider = bonusCellsProvider;
             this.gameplayConstantsProvider = gameplayConstantsProvider;
-            this.wordsService = wordsService;
             this.scoringService = scoringService;
             this.gameValidator = gameValidator;
         }
@@ -51,9 +45,12 @@
         {
             var shuffledTiles = this.shuffleService.Shuffle(this.tilesProvider.GetTiles());
             var tilesBag = new TilesBag(shuffledTiles);
+
             var positionsByBonusCells = this.bonusCellsProvider.GetPositionsByBonusCells();
             var board = new MyOldBoard(positionsByBonusCells);
+
             var shuffledUsers = this.shuffleService.Shuffle(connectionIdsByUserNames);
+
             return new GameState(shuffledUsers, tilesBag, board, this.gameplayConstantsProvider);
         }
 
@@ -148,6 +145,8 @@
                 var inputTiles = input.PositionsByTiles.Select(x => x.Key);
                 var inputPositions = input.PositionsByTiles.Select(x => x.Value);
 
+                // Validate input model
+
                 this.gameValidator.ValidateWhetherThePlayerIsOnTurn(gameState, authorUserName);
 
                 this.gameValidator.ValidateInputTilesCount(
@@ -181,10 +180,9 @@
 
                 this.gameValidator.ValidateWhetherTheWordsExist(wordBuilders.Select(wb => wb.ToString()));
 
-                foreach (var positionByTile in input.PositionsByTiles)
-                {
-                    author.RemoveTile(positionByTile.Key);
-                }
+                author.RemoveTiles(inputTiles);
+
+                // Update score
 
                 int newPoints = this.scoringService.CalculatePointsFromPlayerInput(input, gameState.Board, wordBuilders);
 
@@ -194,6 +192,8 @@
                 }
 
                 author.Points += newPoints;
+
+                // Update game state
 
                 if (author.Tiles.Count <= 0 && gameState.TilesCount <= 0)
                 {
@@ -255,15 +255,8 @@
 
                 gameState.TilesBag.AddTiles(input.TilesToExchange);
 
-                foreach (Tile tile in input.TilesToExchange)
-                {
-                    exchanger.RemoveTile(tile);
-                }
-
-                foreach (Tile tile in newTiles)
-                {
-                    exchanger.AddTile(tile);
-                }
+                exchanger.RemoveTiles(input.TilesToExchange);
+                exchanger.AddTiles(newTiles);
 
                 gameState.NextPlayer();
                 gameState.ResetAllPlayersConsecutiveSkipsCount();
@@ -287,7 +280,8 @@
                 Player player = gameState.GetPlayer(skipperUserName);
                 player.ConsecutiveSkipsCount++;
 
-                bool isGameOver = gameState.Players.All(p => p.ConsecutiveSkipsCount >= 2);
+                bool isGameOver = gameState.Players.All(
+                    p => p.ConsecutiveSkipsCount >= this.gameplayConstantsProvider.MinConsecutiveSkipsCountToEndTheGame);
 
                 if (isGameOver)
                 {

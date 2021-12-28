@@ -85,7 +85,6 @@
                 new FakeTilesProvider(gameplayConstantsProvider),
                 new MyOldBoardBonusCellsProvider(),
                 gameplayConstantsProvider,
-                new AlwaysValidWordsService(),
                 new FakeScoringService(),
                 new GameValidator(gameplayConstantsProvider, new MyOldBoardTilesProvider(gameplayConstantsProvider), new AlwaysValidWordsService()));
 
@@ -126,7 +125,6 @@
                 new MyOldBoardTilesProvider(gameplayConstantsProvider),
                 new MyOldBoardBonusCellsProvider(),
                 gameplayConstantsProvider,
-                new AlwaysValidWordsService(),
                 new FakeScoringService(),
                 new GameValidator(gameplayConstantsProvider, new MyOldBoardTilesProvider(gameplayConstantsProvider), new AlwaysValidWordsService()));
 
@@ -180,7 +178,6 @@
                 new MyOldBoardTilesProvider(gameplayConstantsProvider),
                 new MyOldBoardBonusCellsProvider(),
                 gameplayConstantsProvider,
-                new AlwaysValidWordsService(),
                 new FakeScoringService(),
                 new GameValidator(gameplayConstantsProvider, new MyOldBoardTilesProvider(gameplayConstantsProvider), new AlwaysValidWordsService()));
 
