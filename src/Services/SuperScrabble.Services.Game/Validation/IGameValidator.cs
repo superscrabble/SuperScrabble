@@ -18,11 +18,18 @@
 
         void ValidateWhetherAllTilesPositionsAreFreeBoardCells(IBoard board, IEnumerable<Position> inputTilesPositions);
 
-        void ValidateWhetherTilesAreOnTheSameLine(IEnumerable<Position> inputTilesPositions);
+        /// <summary>
+        /// Validates whether all input tiles are on the same vertical or horizontal line and throws an exception if not
+        /// </summary>
+        /// <param name="inputTilesPositions"></param>
+        /// <returns>True if tiles are alligned vertically and False if horizontally</returns>
+        void ValidateWhetherTilesAreOnTheSameLine(
+            IEnumerable<Position> inputTilesPositions, out bool areTilesAllignedVertically);
 
         void ValidateWhetherInputTilesHaveDuplicatePositions(IEnumerable<Position> inputTilesPositions);
 
-        void ValidateWhetherFirstWordGoesThroughTheBoardCenter(IBoard board, IEnumerable<Position> inputTilesPositions);
+        void ValidateWhetherFirstWordGoesThroughTheBoardCenter(
+            IBoard board, IEnumerable<Position> inputTilesPositions, out bool goesThroughCenter);
 
         void ValidateForGapsBetweenTheInputTiles(
             IBoard board, IEnumerable<Position> inputTilesPositions, bool areTilesAllignedVertically);

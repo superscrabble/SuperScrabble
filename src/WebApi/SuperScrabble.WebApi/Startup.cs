@@ -129,7 +129,7 @@ namespace SuperScrabble.WebApi
             {
                 AppDbContext dbContext = serviceScope.ServiceProvider.GetRequiredService<AppDbContext>();
                 dbContext.Database.Migrate();
-                new AppSeeder().SeedAsync(dbContext, serviceScope.ServiceProvider).GetAwaiter().GetResult();
+                //new AppSeeder().SeedAsync(dbContext, serviceScope.ServiceProvider).GetAwaiter().GetResult();
             }
 
             if (env.IsDevelopment())

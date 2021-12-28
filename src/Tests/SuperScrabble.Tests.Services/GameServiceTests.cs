@@ -16,7 +16,8 @@
     using SuperScrabble.Services.Game.Scoring;
     using SuperScrabble.Services.Game.TilesProviders;
     using SuperScrabble.ViewModels;
-    
+    using SuperScrabble.Services.Game.Validation;
+
     [TestFixture]
     public class GameServiceTests
     {
@@ -85,7 +86,8 @@
                 new MyOldBoardBonusCellsProvider(),
                 gameplayConstantsProvider,
                 new AlwaysValidWordsService(),
-                new FakeScoringService());
+                new FakeScoringService(),
+                new GameValidator(gameplayConstantsProvider, new MyOldBoardTilesProvider(gameplayConstantsProvider), new AlwaysValidWordsService()));
 
             GameState gameState = gameService.CreateGame(this.twoValidConnectionIdsByUserNames);
 
@@ -125,7 +127,8 @@
                 new MyOldBoardBonusCellsProvider(),
                 gameplayConstantsProvider,
                 new AlwaysValidWordsService(),
-                new FakeScoringService());
+                new FakeScoringService(),
+                new GameValidator(gameplayConstantsProvider, new MyOldBoardTilesProvider(gameplayConstantsProvider), new AlwaysValidWordsService()));
 
             var connectionIdsByUserNames = userNames.Select(
                 name => new KeyValuePair<string, string>(name, $"{name}123456"));
@@ -178,7 +181,8 @@
                 new MyOldBoardBonusCellsProvider(),
                 gameplayConstantsProvider,
                 new AlwaysValidWordsService(),
-                new FakeScoringService());
+                new FakeScoringService(),
+                new GameValidator(gameplayConstantsProvider, new MyOldBoardTilesProvider(gameplayConstantsProvider), new AlwaysValidWordsService()));
 
             GameState gameState = gameService.CreateGame(this.twoValidConnectionIdsByUserNames);
 

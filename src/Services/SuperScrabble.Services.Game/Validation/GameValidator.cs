@@ -7,9 +7,9 @@
     using SuperScrabble.Common;
     using SuperScrabble.CustomExceptions.Game;
 
+    using SuperScrabble.Services.Data.Words;
     using SuperScrabble.Services.Game.Models;
     using SuperScrabble.Services.Game.TilesProviders;
-    using SuperScrabble.Services.Data.Words;
 
     public class GameValidator : IGameValidator
     {
@@ -100,7 +100,8 @@
             }
         }
 
-        public void ValidateWhetherTilesAreOnTheSameLine(IEnumerable<Position> inputTilesPositions)
+        public void ValidateWhetherTilesAreOnTheSameLine(
+            IEnumerable<Position> inputTilesPositions, out bool areTilesAllignedVertically)
         {
             var uniqueRows = inputTilesPositions.Select(pos => pos.Row).Distinct();
             var uniqueColumns = inputTilesPositions.Select(pos => pos.Column).Distinct();
@@ -109,6 +110,8 @@
             {
                 throw new TilesNotOnTheSameLineException();
             }
+
+            areTilesAllignedVertically = uniqueRows.Count() > uniqueColumns.Count();
         }
 
         public void ValidateWhetherInputTilesHaveDuplicatePositions(IEnumerable<Position> inputTilesPositions)
@@ -128,11 +131,14 @@
             }
         }
 
-        public void ValidateWhetherFirstWordGoesThroughTheBoardCenter(IBoard board, IEnumerable<Position> inputTilesPositions)
+        public void ValidateWhetherFirstWordGoesThroughTheBoardCenter(
+            IBoard board, IEnumerable<Position> inputTilesPositions, out bool goesThroughCenter)
         {
+            goesThroughCenter = false;
+
             if (board.IsEmpty())
             {
-                bool goesThroughCenter = inputTilesPositions.Any(pos => board.IsPositionCenter(pos));
+                goesThroughCenter = inputTilesPositions.Any(pos => board.IsPositionCenter(pos));
 
                 if (!goesThroughCenter)
                 {
