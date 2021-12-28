@@ -11,7 +11,5 @@
         public char WildcardValue => '\0';
 
         public int BonusPointsForUsingAllTiles => 50;
-
-        public int MinConsecutiveSkipsCountToEndTheGame => 2;
     }
 }

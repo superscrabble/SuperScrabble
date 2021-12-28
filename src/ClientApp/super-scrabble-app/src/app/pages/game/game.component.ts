@@ -198,7 +198,7 @@ export class GameComponent implements OnInit {
   }
 
   modifyCurrentUserName(playerName: string) {
-      let result = playerName
+      let result = playerName;
       if(playerName == this.currentUserName) {
         result += " (аз)"; 
         return result;

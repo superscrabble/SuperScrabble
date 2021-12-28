@@ -176,16 +176,6 @@
             await this.SendNeededPlayersCountAsync(WaitingPlayersQueueGroupName);
         }
 
-        public override Task OnDisconnectedAsync(Exception exception)
-        {
-            if (this.UserName != null)
-            {
-                this.gameStateManager.RemoveUserFromWaitingQueue(this.UserName);
-            }
-
-            return Task.CompletedTask;
-        }
-
         [Authorize]
         public override Task OnConnectedAsync()
         {
@@ -207,6 +197,16 @@
             }
 
             this.Clients.Caller.SendAsync(UserAlreadyInsideGameMethodName, this.GroupName).GetAwaiter().GetResult();
+            return Task.CompletedTask;
+        }
+
+        public override Task OnDisconnectedAsync(Exception exception)
+        {
+            if (this.UserName != null)
+            {
+                this.gameStateManager.RemoveUserFromWaitingQueue(this.UserName);
+            }
+
             return Task.CompletedTask;
         }
 
