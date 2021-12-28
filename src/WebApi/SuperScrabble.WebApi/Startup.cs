@@ -40,6 +40,7 @@ namespace SuperScrabble.WebApi
 
     using static SuperScrabble.Common.ModelValidationConstraints;
     using SuperScrabble.Data.Seeding;
+    using SuperScrabble.Services.Game.Validation;
 
     public class Startup
     {
@@ -111,6 +112,7 @@ namespace SuperScrabble.WebApi
 
             //services.AddTransient<ITilesProvider, FakeTilesProvider>();
             services.AddTransient<ITilesProvider, MyOldBoardTilesProvider>();
+            services.AddTransient<IGameValidator, GameValidator>();
 
             services.AddControllers();
             services.AddSignalR();
@@ -127,7 +129,7 @@ namespace SuperScrabble.WebApi
             {
                 AppDbContext dbContext = serviceScope.ServiceProvider.GetRequiredService<AppDbContext>();
                 dbContext.Database.Migrate();
-                new AppSeeder().SeedAsync(dbContext, serviceScope.ServiceProvider).GetAwaiter().GetResult();
+                //new AppSeeder().SeedAsync(dbContext, serviceScope.ServiceProvider).GetAwaiter().GetResult();
             }
 
             if (env.IsDevelopment())

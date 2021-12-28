@@ -74,5 +74,21 @@
         {
             this.HasLeftTheGame = true;
         }
+
+        public void RemoveTiles(IEnumerable<Tile> tiles)
+        {
+            foreach (Tile tile in tiles)
+            {
+                this.RemoveTile(tile);
+            }
+        }
+
+        public void AddTiles(IEnumerable<Tile> tiles)
+        {
+            foreach (Tile tile in tiles)
+            {
+                this.AddTile(tile);
+            }
+        }
     }
 }

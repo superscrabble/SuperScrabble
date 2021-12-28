@@ -16,7 +16,7 @@
     using SuperScrabble.Services.Game.Scoring;
     using SuperScrabble.Services.Game.TilesProviders;
     using SuperScrabble.ViewModels;
-    using System;
+    using SuperScrabble.Services.Game.Validation;
 
     [TestFixture]
     public class GameServiceTests
@@ -57,8 +57,10 @@
                 new FakeTilesProvider(gameplayConstantsProvider),
                 new MyOldBoardBonusCellsProvider(),
                 gameplayConstantsProvider,
-                new AlwaysValidWordsService(),
-                new FakeScoringService());
+                new FakeScoringService(),
+                new GameValidator(gameplayConstantsProvider,
+                new MyOldBoardTilesProvider(gameplayConstantsProvider),
+                new AlwaysValidWordsService()));
 
             GameState gameState = gameService.CreateGame(this.twoValidConnectionIdsByUserNames);
 
@@ -115,8 +117,10 @@
                 new FakeTilesProvider(gameplayConstantsProvider),
                 new MyOldBoardBonusCellsProvider(),
                 gameplayConstantsProvider,
-                new AlwaysValidWordsService(),
-                new FakeScoringService());
+                new FakeScoringService(),
+                new GameValidator(gameplayConstantsProvider,
+                new MyOldBoardTilesProvider(gameplayConstantsProvider),
+                new AlwaysValidWordsService()));
 
             GameState gameState = gameService.CreateGame(this.twoValidConnectionIdsByUserNames);
 
@@ -151,8 +155,10 @@
                 new FakeTilesProvider(gameplayConstantsProvider),
                 new MyOldBoardBonusCellsProvider(),
                 gameplayConstantsProvider,
-                new AlwaysValidWordsService(),
-                new FakeScoringService());
+                new FakeScoringService(),
+                new GameValidator(gameplayConstantsProvider,
+                new MyOldBoardTilesProvider(gameplayConstantsProvider),
+                new AlwaysValidWordsService()));
 
             GameState gameState = gameService.CreateGame(this.twoValidConnectionIdsByUserNames);
 
@@ -191,8 +197,10 @@
                 new FakeTilesProvider(gameplayConstantsProvider),
                 new MyOldBoardBonusCellsProvider(),
                 gameplayConstantsProvider,
-                new AlwaysValidWordsService(),
-                new FakeScoringService());
+                new FakeScoringService(),
+                new GameValidator(gameplayConstantsProvider,
+                new MyOldBoardTilesProvider(gameplayConstantsProvider),
+                new AlwaysValidWordsService()));
 
             GameState gameState = gameService.CreateGame(this.twoValidConnectionIdsByUserNames);
 
@@ -233,8 +241,10 @@
                 new FakeTilesProvider(gameplayConstantsProvider),
                 new MyOldBoardBonusCellsProvider(),
                 gameplayConstantsProvider,
-                new AlwaysValidWordsService(),
-                new FakeScoringService());
+                new FakeScoringService(),
+                new GameValidator(gameplayConstantsProvider,
+                new MyOldBoardTilesProvider(gameplayConstantsProvider),
+                new AlwaysValidWordsService()));
 
             GameState gameState = gameService.CreateGame(this.twoValidConnectionIdsByUserNames);
 
@@ -282,8 +292,8 @@
                 new FakeTilesProvider(gameplayConstantsProvider),
                 new MyOldBoardBonusCellsProvider(),
                 gameplayConstantsProvider,
-                new AlwaysValidWordsService(),
-                new FakeScoringService());
+                new FakeScoringService(),
+                new GameValidator(gameplayConstantsProvider, new MyOldBoardTilesProvider(gameplayConstantsProvider), new AlwaysValidWordsService()));
 
             GameState gameState = gameService.CreateGame(this.twoValidConnectionIdsByUserNames);
 
@@ -322,8 +332,8 @@
                 new MyOldBoardTilesProvider(gameplayConstantsProvider),
                 new MyOldBoardBonusCellsProvider(),
                 gameplayConstantsProvider,
-                new AlwaysValidWordsService(),
-                new FakeScoringService());
+                new FakeScoringService(),
+                new GameValidator(gameplayConstantsProvider, new MyOldBoardTilesProvider(gameplayConstantsProvider), new AlwaysValidWordsService()));
 
             var connectionIdsByUserNames = userNames.Select(
                 name => new KeyValuePair<string, string>(name, $"{name}123456"));
@@ -372,11 +382,13 @@
 
             var gameService = new GameService(
                 new FakeShuffleService(),
-                new MyOldBoardTilesProvider(gameplayConstantsProvider),
+                new FakeTilesProvider(gameplayConstantsProvider),
                 new MyOldBoardBonusCellsProvider(),
                 gameplayConstantsProvider,
-                new AlwaysValidWordsService(),
-                new FakeScoringService());
+                new FakeScoringService(),
+                new GameValidator(gameplayConstantsProvider,
+                new MyOldBoardTilesProvider(gameplayConstantsProvider),
+                new AlwaysValidWordsService()));
 
             GameState gameState = gameService.CreateGame(this.twoValidConnectionIdsByUserNames);
 

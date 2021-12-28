@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31829.152
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{7A7F1A7A-46AE-422D-852F-A15EF562F43D}"
 EndProject
@@ -51,7 +51,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SuperScrabble.Services.Game
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SuperScrabble.Services.Game.Common", "Services\SuperScrabble.Services.Game.Common\SuperScrabble.Services.Game.Common.csproj", "{5E219129-9007-4666-84F3-9035C7FA9C03}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SuperScrabble.Data.Common", "Data\SuperScrabble.Data.Common\SuperScrabble.Data.Common.csproj", "{8776882D-0CC1-4479-8230-C947F6B6D169}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SuperScrabble.Data.Common", "Data\SuperScrabble.Data.Common\SuperScrabble.Data.Common.csproj", "{8776882D-0CC1-4479-8230-C947F6B6D169}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
