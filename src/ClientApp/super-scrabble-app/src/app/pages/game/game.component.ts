@@ -57,6 +57,8 @@ export class GameComponent implements OnInit {
   WILDCARD_SYMBOL: string = "\u0000";
   userNamesOfPlayersWhoHaveLeftTheGame: string[] = [];
   turnRemainingTime: number = 100;
+  gameTimerMinutes: number = 0;
+  gameTimerSeconds: number = 0;
 
   constructor(
       private signalrService: SignalrService,
@@ -143,6 +145,11 @@ export class GameComponent implements OnInit {
         console.log(data);
         this.wildcardOptions = data;
     })
+
+    this.signalrService.hubConnection?.on("UpdateGameTimer", data => {
+        this.gameTimerMinutes = data.minutes;
+        this.gameTimerSeconds = data.seconds;
+    });
   }
 
   loadBoard(board: any): void {

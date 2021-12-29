@@ -6,6 +6,8 @@
 
     using Microsoft.AspNetCore.SignalR;
 
+    using SuperScrabble.ViewModels;
+
     using SuperScrabble.Services.Game;
     using SuperScrabble.Services.Game.Models;
     using SuperScrabble.Services.Game.GameStateManagers;
@@ -19,6 +21,8 @@
         private readonly IGameStateManager gameStateManager;
         private readonly IHubContext<GameHub> hubContext;
         private readonly IGameplayConstantsProvider gameplayConstantsProvider;
+
+        private int remainingGameTimerSeconds;
 
         public GameTimer(
             GameState gameState,
@@ -41,11 +45,31 @@
         public void Reset()
         {
             this.AutoReset = true;
-            this.Interval = this.gameplayConstantsProvider.GameTimerSeconds * 1000;
+            this.Interval = 1000;
+            this.remainingGameTimerSeconds = this.gameplayConstantsProvider.GameTimerSeconds;
         }
 
-        public async Task OnTimedEvent(object sender, ElapsedEventArgs args)
+        private async Task OnTimedEvent(object sender, ElapsedEventArgs args)
         {
+            if (remainingGameTimerSeconds >= 0)
+            {
+                int minutes = this.remainingGameTimerSeconds / 60;
+                int seconds = this.remainingGameTimerSeconds % 60;
+
+                var viewModel = new UpdateGameTimerViewModel
+                {
+                    Minutes = minutes,
+                    Seconds = seconds,
+                };
+
+                await this.hubContext
+                    .Clients.Group(this.gameState.GroupName)
+                    .SendAsync("UpdateGameTimer", viewModel);
+
+                this.remainingGameTimerSeconds--;
+                return;
+            }
+
             this.gameState.NextPlayer();
 
             foreach (Player player in this.gameState.Players)
@@ -66,7 +90,8 @@
                     this.gameStateManager.RemoveUserFromGroup(player.UserName);
 
                     await this.hubContext.Groups
-                        .RemoveFromGroupAsync(player.ConnectionId, this.gameState.GroupName);
+                        .RemoveFromGroupAsync(
+                            player.ConnectionId, this.gameState.GroupName);
                 }
             }
 
@@ -74,6 +99,8 @@
             {
                 this.gameStateManager.RemoveGameState(this.gameState.GroupName);
             }
+
+            this.Reset();
         }
     }
 }
