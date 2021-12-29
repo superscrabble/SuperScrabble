@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, NgZone } from '@angular/core';
+import { Component, OnInit, Inject, NgZone, Pipe, PipeTransform } from '@angular/core';
 import { SignalrService } from 'src/app/services/signalr.service';
 import { Tile } from 'src/app/models/tile';
 import { Cell } from 'src/app/models/cell';
@@ -17,6 +17,20 @@ export interface ChangeWildcardDialogData {
     writeWordInput: any[];
     tile: Tile;
 }
+
+@Pipe({
+    name: "formatTime"
+})
+export class FormatTimePipe implements PipeTransform {
+    transform(value: number): string {
+      const minutes: number = Math.floor(value / 60);
+      return (
+        ("00" + minutes).slice(-2) +
+        ":" +
+        ("00" + Math.floor(value - minutes * 60)).slice(-2)
+      );
+    }
+  }
 
 @Component({
   selector: 'app-game',
@@ -42,6 +56,7 @@ export class GameComponent implements OnInit {
   //TODO: move this constant in a global file
   WILDCARD_SYMBOL: string = "\u0000";
   userNamesOfPlayersWhoHaveLeftTheGame: string[] = [];
+  turnRemainingTime: number = 100;
 
   constructor(
       private signalrService: SignalrService,

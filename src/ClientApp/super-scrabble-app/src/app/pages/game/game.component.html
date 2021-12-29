@@ -10,6 +10,11 @@
                 </tr>
             </table>
         </div>
+        <div class="mt-5 mb-4 mx-3 rounded">
+            <h1>
+                <mark>ВРЕМЕ {{turnRemainingTime | formatTime}}</mark>
+            </h1>
+        </div>
     </div>
     <div class="col-md-6 align-self-center mt-4">
         <div class="row d-flex justify-content-center px-5">
@@ -54,7 +59,7 @@
     </div>
     <div class="col-md-3">
         <div class="mt-5 mb-4 ms-3">
-            <span class="alert alert-warning dispay-2">
+            <span class="alert alert-warning">
                 <span>Оставащи букви - </span>
                 <b>{{remainingTilesCount}}</b>
             </span>

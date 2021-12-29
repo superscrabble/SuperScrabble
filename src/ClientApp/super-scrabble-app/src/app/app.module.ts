@@ -12,7 +12,7 @@ import { RegisterFormComponent } from './pages/register-form/register-form.compo
 import { LoginFormComponent } from './pages/login-form/login-form.component';
 import { HomeComponent } from './pages/home/home.component';
 import { NavbarComponent } from './pages/navbar/navbar.component';
-import { ErrorDialog, ChangeWildcardDialog, LeaveGameDialog } from './pages/game/game.component';
+import { ErrorDialog, ChangeWildcardDialog, LeaveGameDialog, FormatTimePipe } from './pages/game/game.component';
 import { Utilities } from './common/utilities';
 import { GameComponent } from './pages/game/game.component';
 import { GameSummaryComponent } from './pages/game-summary/game-summary.component';
@@ -32,6 +32,7 @@ import { CommonModule } from '@angular/common';
     ErrorDialog,
     ChangeWildcardDialog,
     LeaveGameDialog,
+    FormatTimePipe,
   ],
   imports: [
     CommonModule,
