@@ -12,6 +12,6 @@
 
         public int BonusPointsForUsingAllTiles => 50;
 
-        public int GameTimerSeconds => 10;
+        public int GameTimerSeconds => 30;
     }
 }

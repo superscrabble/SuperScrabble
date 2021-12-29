@@ -57,8 +57,7 @@ export class GameComponent implements OnInit {
   WILDCARD_SYMBOL: string = "\u0000";
   userNamesOfPlayersWhoHaveLeftTheGame: string[] = [];
   turnRemainingTime: number = 100;
-  gameTimerMinutes: number = 0;
-  gameTimerSeconds: number = 0;
+  gameTimeAsString: string = "";
 
   constructor(
       private signalrService: SignalrService,
@@ -147,8 +146,11 @@ export class GameComponent implements OnInit {
     })
 
     this.signalrService.hubConnection?.on("UpdateGameTimer", data => {
-        this.gameTimerMinutes = data.minutes;
-        this.gameTimerSeconds = data.seconds;
+        const fillString: string = "0";
+        const maxLength: number = 2;
+        let minutes: string = data.minutes.toString().padStart(maxLength, fillString);
+        let seconds: string = data.seconds.toString().padStart(maxLength, fillString);
+        this.gameTimeAsString = `${minutes}:${seconds}`;
     });
   }
 
@@ -217,6 +219,10 @@ export class GameComponent implements OnInit {
   
   getClassNameWhetherPlayerIsOnTurn(playerName: string) {
       return playerName == this.playerNameOnTurn ? "player-on-turn" : "";
+  }
+
+  padLeft(input: string, padder: string, length: number) {
+
   }
 
   modifyCurrentUserName(playerName: string) {
