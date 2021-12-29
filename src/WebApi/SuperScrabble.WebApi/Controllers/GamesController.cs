@@ -5,6 +5,8 @@
 
     using SuperScrabble.Services.Data;
     using SuperScrabble.CustomExceptions.Game;
+    using Microsoft.AspNetCore.SignalR;
+    using SuperScrabble.WebApi.Hubs;
 
     [Route("api/[controller]")]
     [ApiController]

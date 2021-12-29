@@ -10,6 +10,8 @@
 
         int BonusPointsForUsingAllTiles { get; }
 
+        int GameTimerSeconds { get; }
+
         char WildcardValue { get; }
     }
 }

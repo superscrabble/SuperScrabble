@@ -33,6 +33,7 @@
         {
             if (gameState != null && groupName != null)
             {
+                gameState.GroupName = groupName;
                 gamesByGroupName[groupName] = gameState;
             }
         }

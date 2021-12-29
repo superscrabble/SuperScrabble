@@ -1,10 +1,13 @@
 ﻿namespace SuperScrabble.WebApi.Hubs
 {
     using System;
+    using System.Timers;
     using System.Threading.Tasks;
+    using System.Collections.Concurrent;
 
     using Microsoft.AspNetCore.SignalR;
     using Microsoft.AspNetCore.Authorization;
+    using Microsoft.Extensions.DependencyInjection;
 
     using SuperScrabble.ViewModels;
     using SuperScrabble.Services.Data;
@@ -13,9 +16,11 @@
     using SuperScrabble.Services.Game.Models;
     using SuperScrabble.Services.Game.TilesProviders;
     using SuperScrabble.Services.Game.GameStateManagers;
-
+    
     public class GameHub : Hub
     {
+        private static readonly ConcurrentDictionary<Timer, GameState> gameStatesByTimers = new();
+
         public const string WaitingPlayersQueueGroupName = "WaitingPlayerQueue";
         public const string StartGameMethodName = "StartGame";
         public const string UpdateGameStateMethodName = "UpdateGameState";
@@ -25,17 +30,20 @@
         private readonly IGameStateManager gameStateManager;
         private readonly IGamesService gamesService;
         private readonly ITilesProvider tilesProvider;
+        private readonly IServiceProvider serviceProvider;
 
         public GameHub(
             IGameService gameService,
             IGameStateManager gameStateManager,
             IGamesService gamesService,
-            ITilesProvider tilesProvider)
+            ITilesProvider tilesProvider,
+            IServiceProvider serviceProvider)
         {
             this.gameService = gameService;
             this.gameStateManager = gameStateManager;
             this.gamesService = gamesService;
             this.tilesProvider = tilesProvider;
+            this.serviceProvider = serviceProvider;
         }
 
         public string ConnectionId => this.Context.ConnectionId;
@@ -67,16 +75,23 @@
         [Authorize]
         public async Task WriteWord(WriteWordInputModel input)
         {
+            GameTimer timer = GameTimer.GameTimersByGroupNames[this.GroupName];
+            timer.Stop();
+
             GameOperationResult result = this.gameService.WriteWord(this.GameState, input, this.UserName);
 
             if (!result.IsSucceeded)
             {
+                timer.Start();
                 await this.SendValidationErrorMessageAsync("InvalidWriteWordInput", result);
                 return;
             }
 
             await this.SaveGameIfTheGameIsOverAsync();
             await this.UpdateGameStateAsync(this.GroupName);
+
+            timer.Reset();
+            timer.Start();
         }
 
         [Authorize]
@@ -152,10 +167,15 @@
             GameState gameState = this.gameService.CreateGame(waitingPlayers);
             this.gameStateManager.AddGameStateToGroup(gameState, groupName);
 
-            await this.Clients.Group(groupName).SendAsync(StartGameMethodName, groupName);
-            await this.UpdateGameStateAsync(groupName);
+            GameTimer timer = ActivatorUtilities.CreateInstance<GameTimer>(this.serviceProvider, gameState);
+            GameTimer.GameTimersByGroupNames.Add(groupName, timer);
 
             this.gameStateManager.ClearWaitingQueue();
+
+            await this.Clients.Group(groupName).SendAsync(StartGameMethodName, groupName);
+            await this.UpdateGameStateAsync(groupName);
+            
+            timer.Start();
         }
 
         [Authorize]

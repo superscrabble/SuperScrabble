@@ -36,6 +36,8 @@
 
         public int PlayerIndex { get; private set; }
 
+        public string GroupName { get; set; }
+
         public IReadOnlyCollection<Player> Players => this.players.ToList().AsReadOnly();
 
         public int TilesCount => this.TilesBag.TilesCount;

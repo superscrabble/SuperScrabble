@@ -11,5 +11,7 @@
         public char WildcardValue => '\0';
 
         public int BonusPointsForUsingAllTiles => 50;
+
+        public int GameTimerSeconds => 10;
     }
 }
