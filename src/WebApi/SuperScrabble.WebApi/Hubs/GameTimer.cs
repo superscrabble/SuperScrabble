@@ -62,9 +62,12 @@
                     Seconds = seconds,
                 };
 
-                await this.hubContext
-                    .Clients.Group(this.gameState.GroupName)
-                    .SendAsync("UpdateGameTimer", viewModel);
+                foreach (Player player in gameState.Players)
+                {
+                    await this.hubContext
+                        .Clients.Client(player.ConnectionId)
+                        .SendAsync("UpdateGameTimer", viewModel);
+                }
 
                 this.remainingGameTimerSeconds--;
                 return;

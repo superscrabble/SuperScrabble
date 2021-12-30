@@ -97,30 +97,44 @@
         [Authorize]
         public async Task ExchangeTiles(ExchangeTilesInputModel input)
         {
+            GameTimer timer = GameTimer.GameTimersByGroupNames[this.GroupName];
+            timer.Stop();
+
             GameOperationResult result = this.gameService.ExchangeTiles(this.GameState, input, this.UserName);
 
             if (!result.IsSucceeded)
             {
+                timer.Start();
                 await this.SendValidationErrorMessageAsync("InvalidExchangeTilesInput", result);
                 return;
             }
 
             await this.UpdateGameStateAsync(this.GroupName);
+
+            timer.Reset();
+            timer.Start();
         }
 
         [Authorize]
         public async Task SkipTurn()
         {
+            GameTimer timer = GameTimer.GameTimersByGroupNames[this.GroupName];
+            timer.Stop();
+
             GameOperationResult result = this.gameService.SkipTurn(this.GameState, this.UserName);
             
             if (!result.IsSucceeded)
             {
+                timer.Start();
                 await this.SendValidationErrorMessageAsync("ImpossibleToSkipTurn", result);
                 return;
             }
 
             await this.SaveGameIfTheGameIsOverAsync();
             await this.UpdateGameStateAsync(this.GroupName);
+
+            timer.Reset();
+            timer.Start();
         }
 
         [Authorize]
@@ -197,11 +211,11 @@
         }
 
         [Authorize]
-        public override Task OnConnectedAsync()
+        public override async Task OnConnectedAsync()
         {
             if (!this.gameStateManager.IsUserAlreadyInsideGame(this.UserName))
             {
-                return Task.CompletedTask;
+                return;
             }
 
             GameState gameState = this.gameStateManager.GetGameState(this.UserName);
@@ -216,8 +230,10 @@
                 }
             }
 
-            this.Clients.Caller.SendAsync(UserAlreadyInsideGameMethodName, this.GroupName).GetAwaiter().GetResult();
-            return Task.CompletedTask;
+            await this.Clients.Caller
+                .SendAsync(UserAlreadyInsideGameMethodName, this.GroupName);
+
+            return;
         }
 
         public override Task OnDisconnectedAsync(Exception exception)
