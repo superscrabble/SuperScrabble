@@ -7,28 +7,28 @@
 
     public interface IGameValidator
     {
-        void ValidateWhetherThePlayerIsOnTurn(GameState gameState, string userName);
+        void IsPlayerOnTurn(GameState gameState, string userName);
 
         void ValidateInputTilesCount(int playerTilesCount, int inputTilesCount, bool isBoardEmpty);
 
-        void ValidateWhetherPlayerHasSubmittedTilesWhichHeOwns(
+        void HasPlayerSubmittedTilesWhichHeOwns(
             Player player, IEnumerable<Tile> submittedTiles, bool isPlayerTryingToExchangeTiles = false);
 
-        void ValidateWhetherAllTilesAreInsideTheBoardRange(IBoard board, IEnumerable<Position> inputTilesPositions);
+        void AreAllTilesInsideTheBoardRange(IBoard board, IEnumerable<Position> inputTilesPositions);
 
-        void ValidateWhetherAllTilesPositionsAreFreeBoardCells(IBoard board, IEnumerable<Position> inputTilesPositions);
+        void AreAllTilesPositionsFreeBoardCells(IBoard board, IEnumerable<Position> inputTilesPositions);
 
-        void ValidateWhetherTilesAreOnTheSameLine(
+        void AreTilesOnTheSameLine(
             IEnumerable<Position> inputTilesPositions, out bool areTilesAllignedVertically);
 
-        void ValidateWhetherInputTilesHaveDuplicatePositions(IEnumerable<Position> inputTilesPositions);
+        void DoesInputTilesHaveDuplicatePositions(IEnumerable<Position> inputTilesPositions);
 
-        void ValidateWhetherFirstWordGoesThroughTheBoardCenter(
+        void DoesFirstWordGoThroughTheBoardCenter(
             IBoard board, IEnumerable<Position> inputTilesPositions, out bool goesThroughCenter);
 
         void ValidateForGapsBetweenTheInputTiles(
             IBoard board, IEnumerable<Position> inputTilesPositions, bool areTilesAllignedVertically);
 
-        void ValidateWhetherTheWordsExist(IEnumerable<string> words);
+        void ValidateWhetherWordsExist(IEnumerable<string> words);
     }
 }

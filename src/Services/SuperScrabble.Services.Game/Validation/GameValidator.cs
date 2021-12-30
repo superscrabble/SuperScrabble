@@ -27,7 +27,7 @@
             this.wordsService = wordsService;
         }
 
-        public void ValidateWhetherThePlayerIsOnTurn(GameState gameState, string userName)
+        public void IsPlayerOnTurn(GameState gameState, string userName)
         {
             if (gameState.CurrentPlayer.UserName != userName)
             {
@@ -43,7 +43,7 @@
             }
         }
 
-        public void ValidateWhetherPlayerHasSubmittedTilesWhichHeOwns(
+        public void HasPlayerSubmittedTilesWhichHeOwns(
             Player player, IEnumerable<Tile> submittedTiles, bool isPlayerTryingToExchangeTiles = false)
         {
             Func<Tile, Tile, bool> playerTileSelector = isPlayerTryingToExchangeTiles
@@ -78,7 +78,7 @@
             }
         }
 
-        public void ValidateWhetherAllTilesAreInsideTheBoardRange(IBoard board, IEnumerable<Position> inputTilesPositions)
+        public void AreAllTilesInsideTheBoardRange(IBoard board, IEnumerable<Position> inputTilesPositions)
         {
             foreach (Position position in inputTilesPositions)
             {
@@ -89,7 +89,7 @@
             }
         }
 
-        public void ValidateWhetherAllTilesPositionsAreFreeBoardCells(IBoard board, IEnumerable<Position> inputTilesPositions)
+        public void AreAllTilesPositionsFreeBoardCells(IBoard board, IEnumerable<Position> inputTilesPositions)
         {
             foreach (Position position in inputTilesPositions)
             {
@@ -100,7 +100,7 @@
             }
         }
 
-        public void ValidateWhetherTilesAreOnTheSameLine(
+        public void AreTilesOnTheSameLine(
             IEnumerable<Position> inputTilesPositions, out bool areTilesAllignedVertically)
         {
             var uniqueRows = inputTilesPositions.Select(pos => pos.Row).Distinct();
@@ -114,7 +114,7 @@
             areTilesAllignedVertically = uniqueRows.Count() > uniqueColumns.Count();
         }
 
-        public void ValidateWhetherInputTilesHaveDuplicatePositions(IEnumerable<Position> inputTilesPositions)
+        public void DoesInputTilesHaveDuplicatePositions(IEnumerable<Position> inputTilesPositions)
         {
             var uniqueRows = inputTilesPositions.Select(pos => pos.Row).Distinct();
             var uniqueColumns = inputTilesPositions.Select(pos => pos.Column).Distinct();
@@ -131,7 +131,7 @@
             }
         }
 
-        public void ValidateWhetherFirstWordGoesThroughTheBoardCenter(
+        public void DoesFirstWordGoThroughTheBoardCenter(
             IBoard board, IEnumerable<Position> inputTilesPositions, out bool goesThroughCenter)
         {
             goesThroughCenter = false;
@@ -182,7 +182,7 @@
             }
         }
 
-        public void ValidateWhetherTheWordsExist(IEnumerable<string> words)
+        public void ValidateWhetherWordsExist(IEnumerable<string> words)
         {
             var unexistingWords = new List<string>();
 

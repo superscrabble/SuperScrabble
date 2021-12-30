@@ -122,7 +122,8 @@
                     .ThenByDescending(p => p.Points)
                     .ToDictionary(p => p.UserName, p => p.Points),
 
-                UserNamesOfPlayersWhoHaveLeftTheGame = gameState.Players.Where(p => p.HasLeftTheGame).Select(p => p.UserName),
+                UserNamesOfPlayersWhoHaveLeftTheGame = 
+                    gameState.Players.Where(p => p.HasLeftTheGame).Select(p => p.UserName),
             };
 
             var playerViewModel = new PlayerGameStateViewModel
@@ -147,24 +148,24 @@
 
                 // Validate input model
 
-                this.gameValidator.ValidateWhetherThePlayerIsOnTurn(gameState, authorUserName);
+                this.gameValidator.IsPlayerOnTurn(gameState, authorUserName);
 
                 this.gameValidator.ValidateInputTilesCount(
                     author.Tiles.Count, inputTiles.Count(), board.IsEmpty());
 
-                this.gameValidator.ValidateWhetherPlayerHasSubmittedTilesWhichHeOwns(
+                this.gameValidator.HasPlayerSubmittedTilesWhichHeOwns(
                     author, inputTiles, isPlayerTryingToExchangeTiles: false);
 
-                this.gameValidator.ValidateWhetherAllTilesAreInsideTheBoardRange(board, inputPositions);
+                this.gameValidator.AreAllTilesInsideTheBoardRange(board, inputPositions);
 
-                this.gameValidator.ValidateWhetherAllTilesPositionsAreFreeBoardCells(board, inputPositions);
+                this.gameValidator.AreAllTilesPositionsFreeBoardCells(board, inputPositions);
 
-                this.gameValidator.ValidateWhetherTilesAreOnTheSameLine(
+                this.gameValidator.AreTilesOnTheSameLine(
                     inputPositions, out bool areTilesAllignedVertically);
 
-                this.gameValidator.ValidateWhetherInputTilesHaveDuplicatePositions(inputPositions);
+                this.gameValidator.DoesInputTilesHaveDuplicatePositions(inputPositions);
 
-                this.gameValidator.ValidateWhetherFirstWordGoesThroughTheBoardCenter(
+                this.gameValidator.DoesFirstWordGoThroughTheBoardCenter(
                     board, inputPositions, out bool goesThroughCenter);
 
                 var sortedPositionsByTiles = areTilesAllignedVertically ?
@@ -173,12 +174,13 @@
 
                 PlacePlayerTiles(board, sortedPositionsByTiles);
 
-                this.gameValidator.ValidateForGapsBetweenTheInputTiles(board, inputPositions, areTilesAllignedVertically);
+                this.gameValidator.ValidateForGapsBetweenTheInputTiles(
+                    board, inputPositions, areTilesAllignedVertically);
 
                 var wordBuilders = GetAllNewWords(
                     board, sortedPositionsByTiles, areTilesAllignedVertically, goesThroughCenter);
 
-                this.gameValidator.ValidateWhetherTheWordsExist(wordBuilders.Select(wb => wb.ToString()));
+                this.gameValidator.ValidateWhetherWordsExist(wordBuilders.Select(wb => wb.ToString()));
 
                 author.RemoveTiles(inputTiles);
 
@@ -234,7 +236,7 @@
             {
                 Player exchanger = gameState.GetPlayer(exchangerUserName);
 
-                this.gameValidator.ValidateWhetherThePlayerIsOnTurn(gameState, exchanger.UserName);
+                this.gameValidator.IsPlayerOnTurn(gameState, exchanger.UserName);
 
                 if (!gameState.IsTileExchangePossible)
                 {
@@ -242,7 +244,7 @@
                         nameof(Resource.ImpossibleTileExchange), Resource.ImpossibleTileExchange);
                 }
 
-                this.gameValidator.ValidateWhetherPlayerHasSubmittedTilesWhichHeOwns(
+                this.gameValidator.HasPlayerSubmittedTilesWhichHeOwns(
                     exchanger, input.TilesToExchange, isPlayerTryingToExchangeTiles: true);
 
                 var newTiles = new List<Tile>();
@@ -275,7 +277,7 @@
         {
             try
             {
-                this.gameValidator.ValidateWhetherThePlayerIsOnTurn(gameState, skipperUserName);
+                this.gameValidator.IsPlayerOnTurn(gameState, skipperUserName);
 
                 Player player = gameState.GetPlayer(skipperUserName);
                 player.ConsecutiveSkipsCount++;
