@@ -75,6 +75,7 @@
         [Authorize]
         public async Task WriteWord(WriteWordInputModel input)
         {
+            Console.WriteLine(this.UserName);
             GameTimer timer = GameTimer.GameTimersByGroupNames[this.GroupName];
             timer.Stop();
 
@@ -188,7 +189,9 @@
 
             await this.Clients.Group(groupName).SendAsync(StartGameMethodName, groupName);
             await this.UpdateGameStateAsync(groupName);
-            
+
+            Console.WriteLine(groupName);
+
             timer.Start();
         }
 
@@ -289,6 +292,9 @@
             if (gameState.IsGameOver)
             {
                 this.gameStateManager.RemoveGameState(groupName);
+                GameTimer timer = GameTimer.GameTimersByGroupNames[groupName];
+                GameTimer.GameTimersByGroupNames.Remove(groupName);
+                timer.Dispose();
             }
         }
 
