@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\SuperScrabble.Common\SuperScrabble.Common.csproj" />
+    <ProjectReference Include="..\SuperScrabble.Data.Common\SuperScrabble.Data.Common.csproj" />
+    <ProjectReference Include="..\SuperScrabble.Data.Models\SuperScrabble.Data.Models.csproj" />
+  </ItemGroup>
+
+</Project>
