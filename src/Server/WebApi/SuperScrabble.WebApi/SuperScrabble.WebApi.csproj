@@ -17,6 +17,7 @@
     <ProjectReference Include="..\..\Services\SuperScrabble.Services.Data\SuperScrabble.Services.Data.csproj" />
     <ProjectReference Include="..\..\Services\SuperScrabble.Services.Game.Common\SuperScrabble.Services.Game.Common.csproj" />
     <ProjectReference Include="..\..\Services\SuperScrabble.Services.Game\SuperScrabble.Services.Game.csproj" />
+    <ProjectReference Include="..\SuperScrabble.WebApi.ViewModels\SuperScrabble.WebApi.ViewModels.csproj" />
   </ItemGroup>
 
   <ItemGroup>
