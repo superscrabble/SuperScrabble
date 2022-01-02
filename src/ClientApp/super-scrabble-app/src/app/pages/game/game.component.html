@@ -22,9 +22,9 @@
                   <p class="card-text">Същ. име, нар. име</p>
                 </div>
                 <ul class="word-meanings-group list-group list-group-flush">
-                  <li class="word-meanings-group list-group-item">Cras justo odio</li>
-                  <li class="word-meanings-group list-group-item">Dapibus ac facilisis in</li>
-                  <li class="word-meanings-group list-group-item">Vestibulum at eros</li>
+                  <li class="word-meaning list-group-item">Cras justo odio</li>
+                  <li class="word-meaning list-group-item">Dapibus ac facilisis in</li>
+                  <li class="word-meaning list-group-item">Vestibulum at eros</li>
                 </ul>
               </div>
         </div>
@@ -102,6 +102,22 @@
                 </div>
             </div>
             <button [disabled]="!isCurrentPlayerOnTurn()" class="btn btn-danger mb-2 mx-3" (click)="writeWord()">Напиши дума</button>
+        </div>
+        <div class="logs mx-3">
+            <div class="card border border-dark rounded" style="width: 100%;">
+                <div class="card-body">
+                    <h1 class="logs-title card-title text-center"><b>История</b></h1>
+                </div>
+                <ul style="max-height: 20vh;" class="logs-history-group list-group list-group-flush">
+                    <li class="log list-group-item"
+                        *ngFor="let gameLog of gameLogs">
+                        <div class="d-flex flex-row flex-wrap">
+                            <p>{{gameLog.text}}</p>
+                            <p class="text-secondary" (click)="showWordMeaningOf(gameLog.word)">{{gameLog.word}}</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
 </div>

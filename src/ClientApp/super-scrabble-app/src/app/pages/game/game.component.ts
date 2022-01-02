@@ -6,6 +6,7 @@ import { CellViewData } from 'src/app/models/cellViewData';
 import { HubConnection, HubConnectionState } from '@microsoft/signalr';
 import { Router } from '@angular/router';
 import {MatDialog, MatDialogRef, MatDialogState, MAT_DIALOG_DATA} from '@angular/material/dialog';
+import { Action } from 'src/app/models/action';
 
 export interface ErrorDialogData {
     message: string;
@@ -58,6 +59,7 @@ export class GameComponent implements OnInit {
   userNamesOfPlayersWhoHaveLeftTheGame: string[] = [];
   turnRemainingTime: number = 100;
   gameTimeAsString: string = "";
+  gameLogs: Action[] = [];
 
   constructor(
       private signalrService: SignalrService,
@@ -86,6 +88,7 @@ export class GameComponent implements OnInit {
     }
 
     this.loadCellViewDataByType();
+    this.loadMockLogs();
     this.loadMockData(); //TODO: Remove this in production
   }
 
@@ -152,6 +155,12 @@ export class GameComponent implements OnInit {
         let seconds: string = data.seconds.toString().padStart(maxLength, fillString);
         this.gameTimeAsString = `${minutes}:${seconds}`;
     });
+  }
+
+  loadMockLogs() {
+      for(let i = 0; i < 10; i++) {
+          this.gameLogs.push(new Action("Иван написа ", "здраве"));
+      }
   }
 
   loadBoard(board: any): void {
@@ -469,6 +478,10 @@ export class GameComponent implements OnInit {
         }
     }
     return "";
+  }
+
+  showWordMeaningOf(word: string) : void {
+    console.log("Show word meaning")
   }
 
   writeWord() : void {

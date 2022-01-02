@@ -105,3 +105,25 @@
 .word-meaning {
     background-color: #52B788;
 }
+
+.logs {
+    background-color: #52B788;
+}
+
+.logs-title {
+    background-color: #52B788;
+}
+
+.card-body {
+    background-color: #52B788;
+}
+
+.logs-history-group {
+    max-height: 100%;
+    overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;
+}
+
+.log {
+    background-color: #52B788;
+}
