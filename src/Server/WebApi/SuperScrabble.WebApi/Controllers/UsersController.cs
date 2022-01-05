@@ -31,7 +31,7 @@
             }
             catch (UserNotFoundException ex)
             {
-                return this.NotFound(ex.ErrorCodes);
+                return this.NotFound(ex.PropertyNamesByErrorCodes);
             }
         }
 
@@ -51,11 +51,11 @@
             }
             catch (UserNotFoundException ex)
             {
-                return this.NotFound(ex.ErrorCodes);
+                return this.NotFound(ex.PropertyNamesByErrorCodes);
             }
             catch (UserOperationFailedException ex)
             {
-                return this.BadRequest(ex.ErrorCodes);
+                return this.BadRequest(ex.PropertyNamesByErrorCodes);
             }
         }
 
@@ -84,11 +84,11 @@
             }
             catch (UserNotFoundException ex)
             {
-                return this.NotFound(ex.ErrorCodes);
+                return this.NotFound(ex.PropertyNamesByErrorCodes);
             }
             catch (UserOperationFailedException ex)
             {
-                return this.BadRequest(ex.ErrorCodes);
+                return this.BadRequest(ex.PropertyNamesByErrorCodes);
             }
         }
 
@@ -104,11 +104,11 @@
             }
             catch (UserNotFoundException ex)
             {
-                return this.NotFound(ex.ErrorCodes);
+                return this.NotFound(ex.PropertyNamesByErrorCodes);
             }
             catch (UserOperationFailedException ex)
             {
-                return this.BadRequest(ex.ErrorCodes);
+                return this.BadRequest(ex.PropertyNamesByErrorCodes);
             }
         }
     }

@@ -9,5 +9,6 @@
         public const string RepeatedPasswordRequired = "RepeatedPasswordRequired";
         public const string PasswordsDoNotMatch = "PasswordsDoNotMatch";
         public const string UserWithSuchNameNotFound = "UserWithSuchNameNotFound";
+        public const string PasswordTooShort = "PasswordTooShort";
     }
 }

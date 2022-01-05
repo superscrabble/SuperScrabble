@@ -2,7 +2,7 @@
 {
     using Microsoft.AspNetCore.Identity;
     using Microsoft.EntityFrameworkCore;
-
+    using SuperScrabble.Common;
     using SuperScrabble.Common.Exceptions.Users;
     using SuperScrabble.Services.Common;
     using SuperScrabble.WebApi.Resources;
@@ -36,8 +36,8 @@
 
             if (!result.Succeeded)
             {
-                var errorCodes = new List<string>();
-                throw new LoginUserFailedException(errorCodes);
+                throw new LoginUserFailedException(
+                    new Dictionary<string, IEnumerable<string>>());
             }
 
             return this.jsonWebTokenGenerator.GenerateToken(input.UserName);
@@ -56,8 +56,7 @@
 
             if (!result.Succeeded)
             {
-                throw new RegisterUserFailedException(
-                    result.Errors.Select(err => err.Code));
+                throw new RegisterUserFailedException(result.GetErrors());
             }
         }
 
@@ -68,9 +67,10 @@
 
             if (user == null)
             {
-                throw new UserNotFoundException(new[]
+                throw new UserNotFoundException(new Dictionary<string, IEnumerable<string>>
                 {
-                    UserValidationErrorCodes.UserWithSuchNameNotFound
+                    ["UserName"] =
+                        new List<string> { UserValidationErrorCodes.UserWithSuchNameNotFound }
                 });
             }
 
@@ -84,8 +84,7 @@
 
             if (!result.Succeeded)
             {
-                throw new DeleteUserFailedException(
-                    result.Errors.Select(err => err.Code));
+                throw new DeleteUserFailedException(result.GetErrors());
             }
         }
     }

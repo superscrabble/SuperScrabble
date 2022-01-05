@@ -2,8 +2,9 @@
 {
     public class LoginUserFailedException : UserOperationFailedException
     {
-        public LoginUserFailedException(IEnumerable<string> errorCodes)
-            : base(errorCodes)
+        public LoginUserFailedException(
+            IEnumerable<KeyValuePair<string, IEnumerable<string>>> propertyNamesByErrorCodes)
+            : base(propertyNamesByErrorCodes)
         {
         }
     }

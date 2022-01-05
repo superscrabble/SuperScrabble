@@ -2,11 +2,12 @@
 {
     public abstract class UserOperationFailedException : Exception
     {
-        protected UserOperationFailedException(IEnumerable<string> errorCodes)
+        protected UserOperationFailedException(
+            IEnumerable<KeyValuePair<string, IEnumerable<string>>> propertyNamesByErrorCodes)
         {
-            this.ErrorCodes = errorCodes;
+            this.PropertyNamesByErrorCodes = propertyNamesByErrorCodes;
         }
 
-        public IEnumerable<string> ErrorCodes { get; }
+        public IEnumerable<KeyValuePair<string, IEnumerable<string>>> PropertyNamesByErrorCodes { get; }
     }
 }
