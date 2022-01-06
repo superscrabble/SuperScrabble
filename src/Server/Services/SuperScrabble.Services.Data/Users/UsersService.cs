@@ -9,6 +9,8 @@
 
     using SuperScrabble.WebApi.Resources;
     using SuperScrabble.WebApi.ViewModels.Users;
+
+    using static SuperScrabble.WebApi.Resources.User;
     
     public class UsersService : IUsersService
     {
@@ -66,7 +68,7 @@
             {
                 throw new UserNotFoundException(new()
                 {
-                    ["UserName"] = new() { UserValidationErrorCodes.UserWithSuchNameNotFound }
+                    [PropertyNames.UserName] = new() { ErrorCodes.UserWithSuchNameNotFound }
                 });
             }
 
@@ -81,7 +83,7 @@
             {
                 throw new UserNotFoundException(new()
                 {
-                    ["Email"] = new() { UserValidationErrorCodes.UserWithSuchEmailNotFound }
+                    [PropertyNames.Email] = new() { ErrorCodes.UserWithSuchEmailNotFound }
                 });
             }
 

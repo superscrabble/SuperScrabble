@@ -1,49 +1,26 @@
+using System.Text;
+
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+
 using SuperScrabble.Data;
 using SuperScrabble.Data.Common.Repositories;
 using SuperScrabble.Data.Models;
 using SuperScrabble.Data.Repositories;
+
 using SuperScrabble.Services.Common;
 using SuperScrabble.Services.Data.Users;
 using SuperScrabble.Services.Data.Words;
-using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<AppDbContext>();
 
-/*builder.Services.AddCors(options =>
-{
-    options.AddDefaultPolicy(builder =>
-    {
-        builder
-            .WithOrigins("https://localhost:4200", "http://localhost:4200")
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials();
-    });
-});*/
+AddCors(builder.Services);
 
-builder.Services
-    .AddIdentity<AppUser, AppRole>(options =>
-    {
-        options.SignIn.RequireConfirmedEmail = false;
-        options.User.RequireUniqueEmail = true;
-
-        options.Password = new PasswordOptions
-        {
-            RequireDigit = true,
-            RequiredLength = 8,
-            RequireLowercase = true,
-            RequireUppercase = true,
-            RequireNonAlphanumeric = true,
-        };
-    })
-    .AddEntityFrameworkStores<AppDbContext>()
-    .AddDefaultTokenProviders();
+AddIdentityOptions(builder.Services);
 
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
@@ -84,6 +61,44 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+static void AddIdentityOptions(IServiceCollection services)
+{
+    services
+        .AddIdentity<AppUser, AppRole>(options =>
+        {
+            options.SignIn.RequireConfirmedEmail = false;
+            options.User.RequireUniqueEmail = true;
+            options.User.AllowedUserNameCharacters =
+                "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz0123456789_";
+
+            options.Password = new PasswordOptions
+            {
+                RequireDigit = true,
+                RequiredLength = 8,
+                RequireLowercase = true,
+                RequireUppercase = true,
+                RequireNonAlphanumeric = true,
+            };
+        })
+        .AddEntityFrameworkStores<AppDbContext>()
+        .AddDefaultTokenProviders();
+}
+
+static void AddCors(IServiceCollection services)
+{
+    services.AddCors(options =>
+    {
+        options.AddDefaultPolicy(builder =>
+        {
+            builder
+                .WithOrigins("https://localhost:4200", "http://localhost:4200")
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
+        });
+    });
+}
 
 static void AddJsonWebTokenBearerAuthentication(IServiceCollection services)
 {

@@ -3,7 +3,7 @@
     using System.ComponentModel.DataAnnotations;
     using System.Text.RegularExpressions;
 
-    using SuperScrabble.WebApi.Resources;
+    using static SuperScrabble.WebApi.Resources.User;
 
     public class ValidEmailAddressAttribute : ValidationAttribute
     {
@@ -19,7 +19,7 @@
             }
 
             return isValid ? ValidationResult.Success
-                : new ValidationResult(UserValidationErrorCodes.InvalidEmail);
+                : new ValidationResult(ErrorCodes.InvalidEmail);
         }
     }
 }
