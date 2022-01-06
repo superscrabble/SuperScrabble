@@ -9,14 +9,9 @@
             this.wordsRepository = wordsRepository;
         }
 
-        public bool IsWordValid(string word)
+        public bool IsWordValid(string? word)
         {
             return this.wordsRepository.All().FirstOrDefault(w => w.Value == word) != null;
-        }
-
-        public bool AreAllWordsValid(IEnumerable<string> words)
-        {
-            return words.All(this.IsWordValid);
         }
     }
 }
