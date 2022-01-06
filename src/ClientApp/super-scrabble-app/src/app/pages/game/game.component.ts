@@ -225,10 +225,6 @@ export class GameComponent implements OnInit {
   getClassNameByCellType(type: number) {
     return this.cellViewDataByType.get(type)?.className;
   }
-  
-  getClassNameWhetherPlayerIsOnTurn(playerName: string) {
-      return playerName == this.playerNameOnTurn ? "player-on-turn" : "";
-  }
 
   padLeft(input: string, padder: string, length: number) {
 
@@ -269,11 +265,13 @@ export class GameComponent implements OnInit {
   }
 
   clickOnPlayerTile(playerTile: Tile | any) {
+      if(!this.isCurrentPlayerOnTurn()) return;
+
       if(playerTile != null) {
         if(playerTile == this.selectedPlayerTile) {
             this.selectedPlayerTile = null;
             return;
-        }
+        }   
         //Check whether the player has the tile
         for(let i = 0; i < this.playerTiles.length; i++) {
           if(this.playerTiles[i] == playerTile) {
@@ -521,6 +519,10 @@ export class GameComponent implements OnInit {
         }
     }
     return false;
+  }
+
+  areThereNewPlacedTiles() : boolean {
+      return this.updatedBoardCells.length > 0;
   }
 
   loadMockData(): void {
