@@ -3,7 +3,7 @@
     using System.ComponentModel.DataAnnotations;
     using System.Text.RegularExpressions;
 
-    using static SuperScrabble.WebApi.Resources.User;
+    using static SuperScrabble.Common.Resources.User;
 
     public class ValidEmailAddressAttribute : ValidationAttribute
     {

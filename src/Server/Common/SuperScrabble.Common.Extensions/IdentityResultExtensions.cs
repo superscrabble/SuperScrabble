@@ -1,9 +1,9 @@
-﻿namespace SuperScrabble.Common
+﻿namespace SuperScrabble.Common.Extensions
 {
     using Microsoft.AspNetCore.Identity;
 
-    using static SuperScrabble.WebApi.Resources.User.ErrorCodes;
-    using static SuperScrabble.WebApi.Resources.User.PropertyNames;
+    using static SuperScrabble.Common.Resources.User.ErrorCodes;
+    using static SuperScrabble.Common.Resources.User.PropertyNames;
 
     public static class IdentityResultExtensions
     {

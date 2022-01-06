@@ -1,7 +1,7 @@
 ﻿namespace SuperScrabble.WebApi.ViewModels.Users
 {
-    using static SuperScrabble.WebApi.Resources.User;
-    using static SuperScrabble.WebApi.Resources.User.ErrorCodes;
+    using static SuperScrabble.Common.Resources.User;
+    using static SuperScrabble.Common.Resources.User.ErrorCodes;
 
     public class LoginInputModel
     {

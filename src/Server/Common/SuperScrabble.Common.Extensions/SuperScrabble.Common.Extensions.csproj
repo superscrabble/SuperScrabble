@@ -12,7 +12,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\WebApi\SuperScrabble.WebApi.Resources\SuperScrabble.WebApi.Resources.csproj" />
+    <ProjectReference Include="..\SuperScrabble.Common.Resources\SuperScrabble.Common.Resources.csproj" />
+    <ProjectReference Include="..\SuperScrabble.Common\SuperScrabble.Common.csproj" />
   </ItemGroup>
 
 </Project>

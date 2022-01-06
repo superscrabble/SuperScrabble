@@ -2,16 +2,15 @@
 {
     using Microsoft.AspNetCore.Identity;
 
-    using SuperScrabble.Common;
+    using SuperScrabble.Common.Extensions;
     using SuperScrabble.Common.Exceptions.Users;
 
     using SuperScrabble.Services.Common;
 
-    using SuperScrabble.WebApi.Resources;
     using SuperScrabble.WebApi.ViewModels.Users;
 
-    using static SuperScrabble.WebApi.Resources.User;
-    
+    using static SuperScrabble.Common.Resources.User;
+
     public class UsersService : IUsersService
     {
         private readonly IJsonWebTokenGenerator jsonWebTokenGenerator;

@@ -1,4 +1,4 @@
-﻿namespace SuperScrabble.WebApi.Resources
+﻿namespace SuperScrabble.Common.Resources
 {
     public static class User
     {
