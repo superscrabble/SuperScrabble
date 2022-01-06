@@ -2,8 +2,7 @@
 {
     public class DeleteUserFailedException : UserOperationFailedException
     {
-        public DeleteUserFailedException(
-            IEnumerable<KeyValuePair<string, IEnumerable<string>>> propertyNamesByErrorCodes)
+        public DeleteUserFailedException(Dictionary<string, List<string>> propertyNamesByErrorCodes)
             : base(propertyNamesByErrorCodes)
         {
         }

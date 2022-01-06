@@ -2,8 +2,7 @@
 {
     public class RegisterUserFailedException : UserOperationFailedException
     {
-        public RegisterUserFailedException(
-            IEnumerable<KeyValuePair<string, IEnumerable<string>>> propertyNamesByErrorCodes)
+        public RegisterUserFailedException(Dictionary<string, List<string>> propertyNamesByErrorCodes)
             : base(propertyNamesByErrorCodes)
         {
         }

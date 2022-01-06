@@ -8,8 +8,10 @@
 
         Task CreateAsync(RegisterInputModel input);
 
-        Task<AppUser> GetAsync(string userName);
+        Task<AppUser> GetByUserNameAsync(string? userName);
 
-        Task DeleteAsync(string userName);
+        Task<AppUser> GetByEmailAsync(string? email);
+
+        Task DeleteAsync(string? userName);
     }
 }

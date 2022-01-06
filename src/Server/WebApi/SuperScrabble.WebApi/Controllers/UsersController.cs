@@ -20,14 +20,27 @@
             this.usersService = usersService;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Get(string userName)
+        [HttpGet("by/email")]
+        public async Task<IActionResult> GetByEmail(string? email)
         {
             try
             {
-                AppUser user = await this.usersService.GetAsync(userName);
-                var viewModel = new GetUserViewModel { UserName = user.UserName };
-                return this.Ok(viewModel);
+                AppUser user = await this.usersService.GetByEmailAsync(email);
+                return this.Ok(new GetUserViewModel { UserName = user.UserName });
+            }
+            catch (UserNotFoundException ex)
+            {
+                return this.NotFound(ex.PropertyNamesByErrorCodes);
+            }
+        }
+
+        [HttpGet("by/username")]
+        public async Task<IActionResult> GetByUserName(string userName)
+        {
+            try
+            {
+                AppUser user = await this.usersService.GetByUserNameAsync(userName);
+                return this.Ok(new GetUserViewModel { UserName = user.UserName });
             }
             catch (UserNotFoundException ex)
             {
@@ -46,8 +59,7 @@
             try
             {
                 string jsonWebToken = await this.usersService.AuthenticateAsync(input);
-                var response = new { Token = jsonWebToken };
-                return this.Ok(response);
+                return this.Ok(new { Token = jsonWebToken });
             }
             catch (UserNotFoundException ex)
             {
@@ -78,9 +90,7 @@
                 };
 
                 string jsonWebToken = await this.usersService.AuthenticateAsync(loginInput);
-                var response = new { Token = jsonWebToken };
-
-                return this.Ok(response);
+                return this.Ok(new { Token = jsonWebToken });
             }
             catch (UserNotFoundException ex)
             {

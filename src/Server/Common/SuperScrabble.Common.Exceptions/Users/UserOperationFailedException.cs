@@ -3,11 +3,11 @@
     public abstract class UserOperationFailedException : Exception
     {
         protected UserOperationFailedException(
-            IEnumerable<KeyValuePair<string, IEnumerable<string>>> propertyNamesByErrorCodes)
+            Dictionary<string, List<string>> propertyNamesByErrorCodes)
         {
             this.PropertyNamesByErrorCodes = propertyNamesByErrorCodes;
         }
 
-        public IEnumerable<KeyValuePair<string, IEnumerable<string>>> PropertyNamesByErrorCodes { get; }
+        public Dictionary<string, List<string>> PropertyNamesByErrorCodes { get; }
     }
 }

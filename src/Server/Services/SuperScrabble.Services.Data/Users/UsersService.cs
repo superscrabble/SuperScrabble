@@ -1,10 +1,12 @@
 ﻿namespace SuperScrabble.Services.Data.Users
 {
     using Microsoft.AspNetCore.Identity;
-    using Microsoft.EntityFrameworkCore;
+
     using SuperScrabble.Common;
     using SuperScrabble.Common.Exceptions.Users;
+
     using SuperScrabble.Services.Common;
+
     using SuperScrabble.WebApi.Resources;
     using SuperScrabble.WebApi.ViewModels.Users;
     
@@ -13,31 +15,27 @@
         private readonly IJsonWebTokenGenerator jsonWebTokenGenerator;
         private readonly UserManager<AppUser> userManager;
         private readonly SignInManager<AppUser> signInManager;
-        private readonly IRepository<AppUser> usersRepository;
 
         public UsersService(
             IJsonWebTokenGenerator jsonWebTokenGenerator,
             UserManager<AppUser> userManager,
-            SignInManager<AppUser> signInManager,
-            IRepository<AppUser> usersRepository)
+            SignInManager<AppUser> signInManager)
         {
             this.jsonWebTokenGenerator = jsonWebTokenGenerator;
             this.userManager = userManager;
             this.signInManager = signInManager;
-            this.usersRepository = usersRepository;
         }
 
         public async Task<string> AuthenticateAsync(LoginInputModel input)
         {
-            AppUser user = await this.GetAsync(input.UserName);
+            AppUser user = await this.GetByUserNameAsync(input.UserName);
 
             SignInResult result = await this.signInManager
                 .CheckPasswordSignInAsync(user, input.Password, lockoutOnFailure: false);
 
             if (!result.Succeeded)
             {
-                throw new LoginUserFailedException(
-                    new Dictionary<string, IEnumerable<string>>());
+                throw new LoginUserFailedException();
             }
 
             return this.jsonWebTokenGenerator.GenerateToken(input.UserName);
@@ -60,26 +58,39 @@
             }
         }
 
-        public async Task<AppUser> GetAsync(string userName)
+        public async Task<AppUser> GetByUserNameAsync(string? userName)
         {
-            AppUser? user = await this.usersRepository
-                .All().FirstOrDefaultAsync(user => user.UserName == userName);
+            AppUser user = await this.userManager.FindByNameAsync(userName);
 
             if (user == null)
             {
-                throw new UserNotFoundException(new Dictionary<string, IEnumerable<string>>
+                throw new UserNotFoundException(new()
                 {
-                    ["UserName"] =
-                        new List<string> { UserValidationErrorCodes.UserWithSuchNameNotFound }
+                    ["UserName"] = new() { UserValidationErrorCodes.UserWithSuchNameNotFound }
                 });
             }
 
             return user;
         }
 
-        public async Task DeleteAsync(string userName)
+        public async Task<AppUser> GetByEmailAsync(string? email)
         {
-            AppUser user = await this.GetAsync(userName);
+            AppUser user = await this.userManager.FindByEmailAsync(email);
+
+            if (user == null)
+            {
+                throw new UserNotFoundException(new()
+                {
+                    ["Email"] = new() { UserValidationErrorCodes.UserWithSuchEmailNotFound }
+                });
+            }
+
+            return user;
+        }
+
+        public async Task DeleteAsync(string? userName)
+        {
+            AppUser user = await this.GetByUserNameAsync(userName);
             IdentityResult result = await this.userManager.DeleteAsync(user);
 
             if (!result.Succeeded)

@@ -18,11 +18,11 @@
             ["PasswordRequiresUpper"] = "Password",
         };
 
-        public static IEnumerable<KeyValuePair<string, IEnumerable<string>>> GetErrors(this IdentityResult result)
+        public static Dictionary<string, List<string>> GetErrors(this IdentityResult result)
         {
             return result.Errors.GroupBy(err =>
                 propertyNamesByErrorCodes[err.Code], err => err.Code)
-                .ToDictionary(x => x.Key, x => x.AsEnumerable());
+                .ToDictionary(errors => errors.Key, errors => errors.ToList());
         }
     }
 }

@@ -2,8 +2,7 @@
 {
     public class UserNotFoundException : UserOperationFailedException
     {
-        public UserNotFoundException(
-            IEnumerable<KeyValuePair<string, IEnumerable<string>>> propertyNamesByErrorCodes)
+        public UserNotFoundException(Dictionary<string, List<string>> propertyNamesByErrorCodes)
             : base(propertyNamesByErrorCodes)
         {
         }
