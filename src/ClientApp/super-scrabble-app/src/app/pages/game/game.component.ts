@@ -204,12 +204,21 @@ export class GameComponent implements OnInit {
   getClassNameByCell(cell: Cell) {
       let result = " ";
 
-      result += this.getClassNameByCellType(cell.type);
+      result += this.getClassNameIfPlayerIsNotOnTurn();
+      result += " " + this.getClassNameByCellType(cell.type);
       result += " " + this.getClassNameIfCellIsTaken(cell);
       result += " " + this.getClassNameIfSelected(cell);
       result += " " + this.getClassNameIfNewCell(cell);
 
       return result;
+  }
+
+  //TODO: Think how to show that a cell is disabled
+  getClassNameIfPlayerIsNotOnTurn() {
+    if(!this.isCurrentPlayerOnTurn()) {
+        return "basic-cell-disabled"
+    }
+    return "";
   }
 
   getClassNameIfNewCell(cell: Cell) {
