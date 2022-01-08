@@ -13,5 +13,7 @@
         public int BonusPointsForUsingAllTiles => 50;
 
         public int GameTimerSeconds => 65;
+
+        public int MinWordLettersCount => 2;
     }
 }

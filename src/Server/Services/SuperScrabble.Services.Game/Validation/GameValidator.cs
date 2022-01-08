@@ -202,6 +202,16 @@
             }
         }
 
+        private bool IsInputTilesCountValid(int playerTilesCount, int inputTilesCount, bool isBoardEmpty)
+        {
+            if (isBoardEmpty && inputTilesCount < this.gameplayConstantsProvider.MinWordLettersCount)
+            {
+                return false;
+            }
+
+            return inputTilesCount > 0 && inputTilesCount <= playerTilesCount;
+        }
+
         private static bool ExchangeTilesSelector(Tile submittedTile, Tile playerTile)
         {
             return playerTile.Equals(submittedTile);
@@ -211,16 +221,6 @@
         {
             return playerTile.Equals(submittedTile)
                 || (submittedTile?.Points == 0 && playerTile.Letter == wildcardValue && playerTile.Points == 0);
-        }
-
-        private static bool IsInputTilesCountValid(int playerTilesCount, int inputTilesCount, bool isBoardEmpty)
-        {
-            if (isBoardEmpty && inputTilesCount < 2)
-            {
-                return false;
-            }
-
-            return inputTilesCount > 0 && inputTilesCount <= playerTilesCount;
         }
     }
 }
