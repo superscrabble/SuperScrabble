@@ -86,7 +86,7 @@ export class GameComponent implements OnInit {
             this.signalrService.getAllWildcardOptions();
         })
     }
-
+    
     this.loadCellViewDataByType();
     this.loadMockLogs();
     this.loadMockData(); //TODO: Remove this in production
@@ -102,6 +102,7 @@ export class GameComponent implements OnInit {
         this.currentUserName = data.myUserName; //Can be moved into localStorage
         this.isTileExchangePossible = data.commonGameState.isTileExchangePossible;
         this.loadScoreBoard(data.commonGameState.pointsByUserNames)
+        //TODO: remove updatedBoardCells from board, if there are some
         this.updatedBoardCells = [];
 
         if(data.commonGameState.userNamesOfPlayersWhoHaveLeftTheGame) {
