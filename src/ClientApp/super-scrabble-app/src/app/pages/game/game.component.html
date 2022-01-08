@@ -43,7 +43,8 @@
         <app-scoreboard
             [pointsByUserNames]="pointsByUserNames"
             [userNamesOfPlayersWhoHaveLeftTheGame]="userNamesOfPlayersWhoHaveLeftTheGame"
-            [currentUserName]="currentUserName"></app-scoreboard>
+            [currentUserName]="currentUserName">
+        </app-scoreboard>
         <div class="mx-3 rounded">
             <div *ngIf="isCurrentPlayerOnTurn()">
                 <h1><mark>Ти си на ред</mark></h1>

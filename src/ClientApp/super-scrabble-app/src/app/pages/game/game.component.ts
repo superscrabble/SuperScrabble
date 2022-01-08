@@ -240,21 +240,6 @@ export class GameComponent implements OnInit {
 
   }
 
-  modifyCurrentUserName(playerName: string) {
-      let result = playerName;
-      if(playerName == this.currentUserName) {
-        result += " (аз)"; 
-        return result;
-      } 
-      
-      if(this.userNamesOfPlayersWhoHaveLeftTheGame.find(x => x == playerName)) {
-          result += " (напуснал)";
-          return result;
-      }
-
-      return result;
-  }
-
   getClassNameIfCellIsTaken(cell: Cell) {
     if(cell.tile) {
         if(this.selectedBoardCell == cell) {
