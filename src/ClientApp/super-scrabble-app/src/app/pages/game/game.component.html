@@ -40,16 +40,10 @@
     </div>
     <!--Showing on medium screen-->
     <div class="col-md-3 left-column d-md-flex d-sm-none d-none">
-        <div class="border border-dark rounded scoreboard mx-3">
-            <table class="table">
-                <th class="ps-3 py-3">Резултат</th>
-                <tr *ngFor="let pointsByUserName of pointsByUserNames; let i = index">
-                    <td class="ps-3 py-2">{{i + 1}}</td>
-                    <td>{{modifyCurrentUserName(pointsByUserName.key)}}</td>
-                    <td>{{pointsByUserName.value}} т.</td>
-                </tr>
-            </table>
-        </div>
+        <app-scoreboard
+            [pointsByUserNames]="pointsByUserNames"
+            [userNamesOfPlayersWhoHaveLeftTheGame]="userNamesOfPlayersWhoHaveLeftTheGame"
+            [currentUserName]="currentUserName"></app-scoreboard>
         <div class="mx-3 rounded">
             <div *ngIf="isCurrentPlayerOnTurn()">
                 <h1><mark>Ти си на ред</mark></h1>

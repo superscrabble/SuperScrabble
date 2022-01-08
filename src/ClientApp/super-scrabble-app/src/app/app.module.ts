@@ -19,6 +19,7 @@ import { GameSummaryComponent } from './pages/game-summary/game-summary.componen
 import { MatDialogModule } from '@angular/material/dialog';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'; 
 import { CommonModule } from '@angular/common';
+import { ScoreboardComponent } from './pages/common/scoreboard/scoreboard.component';
 
 @NgModule({
   declarations: [
@@ -33,7 +34,8 @@ import { CommonModule } from '@angular/common';
     ChangeWildcardDialog,
     LeaveGameDialog,
     FormatTimePipe,
-    SettingsDialog
+    SettingsDialog,
+    ScoreboardComponent
   ],
   imports: [
     CommonModule,
