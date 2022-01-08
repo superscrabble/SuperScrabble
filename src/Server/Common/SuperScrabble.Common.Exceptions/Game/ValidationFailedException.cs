@@ -1,8 +1,8 @@
 ﻿namespace SuperScrabble.Common.Exceptions.Game
 {
-    public class ValidationFailedException : Exception
+    public abstract class ValidationFailedException : Exception
     {
-        public ValidationFailedException(string errorCode)
+        protected ValidationFailedException(string errorCode)
         {
             this.ErrorCode = errorCode;
         }

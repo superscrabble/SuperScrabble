@@ -1,4 +1,4 @@
-﻿namespace SuperScrabble.Services.Game.Models
+﻿namespace SuperScrabble.Services.Game.Models.Boards
 {
     using SuperScrabble.Common;
     using SuperScrabble.Services.Game.Common;

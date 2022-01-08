@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SuperScrabble.Common.Resources\SuperScrabble.Common.Resources.csproj" />
     <ProjectReference Include="..\SuperScrabble.Common\SuperScrabble.Common.csproj" />
   </ItemGroup>
 

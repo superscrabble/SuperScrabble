@@ -13,6 +13,7 @@ using SuperScrabble.Data.Repositories;
 using SuperScrabble.Services.Common;
 using SuperScrabble.Services.Data.Users;
 using SuperScrabble.Services.Data.Words;
+using SuperScrabble.Services.Game.Validation;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,6 +46,9 @@ builder.Services.AddTransient<IEncryptionKeyProvider, InMemoryEncryptionKeyProvi
 // Services.Data
 builder.Services.AddTransient<IUsersService, UsersService>();
 builder.Services.AddTransient<IWordsService, WordsService>();
+
+// Services.Game
+builder.Services.AddTransient<IGameValidator, GameValidator>();
 
 var app = builder.Build();
 
