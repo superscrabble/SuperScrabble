@@ -86,7 +86,7 @@ export class GameComponent implements OnInit {
             this.signalrService.getAllWildcardOptions();
         })
     }
-    
+
     this.loadCellViewDataByType();
     this.loadMockLogs();
     this.loadMockData(); //TODO: Remove this in production
@@ -529,6 +529,10 @@ export class GameComponent implements OnInit {
         }
     }
     return false;
+  }
+
+  openSettings() {
+      this.dialog.open(SettingsDialog);
   }
 
   areThereNewPlacedTiles() : boolean {
@@ -2423,6 +2427,16 @@ export class LeaveGameDialog {
 
     constructor(public dialogRef: MatDialogRef<ErrorDialog>, 
                 @Inject(MAT_DIALOG_DATA) public data: ErrorDialogData) {}
+}
+
+@Component({
+    selector: 'settings-dialog',
+    templateUrl: 'settings-dialog.html',
+    styleUrls: ['./game.component.css']
+  })
+export class SettingsDialog {
+
+    constructor() {}
 }
 
 @Component({
