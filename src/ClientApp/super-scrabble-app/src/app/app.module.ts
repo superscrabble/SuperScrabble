@@ -20,6 +20,8 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'; 
 import { CommonModule } from '@angular/common';
 import { ScoreboardComponent } from './pages/common/scoreboard/scoreboard.component';
+import { WordInfoComponent } from './pages/common/word-info/word-info.component';
+import { GameLogsComponent } from './pages/common/game-logs/game-logs.component';
 
 @NgModule({
   declarations: [
@@ -35,7 +37,9 @@ import { ScoreboardComponent } from './pages/common/scoreboard/scoreboard.compon
     LeaveGameDialog,
     FormatTimePipe,
     SettingsDialog,
-    ScoreboardComponent
+    ScoreboardComponent,
+    WordInfoComponent,
+    GameLogsComponent
   ],
   imports: [
     CommonModule,
