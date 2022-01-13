@@ -4,8 +4,8 @@
 <div class="container-fluid min-width-xs">
 <div class="row d-flex justify-content-center fill page">
     <!--Showing only on small screen-->
-    <div class="row-sm-12 d-sm-flex flex-column d-md-none">
-        <div class="d-flex flex-row">
+    <div class="row-sm-12 d-sm-flex d-flex flex-column justify-content-around d-md-none">
+        <div class="d-flex flex-row align-items-center justify-content-center">
             <div class="mx-3 rounded">
                 <div *ngIf="isCurrentPlayerOnTurn()">
                     <h3><mark>Ти си на ред</mark></h3>
@@ -72,8 +72,56 @@
     </div>
     <!--Board-->
     <div class="col-md-6 row-sm-12 row-xs-12 order-2 order-sm-last align-self-center mt-md-4">
-        <div class="row d-flex justify-content-center px-md-5 px-sm-4 px-4">
-            <table style="table-layout: fixed;">
+        <div class="d-flex justify-content-center px-sm-4">
+            <div class="d-flex justify-content-center overflow-auto tet">
+                <div class="d-flex justify-content-center grid">
+                    <div class="board-sizing">
+                        <div class="grid-row" *ngFor="let row of board">
+                            <div *ngFor="let cell of row" class="grid-col border border-dark text-center cursor-default {{getClassNameByCell(cell)}}"
+                            (contextmenu)="rightClickOnBoardCell(cell)"
+                            (click)="clickOnBoardCell(cell)"
+                                    (dblclick)="doubleClickOnBoardCell(cell)">
+                            <div *ngIf="cell.tile" class="board-cell">
+                                <span>
+                                    <strong class="tile-letter py-3">
+                                        {{cell.tile.letter}}
+                                    </strong>
+                                    <span class="tile-points">
+                                        {{cell.tile.points}}
+                                    </span>
+                                </span>
+                            </div>
+                            <div *ngIf="!cell.tile">
+                                {{getValueWhenEmptyByCellType(cell.type)}}
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--<div class="row d-flex justify-content-center px-md-5 px-sm-4 px-4 overflow-auto">
+            <div class="row" *ngFor="let row of board">
+                <div *ngFor="let cell of row" class="col-sm-1 col-xs-1 col-md-1 square border border-dark text-center cursor-default {{getClassNameByCell(cell)}}"
+                (contextmenu)="rightClickOnBoardCell(cell)"
+                (click)="clickOnBoardCell(cell)"
+                        (dblclick)="doubleClickOnBoardCell(cell)">
+                <div *ngIf="cell.tile" class="board-cell">
+                    <span>
+                        <strong class="tile-letter py-3">
+                            {{cell.tile.letter}}
+                        </strong>
+                        <span class="tile-points">
+                            {{cell.tile.points}}
+                        </span>
+                    </span>
+                </div>
+                <div *ngIf="!cell.tile">
+                    {{getValueWhenEmptyByCellType(cell.type)}}
+                </div>
+                </div>
+            </div>-->
+            <!--<table style="table-layout: fixed;">
                 <tr *ngFor="let row of board">
                     <td *ngFor="let cell of row" 
                         (click)="clickOnBoardCell(cell)"
@@ -96,8 +144,8 @@
                     </td>
                 </tr>
             </table>
-        </div>
-        <div class="my-3 text-center">
+        </div>-->
+        <div class="my-3 d-flex justify-content-center flex-wrap">
             <span
                 cdkDrag
                 *ngFor="let playerTile of playerTiles"

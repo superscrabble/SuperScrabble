@@ -1,0 +1,25 @@
+.grid {
+    position: relative;
+    width: 100%;
+    padding-top: 100%;
+}
+
+.grid-row {
+    display: grid;
+    grid-template-columns: repeat(15, 2.2rem);
+}
+
+.grid-col {
+    display: flex;
+    align-items: center;
+}
+
+.board-sizing {
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    position: absolute;
+    display: grid;
+    grid-template-rows: repeat(15, 2.2rem);
+}

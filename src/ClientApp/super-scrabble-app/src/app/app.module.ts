@@ -22,6 +22,7 @@ import { CommonModule } from '@angular/common';
 import { ScoreboardComponent } from './pages/common/scoreboard/scoreboard.component';
 import { WordInfoComponent } from './pages/common/word-info/word-info.component';
 import { GameLogsComponent } from './pages/common/game-logs/game-logs.component';
+import { GameboardComponent } from './pages/common/gameboard/gameboard.component';
 
 @NgModule({
   declarations: [
@@ -39,7 +40,8 @@ import { GameLogsComponent } from './pages/common/game-logs/game-logs.component'
     SettingsDialog,
     ScoreboardComponent,
     WordInfoComponent,
-    GameLogsComponent
+    GameLogsComponent,
+    GameboardComponent
   ],
   imports: [
     CommonModule,
