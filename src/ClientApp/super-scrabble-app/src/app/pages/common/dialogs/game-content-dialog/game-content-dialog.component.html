@@ -10,15 +10,16 @@
             Дума
         </button>
     </div>
-    <div [ngSwitch]="showingComponent" class="content-component">
-        <div *ngSwitchCase="showingComponentType.GameLogs" class="content-component">
+    <div [ngSwitch]="showingComponent">
+        <div *ngSwitchCase="showingComponentType.GameLogs">
             <app-game-logs
                 [gameLogs]="data.gameLogs"
-                (showWordMeaningOf)="showWordMeaningOf($event)">
+                (showWordMeaningOf)="showWordMeaningOf($event)"
+                class ="content-component">
             </app-game-logs>
         </div>
         <div *ngSwitchCase="showingComponentType.WordInfo">
-            <app-word-info>
+            <app-word-info class="content-component">
 
             </app-word-info>
         </div>
@@ -26,7 +27,8 @@
             <app-scoreboard
                 [pointsByUserNames]="data.pointsByUserNames"
                 [userNamesOfPlayersWhoHaveLeftTheGame]="data.userNamesOfPlayersWhoHaveLeftTheGame"
-                [currentUserName]="data.currentUserName">
+                [currentUserName]="data.currentUserName"
+                class="content-component">
             </app-scoreboard>
         </div>
     </div>
