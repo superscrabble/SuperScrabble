@@ -154,8 +154,14 @@ TODO: implement this one
     padding-top: 100%;
 }
 
-.tet {
-    width: 79%;
+.board-size {
+    width: 100%;
+}
+
+@media only screen and (min-width: 992px) {
+    .board-size {
+        width: 78%;
+    }   
 }
 
 .grid-row {

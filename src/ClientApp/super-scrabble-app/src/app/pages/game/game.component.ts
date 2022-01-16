@@ -5,20 +5,14 @@ import { Cell } from 'src/app/models/cell';
 import { CellViewData } from 'src/app/models/cellViewData';
 import { HubConnection, HubConnectionState } from '@microsoft/signalr';
 import { Router } from '@angular/router';
-import {MatDialog, MatDialogRef, MatDialogState, MAT_DIALOG_DATA} from '@angular/material/dialog';
+import {MatDialog } from '@angular/material/dialog';
 import { Action } from 'src/app/models/action';
 import { AppConfig } from 'src/app/app-config';
-
-export interface ErrorDialogData {
-    message: string;
-    unexistingWords: string[] | null;
-}
-
-export interface ChangeWildcardDialogData {
-    tiles: Tile[];
-    writeWordInput: any[];
-    tile: Tile;
-}
+import { ChangeWildcardDialogComponent } from '../common/dialogs/change-wildcard-dialog/change-wildcard-dialog.component';
+import { SettingsDialogComponent } from '../common/dialogs/settings-dialog/settings-dialog.component';
+import { LeaveGameDialogComponent } from '../common/dialogs/leave-game-dialog/leave-game-dialog.component';
+import { ErrorDialogComponent, ErrorDialogData } from '../common/dialogs/error-dialog/error-dialog.component';
+import { GameContentDialogComponent } from '../common/dialogs/game-content-dialog/game-content-dialog.component';
 
 @Pipe({
     name: "formatTime"
@@ -89,6 +83,40 @@ export class GameComponent implements OnInit {
     this.loadCellViewDataByType();
     this.loadMockLogs();
     this.loadMockData(); //TODO: Remove this in production
+    this.wildcardOptions = [
+        {
+            "letter": "Ь",
+            "points": 10
+        },
+        {
+            "letter": "Щ",
+            "points": 10
+        },
+        {
+          "letter": "Щ",
+          "points": 10
+        },
+        {
+          "letter": "Ш",
+          "points": 2
+        },
+        {
+            "letter": "А",
+            "points": 1
+        },
+        {
+            "letter": "З",
+            "points": 4
+        },
+        {
+            "letter": "Т",
+            "points": 1
+        },
+        {
+          "letter": "Т",
+          "points": 1
+        },
+    ];
   }
 
   attachGameListeners() {
@@ -121,7 +149,7 @@ export class GameComponent implements OnInit {
         if(data.unexistingWords || data.unexistingWords.length > 0) {
             dialogData.unexistingWords = data.unexistingWords;
         }
-        this.dialog.open(ErrorDialog, { data: dialogData});
+        this.dialog.open(ErrorDialogComponent, { data: dialogData});
         for(let i = 0; i < this.updatedBoardCells.length; i++) {
             this.playerTiles.push(this.updatedBoardCells[i].key.tile)
             this.board[this.updatedBoardCells[i].value.row][this.updatedBoardCells[i].value.column].tile = null;
@@ -132,14 +160,14 @@ export class GameComponent implements OnInit {
 
     this.signalrService.hubConnection?.on("InvalidExchangeTilesInput", data => {
         console.log(data);
-        this.dialog.open(ErrorDialog, { data: { message: Object.values(data.errorsByCodes)}});
+        this.dialog.open(ErrorDialogComponent, { data: { message: Object.values(data.errorsByCodes)}});
         this.showExchangeField = false;
         this.selectedExchangeTiles = [];
     })
 
     this.signalrService.hubConnection?.on("ImpossibleToSkipTurn", data => {
         console.log(data);
-        this.dialog.open(ErrorDialog, { data: { message: Object.values(data.errorsByCodes)}});
+        this.dialog.open(ErrorDialogComponent, { data: { message: Object.values(data.errorsByCodes)}});
     })
 
     this.signalrService.hubConnection?.on("ReceiveAllWildcardOptions", data => {
@@ -280,19 +308,28 @@ export class GameComponent implements OnInit {
     if((playerTile.letter == AppConfig.WildcardSymbol
         || playerTile.points == 0)
         && this.playerTiles.find(item => item == playerTile)) {
-        this.dialog.open(ChangeWildcardDialog, { data: { tiles: this.wildcardOptions, 
+        this.dialog.open(ChangeWildcardDialogComponent, { data: { tiles: this.wildcardOptions, 
             tile: playerTile, writeWordInput: null}});
     }
   }
 
   leaveGame() {
-      let dialogRef = this.dialog.open(LeaveGameDialog)
+      let dialogRef = this.dialog.open(LeaveGameDialogComponent)
       dialogRef.afterClosed().subscribe(result => {
         if(result) {
             this.signalrService.leaveGame();
             this.router.navigate(["/"]);
         }
       })
+  }
+
+  //TODO: declare type for writeWordInput
+  openWildcardDialogEvent(input: {tile: Tile, writeWordInput: any[]}) : void {
+    console.log("Opening Chnage Wildcard Dialog");
+    console.log(input);
+    console.log(this.wildcardOptions);
+    this.dialog.open(ChangeWildcardDialogComponent, { data: { tiles: this.wildcardOptions, 
+        tile: input.tile, writeWordInput: input.writeWordInput}});
   }
 
   clickExchangeBtn() {
@@ -410,10 +447,14 @@ export class GameComponent implements OnInit {
     if((cell.tile?.letter == AppConfig.WildcardSymbol
         || cell.tile?.points == 0)
         && this.updatedBoardCells.find(item => item.key == cell)) {
-        this.dialog.open(ChangeWildcardDialog, { data: { tiles: this.wildcardOptions, 
+        this.dialog.open(ChangeWildcardDialogComponent, { data: { tiles: this.wildcardOptions, 
             tile: cell.tile, writeWordInput: null}});
     }
   }  
+
+  addTileToPlayerTiles(tile: Tile) : void {
+    this.playerTiles.push(tile);
+  }
 
   removeTileFromPlayerTiles(playerTile: Tile) {
       if(playerTile) {
@@ -482,10 +523,10 @@ export class GameComponent implements OnInit {
     }
     
     //Check for null tiles
-    this.updatedBoardCells = this.updatedBoardCells.filter(item => item.key.tile !== null);
+    this.updatedBoardCells = this.updatedBoardCells.filter(item => item.cell.tile !== null);
     console.log("WRITING WORD")
     console.log(this.updatedBoardCells);
-    let writeWordInput = this.updatedBoardCells.map(item => ({key: item.key.tile, value: item.value}))
+    let writeWordInput = this.updatedBoardCells.map(item => ({key: item.cell.tile, value: item.coordinates}))
 
     if(!this.checkForWildcards(writeWordInput.map(item => (item.key)))) {
         try {
@@ -500,7 +541,7 @@ export class GameComponent implements OnInit {
 
     for(let i = writeWordInput.length - 1; i >= 0; i--) {
         if(writeWordInput[i].key.letter == AppConfig.WildcardSymbol) {    
-            this.dialog.open(ChangeWildcardDialog, { data: { tiles: this.wildcardOptions, 
+            this.dialog.open(ChangeWildcardDialogComponent, { data: { tiles: this.wildcardOptions, 
                     tile: this.updatedBoardCells[i].key.tile, writeWordInput: writeWordInput}});
         }
     }
@@ -516,7 +557,11 @@ export class GameComponent implements OnInit {
   }
 
   openSettings() {
-      this.dialog.open(SettingsDialog);
+      this.dialog.open(SettingsDialogComponent);
+  }
+
+  openGameContentMenu() {
+      this.dialog.open(GameContentDialogComponent);
   }
 
   areThereNewPlacedTiles() : boolean {
@@ -2385,7 +2430,11 @@ export class GameComponent implements OnInit {
       {
         "letter": "Т",
         "points": 1
-    },
+      },
+      {
+        "letter": AppConfig.WildcardSymbol,
+        "points": 0
+      },
   ]
 
     this.loadBoard(data.board);
@@ -2394,96 +2443,4 @@ export class GameComponent implements OnInit {
     this.loadScoreBoard(data.pointsByUserNames)
     console.log("Tiles Count: " + this.remainingTilesCount)
   }
-}
-
-@Component({
-    selector: 'error-dialog',
-    templateUrl: 'error-dialog.html',
-  })
-export class ErrorDialog {
-
-    constructor(public dialogRef: MatDialogRef<ErrorDialog>, 
-                @Inject(MAT_DIALOG_DATA) public data: ErrorDialogData) {}
-}
-
-@Component({
-    selector: 'leave-game-dialog',
-    templateUrl: 'leave-game-dialog.html',
-    styleUrls: ['./game.component.css']
-  })
-export class LeaveGameDialog {
-
-    constructor(public dialogRef: MatDialogRef<ErrorDialog>, 
-                @Inject(MAT_DIALOG_DATA) public data: ErrorDialogData) {}
-}
-
-@Component({
-    selector: 'settings-dialog',
-    templateUrl: 'settings-dialog.html',
-    styleUrls: ['./game.component.css']
-  })
-export class SettingsDialog {
-
-    constructor() {}
-}
-
-@Component({
-    selector: 'change-wildcard-dialog',
-    templateUrl: 'change-wildcard-dialog.html',
-    styleUrls: ['./game.component.css']
-  })
-export class ChangeWildcardDialog {
-
-    selectedTile: Tile | null = null;
-    tiles: any[] = new Array();
-
-    constructor(public dialogRef: MatDialogRef<ChangeWildcardDialog>, 
-                @Inject(MAT_DIALOG_DATA) public data: ChangeWildcardDialogData,
-                public signalrService: SignalrService) {
-                    this.tiles = data.tiles;
-                }
-
-    getClassNameIfSelected(tile: Tile) {
-        if(tile == this.selectedTile) {
-            return "selected-tile";
-        }
-        return "";
-    }
-
-    clickOnTile(tile: Tile) {
-        if(tile) {
-            if(tile == this.selectedTile) {
-                this.selectedTile = null;
-                return;
-            }
-            this.selectedTile = tile;
-        }
-    }
-
-    close() {
-        if(this.selectedTile) {
-            this.data.tile.letter = this.selectedTile.letter
-        }
-        if(this.data.writeWordInput) {
-            //check whether all wildcards are not empty
-            if(!this.checkForEmptyWildcards(this.data.writeWordInput)) {
-                try {
-                    this.signalrService.writeWord(this.data.writeWordInput);
-                }
-                catch (ex) {
-                    console.log("ERROR");
-                    console.log(ex);
-                } 
-            }
-        }
-    }
-
-    checkForEmptyWildcards(tiles: any[]) : boolean {
-        for(let i = 0; i < tiles.length; i++) {
-            if(tiles[i].key.letter == AppConfig.WildcardSymbol) {
-                return true;
-            }
-        }
-        return false;
-    }
 }
