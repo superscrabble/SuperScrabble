@@ -1,1 +1,18 @@
-<p>game-logs works!</p>
+<div class="logs mx-3">
+    <div class="card border border-dark rounded" style="width: 100%;">
+        <div class="card-body">
+            <h1 class="logs-title card-title text-center"><b>История</b></h1>
+        </div>
+        <ul style="max-height: 20vh;" class="logs-history-group list-group list-group-flush">
+            <li class="log list-group-item"
+                *ngFor="let gameLog of gameLogs">
+                <div class="d-flex flex-row flex-wrap">
+                    <p>
+                        {{gameLog.text}} <b class="text-secondary"
+                        (click)="showWordMeaningOf(gameLog.word)">{{gameLog.word}}</b>
+                    </p>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
