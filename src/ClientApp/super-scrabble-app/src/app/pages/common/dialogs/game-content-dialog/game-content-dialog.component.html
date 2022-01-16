@@ -1,1 +1,25 @@
-<p>game-content-dialog works!</p>
+<div>
+    <div>
+
+    </div>
+    <div [ngSwitch]="showingComponent">
+        <div *ngSwitchCase="showingComponentType.GameLogs">
+            <app-game-logs
+                [gameLogs]="data.gameLogs"
+                (showWordMeaningOf)="showWordMeaningOf($event)">
+            </app-game-logs>
+        </div>
+        <div *ngSwitchCase="showingComponentType.WordInfo">
+            <app-word-info>
+
+            </app-word-info>
+        </div>
+        <div *ngSwitchDefault>
+            <app-scoreboard
+                [pointsByUserNames]="data.pointsByUserNames"
+                [userNamesOfPlayersWhoHaveLeftTheGame]="data.userNamesOfPlayersWhoHaveLeftTheGame"
+                [currentUserName]="data.currentUserName">
+            </app-scoreboard>
+        </div>
+    </div>
+</div>

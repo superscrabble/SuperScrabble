@@ -1,4 +1,20 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, Inject, Input, OnInit, Output } from '@angular/core';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Action } from 'src/app/models/action';
+
+interface GameContentDialogData {
+  gameLogs: Action[];
+  pointsByUserNames: any[];
+  currentUserName: string;
+  userNamesOfPlayersWhoHaveLeftTheGame: string[];
+  showWordMeaningOf: Function;
+}
+
+export enum ShowingComponent {
+  Scoreboard,
+  GameLogs,
+  WordInfo
+}
 
 @Component({
   selector: 'app-game-content-dialog',
@@ -8,9 +24,19 @@ import { Component, OnInit } from '@angular/core';
 //TODO: change the class's name
 export class GameContentDialogComponent implements OnInit {
 
-  constructor() { }
+  showingComponent: ShowingComponent = ShowingComponent.GameLogs;
+  showingComponentType: typeof ShowingComponent = ShowingComponent;
+
+  data: GameContentDialogData;
+
+  constructor(@Inject(MAT_DIALOG_DATA) public _data: GameContentDialogData) {
+    this.data = _data;
+  }
 
   ngOnInit(): void {
   }
 
+  showWordMeaningOf(value: string) {
+    this.data.showWordMeaningOf.call(value);
+  }
 }

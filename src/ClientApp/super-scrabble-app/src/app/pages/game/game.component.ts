@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, NgZone, Pipe, PipeTransform } from '@angular/core';
+import { Component, OnInit, Inject, NgZone, Pipe, PipeTransform, EventEmitter } from '@angular/core';
 import { SignalrService } from 'src/app/services/signalr.service';
 import { Tile } from 'src/app/models/tile';
 import { Cell } from 'src/app/models/cell';
@@ -561,7 +561,15 @@ export class GameComponent implements OnInit {
   }
 
   openGameContentMenu() {
-      this.dialog.open(GameContentDialogComponent);
+      this.dialog.open(GameContentDialogComponent, {
+        data: {
+            pointsByUserNames: this.pointsByUserNames,
+            userNamesOfPlayersWhoHaveLeftTheGame: this.userNamesOfPlayersWhoHaveLeftTheGame,
+            currentUserName: this.currentUserName,
+            gameLogs: this.gameLogs,
+            showWordMeaningOf: this.showWordMeaningOf
+        }
+      });
   }
 
   areThereNewPlacedTiles() : boolean {
