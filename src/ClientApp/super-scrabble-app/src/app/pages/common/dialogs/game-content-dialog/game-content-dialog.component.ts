@@ -39,4 +39,8 @@ export class GameContentDialogComponent implements OnInit {
   showWordMeaningOf(value: string) {
     this.data.showWordMeaningOf.call(value);
   }
+
+  changeShowingComponent(value: ShowingComponent) {
+    this.showingComponent = value;
+  }
 }

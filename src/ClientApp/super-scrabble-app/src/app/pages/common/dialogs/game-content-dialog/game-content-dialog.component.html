@@ -1,9 +1,17 @@
-<div>
-    <div>
-
+<div class="d-flex flex-column page row-10">
+    <div class="d-flex flex-row">
+        <button (click)="changeShowingComponent(showingComponentType.Scoreboard)">
+            Резултат
+        </button>
+        <button (click)="changeShowingComponent(showingComponentType.GameLogs)">
+            История
+        </button>
+        <button (click)="changeShowingComponent(showingComponentType.WordInfo)">
+            Дума
+        </button>
     </div>
-    <div [ngSwitch]="showingComponent">
-        <div *ngSwitchCase="showingComponentType.GameLogs">
+    <div [ngSwitch]="showingComponent" class="content-component">
+        <div *ngSwitchCase="showingComponentType.GameLogs" class="content-component">
             <app-game-logs
                 [gameLogs]="data.gameLogs"
                 (showWordMeaningOf)="showWordMeaningOf($event)">
