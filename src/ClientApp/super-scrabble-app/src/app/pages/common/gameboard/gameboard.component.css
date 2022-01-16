@@ -1,3 +1,8 @@
+:root {
+    --cell-width: 2.2rem;
+    --cell-height: 2.2rem;
+}
+
 .grid {
     position: relative;
     width: 100%;
@@ -5,8 +10,9 @@
 }
 
 .grid-row {
-    display: grid;
-    grid-template-columns: repeat(15, 2.2rem);
+    display: grid !important;
+    
+    grid-template-columns: repeat(15, var(--cell-width, 2.2rem));
 }
 
 .grid-col {
@@ -21,5 +27,66 @@
     left: 0;
     position: absolute;
     display: grid;
-    grid-template-rows: repeat(15, 2.2rem);
+    
+    grid-template-rows: repeat(15, var(--cell-height, 2.2rem));
+}
+
+.board-cell {
+    position: relative;
+}
+
+.tile-points {
+    font-size: 9px;
+}
+
+.tile-letter {
+    font-size: 14px;
+}
+
+.tile {
+    background-color: #E3CFAA;
+    box-shadow: 2px 2px 2px black;
+    color: black;
+}
+
+.basic-cell {
+    background-color: #52B788;
+}
+
+.center-cell {
+    background-color: #FA9789;
+}
+
+.x2-letter-cell {
+    background-color: #61C7FA;
+}
+
+.x3-letter-cell {
+    color: white;
+    background-color: #0D6896;
+}
+
+.x2-word-cell {
+    background-color: #FA9789;
+}
+
+.x3-word-cell {
+    background-color: #F97362;
+}
+
+.selected-tile {
+    background-color: #F97362;
+}
+
+.selected-cell {
+    background-color: #F97362; /*#f5c453;*/
+}
+
+.cursor-default {
+    cursor: default;
+}
+
+.tile-on-cell {
+    background-color: #E3CFAA;
+    color: black;
 }
