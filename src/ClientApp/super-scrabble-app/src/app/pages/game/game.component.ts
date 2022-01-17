@@ -410,7 +410,11 @@ export class GameComponent implements OnInit {
   }
 
   openExchangeTilesDialog() {
-      this.dialog.open(ExchangeTilesDialogComponent)
+      this.dialog.open(ExchangeTilesDialogComponent, {
+          data: {
+            playerTiles: this.playerTiles
+          }
+      })
   }
 
   areThereNewPlacedTiles() : boolean {
