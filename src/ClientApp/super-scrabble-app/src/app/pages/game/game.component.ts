@@ -35,6 +35,9 @@ export class FormatTimePipe implements PipeTransform {
 })
 export class GameComponent implements OnInit {
 
+  //TODO: check which properties are not used
+  //TODO: create BoardConfigurationProvider which will provide e.x special cells
+  //TODO: create GameService for Join, Leave, ExchangeTiles, WriteWord, SkipTurn
   board: Cell[][] = new Array();
   playerTiles: Tile[] = new Array();
   cellViewDataByType: Map<number, CellViewData> = new Map();
@@ -80,7 +83,7 @@ export class GameComponent implements OnInit {
         })
     }
 
-    this.loadCellViewDataByType();
+    //this.loadCellViewDataByType();
     this.loadMockLogs();
     this.loadMockData(); //TODO: Remove this in production
     this.wildcardOptions = [
@@ -217,38 +220,6 @@ export class GameComponent implements OnInit {
     }
   }
 
-  loadCellViewDataByType() {
-    const emptyCellValue = " ";
-    this.cellViewDataByType = new Map([
-      [0, new CellViewData("basic-cell", emptyCellValue)],
-      [1, new CellViewData("center-cell", emptyCellValue)],
-      [2, new CellViewData("x2-letter-cell", "x2")],
-      [3, new CellViewData("x3-letter-cell", "x3")],
-      [4, new CellViewData("x2-word-cell", "x2")],
-      [5, new CellViewData("x3-word-cell", "x3")],
-    ]);
-  }
-
-  getClassNameByCell(cell: Cell) {
-      let result = " ";
-
-      result += this.getClassNameIfPlayerIsNotOnTurn();
-      result += " " + this.getClassNameByCellType(cell.type);
-      result += " " + this.getClassNameIfCellIsTaken(cell);
-      result += " " + this.getClassNameIfSelected(cell);
-      result += " " + this.getClassNameIfNewCell(cell);
-
-      return result;
-  }
-
-  //TODO: Think how to show that a cell is disabled
-  getClassNameIfPlayerIsNotOnTurn() {
-    if(!this.isCurrentPlayerOnTurn()) {
-        return "basic-cell-disabled"
-    }
-    return "";
-  }
-
   getClassNameIfNewCell(cell: Cell) {
       for(let i = 0; i < this.updatedBoardCells.length; i++) {
           if(this.updatedBoardCells[i].key == cell) {
@@ -265,21 +236,6 @@ export class GameComponent implements OnInit {
 
   padLeft(input: string, padder: string, length: number) {
 
-  }
-
-  getClassNameIfCellIsTaken(cell: Cell) {
-    if(cell.tile) {
-        if(this.selectedBoardCell == cell) {
-            return "selected-tile rounded-1";
-        } else {
-            return "tile-on-cell rounded-1";
-        }
-    }
-    return "";
-  }
-
-  getValueWhenEmptyByCellType(type: number) {
-    return this.cellViewDataByType.get(type)?.valueWhenEmpty;
   }
 
   isCurrentPlayerOnTurn() : boolean {
@@ -368,90 +324,6 @@ export class GameComponent implements OnInit {
     this.selectedExchangeTiles = [];
   }
 
-  clickOnBoardCell(cell: Cell | any) {
-    if(!cell) {
-        return;
-    }
-
-    console.log("CLICK ON BOARD CELL")
-    console.log(this.updatedBoardCells);
-
-    //swap the selected player tile and the selected board cell
-    if(cell.tile && this.selectedPlayerTile) {
-        let isNewCell = false;
-        for(let i = 0; i < this.updatedBoardCells.length; i++) {
-            if(this.updatedBoardCells[i].key == cell) {
-                isNewCell = true;
-                break;
-            }
-        }
-
-        if(!isNewCell) {
-            return;
-        }
-
-        let temp = cell.tile;
-        cell.tile = this.selectedPlayerTile;
-        this.playerTiles.push(temp);
-        this.removeTileFromPlayerTiles(this.selectedPlayerTile);
-        this.selectedPlayerTile = null;
-        return;
-    }
-
-    //place the selected player tile
-    if(this.selectedPlayerTile) {
-        if(!cell.tile) {
-            cell.tile = this.selectedPlayerTile;
-            this.removeTileFromPlayerTiles(this.selectedPlayerTile);
-            this.addCellToUpdatedBoardCells(cell);
-            this.selectedPlayerTile = null;
-            return;
-        }
-    }
-
-    //select a cell
-    if(cell.tile) {
-        if(cell == this.selectedBoardCell) {
-            this.selectedBoardCell = null;
-            return;
-        }
-
-        for(let i = 0; i < this.updatedBoardCells.length; i++) {
-            //TODO: check for posible bugs with the second condition
-            if(this.updatedBoardCells[i].key == cell
-                || this.updatedBoardCells[i].key == cell.tile) {
-                this.selectedBoardCell = cell;
-                return;
-            }
-        }
-        return;
-    }
-
-    //move a tile from a selected cell to another cell
-    if(this.selectedBoardCell) {
-        let tempTile = this.selectedBoardCell.tile;
-        this.selectedBoardCell.tile = cell.tile;
-        cell.tile = tempTile;
-
-        this.removeCellFromUpdatedBoardCells(this.selectedBoardCell);
-        this.addCellToUpdatedBoardCells(cell);
-        this.selectedBoardCell = null;
-
-        console.log("UPDATED BOARD CELLS: ");
-        console.log(this.updatedBoardCells);
-        return;
-    }
-  }
-
-  doubleClickOnBoardCell(cell: Cell) {
-    if((cell.tile?.letter == AppConfig.WildcardSymbol
-        || cell.tile?.points == 0)
-        && this.updatedBoardCells.find(item => item.key == cell)) {
-        this.dialog.open(ChangeWildcardDialogComponent, { data: { tiles: this.wildcardOptions, 
-            tile: cell.tile, writeWordInput: null}});
-    }
-  }  
-
   addTileToPlayerTiles(tile: Tile) : void {
     this.playerTiles.push(tile);
   }
@@ -460,44 +332,6 @@ export class GameComponent implements OnInit {
       if(playerTile) {
         this.playerTiles = this.playerTiles.filter(item => item !== playerTile);
       }
-  }
-
-  removeCellFromUpdatedBoardCells(cell: Cell) {
-      if(cell) {
-        this.updatedBoardCells = this.updatedBoardCells.filter(item => item.key !== cell);
-      }
-  }
-
-  addCellToUpdatedBoardCells(cell: Cell) {
-    if(cell && cell.tile) {
-        for(let i = 0; i < this.updatedBoardCells.length; i++) {
-            if(this.updatedBoardCells[i] == cell) {
-                return;
-            }
-        }
-        this.saveUpdatedBoardCellWithPosition(cell);
-    }
-  }
-
-  saveUpdatedBoardCellWithPosition(cell: Cell) {
-    for(let row = 0; row < this.board.length; row++) {
-        for(let col = 0; col < this.board[row].length; col++) {
-            if(this.board[row][col] == cell) {
-                this.updatedBoardCells.push({key: cell, value: {row: row, column: col}})
-                return;
-            }       
-        }
-    }
-  }
-
-  rightClickOnBoardCell(cell: Cell | any) {
-    if(cell.tile && cell == this.selectedBoardCell) {
-        this.playerTiles.push(cell.tile);
-        this.removeCellFromUpdatedBoardCells(cell);
-        this.selectedBoardCell = null;
-        cell.tile = null;
-    }
-    return false;
   }
 
   getClassNameIfSelected(object: Tile | Cell | any) {
@@ -557,7 +391,9 @@ export class GameComponent implements OnInit {
   }
 
   openSettings() {
-      this.dialog.open(SettingsDialogComponent);
+      this.dialog.open(SettingsDialogComponent, { data: {
+          openLeaveGameDialog: this.leaveGame
+      }});
   }
 
   openGameContentMenu() {
