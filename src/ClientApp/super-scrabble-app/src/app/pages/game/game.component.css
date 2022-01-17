@@ -46,6 +46,7 @@
     background-color: #F97362;
 }
 
+/*TODO: This should go into a global css or something*/
 .selected-tile {
     background-color: #F97362;
 }

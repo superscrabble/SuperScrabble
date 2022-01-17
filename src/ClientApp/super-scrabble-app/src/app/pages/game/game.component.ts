@@ -13,6 +13,7 @@ import { SettingsDialogComponent } from '../common/dialogs/settings-dialog/setti
 import { LeaveGameDialogComponent } from '../common/dialogs/leave-game-dialog/leave-game-dialog.component';
 import { ErrorDialogComponent, ErrorDialogData } from '../common/dialogs/error-dialog/error-dialog.component';
 import { GameContentDialogComponent } from '../common/dialogs/game-content-dialog/game-content-dialog.component';
+import { ExchangeTilesDialogComponent } from '../common/dialogs/exchange-tiles-dialog/exchange-tiles-dialog.component';
 
 @Pipe({
     name: "formatTime"
@@ -406,6 +407,10 @@ export class GameComponent implements OnInit {
             showWordMeaningOf: this.showWordMeaningOf
         }
       });
+  }
+
+  openExchangeTilesDialog() {
+      this.dialog.open(ExchangeTilesDialogComponent)
   }
 
   areThereNewPlacedTiles() : boolean {

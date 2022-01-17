@@ -27,8 +27,9 @@ import { ErrorDialogComponent } from './pages/common/dialogs/error-dialog/error-
 import { SettingsDialogComponent } from './pages/common/dialogs/settings-dialog/settings-dialog.component';
 import { ChangeWildcardDialogComponent } from './pages/common/dialogs/change-wildcard-dialog/change-wildcard-dialog.component';
 import { LeaveGameDialogComponent } from './pages/common/dialogs/leave-game-dialog/leave-game-dialog.component';
-import { ChangeLettersDialogComponent } from './pages/common/dialogs/change-letters-dialog/change-letters-dialog.component';
 import { GameContentDialogComponent } from './pages/common/dialogs/game-content-dialog/game-content-dialog.component';
+import { ExchangeTilesDialogComponent } from './pages/common/dialogs/exchange-tiles-dialog/exchange-tiles-dialog.component';
+import { ExchangeTilesComponent } from './pages/common/exchange-tiles/exchange-tiles.component';
 
 @NgModule({
   declarations: [
@@ -48,8 +49,9 @@ import { GameContentDialogComponent } from './pages/common/dialogs/game-content-
     SettingsDialogComponent,
     ChangeWildcardDialogComponent,
     LeaveGameDialogComponent,
-    ChangeLettersDialogComponent,
-    GameContentDialogComponent
+    GameContentDialogComponent,
+    ExchangeTilesDialogComponent,
+    ExchangeTilesComponent
   ],
   imports: [
     CommonModule,
