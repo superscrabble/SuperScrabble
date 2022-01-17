@@ -1,6 +1,6 @@
 ﻿namespace SuperScrabble.Common.Exceptions.Game
 {
-    public class InvalidInputTilesCountException : ValidationFailedException
+    public class InvalidInputTilesCountException : GameValidationFailedException
     {
         public InvalidInputTilesCountException() : base(InvalidInputTilesCount)
         {

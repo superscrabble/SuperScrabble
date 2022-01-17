@@ -1,14 +1,9 @@
 ﻿namespace SuperScrabble.Services.Game.Common.TilesProviders
 {
-    using SuperScrabble.Services.Game.Common.GameplayConstantsProviders;
+    using SuperScrabble.Common;
 
     public class StandardTilesProvider : BaseTilesProvider
     {
-        public StandardTilesProvider(IGameplayConstantsProvider gameplayConstantsProvider)
-                : base(gameplayConstantsProvider)
-        {
-        }
-
         public override IEnumerable<KeyValuePair<char, TileInfo>> GetTiles()
         {
             return new Dictionary<char, TileInfo>()
@@ -43,7 +38,7 @@
                 ['Ь'] = new(10, 1),
                 ['Ю'] = new(8, 1),
                 ['Я'] = new(5, 2),
-                [this.gameplayConstantsProvider.WildcardValue] = new(0, 2),
+                [GlobalConstants.WildcardValue] = new(0, 2),
             };
         }
     }

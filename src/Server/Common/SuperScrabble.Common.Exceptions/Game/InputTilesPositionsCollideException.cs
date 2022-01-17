@@ -1,6 +1,6 @@
 ﻿namespace SuperScrabble.Common.Exceptions.Game
 {
-    public class InputTilesPositionsCollideException : ValidationFailedException
+    public class InputTilesPositionsCollideException : GameValidationFailedException
     {
         public InputTilesPositionsCollideException() : base(InputTilesPositionsCollide)
         {

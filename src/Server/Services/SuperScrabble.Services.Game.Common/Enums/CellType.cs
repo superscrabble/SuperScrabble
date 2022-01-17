@@ -1,4 +1,4 @@
-﻿namespace SuperScrabble.Services.Game.Common
+﻿namespace SuperScrabble.Services.Game.Common.Enums
 {
     public enum CellType
     {

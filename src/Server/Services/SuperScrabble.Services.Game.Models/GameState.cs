@@ -1,107 +1,98 @@
 ﻿namespace SuperScrabble.Services.Game.Models
 {
     using SuperScrabble.Services.Game.Common.GameplayConstantsProviders;
+
+    using SuperScrabble.Services.Game.Models.Bags;
     using SuperScrabble.Services.Game.Models.Boards;
-    using SuperScrabble.Services.Game.Models.TilesBags;
 
     public class GameState
     {
-        private readonly List<Player> players = new();
+        private readonly List<Team> teams = new();
         private readonly IGameplayConstantsProvider gameplayConstantsProvider;
 
         public GameState(
-            IEnumerable<KeyValuePair<string, string>> connectionIdsByUserNames,
-            ITilesBag tilesBag,
+            IBag bag,
             IBoard board,
+            string groupName,
+            IEnumerable<Team> teams,
             IGameplayConstantsProvider gameplayConstantsProvider)
         {
-            foreach (var user in connectionIdsByUserNames)
-            {
-                this.players.Add(new Player(user.Key, 0, user.Value, gameplayConstantsProvider));
-            }
+            this.teams.AddRange(teams);
 
-            this.TilesBag = tilesBag;
-            this.PlayerIndex = 0;
+            this.Bag = bag;
             this.Board = board;
-            this.gameplayConstantsProvider = gameplayConstantsProvider;
+            this.GroupName = groupName;
+            this.TeamIndex = 0;
             this.IsGameOver = false;
+            this.gameplayConstantsProvider = gameplayConstantsProvider;
         }
 
-        public Player CurrentPlayer => this.players[this.PlayerIndex];
-
-        public bool IsGameOver { get; private set; }
-
-        public ITilesBag TilesBag { get; }
+        public IBag Bag { get; }
 
         public IBoard Board { get; }
 
-        public int PlayerIndex { get; private set; }
+        public string GroupName { get; }
 
-        public string? GroupName { get; set; }
+        public int TeamIndex { get; private set; }
 
-        public IReadOnlyCollection<Player> Players => this.players.ToList().AsReadOnly();
+        public bool IsGameOver { get; private set; }
 
-        public int TilesCount => this.TilesBag.TilesCount;
+        public IReadOnlyCollection<Team> Teams => this.teams.AsReadOnly();
+
+        public Team CurrentTeam => this.teams[this.TeamIndex];
+
+        public int TilesCount => this.Bag.TilesCount;
 
         public bool IsTileExchangePossible =>
             this.TilesCount >= this.gameplayConstantsProvider.PlayerTilesCount;
 
-        public void CheckForGameEnd()
+        public void EndGame()
         {
-            int playersStillPlayingCount = 0;
+            this.IsGameOver = true;
+        }
 
-            foreach (Player player in this.Players)
+        public void EndGameIfRoomIsEmpty()
+        {
+            int remainingTeamsCount = 0;
+
+            foreach (Team team in this.teams)
             {
-                if (!player.HasLeftTheGame)
+                if (!team.HasSurrendered)
                 {
-                    playersStillPlayingCount++;
+                    remainingTeamsCount++;
+                    break;
                 }
             }
 
-            if (playersStillPlayingCount <= 1)
+            if (remainingTeamsCount <= 1)
             {
                 this.EndGame();
             }
         }
 
-        public Player? GetPlayer(string userName)
+        public void ResetConsecutiveSkipsCount()
         {
-            return this.players.FirstOrDefault(p => p.UserName == userName);
-        }
-
-        public void ResetAllPlayersConsecutiveSkipsCount()
-        {
-            foreach (Player player in this.Players)
+            foreach (Team team in this.teams)
             {
-                player.ConsecutiveSkipsCount = 0;
+                team.ResetConsecutiveSkipsCount();
             }
         }
 
-        public void NextPlayer()
+        public void NextTeam()
         {
-            while (this.Players.Count > 1)
+            while (this.teams.Count > 1)
             {
-                this.PlayerIndex++;
+                this.TeamIndex++;
 
-                if (this.PlayerIndex >= this.Players.Count)
+                if (this.TeamIndex >= this.teams.Count)
                 {
-                    this.PlayerIndex = 0;
+                    this.TeamIndex = 0;
                 }
 
-                if (!this.CurrentPlayer.HasLeftTheGame)
+                if (!this.CurrentTeam.HasSurrendered)
                 {
                     break;
                 }
-            }
-        }
-
-        public void EndGame()
-        {
-            this.IsGameOver = true;
-
-            foreach (Player player in this.Players)
-            {
-                player.SubtractRemainingTilesPoints();
             }
         }
     }

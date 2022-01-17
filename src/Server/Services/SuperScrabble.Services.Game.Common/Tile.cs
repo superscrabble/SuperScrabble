@@ -1,5 +1,7 @@
 ﻿namespace SuperScrabble.Services.Game.Common
 {
+    using SuperScrabble.Common;
+
     public class Tile
     {
         public Tile(char letter, int points)
@@ -11,6 +13,9 @@
         public char Letter { get; set; }
 
         public int Points { get; set; }
+
+        public bool IsWildcard =>
+            this.Letter == GlobalConstants.WildcardValue && this.Points == 0;
 
         public override bool Equals(object? obj)
         {

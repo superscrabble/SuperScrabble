@@ -1,49 +1,37 @@
 ﻿namespace SuperScrabble.Services.Game.Models
 {
     using SuperScrabble.Services.Game.Common;
-    using SuperScrabble.Services.Game.Common.GameplayConstantsProviders;
 
     public class Player
     {
         private readonly List<Tile> tiles = new();
-        private readonly IGameplayConstantsProvider gameplayConstantsProvider;
 
-        public Player(
-            string userName,
-            int points,
-            string connectionId,
-            IGameplayConstantsProvider gameplayConstantsProvider)
+        public Player(string userName, string connectionId)
         {
+            this.Points = 0;
             this.UserName = userName;
-            this.Points = points;
             this.ConnectionId = connectionId;
-            this.gameplayConstantsProvider = gameplayConstantsProvider;
             this.ConsecutiveSkipsCount = 0;
             this.HasLeftTheGame = false;
         }
 
-        public int ConsecutiveSkipsCount { get; set; }
-
-        public string UserName { get; set; }
-
         public int Points { get; set; }
 
+        public string UserName { get; }
+
         public string ConnectionId { get; set; }
+
+        public int ConsecutiveSkipsCount { get; set; }
 
         public bool HasLeftTheGame { get; private set; }
 
         public IReadOnlyCollection<Tile> Tiles => this.tiles.AsReadOnly();
 
-        public void SubtractRemainingTilesPoints()
+        public int TilesPointsSum => this.Tiles.Sum(tile => tile.Points);
+
+        public void LeaveGame()
         {
-            int pointsToSubtract = 0;
-
-            foreach (Tile tile in this.Tiles)
-            {
-                pointsToSubtract += tile.Points;
-            }
-
-            this.Points -= pointsToSubtract;
+            this.HasLeftTheGame = true;
         }
 
         public void AddTile(Tile tile)
@@ -53,30 +41,13 @@
 
         public void RemoveTile(Tile tile)
         {
-            Tile? tileToRemove = this.tiles.FirstOrDefault(playerTile =>
-                playerTile.Equals(tile) || (tile?.Points == 0
-                && playerTile.Letter == this.gameplayConstantsProvider.WildcardValue
-                && playerTile.Points == 0));
+            Tile? tileToRemove = this.tiles.FirstOrDefault(playerTile
+                => playerTile.Equals(tile) || (tile?.Points == 0 && playerTile.IsWildcard));
 
             if (tileToRemove != null)
             {
                 this.tiles.Remove(tileToRemove);
             }
-        }
-
-        public Tile? GetTile(int index)
-        {
-            if (index < 0 || index >= this.tiles.Count)
-            {
-                return null;
-            }
-
-            return this.tiles[index];
-        }
-
-        public void LeaveGame()
-        {
-            this.HasLeftTheGame = true;
         }
 
         public void RemoveTiles(IEnumerable<Tile> tiles)

@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Common\SuperScrabble.Common\SuperScrabble.Common.csproj" />
+    <ProjectReference Include="..\SuperScrabble.Services.Common\SuperScrabble.Services.Common.csproj" />
   </ItemGroup>
 
 </Project>

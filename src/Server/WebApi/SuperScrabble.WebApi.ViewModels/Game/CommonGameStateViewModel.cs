@@ -4,9 +4,9 @@
     {
         public int RemainingTilesCount { get; set; }
 
-        public IEnumerable<KeyValuePair<string, int>> PointsByUserNames { get; set; } = default!;
+        public IEnumerable<KeyValuePair<string, int>> PointsByUserNames { get; set; } = new List<KeyValuePair<string, int>>();
 
-        public IEnumerable<string> UserNamesOfPlayersWhoHaveLeftTheGame { get; set; } = default!;
+        public IEnumerable<string> UserNamesOfPlayersWhoHaveLeftTheGame { get; set; } = new List<string>();
 
         public BoardViewModel Board { get; set; } = default!;
 

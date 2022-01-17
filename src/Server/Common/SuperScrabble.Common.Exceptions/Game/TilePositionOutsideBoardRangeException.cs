@@ -1,6 +1,6 @@
 ﻿namespace SuperScrabble.Common.Exceptions.Game
 {
-    public class TilePositionOutsideBoardRangeException : ValidationFailedException
+    public class TilePositionOutsideBoardRangeException : GameValidationFailedException
     {
         public TilePositionOutsideBoardRangeException() : base(TilePositionOutsideBoardRange)
         {

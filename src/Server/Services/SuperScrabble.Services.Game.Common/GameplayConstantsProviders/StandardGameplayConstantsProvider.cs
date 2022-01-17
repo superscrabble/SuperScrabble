@@ -2,17 +2,21 @@
 {
     public class StandardGameplayConstantsProvider : IGameplayConstantsProvider
     {
-        public int PlayerTilesCount => 7;
+        public StandardGameplayConstantsProvider(int playersPerGameCount, int gameTimerSeconds)
+        {
+            this.PlayersPerGameCount = playersPerGameCount;
+            this.GameTimerSeconds = gameTimerSeconds;
+        }
 
-        public int PlayersPerGameCount => 2;
+        public int PlayersPerGameCount { get; }
+
+        public int GameTimerSeconds { get; }
+
+        public int PlayerTilesCount => 2;
 
         public int MinSkipsCountForEachPlayerToEndTheGame => 2;
 
-        public char WildcardValue => '\0';
-
         public int BonusPointsForUsingAllTiles => 50;
-
-        public int GameTimerSeconds => 65;
 
         public int MinWordLettersCount => 2;
     }

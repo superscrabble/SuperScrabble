@@ -1,5 +1,7 @@
 ﻿namespace SuperScrabble.Services.Game.Common
 {
+    using SuperScrabble.Services.Game.Common.Enums;
+
     public class Cell
     {
         public Cell(CellType type, Tile? tile = null)

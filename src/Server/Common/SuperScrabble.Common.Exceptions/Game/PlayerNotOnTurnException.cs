@@ -1,6 +1,6 @@
 ﻿namespace SuperScrabble.Common.Exceptions.Game
 {
-    public class PlayerNotOnTurnException : ValidationFailedException
+    public class PlayerNotOnTurnException : GameValidationFailedException
     {
         public PlayerNotOnTurnException() : base(PlayerIsNotOnTurn)
         {

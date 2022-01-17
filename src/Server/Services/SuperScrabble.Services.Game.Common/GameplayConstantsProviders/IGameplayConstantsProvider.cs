@@ -12,8 +12,6 @@
 
         int GameTimerSeconds { get; }
 
-        char WildcardValue { get; }
-
         int MinWordLettersCount { get; }
     }
 }

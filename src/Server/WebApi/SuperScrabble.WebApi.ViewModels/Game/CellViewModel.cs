@@ -2,6 +2,7 @@
 {
     using SuperScrabble.Common;
     using SuperScrabble.Services.Game.Common;
+    using SuperScrabble.Services.Game.Common.Enums;
 
     public class CellViewModel
     {

@@ -28,9 +28,14 @@
             this.wordsService = wordsService;
         }
 
+        public void IsPlayerInsideGame(GameState gameState, string playerUserName, out Player player)
+        {
+            throw new NotImplementedException();
+        }
+
         public void IsPlayerOnTurn(GameState gameState, string userName)
         {
-            if (gameState.CurrentPlayer.UserName != userName)
+            if (gameState.CurrentTeam.CurrentPlayer.UserName != userName)
             {
                 throw new PlayerNotOnTurnException();
             }
@@ -50,7 +55,7 @@
             Func<Tile, Tile, bool> playerTileSelector = isPlayerTryingToExchangeTiles
                 ? ExchangeTilesSelector
                 : (submittedTile, playerTile) =>
-                    WriteWordSelector(submittedTile, playerTile, this.gameplayConstantsProvider.WildcardValue);
+                    WriteWordSelector(submittedTile, playerTile, GlobalConstants.WildcardValue);
 
             var wildcardOptions = this.tilesProvider.GetAllWildcardOptions();
             var playerTilesCopy = player.Tiles.ToList();
@@ -65,7 +70,7 @@
                     throw new UnexistingPlayerTilesException();
                 }
 
-                bool isTileToRemoveWildcard = actualTile.Letter == gameplayConstantsProvider.WildcardValue
+                bool isTileToRemoveWildcard = actualTile.Letter == GlobalConstants.WildcardValue
                     && !isPlayerTryingToExchangeTiles;
 
                 bool isTileToRemoveInvalidWildcardOption = wildcardOptions.FirstOrDefault(

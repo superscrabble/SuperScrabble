@@ -1,6 +1,7 @@
 ﻿namespace SuperScrabble.Services.Game.Scoring
 {
     using SuperScrabble.Services.Game.Common;
+    using SuperScrabble.Services.Game.Common.Enums;
     using SuperScrabble.Services.Game.Models;
     using SuperScrabble.Services.Game.Models.Boards;
 

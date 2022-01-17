@@ -1,4 +1,4 @@
-﻿namespace SuperScrabble.Common.Exceptions.Game
+﻿namespace SuperScrabble.Common.Exceptions
 {
     public abstract class ValidationFailedException : Exception
     {

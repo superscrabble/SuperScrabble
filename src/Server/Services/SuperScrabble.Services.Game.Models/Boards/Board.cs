@@ -3,6 +3,7 @@
     using SuperScrabble.Common;
     using SuperScrabble.Services.Game.Common;
     using SuperScrabble.Services.Game.Common.BonusCellsProviders;
+    using SuperScrabble.Services.Game.Common.Enums;
 
     public abstract class Board : IBoard
     {
