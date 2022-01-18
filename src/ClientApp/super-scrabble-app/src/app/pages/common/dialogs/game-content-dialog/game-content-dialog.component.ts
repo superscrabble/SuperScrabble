@@ -24,7 +24,7 @@ export enum ShowingComponent {
 //TODO: change the class's name
 export class GameContentDialogComponent implements OnInit {
 
-  showingComponent: ShowingComponent = ShowingComponent.GameLogs;
+  showingComponent: ShowingComponent = ShowingComponent.Scoreboard;
   showingComponentType: typeof ShowingComponent = ShowingComponent;
 
   data: GameContentDialogData;
