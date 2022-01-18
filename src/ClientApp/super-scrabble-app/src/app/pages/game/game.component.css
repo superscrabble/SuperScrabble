@@ -16,7 +16,7 @@
 }
 
 .tile {
-    background-color: #E3CFAA;
+    background-color: #E3CFAA; /*#D3EEDC;*/
     box-shadow: 2px 2px 2px black;
     color: black;
 }
@@ -159,11 +159,16 @@ TODO: implement this one
     width: 100%;
 }
 
-/*Special case for ipad, width: 100%*/
-
 @media only screen and (min-width: 992px) {
     .board-size {
         width: 78%;
+    }   
+}
+
+/*Special case for ipad landscape*/
+@media only screen and (min-device-width: 768px) and (max-device-width: 1080px) and (orientation:landscape) {
+    .board-size {
+        width: 100%;
     }   
 }
 

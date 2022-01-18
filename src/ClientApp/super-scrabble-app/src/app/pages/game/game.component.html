@@ -2,7 +2,7 @@
 <div class="row d-flex justify-content-center fill page">
     <!--Showing only on small and medium screen-->
     <div class="row-sm-12 row-md-12 d-md-flex d-sm-flex d-flex flex-column justify-content-around d-lg-none">
-        <div class="d-flex flex-row align-items-center justify-content-center">
+        <div class="d-flex flex-row align-items-center justify-content-sm-center justify-content-md-around">
             <div class="mx-3 rounded">
                 <div *ngIf="isCurrentPlayerOnTurn()">
                     <h3><mark>Ти си на ред</mark></h3>
@@ -29,7 +29,7 @@
                 </button>
             </div>
         </div>
-        <div class="d-flex flex-row">
+        <div class="d-flex flex-row align-items-center justify-content-sm-center justify-content-md-around">
             <button [disabled]="!isCurrentPlayerOnTurn()" class="btn normal-btn mb-3 mx-3" (click)="skipTurn()">Пропусни ход</button>
             <button [disabled]="!isCurrentPlayerOnTurn() || !areThereNewPlacedTiles()" class="btn btn-danger mb-2 mx-3" (click)="writeWord()">Напиши дума</button>
             <button class="btn normal-btn mb-3 mx-3" [disabled]="!isTileExchangePossible || !isCurrentPlayerOnTurn()" (click)="openExchangeTilesDialog()">Замени буква</button>
@@ -40,7 +40,8 @@
         <app-scoreboard
             [pointsByUserNames]="pointsByUserNames"
             [userNamesOfPlayersWhoHaveLeftTheGame]="userNamesOfPlayersWhoHaveLeftTheGame"
-            [currentUserName]="currentUserName">
+            [currentUserName]="currentUserName"
+            class="mx-3">
         </app-scoreboard>
         <div class="mx-3 rounded">
             <div *ngIf="isCurrentPlayerOnTurn()">
@@ -53,7 +54,8 @@
                 <mark>ОСТАВАЩО ВРЕМЕ: {{gameTimeAsString}}</mark>
             </h1>
         </div>
-        <app-word-info>
+        <app-word-info
+            class="mx-3">
             
         </app-word-info>
     </div>
@@ -121,7 +123,8 @@
         </div>
         <app-game-logs
             [gameLogs]="gameLogs"
-            (showWordMeaningOf)="showWordMeaningOf($event)">
+            (showWordMeaningOf)="showWordMeaningOf($event)"
+            class="mx-3">
         </app-game-logs>
     </div>
 </div>
