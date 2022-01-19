@@ -172,6 +172,13 @@ TODO: implement this one
     }   
 }
 
+/*Special case for ipad portrait*/
+@media only screen and (min-device-width: 768px) and (max-device-width: 1080px) and (orientation:portrait) {
+    .board-size {
+        width: 100%;
+    }   
+}
+
 .grid-row {
     /*grid-template-rows: repeat(15, 40px);*/
     display: grid;

@@ -1,7 +1,7 @@
 <div class="d-flex justify-content-center grid">
     <div class="board-sizing">
         <div class="grid-row" *ngFor="let row of board">
-            <div *ngFor="let cell of row" class="grid-col border border-dark text-center cursor-default {{getClassNameByCell(cell)}}"
+            <div *ngFor="let cell of row" class="grid-col border border-dark text-center justify-content-center cursor-default {{getClassNameByCell(cell)}}"
             (contextmenu)="rightClickOnBoardCell(cell)"
             (click)="clickOnBoardCell(cell)"
             (dblclick)="doubleClickOnBoardCell(cell)">

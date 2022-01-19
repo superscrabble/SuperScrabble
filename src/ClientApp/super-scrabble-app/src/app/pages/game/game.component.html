@@ -3,14 +3,14 @@
     <!--Showing only on small and medium screen-->
     <div class="row-sm-12 row-md-12 d-md-flex d-sm-flex d-flex flex-column justify-content-around d-lg-none">
         <div class="d-flex flex-row align-items-center justify-content-sm-center justify-content-md-around">
-            <div class="mx-3 rounded">
+            <div class="rounded">
                 <div *ngIf="isCurrentPlayerOnTurn()">
                     <h3><mark>Ти си на ред</mark></h3>
                 </div>
                 <div *ngIf="!isCurrentPlayerOnTurn()">
                     <h3><mark>На ред е {{playerNameOnTurn}}</mark></h3>
                 </div>
-                <h3 class="">
+                <h3>
                     <mark>ОСТАВАЩО ВРЕМЕ: {{gameTimeAsString}}</mark>
                 </h3>
             </div>
@@ -30,9 +30,9 @@
             </div>
         </div>
         <div class="d-flex flex-row align-items-center justify-content-sm-center justify-content-md-around">
-            <button [disabled]="!isCurrentPlayerOnTurn()" class="btn normal-btn mb-3 mx-3" (click)="skipTurn()">Пропусни ход</button>
-            <button [disabled]="!isCurrentPlayerOnTurn() || !areThereNewPlacedTiles()" class="btn btn-danger mb-2 mx-3" (click)="writeWord()">Напиши дума</button>
-            <button class="btn normal-btn mb-3 mx-3" [disabled]="!isTileExchangePossible || !isCurrentPlayerOnTurn()" (click)="openExchangeTilesDialog()">Замени буква</button>
+            <button class="btn normal-btn mx-3" [disabled]="!isCurrentPlayerOnTurn()" (click)="skipTurn()">Пропусни ход</button>
+            <button class="btn btn-danger mx-3" [disabled]="!isCurrentPlayerOnTurn() || !areThereNewPlacedTiles()" (click)="writeWord()">Напиши дума</button>
+            <button class="btn normal-btn mx-3" [disabled]="!isTileExchangePossible || !isCurrentPlayerOnTurn()" (click)="openExchangeTilesDialog()">Замени буква</button>
         </div>
     </div>
     <!--Showing on large screen-->
@@ -97,7 +97,7 @@
         </div>
         <button class="btn btn-danger mx-3" (click)="leaveGame()">Напусни играта</button>
         <div class="d-flex flex-column">
-            <button [disabled]="!isCurrentPlayerOnTurn()" class="btn normal-btn mb-3 mx-3" (click)="skipTurn()">Пропусни ход</button>
+            <button class="btn normal-btn mb-3 mx-3" [disabled]="!isCurrentPlayerOnTurn()" (click)="skipTurn()">Пропусни ход</button>
             <button class="btn normal-btn mb-3 mx-3" [disabled]="!isTileExchangePossible || !isCurrentPlayerOnTurn()" (click)="clickExchangeBtn()">Замени буква</button>
             <div *ngIf="showExchangeField" class="align-self-center">
                 <div class="my-1 d-flex flex-wrap">
@@ -119,7 +119,7 @@
                     <button class="btn btn-danger mt-2 mb-5 align-self-center" (click)="exchangeSelectedTiles()">Замени</button>
                 </div>
             </div>
-            <button [disabled]="!isCurrentPlayerOnTurn() || !areThereNewPlacedTiles()" class="btn btn-danger mb-2 mx-3" (click)="writeWord()">Напиши дума</button>
+            <button class="btn btn-danger mb-2 mx-3" [disabled]="!isCurrentPlayerOnTurn() || !areThereNewPlacedTiles()" (click)="writeWord()">Напиши дума</button>
         </div>
         <app-game-logs
             [gameLogs]="gameLogs"
