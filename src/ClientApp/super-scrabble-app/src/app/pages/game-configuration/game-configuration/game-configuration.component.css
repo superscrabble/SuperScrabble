@@ -1,0 +1,22 @@
+.game-config {
+    width: 100%;
+    height: 100%;
+}
+
+.game-options {
+    width: 90%;
+    height: 80%;
+    justify-content: space-evenly;
+}
+
+/*TODO: Calculate height for different screen sizes*/
+.game-option {
+    width: 100%;
+    height: 40%;
+}
+
+/*FIXME: font-family*/
+.config-title {
+    font-size: 2rem;
+    font-family: 'Regular';
+}

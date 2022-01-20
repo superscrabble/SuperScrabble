@@ -1,11 +1,9 @@
-<div class="d-md-flex flex-md-column row-xs-12 row-sm-12 row-md-12">
-    <div class="mat-headline">
-        <!--Question-->
-    </div>
-    <div>
-        <!--Options-->
-    </div>
-    <div>
-        <!--Back and Start-->
+<div class="menu d-md-flex flex-md-column d-xs-flex flex-xs-column row-xs-12 row-sm-12 row-md-12">
+    <app-game-configuration
+        [gameConfig]="gameConfigs[0]">
+    </app-game-configuration>
+    <div class="buttons">
+        <button class="btn btn-secondary">Назад</button>
+        <!--<button class="btn btn-success">Започни</button>-->
     </div>
 </div>

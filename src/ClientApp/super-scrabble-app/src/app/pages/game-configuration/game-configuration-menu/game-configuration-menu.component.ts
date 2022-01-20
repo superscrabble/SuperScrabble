@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { GameConfig } from 'src/app/models/game-configuaration/game-config';
 
 @Component({
   selector: 'app-game-configuration-menu',
@@ -7,14 +8,31 @@ import { Component, OnInit } from '@angular/core';
 })
 export class GameConfigurationMenuComponent implements OnInit {
 
-  /*
-    - gameType
-    - descr
-    - hint
-    - values
-  */
+  gameConfigs: GameConfig[] = [];
 
-  constructor() { }
+  constructor() {
+    this.gameConfigs = [
+      {
+        title: "Изберете вариант",
+        gameOptions: [
+          {
+            title: "Соло",
+            description: "Играй самостоятелно срещу други играчи",
+            hint: "",
+            value: 1,
+            backgroundColorHex: ""
+          },
+          {
+            title: "Дуо",
+            description: "Играй заедно с приятел или случаен играч срещу други отбори",
+            hint: "",
+            value: 2,
+            backgroundColorHex: ""
+          }
+        ]
+      }
+    ]
+  }
 
   ngOnInit(): void {
   }

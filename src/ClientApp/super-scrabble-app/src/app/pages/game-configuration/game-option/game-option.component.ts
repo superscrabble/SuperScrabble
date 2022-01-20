@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
+import { GameOption } from 'src/app/models/game-configuaration/game-option';
 
 @Component({
   selector: 'app-game-option',
@@ -7,9 +8,21 @@ import { Component, OnInit } from '@angular/core';
 })
 export class GameOptionComponent implements OnInit {
 
-  constructor() { }
+  @Input() gameOption: GameOption = {
+    title: "",
+    description: "",
+    hint: "",
+    value: 0,
+    backgroundColorHex: ""
+  };
+
+  constructor() {
+  }
 
   ngOnInit(): void {
   }
 
+  openDescriptionDialog(): void {
+
+  } 
 }
