@@ -24,5 +24,5 @@ export class GameOptionComponent implements OnInit {
 
   openDescriptionDialog(): void {
 
-  } 
+  }
 }

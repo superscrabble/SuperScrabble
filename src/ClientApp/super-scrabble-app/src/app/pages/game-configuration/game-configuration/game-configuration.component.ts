@@ -1,5 +1,6 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { GameConfig } from 'src/app/models/game-configuaration/game-config';
+import { GameOption } from 'src/app/models/game-configuaration/game-option';
 
 @Component({
   selector: 'app-game-configuration',
@@ -13,10 +14,15 @@ export class GameConfigurationComponent implements OnInit {
     gameOptions: []
   };
 
+  @Output() onChosenOption: EventEmitter<any> = new EventEmitter<any>();
+
   constructor() {
   }
 
   ngOnInit(): void {
   }
 
+  chooseOption(gameOption: GameOption) {
+    this.onChosenOption.emit({chosenValue: gameOption.value});
+  }
 }

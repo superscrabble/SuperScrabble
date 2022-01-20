@@ -1,9 +1,11 @@
 <div class="menu d-md-flex flex-md-column d-xs-flex flex-xs-column row-xs-12 row-sm-12 row-md-12">
     <app-game-configuration
-        [gameConfig]="gameConfigs[0]">
+        [gameConfig]="gameConfigs[getCurrentIndex()]"
+        (onChosenOption)="onChosenOption($event)">
     </app-game-configuration>
     <div class="buttons">
-        <button class="btn btn-secondary">Назад</button>
-        <!--<button class="btn btn-success">Започни</button>-->
+        <button *ngIf="isBackButtonEnabled()" class="btn btn-secondary"
+                (click)="previousConfig()">Назад</button>
+        <button *ngIf="isStartButtonEnabled()" class="btn btn-success" (click)="joinRoom()">Започни</button>
     </div>
 </div>

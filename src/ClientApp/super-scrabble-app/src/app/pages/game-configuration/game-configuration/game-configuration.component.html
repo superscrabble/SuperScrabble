@@ -1,12 +1,13 @@
 <div class="game-config d-flex flex-column align-items-center justify-content-center">
     <div class="d-flex justify-content-center">
-        <p class="mat-headline config-title">{{gameConfig.title}}</p>
+        <p class="mat-headline config-title text-center">{{gameConfig.title}}</p>
     </div>
     <div class="game-options d-flex flex-column align-items-center">
         <app-game-option
             *ngFor="let gameOption of gameConfig.gameOptions"
             [gameOption]="gameOption"
-            class="game-option">
+            class="game-option"
+            (click)="chooseOption(gameOption)">
         </app-game-option>
     </div>
 </div>
