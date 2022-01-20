@@ -30,9 +30,9 @@
             </div>
         </div>
         <div class="d-flex flex-row align-items-center justify-content-sm-center justify-content-md-around">
-            <button class="btn normal-btn mx-3" [disabled]="!isCurrentPlayerOnTurn()" (click)="skipTurn()">Пропусни ход</button>
-            <button class="btn btn-danger mx-3" [disabled]="!isCurrentPlayerOnTurn() || !areThereNewPlacedTiles()" (click)="writeWord()">Напиши дума</button>
-            <button class="btn normal-btn mx-3" [disabled]="!isTileExchangePossible || !isCurrentPlayerOnTurn()" (click)="openExchangeTilesDialog()">Замени буква</button>
+            <button class="btn normal-btn mx-3" [disabled]="!isCurrentPlayerOnTurn()" (click)="skipTurn()">ПРОПУСНИ ХОД</button>
+            <button class="btn btn-danger mx-3" [disabled]="!isCurrentPlayerOnTurn() || !areThereNewPlacedTiles()" (click)="writeWord()">НАПИШИ ДУМА</button>
+            <button class="btn normal-btn mx-3" [disabled]="!isTileExchangePossible || !isCurrentPlayerOnTurn()" (click)="openExchangeTilesDialog()">ЗАМЕНИ БУКВА</button>
         </div>
     </div>
     <!--Showing on large screen-->
@@ -45,7 +45,7 @@
         </app-scoreboard>
         <div class="mx-3 rounded">
             <div *ngIf="isCurrentPlayerOnTurn()">
-                <h1><mark>Ти си на ред</mark></h1>
+                <p class="mat-headline"><mark>Ти си на ред</mark></p>
             </div>
             <div *ngIf="!isCurrentPlayerOnTurn()">
                 <h1><mark>На ред е {{playerNameOnTurn}}</mark></h1>
@@ -55,8 +55,7 @@
             </h1>
         </div>
         <app-word-info
-            class="mx-3">
-            
+            class="mx-3">           
         </app-word-info>
     </div>
     <!--Board-->
@@ -91,8 +90,7 @@
     <div class="right-column col-lg-3 d-lg-flex d-md-none d-sm-none d-none order-lg-last">
         <div class="ms-3">
             <span class="alert alert-warning">
-                <span>Оставащи букви - </span>
-                <b>{{remainingTilesCount}}</b>
+                <span>Оставащи букви - <b>{{remainingTilesCount}}</b></span>
             </span>
         </div>
         <button class="btn btn-danger mx-3" (click)="leaveGame()">Напусни играта</button>

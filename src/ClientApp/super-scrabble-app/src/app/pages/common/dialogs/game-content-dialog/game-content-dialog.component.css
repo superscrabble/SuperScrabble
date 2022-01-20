@@ -12,3 +12,11 @@
     width: 100%;
     height: 100%;
 }
+
+/*TODO: Calculate here which (width or height) is smaller*/
+.buttons {
+    width: 80vw;
+    height: 5vw;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+}

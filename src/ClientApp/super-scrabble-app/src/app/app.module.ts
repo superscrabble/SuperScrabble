@@ -30,6 +30,9 @@ import { LeaveGameDialogComponent } from './pages/common/dialogs/leave-game-dial
 import { GameContentDialogComponent } from './pages/common/dialogs/game-content-dialog/game-content-dialog.component';
 import { ExchangeTilesDialogComponent } from './pages/common/dialogs/exchange-tiles-dialog/exchange-tiles-dialog.component';
 import { ExchangeTilesComponent } from './pages/common/exchange-tiles/exchange-tiles.component';
+import { GameConfigurationComponent } from './pages/game-configuration/game-configuration/game-configuration.component';
+import { GameOptionComponent } from './pages/game-configuration/game-option/game-option.component';
+import { GameConfigurationMenuComponent } from './pages/game-configuration/game-configuration-menu/game-configuration-menu.component';
 
 @NgModule({
   declarations: [
@@ -51,7 +54,10 @@ import { ExchangeTilesComponent } from './pages/common/exchange-tiles/exchange-t
     LeaveGameDialogComponent,
     GameContentDialogComponent,
     ExchangeTilesDialogComponent,
-    ExchangeTilesComponent
+    ExchangeTilesComponent,
+    GameConfigurationMenuComponent,
+    GameConfigurationComponent,
+    GameOptionComponent
   ],
   imports: [
     CommonModule,
