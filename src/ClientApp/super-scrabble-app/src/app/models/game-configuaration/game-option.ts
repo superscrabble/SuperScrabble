@@ -1,4 +1,5 @@
 export class GameOption {
+    //FIXME: title = value; remove hint
     title: string = "";
     description: string = "";
     value: number = 0;
