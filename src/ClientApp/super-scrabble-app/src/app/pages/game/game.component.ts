@@ -14,6 +14,7 @@ import { LeaveGameDialogComponent } from '../common/dialogs/leave-game-dialog/le
 import { ErrorDialogComponent, ErrorDialogData } from '../common/dialogs/error-dialog/error-dialog.component';
 import { GameContentDialogComponent } from '../common/dialogs/game-content-dialog/game-content-dialog.component';
 import { ExchangeTilesDialogComponent } from '../common/dialogs/exchange-tiles-dialog/exchange-tiles-dialog.component';
+import { GameService } from 'src/app/services/game.service';
 
 @Pipe({
     name: "formatTime"
@@ -59,6 +60,7 @@ export class GameComponent implements OnInit {
   gameLogs: Action[] = [];
 
   constructor(
+      private gameService: GameService,
       private signalrService: SignalrService,
       private router: Router,
       public dialog: MatDialog) {}
@@ -365,7 +367,8 @@ export class GameComponent implements OnInit {
 
     if(!this.checkForWildcards(writeWordInput.map(item => (item.key)))) {
         try {
-            this.signalrService.writeWord(writeWordInput);
+            //this.signalrService.writeWord(writeWordInput);
+            this.gameService.writeWord(writeWordInput);
         }
         catch (ex) {
             console.log("ERROR");
