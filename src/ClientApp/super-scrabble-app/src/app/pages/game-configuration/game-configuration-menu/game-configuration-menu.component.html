@@ -1,6 +1,6 @@
 <div class="menu d-md-flex flex-md-column d-xs-flex flex-xs-column row-xs-12 row-sm-12 row-md-12">
     <app-game-configuration
-        [gameConfig]="gameConfigs[getCurrentIndex()]"
+        [gameConfig]="getCurrentConfig()"
         (onChosenOption)="onChosenOption($event)">
     </app-game-configuration>
     <div class="buttons">
