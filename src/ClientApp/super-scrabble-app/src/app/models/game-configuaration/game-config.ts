@@ -8,8 +8,15 @@ export class GameConfig {
     //image: string
     //background color
     //selectedOption
-
-    constructor(title: string) {
+    onSelectingOption: Function = () => {};
+    
+    constructor(title: string, gameOptions: GameOption[], onSelectinOption: Function) {
         this.title = title;
+        this.gameOptions = gameOptions;
+        this.onSelectingOption = onSelectinOption;
+    }
+
+    public selectOption(option: GameOption) : void {
+        this.onSelectingOption(option);
     }
 }

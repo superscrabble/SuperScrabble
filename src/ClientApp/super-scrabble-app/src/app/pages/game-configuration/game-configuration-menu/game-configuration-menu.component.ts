@@ -33,7 +33,7 @@ export class GameConfigurationMenuComponent implements OnInit {
   }
 
   isStartButtonEnabled() {
-    return this.matchmakingService.isLastConfig();
+    return this.matchmakingService.isConfigReady();
   }
 
   joinRoom() {

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { GameType } from '../common/enums/game-type';
 import { ConfigsPath } from '../models/game-configuaration/configs-path';
 import { GameConfig } from '../models/game-configuaration/game-config';
+import { GameOption } from '../models/game-configuaration/game-option';
 import { MatchProps } from '../models/game-configuaration/match-props';
 
 @Injectable({
@@ -13,6 +14,7 @@ export class MatchmakingService {
   additionalConfigs: Map<GameType, ConfigsPath> = new Map();
   matchProps: MatchProps = new MatchProps();
   isOnAdditionalConfigs: boolean = false;
+  waitingForFriend: boolean = false;
 
   //TODO: add property for currentConfig
 
@@ -22,30 +24,30 @@ export class MatchmakingService {
     const nameof = <T>(name: keyof T) => name;
 
     this.standardConfigs = new ConfigsPath([
-      {
-        title: "Изберете вариант",
-        inputPropName: nameof<MatchProps>("type"),
-        gameOptions: [
+      new GameConfig(
+        "Изберете вариант",
+        [
           {
             title: "Соло",
             description: "Играй самостоятелно срещу други играчи",
             hint: "",
-            value: 1,
+            value: GameType.Single,
             backgroundColorHex: ""
           },
           {
             title: "Дуо",
             description: "Играй заедно с приятел или случаен играч срещу други отбори",
             hint: "",
-            value: 2,
+            value: GameType.Duo,
             backgroundColorHex: ""
           }
-        ]
-      },
-      {
-        title: "Изберете таймер",
-        inputPropName: nameof<MatchProps>("timerType"),
-        gameOptions: [
+        ],
+        (option: GameOption) => {
+          this.matchProps.type = option.value;
+        }),
+      new GameConfig(
+        "Изберете таймер",
+        [
           {
             title: "Стандартен",
             description: "Играй самостоятелно срещу други играчи",
@@ -60,12 +62,13 @@ export class MatchmakingService {
             value: 2,
             backgroundColorHex: ""
           }
-        ]
-      },
-      {
-        title: "Изберете време за таймера",
-        inputPropName: nameof<MatchProps>("timerTimeType"),
-        gameOptions: [
+        ],
+        (option: GameOption) => {
+          this.matchProps.timerType = option.value;
+        }),
+      new GameConfig(
+        "Изберете време за таймера",
+        [
           {
             title: "Бързо",
             description: "Играй самостоятелно срещу други играчи",
@@ -87,15 +90,16 @@ export class MatchmakingService {
             value: 3,
             backgroundColorHex: ""
           }
-        ]
-      }
-    ]);
+        ],
+        (option: GameOption) => {
+          this.matchProps.timerTimeType = option.value;
+        }
+      )]);
 
     this.additionalConfigs.set(GameType.Duo, new ConfigsPath([
-      {
-        title: "Играй с:",
-        inputPropName: "Nan",
-        gameOptions: [
+      new GameConfig(
+        "Играй с:",
+        [
           {
             title: "Случаен играч",
             description: "Играй самостоятелно срещу други играчи",
@@ -110,24 +114,34 @@ export class MatchmakingService {
             value: 2,
             backgroundColorHex: ""
           }
-        ]
-      }
-    ]));
+        ],
+        (option: GameOption) => {
+          //If partherType == Friend, open dialog and wait for result
+          //this.waitingForFriend = true;
+          //or false
+        }
+      )]));
   }
 
-  chooseOption(value: any) {
+  chooseOption(value: GameOption) {
     //console.log("Prop value");
     //console.log(this.getCurrentConfig()?.inputPropName);
     const a: string = "${this.getCurrentConfig().inputPropName}";
-    let prop = this.matchProps["teamCount"];
+    //let prop = this.matchProps["teamCount"];
 
     //this.matchProps[Object.getOwnPropertyNames()[0]] = 1;
-    prop = value;
+    //prop = value;
+
+    console.log("Match props");
+    console.log(this.matchProps)
 
     if(this.isOnAdditionalConfigs) {
+      this.additionalConfigs.get(this.matchProps.type)?.getCurrentConfig().selectOption(value);
       this.additionalConfigs.get(this.matchProps.type)?.nextConfig();
       return;
     }
+
+    this.standardConfigs.getCurrentConfig().selectOption(value);
 
     if(this.standardConfigs.isLastConfig()) {
       this.standardConfigs.nextConfig();
@@ -172,7 +186,8 @@ export class MatchmakingService {
     return this.standardConfigs.isFirstConfig();
   }
 
-  isLastConfig() : boolean {
+  isConfigReady() : boolean {
+    //Check if waiting for friends
     //TODO: simplify this
     if(this.standardConfigs.isLastConfig() && this.standardConfigs.isFinished) {
       if(this.isOnAdditionalConfigs) {
