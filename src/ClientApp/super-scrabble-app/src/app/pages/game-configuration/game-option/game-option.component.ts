@@ -8,18 +8,20 @@ import { GameOption } from 'src/app/models/game-configuaration/game-option';
 })
 export class GameOptionComponent implements OnInit {
 
-  @Input() gameOption: GameOption = {
-    title: "",
-    description: "",
-    hint: "",
-    value: 0,
-    backgroundColorHex: ""
-  };
+  @Input() gameOption: GameOption = new GameOption("", "", 0);
 
   constructor() {
   }
 
   ngOnInit(): void {
+  }
+
+  //TODO: rename this
+  getClassIfSelected() {
+    if(this.gameOption.isSelected) {
+      return "selected-game-option"
+    }
+    return "game-option"
   }
 
   openDescriptionDialog(): void {

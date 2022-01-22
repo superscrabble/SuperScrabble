@@ -20,6 +20,11 @@ export class GameConfigurationComponent implements OnInit {
   }
 
   chooseOption(gameOption: GameOption) {
+    this.gameConfig.gameOptions.forEach(option => {
+      option.isSelected = false;
+    });
+
+    gameOption.isSelected = true;
     this.onChosenOption.emit({chosenValue: gameOption});
   }
 }

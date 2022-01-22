@@ -30,20 +30,16 @@ export class MatchmakingService {
       new GameConfig(
         "Изберете вариант",
         [
-          {
-            title: "Соло",
-            description: "Играй самостоятелно срещу други играчи",
-            hint: "",
-            value: GameType.Single,
-            backgroundColorHex: ""
-          },
-          {
-            title: "Дуо",
-            description: "Играй заедно с приятел или случаен играч срещу други отбори",
-            hint: "",
-            value: GameType.Duo,
-            backgroundColorHex: ""
-          }
+          new GameOption(
+            "Соло",
+            "Играй самостоятелно срещу други играчи",
+            GameType.Single,
+          ),
+          new GameOption(
+            "Дуо",
+            "Играй заедно с приятел или случаен играч срещу други отбори",
+            GameType.Duo,
+          )
         ],
         (option: GameOption) => {
           this.matchProps.type = option.value;
@@ -51,20 +47,16 @@ export class MatchmakingService {
       new GameConfig(
         "Изберете таймер",
         [
-          {
-            title: "Стандартен",
-            description: "Играй самостоятелно срещу други играчи",
-            hint: "",
-            value: TimerType.Standard,
-            backgroundColorHex: ""
-          },
-          {
-            title: "Шах",
-            description: "Играй заедно с приятел или случаен играч срещу други отбори",
-            hint: "",
-            value: TimerType.Chess,
-            backgroundColorHex: ""
-          }
+          new GameOption(
+            "Стандартен",
+            "Играй самостоятелно срещу други играчи",
+            TimerType.Standard,
+          ),
+          new GameOption(
+            "Шах",
+            "Играй заедно с приятел или случаен играч срещу други отбори",
+            TimerType.Chess,
+          )
         ],
         (option: GameOption) => {
           this.matchProps.timerType = option.value;
@@ -72,27 +64,21 @@ export class MatchmakingService {
       new GameConfig(
         "Изберете време за таймера",
         [
-          {
-            title: "Бързо",
-            description: "Играй самостоятелно срещу други играчи",
-            hint: "",
-            value: TimerTimeType.Fast,
-            backgroundColorHex: ""
-          },
-          {
-            title: "Стандартно",
-            description: "Играй заедно с приятел или случаен играч срещу други отбори",
-            hint: "",
-            value: TimerTimeType.Standard,
-            backgroundColorHex: ""
-          },
-          {
-            title: "Бавно",
-            description: "Играй заедно с приятел или случаен играч срещу други отбори",
-            hint: "",
-            value: TimerTimeType.Slow,
-            backgroundColorHex: ""
-          }
+          new GameOption(
+            "Бързо",
+            "Играй самостоятелно срещу други играчи",
+            TimerTimeType.Fast,  
+          ),
+          new GameOption(
+            "Стандартно",
+            "Играй заедно с приятел или случаен играч срещу други отбори",
+            TimerTimeType.Standard,
+          ),
+          new GameOption(
+            "Бавно",
+            "Играй заедно с приятел или случаен играч срещу други отбори",
+            TimerTimeType.Slow, 
+          )
         ],
         (option: GameOption) => {
           this.matchProps.timerTimeType = option.value;
@@ -103,20 +89,16 @@ export class MatchmakingService {
       new GameConfig(
         "Играй с:",
         [
-          {
-            title: "Случаен играч",
-            description: "Играй самостоятелно срещу други играчи",
-            hint: "",
-            value: PartherType.Random,
-            backgroundColorHex: ""
-          },
-          {
-            title: "Приятел",
-            description: "Играй заедно с приятел или случаен играч срещу други отбори",
-            hint: "",
-            value: PartherType.InviteFriends,
-            backgroundColorHex: ""
-          }
+          new GameOption(
+            "Случаен играч",
+            "Играй самостоятелно срещу други играчи",
+            PartherType.Random, 
+          ),
+          new GameOption(
+            "Приятел",
+            "Играй заедно с приятел или случаен играч срещу други отбори",
+            PartherType.InviteFriends
+          )
         ],
         (option: GameOption) => {
           if(option.value == PartherType.InviteFriends) {

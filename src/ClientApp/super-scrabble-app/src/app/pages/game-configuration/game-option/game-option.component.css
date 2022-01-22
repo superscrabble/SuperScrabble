@@ -4,6 +4,12 @@
     cursor: pointer;
 }
 
+.selected-game-option {
+    background-color: darkolivegreen;
+    min-width: 9rem;
+    cursor: pointer;
+}
+
 .hint {
     position: absolute;
     float: left;
