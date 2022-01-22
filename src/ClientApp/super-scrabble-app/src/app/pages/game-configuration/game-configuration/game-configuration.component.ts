@@ -9,10 +9,7 @@ import { GameOption } from 'src/app/models/game-configuaration/game-option';
 })
 export class GameConfigurationComponent implements OnInit {
 
-  @Input() gameConfig: GameConfig = { 
-    title: "",
-    gameOptions: []
-  };
+  @Input() gameConfig: GameConfig = new GameConfig("");
 
   @Output() onChosenOption: EventEmitter<any> = new EventEmitter<any>();
 

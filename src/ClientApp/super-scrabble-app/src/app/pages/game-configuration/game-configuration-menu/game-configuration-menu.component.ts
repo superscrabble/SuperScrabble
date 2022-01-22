@@ -14,7 +14,7 @@ export class GameConfigurationMenuComponent implements OnInit {
   }
 
   getCurrentConfig() {
-    console.log(this.matchmakingService.getCurrentConfig().title)
+    console.log(this.matchmakingService.getCurrentConfig()?.title)
 
     return this.matchmakingService.getCurrentConfig();
   }
@@ -25,7 +25,7 @@ export class GameConfigurationMenuComponent implements OnInit {
 
   onChosenOption($event: any) {
     let chosenValue = $event.chosenValue;
-    this.matchmakingService.chooseOption();
+    this.matchmakingService.chooseOption(chosenValue);
   }
 
   previousConfig() {

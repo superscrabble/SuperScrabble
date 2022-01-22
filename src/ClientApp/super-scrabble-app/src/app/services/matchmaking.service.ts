@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { GameType } from '../common/enums/game-type';
+import { ConfigsPath } from '../models/game-configuaration/configs-path';
 import { GameConfig } from '../models/game-configuaration/game-config';
 import { MatchProps } from '../models/game-configuaration/match-props';
 
@@ -8,20 +9,22 @@ import { MatchProps } from '../models/game-configuaration/match-props';
 })
 export class MatchmakingService {
 
-  gameConfigs: GameConfig[] = [];
-  currentConfigIndex: number = 0;
+  standardConfigs: ConfigsPath;
+  additionalConfigs: Map<GameType, ConfigsPath> = new Map();
   matchProps: MatchProps = new MatchProps();
-  //TODO: probably add such configs for other types; move this into a structure
-  additionalTeamConfigs: GameConfig[] = [];
-  additionalTeamConfigsIndex: number = 0;
+  isOnAdditionalConfigs: boolean = false;
+
+  //TODO: add property for currentConfig
 
   constructor() {
     //REMOVE
-    this.matchProps.type = GameType.Duo;
+    //this.matchProps.type = GameType.Duo;
+    const nameof = <T>(name: keyof T) => name;
 
-    this.gameConfigs = [
+    this.standardConfigs = new ConfigsPath([
       {
         title: "Изберете вариант",
+        inputPropName: nameof<MatchProps>("type"),
         gameOptions: [
           {
             title: "Соло",
@@ -41,6 +44,7 @@ export class MatchmakingService {
       },
       {
         title: "Изберете таймер",
+        inputPropName: nameof<MatchProps>("timerType"),
         gameOptions: [
           {
             title: "Стандартен",
@@ -60,6 +64,7 @@ export class MatchmakingService {
       },
       {
         title: "Изберете време за таймера",
+        inputPropName: nameof<MatchProps>("timerTimeType"),
         gameOptions: [
           {
             title: "Бързо",
@@ -84,11 +89,12 @@ export class MatchmakingService {
           }
         ]
       }
-    ]
+    ]);
 
-    this.additionalTeamConfigs = [
+    this.additionalConfigs.set(GameType.Duo, new ConfigsPath([
       {
         title: "Играй с:",
+        inputPropName: "Nan",
         gameOptions: [
           {
             title: "Случаен играч",
@@ -106,42 +112,56 @@ export class MatchmakingService {
           }
         ]
       }
-    ]
+    ]));
   }
 
-  chooseOption() {
-    
-    /*if((this.currentGameConfigIndex > this.chosenOptionValuesByConfigurationIndex.length)
-        || (this.currentGameConfigIndex >= this.gameConfigs.length)) {
+  chooseOption(value: any) {
+    //console.log("Prop value");
+    //console.log(this.getCurrentConfig()?.inputPropName);
+    const a: string = "${this.getCurrentConfig().inputPropName}";
+    let prop = this.matchProps["teamCount"];
+
+    //this.matchProps[Object.getOwnPropertyNames()[0]] = 1;
+    prop = value;
+
+    if(this.isOnAdditionalConfigs) {
+      this.additionalConfigs.get(this.matchProps.type)?.nextConfig();
       return;
     }
 
-    if(this.currentGameConfigIndex == this.chosenOptionValuesByConfigurationIndex.length) {
-      this.chosenOptionValuesByConfigurationIndex.push(chosenValue);
-    } else {
-      this.chosenOptionValuesByConfigurationIndex[this.currentGameConfigIndex] = chosenValue;
+    if(this.standardConfigs.isLastConfig()) {
+      this.standardConfigs.nextConfig();
+      if(this.additionalConfigs.has(this.matchProps.type)) {
+        this.isOnAdditionalConfigs = true;
+      }
+      return;
     }
-
-    if((this.currentGameConfigIndex + 1) < this.gameConfigs.length) {
-      this.currentGameConfigIndex++;
-    }*/
-
-    this.currentConfigIndex++;
+    
+    this.standardConfigs.nextConfig();
   }
 
-  getCurrentConfig() {
-    if(this.isLastBasicConfig() && this.isTeamGame()) {
-      return this.additionalTeamConfigs[this.additionalTeamConfigsIndex];
+  getCurrentConfig() : GameConfig{
+    let currentConfig = this.standardConfigs.getCurrentConfig();
+    if(this.isOnAdditionalConfigs) {
+      let additionalConfig = this.additionalConfigs.get(this.matchProps.type)?.getCurrentConfig();
+      if(additionalConfig) {
+        currentConfig = additionalConfig;
+      }
     }
 
-    return this.gameConfigs[this.currentConfigIndex];
+    return currentConfig;
   }
 
   previousConfig() {
-    if(this.currentConfigIndex > 0) {
-      //this.chosenOptionValuesByConfigurationIndex.pop();
-      this.currentConfigIndex--;
+    if(this.isOnAdditionalConfigs) {
+      if(this.additionalConfigs.get(this.matchProps.type)?.isFirstConfig()) {
+        this.isOnAdditionalConfigs = false;
+      }
+
+      this.additionalConfigs.get(this.matchProps.type)?.previousConfig;
+      return;
     }
+    this.standardConfigs.previousConfig();
   }
 
   isTeamGame() {
@@ -149,21 +169,20 @@ export class MatchmakingService {
   }
 
   isFirstConfig() : boolean {
-    return this.currentConfigIndex == 0;
-  }
-
-  private isLastBasicConfig() : boolean {
-    return (this.currentConfigIndex + 1) > this.gameConfigs.length;
+    return this.standardConfigs.isFirstConfig();
   }
 
   isLastConfig() : boolean {
-    //TODO: probably add additional check
-    //If TeamGame() and a parther is chosen
-
-    if(this.isTeamGame() && this.isLastBasicConfig()) {
-
+    //TODO: simplify this
+    if(this.standardConfigs.isLastConfig() && this.standardConfigs.isFinished) {
+      if(this.isOnAdditionalConfigs) {
+        if(this.additionalConfigs.get(this.matchProps.type)?.isFinished) {
+          return true;
+        }
+        return false;
+      }
+      return true;
     }
-
-    return (this.currentConfigIndex + 1) == this.gameConfigs.length;
+    return false;
   }
 }
