@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import { GameType } from '../common/enums/game-type';
+import { TimerTimeType } from '../common/enums/timer-time-type';
+import { TimerType } from '../common/enums/timer-type';
 import { ConfigsPath } from '../models/game-configuaration/configs-path';
 import { GameConfig } from '../models/game-configuaration/game-config';
 import { GameOption } from '../models/game-configuaration/game-option';
@@ -52,14 +54,14 @@ export class MatchmakingService {
             title: "Стандартен",
             description: "Играй самостоятелно срещу други играчи",
             hint: "",
-            value: 1,
+            value: TimerType.Standard,
             backgroundColorHex: ""
           },
           {
             title: "Шах",
             description: "Играй заедно с приятел или случаен играч срещу други отбори",
             hint: "",
-            value: 2,
+            value: TimerType.Chess,
             backgroundColorHex: ""
           }
         ],
@@ -73,21 +75,21 @@ export class MatchmakingService {
             title: "Бързо",
             description: "Играй самостоятелно срещу други играчи",
             hint: "",
-            value: 1,
+            value: TimerTimeType.Fast,
             backgroundColorHex: ""
           },
           {
             title: "Стандартно",
             description: "Играй заедно с приятел или случаен играч срещу други отбори",
             hint: "",
-            value: 2,
+            value: TimerTimeType.Standard,
             backgroundColorHex: ""
           },
           {
             title: "Бавно",
             description: "Играй заедно с приятел или случаен играч срещу други отбори",
             hint: "",
-            value: 3,
+            value: TimerTimeType.Slow,
             backgroundColorHex: ""
           }
         ],
