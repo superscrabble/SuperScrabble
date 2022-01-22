@@ -14,8 +14,6 @@ export class GameConfigurationMenuComponent implements OnInit {
   }
 
   getCurrentConfig() {
-    console.log(this.matchmakingService.getCurrentConfig()?.title)
-
     return this.matchmakingService.getCurrentConfig();
   }
 

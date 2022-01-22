@@ -22,10 +22,6 @@ export class MatchmakingService {
   //TODO: add property for currentConfig
 
   constructor() {
-    //REMOVE
-    //this.matchProps.type = GameType.Duo;
-    const nameof = <T>(name: keyof T) => name;
-
     this.standardConfigs = new ConfigsPath([
       new GameConfig(
         "Изберете вариант",
@@ -113,17 +109,6 @@ export class MatchmakingService {
   }
 
   chooseOption(value: GameOption) {
-    //console.log("Prop value");
-    //console.log(this.getCurrentConfig()?.inputPropName);
-    const a: string = "${this.getCurrentConfig().inputPropName}";
-    //let prop = this.matchProps["teamCount"];
-
-    //this.matchProps[Object.getOwnPropertyNames()[0]] = 1;
-    //prop = value;
-
-    console.log("Match props");
-    console.log(this.matchProps)
-
     if(this.isOnAdditionalConfigs) {
       this.additionalConfigs.get(this.matchProps.type)?.getCurrentConfig().selectOption(value);
       this.additionalConfigs.get(this.matchProps.type)?.nextConfig();
@@ -177,10 +162,10 @@ export class MatchmakingService {
   }
 
   isConfigReady() : boolean {
-    //Check if waiting for friends
     if(this.waitingForFriend) {
       return false;
     }
+
     //TODO: simplify this
     if(this.standardConfigs.isLastConfig() && this.standardConfigs.isFinished) {
       if(this.isOnAdditionalConfigs) {

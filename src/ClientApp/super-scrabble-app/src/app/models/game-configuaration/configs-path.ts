@@ -23,7 +23,6 @@ export class ConfigsPath {
 
     nextConfig() {
         if((this.currentConfigIndex + 1) == this.configs.length) {
-            console.log("Config is finished in")
             this.isFinished = true;
             return;
         } 
