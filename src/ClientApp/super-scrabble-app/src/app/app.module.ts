@@ -33,6 +33,7 @@ import { ExchangeTilesComponent } from './pages/common/exchange-tiles/exchange-t
 import { GameConfigurationComponent } from './pages/game-configuration/game-configuration/game-configuration.component';
 import { GameOptionComponent } from './pages/game-configuration/game-option/game-option.component';
 import { GameConfigurationMenuComponent } from './pages/game-configuration/game-configuration-menu/game-configuration-menu.component';
+import { GameInviteFriendsDialogComponent } from './pages/game-configuration/dialogs/game-invite-friends-dialog/game-invite-friends-dialog.component';
 
 @NgModule({
   declarations: [
@@ -57,7 +58,8 @@ import { GameConfigurationMenuComponent } from './pages/game-configuration/game-
     ExchangeTilesComponent,
     GameConfigurationMenuComponent,
     GameConfigurationComponent,
-    GameOptionComponent
+    GameOptionComponent,
+    GameInviteFriendsDialogComponent
   ],
   imports: [
     CommonModule,

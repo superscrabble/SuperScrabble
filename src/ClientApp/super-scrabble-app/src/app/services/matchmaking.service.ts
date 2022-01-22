@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { GameType } from '../common/enums/game-type';
 import { PartherType } from '../common/enums/parther-type';
 import { TimerTimeType } from '../common/enums/timer-time-type';
@@ -7,6 +8,7 @@ import { ConfigsPath } from '../models/game-configuaration/configs-path';
 import { GameConfig } from '../models/game-configuaration/game-config';
 import { GameOption } from '../models/game-configuaration/game-option';
 import { MatchProps } from '../models/game-configuaration/match-props';
+import { GameInviteFriendsDialogComponent } from '../pages/game-configuration/dialogs/game-invite-friends-dialog/game-invite-friends-dialog.component';
 
 @Injectable({
   providedIn: 'root'
@@ -20,8 +22,9 @@ export class MatchmakingService {
   waitingForFriend: boolean = false;
 
   //TODO: add property for currentConfig
+  //TODO: load data from the server and the text from Firebase
 
-  constructor() {
+  constructor(private dialog: MatDialog) {
     this.standardConfigs = new ConfigsPath([
       new GameConfig(
         "Изберете вариант",
@@ -98,8 +101,9 @@ export class MatchmakingService {
         ],
         (option: GameOption) => {
           if(option.value == PartherType.InviteFriends) {
-            //openDialog
             this.waitingForFriend = true;
+            this.dialog.open(GameInviteFriendsDialogComponent);
+            //Subscribe on close;
             return;
           }
 
