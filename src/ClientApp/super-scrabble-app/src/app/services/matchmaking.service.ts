@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { GameType } from '../common/enums/game-type';
+import { PartherType } from '../common/enums/parther-type';
 import { TimerTimeType } from '../common/enums/timer-time-type';
 import { TimerType } from '../common/enums/timer-type';
 import { ConfigsPath } from '../models/game-configuaration/configs-path';
@@ -106,21 +107,25 @@ export class MatchmakingService {
             title: "Случаен играч",
             description: "Играй самостоятелно срещу други играчи",
             hint: "",
-            value: 1,
+            value: PartherType.Random,
             backgroundColorHex: ""
           },
           {
             title: "Приятел",
             description: "Играй заедно с приятел или случаен играч срещу други отбори",
             hint: "",
-            value: 2,
+            value: PartherType.InviteFriends,
             backgroundColorHex: ""
           }
         ],
         (option: GameOption) => {
-          //If partherType == Friend, open dialog and wait for result
-          //this.waitingForFriend = true;
-          //or false
+          if(option.value == PartherType.InviteFriends) {
+            //openDialog
+            this.waitingForFriend = true;
+            return;
+          }
+
+          this.waitingForFriend = false;
         }
       )]));
   }
@@ -178,6 +183,7 @@ export class MatchmakingService {
       return;
     }
     this.standardConfigs.previousConfig();
+    this.waitingForFriend = false;
   }
 
   isTeamGame() {
@@ -190,6 +196,9 @@ export class MatchmakingService {
 
   isConfigReady() : boolean {
     //Check if waiting for friends
+    if(this.waitingForFriend) {
+      return false;
+    }
     //TODO: simplify this
     if(this.standardConfigs.isLastConfig() && this.standardConfigs.isFinished) {
       if(this.isOnAdditionalConfigs) {

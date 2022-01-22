@@ -1,4 +1,4 @@
 export enum GameType {
-    Single = 0,
-    Duo = 0
+    Single,
+    Duo
 } 
