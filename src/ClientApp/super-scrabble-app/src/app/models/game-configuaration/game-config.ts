@@ -5,6 +5,9 @@ export class GameConfig {
     gameOptions: GameOption[] = [];
     //TODO: change name
     inputPropName: string = "";
+    //FIXME: change with enum
+    isAboutTeamCount: boolean = false;
+    
     //image: string
     //background color
     //selectedOption
