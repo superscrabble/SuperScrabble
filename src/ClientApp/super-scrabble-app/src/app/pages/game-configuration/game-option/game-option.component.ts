@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { GameOption } from 'src/app/models/game-configuaration/game-option';
+import { MatchmakingService } from 'src/app/services/matchmaking.service';
 
 @Component({
   selector: 'app-game-option',
@@ -9,8 +10,9 @@ import { GameOption } from 'src/app/models/game-configuaration/game-option';
 export class GameOptionComponent implements OnInit {
 
   @Input() gameOption: GameOption = new GameOption("", "", 0);
+  @Input() isAboutTeamCount: boolean = false;
 
-  constructor() {
+  constructor(private matchmakingService: MatchmakingService) {
   }
 
   ngOnInit(): void {
@@ -22,6 +24,10 @@ export class GameOptionComponent implements OnInit {
       return "selected-game-option"
     }
     return "game-option"
+  }
+
+  isTeamGame() : boolean {
+    return this.matchmakingService.isTeamGame();
   }
 
   openDescriptionDialog(): void {

@@ -6,6 +6,7 @@
         <app-game-option
             *ngFor="let gameOption of gameConfig.gameOptions"
             [gameOption]="gameOption"
+            [isAboutTeamCount]="gameConfig.isAboutTeamCount"
             class="game-option"
             (click)="chooseOption(gameOption)">
         </app-game-option>

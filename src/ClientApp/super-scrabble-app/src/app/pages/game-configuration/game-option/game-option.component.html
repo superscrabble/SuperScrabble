@@ -1,9 +1,20 @@
 <div style="width: 100%; height: 100%" class="{{getClassIfSelected()}} rounded">
-    <div class="text-center d-flex flex-column align-items-center justify-content-center">
+    <div *ngIf="!isAboutTeamCount" class="text-center d-flex flex-column align-items-center justify-content-center">
         <div class="align-self-end">
             <span class="material-icons p-1" (click)="openDescriptionDialog()">help</span>
         </div>
         <p class="mat-headline">{{gameOption.title}}</p>
         <p class="option-desc p-2">{{gameOption.description}}</p>
+    </div>
+    <div *ngIf="isAboutTeamCount" class="text-center d-flex flex-row align-items-center justify-content-center">
+        <!--Not sure whether this is the correct way to loop-->
+        <div class="d-flex flex-column" *ngFor="let index of [].constructor(gameOption.value)">
+            <div>
+                <span class="material-icons p-1">person</span>
+            </div>
+            <div *ngIf="isTeamGame()">
+                <span class="material-icons p-1">person</span>
+            </div>  
+        </div>
     </div>
 </div>
