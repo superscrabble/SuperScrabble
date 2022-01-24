@@ -25,6 +25,31 @@ export class MatchmakingService {
   //TODO: load data from the server and the text from Firebase
 
   constructor(private dialog: MatDialog) {
+    let teamCountConfig = new GameConfig(
+      "Изберете броя на отборите",
+      [
+        new GameOption(
+          "1",
+          "",
+          2,
+        ),
+        new GameOption(
+          "",
+          "",
+          3,
+        ),
+        new GameOption(
+          "",
+          "",
+          4,
+        )
+      ],
+      (option: GameOption) => {
+        this.matchProps.teamCount = option.value;
+      });
+    
+    teamCountConfig.isAboutTeamCount = true;
+
     this.standardConfigs = new ConfigsPath([
       new GameConfig(
         "Изберете вариант",
@@ -77,12 +102,19 @@ export class MatchmakingService {
             "Бавно",
             "Играй заедно с приятел или случаен играч срещу други отбори",
             TimerTimeType.Slow, 
+          ),
+          new GameOption(
+            "Бавно",
+            "Играй заедно с приятел или случаен играч срещу други отбори",
+            TimerTimeType.Slow, 
           )
         ],
         (option: GameOption) => {
           this.matchProps.timerTimeType = option.value;
         }
-      )]);
+      ),
+      teamCountConfig
+    ]);
 
     this.additionalConfigs.set(GameType.Duo, new ConfigsPath([
       new GameConfig(
