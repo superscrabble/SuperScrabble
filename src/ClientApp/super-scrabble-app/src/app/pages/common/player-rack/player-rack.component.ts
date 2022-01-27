@@ -11,8 +11,9 @@ import { AppConfig } from 'src/app/app-config';
 export class PlayerRackComponent implements OnInit {
 
   @Input() playerTiles: Tile[] = [];
-  @Output() openWildcardDialogEvent: EventEmitter<any> = new EventEmitter();
   @Input() isEnabled: boolean = false;
+  @Output() openWildcardDialogEvent: EventEmitter<any> = new EventEmitter();
+  @Output() removeTileFromBoard: EventEmitter<any> = new EventEmitter();
   selectedPlayerTile: Tile = this.playerTiles[0];
 
   constructor() { }
@@ -37,6 +38,8 @@ export class PlayerRackComponent implements OnInit {
         if(event.previousContainer.data) {
           transferArrayItem(event.previousContainer.data, event.container.data, event.previousIndex, event.currentIndex);
         } else {
+          //Remove the tile from the board
+          this.removeTileFromBoard.emit(event.item.data);
           this.playerTiles.push(event.item.data);
         }
     }

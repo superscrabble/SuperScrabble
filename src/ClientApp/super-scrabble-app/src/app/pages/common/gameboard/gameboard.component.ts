@@ -13,6 +13,9 @@ import { CdkDragDrop, CdkDragEnter } from '@angular/cdk/drag-drop';
 })
 export class GameboardComponent implements OnInit {
 
+  //TODO: add [cdkDropListData] property to every row; maybe board should be
+  //stored as Tile[][]
+
   @Input() board: Cell[][] = new Array();
   @Input() selectedPlayerTile: Tile | null = null;
   

@@ -1,42 +1,43 @@
-    import { Component, OnInit, Inject, NgZone, Pipe, PipeTransform, EventEmitter, ElementRef } from '@angular/core';
-    import { SignalrService } from 'src/app/services/signalr.service';
-    import { Tile } from 'src/app/models/tile';
-    import { Cell } from 'src/app/models/cell';
-    import { CellViewData } from 'src/app/models/cellViewData';
-    import { HubConnection, HubConnectionState } from '@microsoft/signalr';
-    import { Router } from '@angular/router';
-    import { MatDialog } from '@angular/material/dialog';
-    import { Action } from 'src/app/models/action';
-    import { AppConfig } from 'src/app/app-config';
-    import { ChangeWildcardDialogComponent } from '../common/dialogs/change-wildcard-dialog/change-wildcard-dialog.component';
-    import { SettingsDialogComponent } from '../common/dialogs/settings-dialog/settings-dialog.component';
-    import { LeaveGameDialogComponent } from '../common/dialogs/leave-game-dialog/leave-game-dialog.component';
-    import { ErrorDialogComponent, ErrorDialogData } from '../common/dialogs/error-dialog/error-dialog.component';
-    import { GameContentDialogComponent } from '../common/dialogs/game-content-dialog/game-content-dialog.component';
-    import { ExchangeTilesDialogComponent } from '../common/dialogs/exchange-tiles-dialog/exchange-tiles-dialog.component';
-    import { GameService } from 'src/app/services/game.service';
-    import { CdkDragDrop, CdkDragEnter, moveItemInArray, transferArrayItem } from "@angular/cdk/drag-drop";
+import { Component, OnInit, Inject, NgZone, Pipe, PipeTransform, EventEmitter, ElementRef, ViewChild } from '@angular/core';
+import { SignalrService } from 'src/app/services/signalr.service';
+import { Tile } from 'src/app/models/tile';
+import { Cell } from 'src/app/models/cell';
+import { CellViewData } from 'src/app/models/cellViewData';
+import { HubConnection, HubConnectionState } from '@microsoft/signalr';
+import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { Action } from 'src/app/models/action';
+import { AppConfig } from 'src/app/app-config';
+import { ChangeWildcardDialogComponent } from '../common/dialogs/change-wildcard-dialog/change-wildcard-dialog.component';
+import { SettingsDialogComponent } from '../common/dialogs/settings-dialog/settings-dialog.component';
+import { LeaveGameDialogComponent } from '../common/dialogs/leave-game-dialog/leave-game-dialog.component';
+import { ErrorDialogComponent, ErrorDialogData } from '../common/dialogs/error-dialog/error-dialog.component';
+import { GameContentDialogComponent } from '../common/dialogs/game-content-dialog/game-content-dialog.component';
+import { ExchangeTilesDialogComponent } from '../common/dialogs/exchange-tiles-dialog/exchange-tiles-dialog.component';
+import { GameService } from 'src/app/services/game.service';
+import { CdkDragDrop, CdkDragEnter, moveItemInArray, transferArrayItem } from "@angular/cdk/drag-drop";
+import { GameboardComponent } from '../common/gameboard/gameboard.component';
 
-    @Pipe({
-        name: "formatTime"
-    })
-    export class FormatTimePipe implements PipeTransform {
-        transform(value: number): string {
-        const minutes: number = Math.floor(value / 60);
-        return (
-            ("00" + minutes).slice(-2) +
-            ":" +
-            ("00" + Math.floor(value - minutes * 60)).slice(-2)
-        );
-        }
+@Pipe({
+    name: "formatTime"
+})
+export class FormatTimePipe implements PipeTransform {
+    transform(value: number): string {
+    const minutes: number = Math.floor(value / 60);
+    return (
+        ("00" + minutes).slice(-2) +
+        ":" +
+        ("00" + Math.floor(value - minutes * 60)).slice(-2)
+    );
     }
+}
 
-    @Component({
-    selector: 'app-game',
-    templateUrl: './game.component.html',
-    styleUrls: ['./game.component.css']
-    })
-    export class GameComponent implements OnInit {
+@Component({
+selector: 'app-game',
+templateUrl: './game.component.html',
+styleUrls: ['./game.component.css']
+})
+export class GameComponent implements OnInit {
 
     //TODO: check which properties are not used
     //TODO: create BoardConfigurationProvider which will provide e.x special cells
@@ -59,6 +60,7 @@
     turnRemainingTime: number = 100;
     gameTimeAsString: string = "";
     gameLogs: Action[] = [];
+    @ViewChild('boardComponent', {static: false}) boardComponent: GameboardComponent | undefined;
 
     constructor(
         private gameService: GameService,
@@ -237,6 +239,11 @@
 
     getClassNameByCellType(type: number) {
         return this.cellViewDataByType.get(type)?.className;
+    }
+
+    removeTileFromBoard(tile: Tile) {
+        console.log("Remove tile from Board")
+        this.boardComponent?.removeTileFromBoard(tile);
     }
 
     drop(event: CdkDragDrop<Tile[]>) {
@@ -2341,4 +2348,4 @@
         this.loadScoreBoard(data.pointsByUserNames)
         console.log("Tiles Count: " + this.remainingTilesCount)
     }
-    }
+}

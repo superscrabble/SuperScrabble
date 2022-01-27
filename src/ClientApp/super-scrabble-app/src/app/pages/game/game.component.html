@@ -63,6 +63,7 @@
         <div class="d-flex justify-content-center px-sm-4 mb-3" cdkScrollable>
             <div class="overflow-auto board-size" cdkScrollable>
                 <app-gameboard
+                    #boardComponent
                     [board]="board"
                     [selectedPlayerTile]="selectedPlayerTile"
                     [updatedBoardCells]="updatedBoardCells"
@@ -74,7 +75,7 @@
             </div>
         </div>
         <app-player-rack
-            [playerTiles]="playerTiles" [isEnabled]="true"
+            [playerTiles]="playerTiles" [isEnabled]="true" (removeTileFromBoard)="removeTileFromBoard($event)"
             (openWildcardDialogEvent)="openWildcardDialogEvent($event)"></app-player-rack>
     </div>
     <div class="right-column col-lg-3 d-lg-flex d-md-none d-sm-none d-none order-lg-last">
