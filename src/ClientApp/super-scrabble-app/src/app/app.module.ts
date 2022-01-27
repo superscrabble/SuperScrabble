@@ -34,6 +34,9 @@ import { GameConfigurationComponent } from './pages/game-configuration/game-conf
 import { GameOptionComponent } from './pages/game-configuration/game-option/game-option.component';
 import { GameConfigurationMenuComponent } from './pages/game-configuration/game-configuration-menu/game-configuration-menu.component';
 import { GameInviteFriendsDialogComponent } from './pages/game-configuration/dialogs/game-invite-friends-dialog/game-invite-friends-dialog.component';
+import { DragDropModule } from '@angular/cdk/drag-drop';
+import { ScrollingModule } from '@angular/cdk/scrolling';
+import { PlayerRackComponent } from './pages/common/player-rack/player-rack.component';
 
 @NgModule({
   declarations: [
@@ -59,7 +62,8 @@ import { GameInviteFriendsDialogComponent } from './pages/game-configuration/dia
     GameConfigurationMenuComponent,
     GameConfigurationComponent,
     GameOptionComponent,
-    GameInviteFriendsDialogComponent
+    GameInviteFriendsDialogComponent,
+    PlayerRackComponent
   ],
   imports: [
     CommonModule,
@@ -70,6 +74,8 @@ import { GameInviteFriendsDialogComponent } from './pages/game-configuration/dia
     NgbModule,
     MatDialogModule,
     BrowserAnimationsModule,
+    DragDropModule,
+    ScrollingModule
   ],
   providers: [ Utilities ],
   bootstrap: [AppComponent]

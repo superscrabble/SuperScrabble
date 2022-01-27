@@ -1,0 +1,16 @@
+<div class="d-flex justify-content-center flex-wrap"
+    cdkDropList #cdkPlayerTiles="cdkDropList" (cdkDropListDropped)="drop($event)"
+    [cdkDropListData]="playerTiles" cdkDropListOrientation="horizontal" cdkScrollable> <!--[cdkDropListConnectedTo]="[cdkCustomPlayerTiles]"-->
+    <div
+        *ngFor="let playerTile of playerTiles"
+        class="mx-2 border tile cursor-default rounded-1 p-2 text-center"
+        (dblclick)="doubleClickOnPlayerTile(playerTile)"
+        cdkDrag [cdkDragData]="playerTile" [cdkDragDisabled]="!isEnabled">
+        <!--<div style="display: hidden;" *cdkDragPlaceholder></div>-->
+        <div style="display: none;" *cdkDragPlaceholder></div>
+        {{playerTile.letter}}
+        <span style="font-size: 10px">
+            {{playerTile.points}}
+        </span>
+    </div>
+</div>
