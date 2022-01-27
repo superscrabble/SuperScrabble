@@ -4,6 +4,7 @@ import { CellViewData } from 'src/app/models/cellViewData';
 import { Tile } from 'src/app/models/tile';
 import { AppConfig } from 'src/app/app-config';
 import { ViewportRuler } from '@angular/cdk/scrolling';
+import { CdkDragDrop, CdkDragEnter } from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'app-gameboard',
@@ -80,6 +81,98 @@ export class GameboardComponent implements OnInit {
     ]);
   }
 
+  currentMouseOverPosition: any = {};
+
+  setCurrentMouseOverPosition(rowIndex: number, colIndex: number) {
+    //console.log("Current Mouse Over Position")
+    //console.log(rowIndex + " " + colIndex)
+    this.currentMouseOverPosition.row = rowIndex;
+    this.currentMouseOverPosition.column = colIndex;
+  }
+
+  isTileDraggable(tile: Tile) : boolean {
+    if(this.isNewPlacedTile(tile)) {
+      return true;
+    }
+    return false;
+  }
+
+  isNewPlacedTile(tile: Tile) : boolean {
+    for(let i = 0; i < this.updatedBoardCells.length; i++) {
+        if(this.updatedBoardCells[i].cell.tile == tile) {
+            return true;
+        }
+    }
+    return false;
+  }
+
+  placeTileOnBoard(tile: Tile, row: number, column: number) {
+    //validate row and column
+    //if not free and not new => exception
+    this.board[row][column].tile = tile;
+    this.addCellToUpdatedBoardCells(this.board[row][column]);
+  }
+
+  cellTileDropped(dropped: CdkDragDrop<Tile>) {
+
+  }
+
+  removeTileFromBoard(tile: Tile) {
+    let cell = this.updatedBoardCells.find(x => x.cell.tile == tile)!.cell;
+    cell.tile = null;
+    this.removeCellFromUpdatedBoardCells(cell);
+  }
+
+  swapTilesOnBoard(cell: Cell, otherCell: Cell) {
+    let tempTile = cell.tile;
+    cell.tile = otherCell.tile;
+    otherCell.tile = tempTile;
+
+    if(cell.tile == null) {
+      this.removeCellFromUpdatedBoardCells(cell);  
+      this.addCellToUpdatedBoardCells(otherCell);
+      return;
+    }
+
+    if(otherCell.tile == null) {
+      this.removeCellFromUpdatedBoardCells(otherCell);
+      this.addCellToUpdatedBoardCells(cell);
+    }
+  }
+
+  drop(event: CdkDragDrop<Tile[]>) {
+      console.log("Drop in GAMEBOARD")
+      let row = this.currentMouseOverPosition.row;
+      let column = this.currentMouseOverPosition.column;
+      let inputTile = event.item.data;
+      let boardCell = this.board[row][column];
+
+      //If a tile is dropped out of the board => return to the player
+      if(!event.isPointerOverContainer) {
+        this.addTileToPlayerTiles.emit(inputTile);
+        this.removeTileFromBoard(inputTile);
+        return;
+      }
+
+      //swap board tiles
+      if(this.isNewPlacedTile(inputTile)) {
+        this.swapTilesOnBoard(boardCell, this.updatedBoardCells.find(x => x.cell.tile == inputTile)!.cell);
+        return;
+      }
+
+      //swap the tile and the board tile
+      if(boardCell.tile) {
+        this.removeTileFromPlayerTiles.emit(inputTile);
+        this.addTileToPlayerTiles.emit(boardCell.tile);
+        this.placeTileOnBoard(inputTile, row, column);
+        return;
+      }
+
+      this.removeTileFromPlayerTiles.emit(inputTile);
+      this.placeTileOnBoard(inputTile, row, column);
+      this.addCellToUpdatedBoardCells(boardCell);
+  }
+
   getValueWhenEmptyByCellType(type: number) {
     return this.cellViewDataByType.get(type)?.valueWhenEmpty;
   }
@@ -113,16 +206,8 @@ export class GameboardComponent implements OnInit {
 
     //swap the selected player tile and the selected board cell
     if(cell.tile && this.selectedPlayerTile) {
-        let isNewCell = false;
-        for(let i = 0; i < this.updatedBoardCells.length; i++) {
-            if(this.updatedBoardCells[i].cell == cell) {
-                isNewCell = true;
-                break;
-            }
-        }
-
-        if(!isNewCell) {
-            return;
+        if(!this.isNewPlacedTile(cell.tile)) {
+          return;
         }
 
         let temp = cell.tile;

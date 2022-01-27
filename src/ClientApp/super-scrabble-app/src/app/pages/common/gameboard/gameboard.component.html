@@ -1,23 +1,34 @@
 <div class="d-flex justify-content-center grid">
-    <div class="board-sizing">
-        <div class="grid-row" *ngFor="let row of board">
-            <div *ngFor="let cell of row" class="grid-col border border-dark text-center justify-content-center cursor-default {{getClassNameByCell(cell)}}"
-            (contextmenu)="rightClickOnBoardCell(cell)"
-            (click)="clickOnBoardCell(cell)"
-            (dblclick)="doubleClickOnBoardCell(cell)">
-            <div *ngIf="cell.tile" class="board-cell">
-                <span>
-                    <strong class="tile-letter py-3">
-                        {{cell.tile.letter}}
-                    </strong>
-                    <span class="tile-points">
-                        {{cell.tile.points}}
-                    </span>
-                </span>
-            </div>
-            <div *ngIf="!cell.tile">
-                {{getValueWhenEmptyByCellType(cell.type)}}
-            </div>
+    <div
+        class="board-sizing">
+        <div
+            cdkDropList #cdkGameboard=cdkDropList (cdkDropListDropped)="drop($event)"
+            cdkScrollable cdkDropListSortingDisabled="true" [cdkDropListAutoScrollDisabled]="false"
+            class="grid-row" *ngFor="let row of board; let rowIndex = index">
+            <div
+                *ngFor="let cell of row; let colIndex = index" class="grid-col border border-dark text-center justify-content-center cursor-default {{getClassNameByCellType(cell.type)}}"
+                (contextmenu)="rightClickOnBoardCell(cell)"
+                (click)="clickOnBoardCell(cell)"
+                (dblclick)="doubleClickOnBoardCell(cell)"
+                (mouseover)="setCurrentMouseOverPosition(rowIndex, colIndex)">
+                        <div *ngIf="cell.tile" class="placed-tile"> <!--class="board-cell">-->
+                            <div class="placed-tile text-center justify-content-center cursor-default {{getClassNameByCell(cell)}}"
+                                cdkDrag [cdkDragData]="cell.tile"
+                                [cdkDragDisabled]="!isTileDraggable(cell.tile)"
+                                (cdkDragDropped)="cellTileDropped($event)">
+                                <span>
+                                    <strong class="tile-letter py-3">
+                                        {{cell.tile.letter}}
+                                    </strong>
+                                    <span class="tile-points">
+                                        {{cell.tile.points}}
+                                    </span>
+                                </span>
+                            </div>
+                        </div>
+                        <div *ngIf="!cell.tile">
+                            {{getValueWhenEmptyByCellType(cell.type)}}
+                        </div>
             </div>
         </div>
     </div>

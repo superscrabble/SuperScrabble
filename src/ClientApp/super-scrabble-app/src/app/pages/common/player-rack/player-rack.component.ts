@@ -13,6 +13,7 @@ export class PlayerRackComponent implements OnInit {
   @Input() playerTiles: Tile[] = [];
   @Output() openWildcardDialogEvent: EventEmitter<any> = new EventEmitter();
   @Input() isEnabled: boolean = false;
+  selectedPlayerTile: Tile = this.playerTiles[0];
 
   constructor() { }
 
@@ -33,7 +34,22 @@ export class PlayerRackComponent implements OnInit {
     if(event.previousContainer === event.container)
         moveItemInArray(this.playerTiles, event.previousIndex, event.currentIndex);
     else {
-        transferArrayItem(event.previousContainer.data, event.container.data, event.previousIndex, event.currentIndex);
+        if(event.previousContainer.data) {
+          transferArrayItem(event.previousContainer.data, event.container.data, event.previousIndex, event.currentIndex);
+        } else {
+          this.playerTiles.push(event.item.data);
+        }
     }
+  }
+
+  getClassOfTile(object: Tile) {
+    let result = "";
+    if(this.selectedPlayerTile && this.selectedPlayerTile == object) {
+      result += "selected-tile";
+    }
+    if(this.isEnabled) {
+      result += " cursor-pointer";
+    }
+    return result;
   }
 }

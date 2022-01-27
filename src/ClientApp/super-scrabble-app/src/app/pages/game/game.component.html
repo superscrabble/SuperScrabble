@@ -59,33 +59,23 @@
         </app-word-info>
     </div>
     <!--Board-->
-    <div class="col-lg-6 col-md-12 row-sm-12 row-xs-12 order-2 order-md-last order-sm-last align-self-center mt-md-4">
-        <div class="d-flex justify-content-center px-sm-4">
-            <div class="overflow-auto board-size">
+    <div cdkDropListGroup cdkScrollable class="col-lg-6 col-md-12 row-sm-12 row-xs-12 order-2 order-md-last order-sm-last align-self-center mt-md-4">
+        <div class="d-flex justify-content-center px-sm-4 mb-3" cdkScrollable>
+            <div class="overflow-auto board-size" cdkScrollable>
                 <app-gameboard
                     [board]="board"
                     [selectedPlayerTile]="selectedPlayerTile"
+                    [updatedBoardCells]="updatedBoardCells"
                     (openWildcardDialogEvent)="openWildcardDialogEvent($event)"
                     (removeTileFromPlayerTiles)="removeTileFromPlayerTiles($event)"
                     (addTileToPlayerTiles)="addTileToPlayerTiles($event)"
-                    [updatedBoardCells]="updatedBoardCells"
-                    >
+                    cdkScrollable>
                 </app-gameboard>
             </div>
         </div>
-        <div class="my-3 d-flex justify-content-center flex-wrap">
-            <span
-                cdkDrag
-                *ngFor="let playerTile of playerTiles"
-                class="mx-2 border tile cursor-default rounded-1 p-2 text-center {{getClassNameIfSelected(playerTile)}}"
-                (click)="clickOnPlayerTile(playerTile)"
-                (dblclick)="doubleClickOnPlayerTile(playerTile)">
-                {{playerTile.letter}}
-                <span style="font-size: 10px">
-                    {{playerTile.points}}
-                </span>
-            </span>
-        </div>
+        <app-player-rack
+            [playerTiles]="playerTiles" [isEnabled]="true"
+            (openWildcardDialogEvent)="openWildcardDialogEvent($event)"></app-player-rack>
     </div>
     <div class="right-column col-lg-3 d-lg-flex d-md-none d-sm-none d-none order-lg-last">
         <div class="ms-3">
