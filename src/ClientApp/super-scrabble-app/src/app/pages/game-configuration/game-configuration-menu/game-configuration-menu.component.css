@@ -8,3 +8,7 @@
     flex-direction: row;
     justify-content: space-evenly;
 }
+
+.game-configuration {
+    height: 90%;
+}

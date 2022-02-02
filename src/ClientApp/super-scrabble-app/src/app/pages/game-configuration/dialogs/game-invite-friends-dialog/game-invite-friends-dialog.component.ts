@@ -6,8 +6,8 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./game-invite-friends-dialog.component.scss']
 })
 export class GameInviteFriendsDialogComponent implements OnInit {
-
-  constructor() { }
+  
+  constructor() {}
 
   ngOnInit(): void {
   }

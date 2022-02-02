@@ -1,7 +1,8 @@
 <div class="menu d-md-flex flex-md-column d-xs-flex flex-xs-column row-xs-12 row-sm-12 row-md-12">
     <app-game-configuration
         [gameConfig]="getCurrentConfig()"
-        (onChosenOption)="onChosenOption($event)">
+        (onChosenOption)="onChosenOption($event)"
+        class="game-configuration">
     </app-game-configuration>
     <div class="buttons">
         <button *ngIf="isBackButtonEnabled()" class="btn btn-secondary"
