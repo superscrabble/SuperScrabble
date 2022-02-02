@@ -6,7 +6,7 @@
         <p class="mat-headline">{{gameOption.title}}</p>
         <p class="option-desc p-2">{{gameOption.description}}</p>
     </div>
-    <div *ngIf="isAboutTeamCount" class="text-center d-flex flex-row align-items-center justify-content-center">
+    <div style="height: 100%" *ngIf="isAboutTeamCount" class="text-center d-flex flex-row align-items-center justify-content-center">
         <!--Not sure whether this is the correct way to loop-->
         <div class="d-flex flex-column" *ngFor="let index of [].constructor(gameOption.value)">
             <div>

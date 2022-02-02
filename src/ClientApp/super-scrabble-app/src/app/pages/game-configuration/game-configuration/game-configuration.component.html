@@ -2,7 +2,7 @@
     <div class="d-flex justify-content-center">
         <p class="mat-headline config-title text-center">{{gameConfig.title}}</p>
     </div>
-    <div class="game-options align-items-center overflow-auto">
+    <div class="game-options overflow-auto">
         <app-game-option
             *ngFor="let gameOption of gameConfig.gameOptions"
             [gameOption]="gameOption"
