@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\SuperScrabble.Common.Resources\SuperScrabble.Common.Resources.csproj" />
+    <ProjectReference Include="..\..\Common\SuperScrabble.Common\SuperScrabble.Common.csproj" />
+    <ProjectReference Include="..\..\Data\SuperScrabble.Data\SuperScrabble.Data.csproj" />
+    <ProjectReference Include="..\..\Services\SuperScrabble.Services.Common\SuperScrabble.Services.Common.csproj" />
+    <ProjectReference Include="..\..\Services\SuperScrabble.Services.Data\SuperScrabble.Services.Data.csproj" />
+    <ProjectReference Include="..\..\Services\SuperScrabble.Services.Game.Common\SuperScrabble.Services.Game.Common.csproj" />
+    <ProjectReference Include="..\..\Services\SuperScrabble.Services.Game\SuperScrabble.Services.Game.csproj" />
+    <ProjectReference Include="..\SuperScrabble.WebApi.ViewModels\SuperScrabble.WebApi.ViewModels.csproj" />
+  </ItemGroup>
+
+</Project>

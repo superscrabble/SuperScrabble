@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\SuperScrabble.Common\SuperScrabble.Common.csproj" />
+    <ProjectReference Include="..\..\WebApi\SuperScrabble.WebApi.ViewModels\SuperScrabble.WebApi.ViewModels.csproj" />
+    <ProjectReference Include="..\SuperScrabble.Services.Common\SuperScrabble.Services.Common.csproj" />
+    <ProjectReference Include="..\SuperScrabble.Services.Data\SuperScrabble.Services.Data.csproj" />
+    <ProjectReference Include="..\SuperScrabble.Services.Game.Common\SuperScrabble.Services.Game.Common.csproj" />
+    <ProjectReference Include="..\SuperScrabble.Services.Game.Models\SuperScrabble.Services.Game.Models.csproj" />
+  </ItemGroup>
+
+</Project>

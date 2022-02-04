@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\SuperScrabble.Common.Exceptions\SuperScrabble.Common.Exceptions.csproj" />
+    <ProjectReference Include="..\..\Common\SuperScrabble.Common.Extensions\SuperScrabble.Common.Extensions.csproj" />
+    <ProjectReference Include="..\..\Common\SuperScrabble.Common\SuperScrabble.Common.csproj" />
+    <ProjectReference Include="..\..\Data\SuperScrabble.Data\SuperScrabble.Data.csproj" />
+    <ProjectReference Include="..\..\WebApi\SuperScrabble.WebApi.ViewModels\SuperScrabble.WebApi.ViewModels.csproj" />
+    <ProjectReference Include="..\SuperScrabble.Services.Common\SuperScrabble.Services.Common.csproj" />
+  </ItemGroup>
+
+</Project>
