@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.Certificate;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 using SuperScrabble.Data;
@@ -61,6 +62,13 @@ builder.Services.AddTransient<IGameplayConstantsProvider, GameplayConstantsProvi
 builder.Services.AddTransient<ITilesProvider, StandardTilesProvider>();
 
 var app = builder.Build();
+
+using (var serviceScope = app.Services.CreateScope())
+{
+    AppDbContext dbContext = serviceScope.ServiceProvider.GetRequiredService<AppDbContext>();
+    dbContext.Database.Migrate();
+    //new AppSeeder().SeedAsync(dbContext, serviceScope.ServiceProvider).GetAwaiter().GetResult();
+}
 
 if (app.Environment.IsDevelopment())
 {
