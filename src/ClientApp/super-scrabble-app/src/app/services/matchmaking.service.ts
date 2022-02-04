@@ -9,6 +9,7 @@ import { GameConfig } from '../models/game-configuaration/game-config';
 import { GameOption } from '../models/game-configuaration/game-option';
 import { MatchProps } from '../models/game-configuaration/match-props';
 import { GameInviteFriendsDialogComponent } from '../pages/game-configuration/dialogs/game-invite-friends-dialog/game-invite-friends-dialog.component';
+import { SignalrService } from './signalr.service';
 
 @Injectable({
   providedIn: 'root'
@@ -24,7 +25,7 @@ export class MatchmakingService {
   //TODO: add property for currentConfig
   //TODO: load data from the server and the text from Firebase
 
-  constructor(private dialog: MatDialog) {
+  constructor(private dialog: MatDialog, private signalrService: SignalrService) {
     let teamCountConfig = new GameConfig(
       "Изберете броя на отборите",
       [
@@ -213,5 +214,9 @@ export class MatchmakingService {
       return true;
     }
     return false;
+  }
+
+  joinRoom(): void {
+    this.signalrService.joinRoomWithProps(this.matchProps);
   }
 }

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import * as signalR from "@microsoft/signalr";
 import { Utilities } from 'src/app/common/utilities';
+import { MatchProps } from '../models/game-configuaration/match-props';
 import { Tile } from '../models/tile';
 
 @Injectable({
@@ -61,6 +62,13 @@ export class SignalrService {
     console.log("Join Room")
     if(this.hubConnection?.state == signalR.HubConnectionState.Connected) {
       this.hubConnection?.invoke("JoinRoom");
+    }
+  }
+
+  public joinRoomWithProps(props: MatchProps) {
+    if(this.hubConnection?.state == signalR.HubConnectionState.Connected) {
+      console.log("Jpin room with props")
+      this.hubConnection?.invoke("JoinRoom", props);
     }
   }
 
