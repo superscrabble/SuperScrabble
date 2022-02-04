@@ -9,7 +9,7 @@ export class WebRequestsService {
   readonly ROOT_URL;
 
   constructor(private http: HttpClient) {
-    this.ROOT_URL = "https://localhost:5001";
+    this.ROOT_URL = "https://localhost:7168";
   }
 
   get(url: string) {

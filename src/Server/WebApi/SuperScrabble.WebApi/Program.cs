@@ -13,13 +13,13 @@ using SuperScrabble.Data.Repositories;
 using SuperScrabble.Services.Common;
 using SuperScrabble.Services.Data.Users;
 using SuperScrabble.Services.Data.Words;
+using SuperScrabble.Services.Game.Common.GameplayConstantsProviders;
+using SuperScrabble.Services.Game.Common.TilesProviders;
 using SuperScrabble.Services.Game.Validation;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<AppDbContext>();
-
-AddCors(builder.Services);
 
 AddIdentityOptions(builder.Services);
 
@@ -49,6 +49,8 @@ builder.Services.AddTransient<IWordsService, WordsService>();
 
 // Services.Game
 builder.Services.AddTransient<IGameValidator, GameValidator>();
+builder.Services.AddTransient<IGameplayConstantsProvider, GameplayConstantsProvider>();
+builder.Services.AddTransient<ITilesProvider, StandardTilesProvider>();
 
 var app = builder.Build();
 
@@ -57,6 +59,14 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+//TODO: Fix for production
+app.UseCors(x => x
+        .AllowAnyOrigin()
+        .AllowAnyMethod()
+        .AllowAnyHeader());
+
+//AddCors(builder.Services);
 
 app.UseHttpsRedirection();
 
@@ -96,7 +106,7 @@ static void AddCors(IServiceCollection services)
         options.AddDefaultPolicy(builder =>
         {
             builder
-                .WithOrigins("https://localhost:4200", "http://localhost:4200")
+                .AllowAnyOrigin()//("https://localhost:4200", "http://localhost:4200")
                 .AllowAnyHeader()
                 .AllowAnyMethod()
                 .AllowCredentials();
