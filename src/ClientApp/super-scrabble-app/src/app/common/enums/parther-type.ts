@@ -1,4 +1,4 @@
 export enum PartherType {
-    Random,
-    InviteFriends
+    Random = 1,
+    Friend = 2
 } 

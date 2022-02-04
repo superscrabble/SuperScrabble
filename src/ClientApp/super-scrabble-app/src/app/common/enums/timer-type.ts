@@ -1,4 +1,4 @@
 export enum TimerType {
-    Standard,
-    Chess
+    Standard = 1,
+    Chess = 2
 }

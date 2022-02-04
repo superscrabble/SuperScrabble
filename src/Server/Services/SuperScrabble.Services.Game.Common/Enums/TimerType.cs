@@ -2,7 +2,7 @@
 {
     public enum TimerType
     {
-        Standard = 1, 
+        Standard = 1,
         Chess = 2,
     }
 }

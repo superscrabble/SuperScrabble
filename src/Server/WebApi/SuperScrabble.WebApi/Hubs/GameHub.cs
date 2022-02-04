@@ -20,8 +20,13 @@
 
         public string ConnectionId => this.Context.ConnectionId;
 
+        [Authorize]
         public async Task JoinRoom(GameRoomConfiguration input)
         {
+            Console.WriteLine("Teams count: " + input.TeamsCount);
+            Console.WriteLine("Timer type: " + input.TimerType);
+            Console.WriteLine("Timer difficulty: " + input.TimerDifficulty);
+            Console.WriteLine("Team type: " + input.TeamType);
             if (this.UserName == null)
             {
                 await this.SendUnauthorizedErrorAsync(this.ConnectionId);

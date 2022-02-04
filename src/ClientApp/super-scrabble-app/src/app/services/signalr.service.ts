@@ -67,7 +67,8 @@ export class SignalrService {
 
   public joinRoomWithProps(props: MatchProps) {
     if(this.hubConnection?.state == signalR.HubConnectionState.Connected) {
-      console.log("Jpin room with props")
+      console.log("Join room with props")
+      console.log(props)
       this.hubConnection?.invoke("JoinRoom", props);
     }
   }

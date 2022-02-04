@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { GameType } from '../common/enums/game-type';
+import { TeamType } from '../common/enums/game-type';
 import { PartherType } from '../common/enums/parther-type';
-import { TimerTimeType } from '../common/enums/timer-time-type';
+import { TimerDifficulty } from '../common/enums/timer-time-type';
 import { TimerType } from '../common/enums/timer-type';
 import { ConfigsPath } from '../models/game-configuaration/configs-path';
 import { GameConfig } from '../models/game-configuaration/game-config';
@@ -17,7 +17,7 @@ import { SignalrService } from './signalr.service';
 export class MatchmakingService {
 
   standardConfigs: ConfigsPath;
-  additionalConfigs: Map<GameType, ConfigsPath> = new Map();
+  additionalConfigs: Map<TeamType, ConfigsPath> = new Map();
   matchProps: MatchProps = new MatchProps();
   isOnAdditionalConfigs: boolean = false;
   waitingForFriend: boolean = false;
@@ -46,7 +46,7 @@ export class MatchmakingService {
         )
       ],
       (option: GameOption) => {
-        this.matchProps.teamCount = option.value;
+        this.matchProps.teamsCount = option.value;
       });
     
     teamCountConfig.isAboutTeamCount = true;
@@ -58,16 +58,16 @@ export class MatchmakingService {
           new GameOption(
             "Соло",
             "Играй самостоятелно срещу други играчи",
-            GameType.Single,
+            TeamType.Solo,
           ),
           new GameOption(
             "Дуо",
             "Играй заедно с приятел или случаен играч срещу други отбори",
-            GameType.Duo,
+            TeamType.Duo,
           )
         ],
         (option: GameOption) => {
-          this.matchProps.type = option.value;
+          this.matchProps.teamType = option.value;
         }),
       new GameConfig(
         "Изберете таймер",
@@ -92,32 +92,32 @@ export class MatchmakingService {
           new GameOption(
             "Бързо",
             "Играй самостоятелно срещу други играчи",
-            TimerTimeType.Fast,  
+            TimerDifficulty.Fast,  
           ),
           new GameOption(
             "Стандартно",
             "Играй заедно с приятел или случаен играч срещу други отбори",
-            TimerTimeType.Standard,
+            TimerDifficulty.Standard,
           ),
           new GameOption(
             "Бавно",
             "Играй заедно с приятел или случаен играч срещу други отбори",
-            TimerTimeType.Slow, 
+            TimerDifficulty.Slow, 
           ),
           new GameOption(
             "Бавно",
             "Играй заедно с приятел или случаен играч срещу други отбори",
-            TimerTimeType.Slow, 
+            TimerDifficulty.Slow, 
           )
         ],
         (option: GameOption) => {
-          this.matchProps.timerTimeType = option.value;
+          this.matchProps.timerDifficulty = option.value;
         }
       ),
       teamCountConfig
     ]);
 
-    this.additionalConfigs.set(GameType.Duo, new ConfigsPath([
+    this.additionalConfigs.set(TeamType.Duo, new ConfigsPath([
       new GameConfig(
         "Играй с:",
         [
@@ -129,11 +129,11 @@ export class MatchmakingService {
           new GameOption(
             "Приятел",
             "Играй заедно с приятел или случаен играч срещу други отбори",
-            PartherType.InviteFriends
+            PartherType.Friend
           )
         ],
         (option: GameOption) => {
-          if(option.value == PartherType.InviteFriends) {
+          if(option.value == PartherType.Friend) {
             this.waitingForFriend = true;
             this.dialog.open(GameInviteFriendsDialogComponent);
             //Subscribe on close;
@@ -147,8 +147,8 @@ export class MatchmakingService {
 
   chooseOption(value: GameOption) {
     if(this.isOnAdditionalConfigs) {
-      this.additionalConfigs.get(this.matchProps.type)?.getCurrentConfig().selectOption(value);
-      this.additionalConfigs.get(this.matchProps.type)?.nextConfig();
+      this.additionalConfigs.get(this.matchProps.teamType)?.getCurrentConfig().selectOption(value);
+      this.additionalConfigs.get(this.matchProps.teamType)?.nextConfig();
       return;
     }
 
@@ -156,7 +156,7 @@ export class MatchmakingService {
 
     if(this.standardConfigs.isLastConfig()) {
       this.standardConfigs.nextConfig();
-      if(this.additionalConfigs.has(this.matchProps.type)) {
+      if(this.additionalConfigs.has(this.matchProps.teamType)) {
         this.isOnAdditionalConfigs = true;
       }
       return;
@@ -168,7 +168,7 @@ export class MatchmakingService {
   getCurrentConfig() : GameConfig{
     let currentConfig = this.standardConfigs.getCurrentConfig();
     if(this.isOnAdditionalConfigs) {
-      let additionalConfig = this.additionalConfigs.get(this.matchProps.type)?.getCurrentConfig();
+      let additionalConfig = this.additionalConfigs.get(this.matchProps.teamType)?.getCurrentConfig();
       if(additionalConfig) {
         currentConfig = additionalConfig;
       }
@@ -179,11 +179,11 @@ export class MatchmakingService {
 
   previousConfig() {
     if(this.isOnAdditionalConfigs) {
-      if(this.additionalConfigs.get(this.matchProps.type)?.isFirstConfig()) {
+      if(this.additionalConfigs.get(this.matchProps.teamType)?.isFirstConfig()) {
         this.isOnAdditionalConfigs = false;
       }
 
-      this.additionalConfigs.get(this.matchProps.type)?.previousConfig;
+      this.additionalConfigs.get(this.matchProps.teamType)?.previousConfig;
       return;
     }
     this.standardConfigs.previousConfig();
@@ -191,7 +191,7 @@ export class MatchmakingService {
   }
 
   isTeamGame() {
-    return this.matchProps.type == GameType.Duo;
+    return this.matchProps.teamType == TeamType.Duo;
   }
 
   isFirstConfig() : boolean {
@@ -206,7 +206,7 @@ export class MatchmakingService {
     //TODO: simplify this
     if(this.standardConfigs.isLastConfig() && this.standardConfigs.isFinished) {
       if(this.isOnAdditionalConfigs) {
-        if(this.additionalConfigs.get(this.matchProps.type)?.isFinished) {
+        if(this.additionalConfigs.get(this.matchProps.teamType)?.isFinished) {
           return true;
         }
         return false;

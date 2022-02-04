@@ -1,4 +1,4 @@
-export enum GameType {
-    Single,
-    Duo
+export enum TeamType {
+    Solo = 1,
+    Duo = 2
 } 
