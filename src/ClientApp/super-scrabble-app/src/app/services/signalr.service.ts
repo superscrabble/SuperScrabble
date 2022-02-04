@@ -21,7 +21,7 @@ export class SignalrService {
     }
 
     this.hubConnection = new signalR.HubConnectionBuilder()
-                            .withUrl('https://localhost:5001/gamehub',  { accessTokenFactory: () => this.utilities.getAccessToken()})
+                            .withUrl('https://localhost:7168/gamehub',  { accessTokenFactory: () => this.utilities.getAccessToken()})
                             .build();
 
     this.hubConnectionStartPromise = this.hubConnection.start();

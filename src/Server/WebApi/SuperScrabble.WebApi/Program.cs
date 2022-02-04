@@ -1,5 +1,5 @@
 using System.Text;
-
+using Microsoft.AspNetCore.Authentication.Certificate;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -16,10 +16,13 @@ using SuperScrabble.Services.Data.Words;
 using SuperScrabble.Services.Game.Common.GameplayConstantsProviders;
 using SuperScrabble.Services.Game.Common.TilesProviders;
 using SuperScrabble.Services.Game.Validation;
+using SuperScrabble.WebApi.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<AppDbContext>();
+
+AddCors(builder.Services);
 
 AddIdentityOptions(builder.Services);
 
@@ -31,9 +34,14 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
 AddJsonWebTokenBearerAuthentication(builder.Services);
 
 builder.Services.AddControllers();
+builder.Services.AddSignalR();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services
+        .AddAuthentication(CertificateAuthenticationDefaults.AuthenticationScheme)
+        .AddCertificate();
 
 // Data
 builder.Services.AddScoped(typeof(IRepository<>), typeof(EFRepository<>));
@@ -60,19 +68,22 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-//TODO: Fix for production
-app.UseCors(x => x
-        .AllowAnyOrigin()
-        .AllowAnyMethod()
-        .AllowAnyHeader());
-
-//AddCors(builder.Services);
-
 app.UseHttpsRedirection();
 
+app.UseRouting();
+
+app.UseCors();
+
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+    endpoints.MapHub<GameHub>("/gamehub");
+});
 
 app.Run();
 
@@ -106,7 +117,7 @@ static void AddCors(IServiceCollection services)
         options.AddDefaultPolicy(builder =>
         {
             builder
-                .AllowAnyOrigin()//("https://localhost:4200", "http://localhost:4200")
+                .WithOrigins("https://localhost:4200", "http://localhost:4200")
                 .AllowAnyHeader()
                 .AllowAnyMethod()
                 .AllowCredentials();
