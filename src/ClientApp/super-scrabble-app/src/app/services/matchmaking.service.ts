@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { TeamType } from '../common/enums/game-type';
 import { PartherType } from '../common/enums/parther-type';
-import { TimerDifficulty } from '../common/enums/timer-time-type';
+import { TimerDifficulty } from '../common/enums/timer-difficulty';
 import { TimerType } from '../common/enums/timer-type';
 import { ConfigsPath } from '../models/game-configuaration/configs-path';
 import { GameConfig } from '../models/game-configuaration/game-config';
