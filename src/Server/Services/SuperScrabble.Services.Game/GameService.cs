@@ -11,6 +11,32 @@ namespace SuperScrabble.Services.Game
 {
     public class GameService : IGameService
     {
+        public GameService()
+        {
+
+        }
+
+        public void FillPlayerTiles(GameState gameState, Player player)
+        {
+            if (gameState.TilesCount == 0)
+            {
+                return;
+            }
+
+            int neededTilesCount = gameState.GameplayConstants.PlayerTilesCount - player.Tiles.Count;
+
+            for (int i = 0; i < neededTilesCount; i++)
+            {
+                if (gameState.TilesCount <= 0)
+                {
+                    break;
+                }
+
+                Tile tile = gameState.Bag.DrawTile()!;
+                player.AddTile(tile);
+            }
+        }
+
         public PlayerGameStateViewModel MapFromGameState(GameState gameState, string userName)
         {
             Player player = gameState.GetPlayer(userName)

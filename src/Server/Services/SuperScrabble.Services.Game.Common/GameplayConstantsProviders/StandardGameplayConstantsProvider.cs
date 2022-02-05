@@ -12,7 +12,7 @@
 
         public int GameTimerSeconds { get; }
 
-        public int PlayerTilesCount => 2;
+        public int PlayerTilesCount => 7;
 
         public int MinSkipsCountForEachPlayerToEndTheGame => 2;
 

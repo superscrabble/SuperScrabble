@@ -61,7 +61,9 @@
             {
                 var teamToAdd = new Team(maxPlayersCount);
                 teamToAdd.AddPlayer(this.UserName!, this.ConnectionId);
-                this.matchmakingService.AddTeamToWaitingQueue(input, teamToAdd, out bool hasGameStarted);
+
+                this.matchmakingService.AddTeamToWaitingQueue(
+                    input, teamToAdd, out bool hasGameStarted);
 
                 if (!hasGameStarted)
                 {
@@ -74,14 +76,18 @@
 
                 foreach (Player player in gameState.Teams.SelectMany(team => team.Players))
                 {
+                    this.gameService.FillPlayerTiles(gameState, player);
                     await this.Groups.AddToGroupAsync(player.ConnectionId, gameState.GroupName);
                 }
 
-                await this.Clients.Group(gameState.GroupName).SendAsync(Messages.StartGame);
+                await this.Clients.Group(gameState.GroupName)
+                    .SendAsync(Messages.StartGame, gameState.GroupName);
+
                 await this.UpdateGameStateAsync(gameState);
             }
             else if (input.TeamType == TeamType.Duo)
             {
+                // addToLobby
             }
         }
 

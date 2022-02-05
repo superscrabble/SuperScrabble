@@ -9,22 +9,28 @@
 
     public static class TimerDifficultyExtensions
     {
-        private static readonly Dictionary<TimerDifficulty, int> standardTimerSeconds = new();
-        private static readonly Dictionary<TimerDifficulty, int> chessTimerSeconds = new();
+        private static readonly Dictionary<TimerDifficulty, int> standardTimerSeconds = new()
+        {
+            [TimerDifficulty.Slow] = 120,
+            [TimerDifficulty.Normal] = 80,
+            [TimerDifficulty.Fast] = 60,
+        };
+
+        private static readonly Dictionary<TimerDifficulty, int> chessTimerSeconds = new()
+        {
+            [TimerDifficulty.Slow] = 1200,
+            [TimerDifficulty.Normal] = 800,
+            [TimerDifficulty.Fast] = 600,
+        };
 
         public static int GetSeconds(this TimerDifficulty timerDifficulty, TimerType timerType)
         {
-            switch (timerType)
+            return timerType switch
             {
-                case TimerType.Standard:
-                    return standardTimerSeconds[timerDifficulty];
-
-                case TimerType.Chess:
-                    return chessTimerSeconds[timerDifficulty];
-
-                default:
-                    throw new NotSupportedException($"Not supported {nameof(TimerType)} enum value.");
-            }
+                TimerType.Standard => standardTimerSeconds[timerDifficulty],
+                TimerType.Chess => chessTimerSeconds[timerDifficulty],
+                _ => throw new NotSupportedException($"Not supported {nameof(TimerType)} enum value."),
+            };
         }
     }
 }

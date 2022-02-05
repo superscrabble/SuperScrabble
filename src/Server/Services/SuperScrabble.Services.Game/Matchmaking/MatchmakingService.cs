@@ -6,10 +6,10 @@
 
     public class MatchmakingService : IMatchmakingService
     {
-        private static readonly Dictionary<string, string> connectionIdsByUserName = new();
-
         private static readonly Dictionary<string, string> groupNamesByUserNames = new();
         private static readonly Dictionary<string, GameState> gameStatesByGroupNames = new();
+
+        private static readonly Dictionary<string, Lobby> friendlyLobbiesByLobbyIds = new();
 
         private static readonly Dictionary<
             GameRoomConfiguration, List<Team>> waitingTeamsByRoomConfigs = new();
@@ -59,6 +59,12 @@
             }
 
             hasGameStarted = true;
+        }
+
+        public void AddPlayerToLobby(
+            GameRoomConfiguration roomConfiguration, Player player, out bool isLobbyReady)
+        {
+            throw new NotImplementedException();
         }
 
         public GameState? GetGameState(string userName)

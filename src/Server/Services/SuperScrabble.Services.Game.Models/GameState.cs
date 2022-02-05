@@ -8,7 +8,6 @@
     public class GameState
     {
         private readonly List<Team> teams = new();
-        private readonly IGameplayConstantsProvider gameplayConstantsProvider;
 
         public GameState(
             IBag bag,
@@ -24,8 +23,10 @@
             this.GroupName = groupName;
             this.TeamIndex = 0;
             this.IsGameOver = false;
-            this.gameplayConstantsProvider = gameplayConstantsProvider;
+            this.GameplayConstants = gameplayConstantsProvider;
         }
+
+        public IGameplayConstantsProvider GameplayConstants { get; set; }
 
         public IBag Bag { get; }
 
@@ -44,7 +45,7 @@
         public int TilesCount => this.Bag.TilesCount;
 
         public bool IsTileExchangePossible =>
-            this.TilesCount >= this.gameplayConstantsProvider.PlayerTilesCount;
+            this.TilesCount >= this.GameplayConstants.PlayerTilesCount;
 
         public void EndGame()
         {

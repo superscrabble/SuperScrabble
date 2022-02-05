@@ -5,6 +5,8 @@
 
     public interface IGameService
     {
+        void FillPlayerTiles(GameState gameState, Player player);
+
         PlayerGameStateViewModel MapFromGameState(GameState gameState, string userName);
 
         /*
