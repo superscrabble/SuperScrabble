@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { TeamType } from '../common/enums/game-type';
-import { PartherType } from '../common/enums/parther-type';
+import { PartnerType } from '../common/enums/partner-type';
 import { TimerDifficulty } from '../common/enums/timer-difficulty';
 import { TimerType } from '../common/enums/timer-type';
 import { ConfigsPath } from '../models/game-configuaration/configs-path';
@@ -20,7 +20,6 @@ export class MatchmakingService {
   additionalConfigs: Map<TeamType, ConfigsPath> = new Map();
   matchProps: MatchProps = new MatchProps();
   isOnAdditionalConfigs: boolean = false;
-  waitingForFriend: boolean = false;
 
   //TODO: add property for currentConfig
   //TODO: load data from the server and the text from Firebase
@@ -124,23 +123,16 @@ export class MatchmakingService {
           new GameOption(
             "Случаен играч",
             "Играй самостоятелно срещу други играчи",
-            PartherType.Random, 
+            PartnerType.Random, 
           ),
           new GameOption(
             "Приятел",
             "Играй заедно с приятел или случаен играч срещу други отбори",
-            PartherType.Friend
+            PartnerType.Friend
           )
         ],
         (option: GameOption) => {
-          if(option.value == PartherType.Friend) {
-            this.waitingForFriend = true;
-            this.dialog.open(GameInviteFriendsDialogComponent);
-            //Subscribe on close;
-            return;
-          }
-
-          this.waitingForFriend = false;
+          this.matchProps.partnerType = option.value;
         }
       )]));
   }
@@ -187,7 +179,6 @@ export class MatchmakingService {
       return;
     }
     this.standardConfigs.previousConfig();
-    this.waitingForFriend = false;
   }
 
   isTeamGame() {
@@ -199,10 +190,6 @@ export class MatchmakingService {
   }
 
   isConfigReady() : boolean {
-    if(this.waitingForFriend) {
-      return false;
-    }
-
     //TODO: simplify this
     if(this.standardConfigs.isLastConfig() && this.standardConfigs.isFinished) {
       if(this.isOnAdditionalConfigs) {
