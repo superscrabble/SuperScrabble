@@ -95,5 +95,39 @@
                 }
             }
         }
+
+        public Player? GetPlayer(string userName)
+        {
+            foreach (Team team in this.Teams)
+            {
+                Player? player = team.Players.FirstOrDefault(pl => pl.UserName == userName);
+
+                if (player != null)
+                {
+                    return player;
+                }
+            }
+
+            return null;
+        }
+
+        public Team? GetTeam(string userName)
+        {
+            return this.Teams.FirstOrDefault(
+                team => team.Players.Any(pl => pl.UserName == userName));
+        }
+
+        public IEnumerable<string> GetUserNamesOfPlayersWhoHaveLeftTheGame()
+        {
+            var playersWhoHaveLeft = new List<string>();
+
+            foreach (Team team in this.Teams)
+            {
+                playersWhoHaveLeft.AddRange(team.Players
+                    .Where(pl => pl.HasLeftTheGame).Select(pl => pl.UserName));
+            }
+
+            return playersWhoHaveLeft;
+        }
     }
 }

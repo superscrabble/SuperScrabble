@@ -14,8 +14,11 @@ using SuperScrabble.Data.Repositories;
 using SuperScrabble.Services.Common;
 using SuperScrabble.Services.Data.Users;
 using SuperScrabble.Services.Data.Words;
+using SuperScrabble.Services.Game;
 using SuperScrabble.Services.Game.Common.GameplayConstantsProviders;
 using SuperScrabble.Services.Game.Common.TilesProviders;
+using SuperScrabble.Services.Game.Factories;
+using SuperScrabble.Services.Game.Matchmaking;
 using SuperScrabble.Services.Game.Validation;
 using SuperScrabble.WebApi.Hubs;
 
@@ -60,6 +63,9 @@ builder.Services.AddTransient<IWordsService, WordsService>();
 builder.Services.AddTransient<IGameValidator, GameValidator>();
 builder.Services.AddTransient<IGameplayConstantsProvider, GameplayConstantsProvider>();
 builder.Services.AddTransient<ITilesProvider, StandardTilesProvider>();
+builder.Services.AddTransient<IMatchmakingService, MatchmakingService>();
+builder.Services.AddTransient<IGameService, GameService>();
+builder.Services.AddTransient<IGameStateFactory, GameStateFactory>();
 
 var app = builder.Build();
 

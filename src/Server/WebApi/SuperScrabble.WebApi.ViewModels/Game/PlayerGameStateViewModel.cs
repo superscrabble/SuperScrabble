@@ -9,5 +9,7 @@
         public CommonGameStateViewModel CommonGameState { get; set; } = default!;
 
         public string MyUserName { get; set; } = default!;
+
+        public IEnumerable<Tile>? TeammateTiles { get; set; }
     }
 }

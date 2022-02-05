@@ -23,6 +23,8 @@
         public GameState CreateGameState(
             GameRoomConfiguration roomConfiguration, IEnumerable<Team> teams, string groupName)
         {
+            //TODO: Load specific game state dependencies according to GameMode (e.g Classic, MadBoards)
+
             var bonusCellsProvider = new StandardBonusCellsProvider();
             IBoard board = new StandardBoard(bonusCellsProvider);
 

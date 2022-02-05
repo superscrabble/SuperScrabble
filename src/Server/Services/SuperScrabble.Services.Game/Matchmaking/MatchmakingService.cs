@@ -8,11 +8,11 @@
     {
         private static readonly Dictionary<string, string> connectionIdsByUserName = new();
 
-        private static readonly Dictionary<string, string> groupNamesByUserName = new();
-        private static readonly Dictionary<string, GameState> gameStatesByGroupName = new();
+        private static readonly Dictionary<string, string> groupNamesByUserNames = new();
+        private static readonly Dictionary<string, GameState> gameStatesByGroupNames = new();
 
         private static readonly Dictionary<
-            GameRoomConfiguration, List<Team>> waitingTeamsByGameRoomConfiguration = new();
+            GameRoomConfiguration, List<Team>> waitingTeamsByRoomConfigs = new();
 
         private readonly IGameStateFactory gameStateFactory;
 
@@ -26,37 +26,71 @@
         {
             hasGameStarted = false;
 
-            if (!waitingTeamsByGameRoomConfiguration.ContainsKey(roomConfiguration))
+            if (!waitingTeamsByRoomConfigs.ContainsKey(roomConfiguration))
             {
-                waitingTeamsByGameRoomConfiguration.Add(roomConfiguration, new());
+                waitingTeamsByRoomConfigs.Add(roomConfiguration, new());
             }
 
-            bool isRoomFull = waitingTeamsByGameRoomConfiguration[roomConfiguration].Count
-                >= roomConfiguration.TeamsCount;
+            waitingTeamsByRoomConfigs[roomConfiguration].Add(teamToAdd);
+
+            bool isRoomFull = waitingTeamsByRoomConfigs[
+                roomConfiguration].Count == roomConfiguration.TeamsCount;
 
             if (!isRoomFull)
             {
-                waitingTeamsByGameRoomConfiguration[roomConfiguration].Add(teamToAdd);
                 return;
             }
 
             string groupName = Guid.NewGuid().ToString();
-            var teams = waitingTeamsByGameRoomConfiguration[roomConfiguration];
+            var teams = waitingTeamsByRoomConfigs[roomConfiguration];
 
-            GameState gameState = this.gameStateFactory.CreateGameState(roomConfiguration, teams, groupName);
+            GameState gameState = this.gameStateFactory.CreateGameState(
+                roomConfiguration, teams, groupName);
 
-            waitingTeamsByGameRoomConfiguration.Remove(roomConfiguration);
-            gameStatesByGroupName.Add(groupName, gameState);
+            waitingTeamsByRoomConfigs.Remove(roomConfiguration);
+            gameStatesByGroupNames.Add(groupName, gameState);
 
             foreach (Team team in gameState.Teams)
             {
                 foreach (Player player in team.Players)
                 {
-                    groupNamesByUserName.Add(player.UserName, groupName);
+                    groupNamesByUserNames.Add(player.UserName, groupName);
                 }
             }
 
             hasGameStarted = true;
+        }
+
+        public GameState? GetGameState(string userName)
+        {
+            if (!groupNamesByUserNames.ContainsKey(userName))
+            {
+                return null;
+            }
+
+            string groupName = groupNamesByUserNames[userName];
+            return gameStatesByGroupNames[groupName];
+        }
+
+        public bool IsUserAlreadyInsideGame(string userName)
+        {
+            return groupNamesByUserNames.ContainsKey(userName);
+        }
+
+        public bool IsUserAlreadyWaitingToJoinGame(string userName)
+        {
+            foreach (var teamByRoomConfig in waitingTeamsByRoomConfigs)
+            {
+                foreach (Team team in teamByRoomConfig.Value)
+                {
+                    if (team.Players.Any(pl => pl.UserName == userName))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
     }
 }

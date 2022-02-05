@@ -8,7 +8,7 @@
     {
         public Position Position { get; set; } = default!;
 
-        public Tile Tile { get; set; } = default!;
+        public Tile? Tile { get; set; }
 
         public CellType Type { get; set; }
     }

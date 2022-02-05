@@ -7,5 +7,11 @@
     {
         void AddTeamToWaitingQueue(
             GameRoomConfiguration roomConfiguration, Team teamToAdd, out bool hasGameStarted);
+
+        bool IsUserAlreadyWaitingToJoinGame(string userName);
+
+        bool IsUserAlreadyInsideGame(string userName);
+
+        GameState? GetGameState(string userName);
     }
 }

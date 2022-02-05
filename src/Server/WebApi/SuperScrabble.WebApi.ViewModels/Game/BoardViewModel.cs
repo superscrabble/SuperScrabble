@@ -6,6 +6,6 @@
 
         public int Height { get; set; }
 
-        public IEnumerable<CellViewModel> Cells { get; set; } = new List<CellViewModel>();
+        public IEnumerable<CellViewModel> Cells { get; set; } = default!;
     }
 }

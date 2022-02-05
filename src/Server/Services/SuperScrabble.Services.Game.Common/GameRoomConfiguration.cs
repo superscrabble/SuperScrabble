@@ -17,5 +17,9 @@
         public TeamType TeamType { get; set; }
 
         public TimerType TimerType { get; set; }
+
+        public PartnerType? PartnerType { get; set; }
+
+        //GameMode = Classic, MadBoards, 
     }
 }

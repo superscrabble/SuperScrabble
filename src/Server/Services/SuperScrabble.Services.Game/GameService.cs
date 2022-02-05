@@ -5,10 +5,87 @@ using SuperScrabble.Services.Game.Models;
 using SuperScrabble.Services.Game.Models.Boards;
 using SuperScrabble.WebApi.ViewModels.Game;
 
+using System;
+
 namespace SuperScrabble.Services.Game
 {
-    public class GameService// : IGameService
+    public class GameService : IGameService
     {
+        public PlayerGameStateViewModel MapFromGameState(GameState gameState, string userName)
+        {
+            Player player = gameState.GetPlayer(userName)
+                ?? throw new ArgumentException(
+                    $"No player with such {nameof(userName)} was found inside the {nameof(gameState)}");
+
+            var commonGameStateViewModel = new CommonGameStateViewModel
+            {
+                Board = BoardAsViewModel(gameState.Board),
+                Teams = gameState.Teams.Select(TeamAsViewModel),
+                RemainingTilesCount = gameState.TilesCount,
+                IsGameOver = gameState.IsGameOver,
+                IsTileExchangePossible = gameState.IsTileExchangePossible,
+                PlayerOnTurnUserName = gameState.CurrentTeam.CurrentPlayer.UserName,
+                UserNamesOfPlayersWhoHaveLeftTheGame = gameState.GetUserNamesOfPlayersWhoHaveLeftTheGame(),
+            };
+
+            return new PlayerGameStateViewModel
+            {
+                MyUserName = player.UserName,
+                Tiles = player.Tiles,
+                CommonGameState = commonGameStateViewModel,
+                TeammateTiles = gameState.GetTeam(userName)?
+                    .Players.FirstOrDefault(pl => pl.UserName != userName)?.Tiles,
+            };
+        }
+
+        private static TeamViewModel TeamAsViewModel(Team team)
+        {
+            return new TeamViewModel
+            {
+                Players = team.Players.Select(PlayerAsViewModel)
+            };
+        }
+
+        private static PlayerViewModel PlayerAsViewModel(Player player)
+        {
+            return new PlayerViewModel
+            {
+                UserName = player.UserName,
+                Points = player.Points,
+            };
+        }
+
+        private static BoardViewModel BoardAsViewModel(IBoard board)
+        {
+            var cellViewModels = new List<CellViewModel>();
+
+            for (int row = 0; row < board.Height; row++)
+            {
+                for (int col = 0; col < board.Width; col++)
+                {
+                    Cell cell = board[row, col];
+                    cellViewModels.Add(CellAsViewModel(cell, row, col));
+                }
+            }
+
+            return new BoardViewModel
+            {
+                Width = board.Width,
+                Height = board.Height,
+                Cells = cellViewModels,
+            };
+        }
+
+        private static CellViewModel CellAsViewModel(Cell cell, int row, int column)
+        {
+            return new CellViewModel
+            {
+                Position = new Position(row, column),
+                Tile = cell.Tile,
+                Type = cell.Type,
+            };
+        }
+
         /*private readonly IGameplayConstantsProvider gameplayConstantsProvider;
         private readonly IScoringService scoringService;
         private readonly IGameValidator gameValidator;
@@ -361,6 +438,6 @@ namespace SuperScrabble.Services.Game
 
             return wordBuilders;
         }
-    }*/
+    */
     }
 }
