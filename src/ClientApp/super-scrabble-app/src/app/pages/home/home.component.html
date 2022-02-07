@@ -18,3 +18,8 @@
     <app-game-configuration-menu
         style="width: 100%; height: 100%;"></app-game-configuration-menu>
 </div>
+
+<button (click)="createFriendlyGame()">Create Friendly Game</button>
+
+<input type="text" [(ngModel)]="invitationCode" class="form-input" />
+<button (click)="joinFriendlyGame()">Join Friendly Game</button>

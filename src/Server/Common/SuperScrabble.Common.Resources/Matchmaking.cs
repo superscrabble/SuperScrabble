@@ -6,6 +6,9 @@
         {
             public const string PlayersPerGameCountNotSupported = "PlayersPerGameCountNotSupported";
             public const string GameModeNotSupported = "GameModeNotSupported";
+
+            public const string UnexistingInvitationCode = "UnexistingInvitationCode";
+            public const string GameLobbyFull = "GameLobbyFull";
         }
     }
 }

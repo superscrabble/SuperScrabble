@@ -14,6 +14,8 @@ export class HomeComponent implements OnInit {
   isSearchingForGame: boolean = false;
   currentGameGroupName: string | null = null;
 
+  invitationCode: string = "";
+
   constructor(private signalrService: SignalrService, private utilities: Utilities,
               private router: Router) { }
 
@@ -36,6 +38,14 @@ export class HomeComponent implements OnInit {
     this.signalrService.hubConnection?.on("UserAlreadyInsideGame", data => {
       this.currentGameGroupName = data;
     });
+
+    this.signalrService.hubConnection?.on("Error", data => {
+      console.error(data);
+    });
+
+    this.signalrService.hubConnection?.on("ReceiveFriendlyGameCode", data => {
+      console.log(data);
+    });
   }
 
   joinRoom() {
@@ -54,5 +64,18 @@ export class HomeComponent implements OnInit {
 
   redirectToCurrentGame() {
     this.router.navigate(["games/" + this.currentGameGroupName]);
+  }
+
+  createFriendlyGame() {
+    const input = {
+      timerType: 1,
+      timerDifficulty: 2
+    };
+    this.signalrService.hubConnection?.invoke("CreateFriendlyGame", input);
+  }
+
+  joinFriendlyGame() {
+    console.log(this.invitationCode);
+    this.signalrService.hubConnection?.invoke("JoinFriendlyGame", this.invitationCode);
   }
 }

@@ -23,8 +23,6 @@
         public GameState CreateGameState(
             GameRoomConfiguration roomConfiguration, IEnumerable<Team> teams, string groupName)
         {
-            //TODO: Load specific game state dependencies according to GameMode (e.g Classic, MadBoards)
-
             var bonusCellsProvider = new StandardBonusCellsProvider();
             IBoard board = new StandardBoard(bonusCellsProvider);
 
@@ -38,6 +36,16 @@
             IBag bag = new Bag(shuffledTilesProvider);
 
             return new GameState(bag, board, groupName, teams, gameplayConstantsProvider);
+        }
+
+        private IBoard CreateBoard(BoardType boardType, IBonusCellsProvider bonusCellsProvider)
+        {
+            return boardType switch
+            {
+                BoardType.Standard => new StandardBoard(bonusCellsProvider),
+                BoardType.Giant => new GiantBoard(bonusCellsProvider),
+                _ => throw new NotSupportedException($"Not supported {nameof(boardType)}."),
+            };
         }
     }
 }
