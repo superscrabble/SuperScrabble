@@ -4,7 +4,7 @@ import { Action } from 'src/app/models/action';
 
 interface GameContentDialogData {
   gameLogs: Action[];
-  pointsByUserNames: any[];
+  teams: any[];
   currentUserName: string;
   userNamesOfPlayersWhoHaveLeftTheGame: string[];
   showWordMeaningOf: Function;

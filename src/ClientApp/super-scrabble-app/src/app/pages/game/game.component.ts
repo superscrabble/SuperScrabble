@@ -17,6 +17,8 @@ import { ExchangeTilesDialogComponent } from '../common/dialogs/exchange-tiles-d
 import { GameService } from 'src/app/services/game.service';
 import { CdkDragDrop, CdkDragEnter, moveItemInArray, transferArrayItem } from "@angular/cdk/drag-drop";
 import { GameboardComponent } from '../common/gameboard/gameboard.component';
+import { Team } from 'src/app/models/team';
+import { Player } from 'src/app/models/player';
 
 @Pipe({
     name: "formatTime"
@@ -46,7 +48,7 @@ export class GameComponent implements OnInit {
     playerTiles: Tile[] = new Array();
     cellViewDataByType: Map<number, CellViewData> = new Map();
     remainingTilesCount: number = 0;
-    pointsByUserNames: any[] = new Array();
+    teams: Team[] = new Array();
     selectedPlayerTile: Tile | null = null;
     updatedBoardCells: any[] = new Array();
     selectedBoardCell: Cell | null = null;
@@ -60,7 +62,7 @@ export class GameComponent implements OnInit {
     turnRemainingTime: number = 100;
     gameTimeAsString: string = "";
     gameLogs: Action[] = [];
-    @ViewChild('boardComponent', {static: false}) boardComponent: GameboardComponent | undefined;
+    //@ViewChild('boardComponent', {static: false}) boardComponent: GameboardComponent | undefined;
 
     constructor(
         private gameService: GameService,
@@ -138,7 +140,7 @@ export class GameComponent implements OnInit {
             this.playerNameOnTurn = data.commonGameState.playerOnTurnUserName;
             this.currentUserName = data.myUserName; //Can be moved into localStorage
             this.isTileExchangePossible = data.commonGameState.isTileExchangePossible;
-            this.loadScoreBoard(data.commonGameState.pointsByUserNames)
+            this.loadScoreBoard(data.commonGameState.teams)
             //TODO: remove updatedBoardCells from board, if there are some
             this.updatedBoardCells = [];
 
@@ -205,9 +207,9 @@ export class GameComponent implements OnInit {
         this.board = new Array(board.height).fill(false).map(() => new Array(board.width));
         
         for(let i = 0; i < board.cells.length; i++) {
-        let cell = board.cells[i];
-        let tile = cell.tile ? new Tile(cell.tile.letter, cell.tile.points) : null;
-        this.board[cell.position.row][cell.position.column] = new Cell(cell.type, tile);
+            let cell = board.cells[i];
+            let tile = cell.tile ? new Tile(cell.tile.letter, cell.tile.points) : null;
+            this.board[cell.position.row][cell.position.column] = new Cell(cell.type, tile);
         }
     }
 
@@ -220,11 +222,32 @@ export class GameComponent implements OnInit {
         }
     }
 
-    loadScoreBoard(pointsByUserNames: any): void {
-        this.pointsByUserNames = [];
-        for(let i = 0; i < pointsByUserNames.length; i++) {
-        this.pointsByUserNames.push({key: pointsByUserNames[i].key, value: pointsByUserNames[i].value});
+    loadScoreBoard(teams: any): void {
+        console.log("Beginning");
+        console.log(teams)
+        this.teams = [];
+        for(let i = 0; i < teams.length; i++) {
+            this.teams.push(this.loadTeam(teams[i].players));
         }
+        this.teams.sort((a : Team, b : Team) => {
+            return b.points - a.points;
+        });
+        console.log("TEAMS");
+        console.log(this.teams);
+    }
+
+    loadTeam(players: any): Team {
+        let team: Team = new Team();
+        for(let i = 0; i < players.length; i++) {
+            team.players.push(new Player(players[i].userName, players[i].points));
+        }
+
+        team.calculatePoints();
+        team.players.sort((a : Player, b : Player) => {
+            return b.points - a.points;
+        })
+
+        return team;
     }
 
     getClassNameIfNewCell(cell: Cell) {
@@ -243,7 +266,7 @@ export class GameComponent implements OnInit {
 
     removeTileFromBoard(tile: Tile) {
         console.log("Remove tile from Board")
-        this.boardComponent?.removeTileFromBoard(tile);
+        //this.boardComponent?.removeTileFromBoard(tile);
     }
 
     drop(event: CdkDragDrop<Tile[]>) {
@@ -452,7 +475,7 @@ export class GameComponent implements OnInit {
     openGameContentMenu() {
         this.dialog.open(GameContentDialogComponent, {
             data: {
-                pointsByUserNames: this.pointsByUserNames,
+                teams: this.teams,
                 userNamesOfPlayersWhoHaveLeftTheGame: this.userNamesOfPlayersWhoHaveLeftTheGame,
                 currentUserName: this.currentUserName,
                 gameLogs: this.gameLogs,
@@ -477,6 +500,40 @@ export class GameComponent implements OnInit {
         let data = 
         {
         "remainingTilesCount": 88,
+        "teams": [
+            {
+                "players": [
+                    {
+                        "UserName": "Gosho2",
+                        "points": 20
+                    }
+                ]
+            },
+            {
+                "players": [
+                    {
+                        "UserName": "Gosho1",
+                        "points": 10
+                    },
+                    {
+                        "UserName": "Gosho1",
+                        "points": 20
+                    },
+                    {
+                        "UserName": "Gosho1",
+                        "points": 30
+                    }
+                ]
+            },
+            {
+                "players": [
+                    {
+                        "UserName": "Gosho1",
+                        "points": 10
+                    }
+                ]
+            }
+        ],
         "pointsByUserNames": [
             {
                 "key": "Gosho2",
@@ -2345,7 +2402,7 @@ export class GameComponent implements OnInit {
         this.loadBoard(data.board);
         this.loadPlayerTiles(tiles);
         this.remainingTilesCount = data.remainingTilesCount;
-        this.loadScoreBoard(data.pointsByUserNames)
+        this.loadScoreBoard(data.teams)
         console.log("Tiles Count: " + this.remainingTilesCount)
     }
 }

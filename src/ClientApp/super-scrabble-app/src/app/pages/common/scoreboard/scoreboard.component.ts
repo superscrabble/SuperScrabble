@@ -6,7 +6,7 @@ import { Component, OnInit, Input } from '@angular/core';
   styleUrls: ['./scoreboard.component.css']
 })
 export class ScoreboardComponent implements OnInit {
-  @Input() pointsByUserNames: any[] = [];
+  @Input() teams: any[] = [];
   @Input() currentUserName: string = "";
   @Input() userNamesOfPlayersWhoHaveLeftTheGame: string[] = [];
 

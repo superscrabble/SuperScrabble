@@ -25,7 +25,7 @@
         </div>
         <div *ngSwitchDefault>
             <app-scoreboard
-                [pointsByUserNames]="data.pointsByUserNames"
+                [teams]="data.teams"
                 [userNamesOfPlayersWhoHaveLeftTheGame]="data.userNamesOfPlayersWhoHaveLeftTheGame"
                 [currentUserName]="data.currentUserName"
                 class="content-component">
