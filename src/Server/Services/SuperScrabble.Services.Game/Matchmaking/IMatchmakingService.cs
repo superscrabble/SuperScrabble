@@ -2,14 +2,19 @@
 {
     using SuperScrabble.Services.Game.Common;
     using SuperScrabble.Services.Game.Models;
-    using SuperScrabble.WebApi.ViewModels.Game;
 
     public interface IMatchmakingService
     {
-        string CreateFriendlyGame(
-            string creatorUserName, string creatorConnectionId, CreateFriendlyGameInputModel input);
+        string CreateFriendlyGame(string creatorUserName,
+            string creatorConnectionId, FriendlyGameConfiguration gameConfig);
 
-        void JoinFriendlyGame(string joinerName, string joinerConnectionId, string invitationCode, out bool canGameBeStarted);
+        void JoinFriendlyGame(string joinerUserName, string joinerConnectionId, string invitationCode);
+
+        void StartFriendlyGame(string starterUserName, string invitationCode);
+
+        FriendlyGameLobby GetFriendlyGameLobby(string invitationCode);
+
+        GameState GetGameState(string userName);
 
         void AddTeamToWaitingQueue(
             GameRoomConfiguration roomConfiguration, Team teamToAdd, out bool hasGameStarted);
@@ -20,7 +25,5 @@
         bool IsUserAlreadyWaitingToJoinGame(string userName);
 
         bool IsUserAlreadyInsideGame(string userName);
-
-        GameState? GetGameState(string userName);
     }
 }

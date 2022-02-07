@@ -11,10 +11,15 @@ import { Router } from '@angular/router';
 })
 export class HomeComponent implements OnInit {
 
+  messages: string[] = new Array();
+
+  isStartGameButtonEnabled: boolean = false;
   isSearchingForGame: boolean = false;
   currentGameGroupName: string | null = null;
 
   invitationCode: string = "";
+  receivedInvitationCode: string = "";
+  invitationCodeFieldVisible: boolean = false;
 
   constructor(private signalrService: SignalrService, private utilities: Utilities,
               private router: Router) { }
@@ -40,17 +45,28 @@ export class HomeComponent implements OnInit {
     });
 
     this.signalrService.hubConnection?.on("Error", data => {
-      console.error(data);
+      alert(data);
     });
 
-    this.signalrService.hubConnection?.on("ReceiveFriendlyGameCode", data => {
-      console.log(data);
+    this.signalrService.hubConnection?.on("ReceiveFriendlyGameCode", code => {
+      this.receivedInvitationCode = code;
+    });
+    
+    this.signalrService.hubConnection?.on("EnableFriendlyGameStart", () => {
+      this.isStartGameButtonEnabled = true;
+    });
+    this.signalrService.hubConnection?.on("PlayerJoinedLobby", joinedUserName => {
+      this.messages.push(`${joinedUserName} се присиедини към лобито`);
     });
   }
 
   joinRoom() {
     this.signalrService.joinRoom();
     this.isSearchingForGame = true;
+  }
+
+  isReceivedInvitationCodeVisible() {
+    return this.receivedInvitationCode != "";
   }
 
   leaveQueue() {
@@ -75,7 +91,17 @@ export class HomeComponent implements OnInit {
   }
 
   joinFriendlyGame() {
-    console.log(this.invitationCode);
     this.signalrService.hubConnection?.invoke("JoinFriendlyGame", this.invitationCode);
+  }
+
+  startFriendlyGame() {
+    this.signalrService.hubConnection?.invoke("StartFriendlyGame", this.receivedInvitationCode);
+  }
+
+  showInvitationCodeField() {
+    if (this.invitationCode.length > 0) {
+      this.joinFriendlyGame();
+    }
+    this.invitationCodeFieldVisible = true;
   }
 }

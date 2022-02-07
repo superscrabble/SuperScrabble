@@ -54,6 +54,7 @@ builder.Services.AddScoped(typeof(IRepository<>), typeof(EFRepository<>));
 builder.Services.AddTransient<IShuffleService, ShuffleService>();
 builder.Services.AddTransient<IJsonWebTokenGenerator, JsonWebTokenGenerator>();
 builder.Services.AddTransient<IEncryptionKeyProvider, InMemoryEncryptionKeyProvider>();
+builder.Services.AddTransient<IInvitationCodeGenerator, InvitationCodeGenerator>();
 
 // Services.Data
 builder.Services.AddTransient<IUsersService, UsersService>();

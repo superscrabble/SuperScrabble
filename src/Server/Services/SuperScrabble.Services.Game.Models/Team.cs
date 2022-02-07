@@ -4,13 +4,11 @@
     {
         private readonly List<Player> players = new();
 
-        public Team(int maxPlayersCount)
+        public Team()
         {
-            this.MaxPlayersCount = maxPlayersCount;
             this.PlayerIndex = 0;
             this.IsTurnFinished = false;
         }
-        public int MaxPlayersCount { get; }
 
         public int PlayerIndex { get; private set; }
 

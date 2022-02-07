@@ -7,8 +7,11 @@
             public const string PlayersPerGameCountNotSupported = "PlayersPerGameCountNotSupported";
             public const string GameModeNotSupported = "GameModeNotSupported";
 
+            public const string PlayerAlreadyInsideLobby = "PlayerAlreadyInsideLobby";
             public const string UnexistingInvitationCode = "UnexistingInvitationCode";
+            public const string NotEnoughPlayersToStartFriendlyGame = "NotEnoughPlayersToStartFriendlyGame";
             public const string GameLobbyFull = "GameLobbyFull";
+            public const string UnauthorizedToStartGame = "UnauthorizedToStartGame";
         }
     }
 }
