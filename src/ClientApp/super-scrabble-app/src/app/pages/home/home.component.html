@@ -1,4 +1,7 @@
-<h3 class="m-4">Добре дошли в Супер Скрабъл</h3>
+<div class="d-flex flex-column justify-content-center align-items-center my-4 text-center">
+    <h1 class="m-4">Добре дошли в Супер Скрабъл</h1>
+    <h2 class="text-center">Избере вариант на играта, който да играете</h2>
+</div>
 <div *ngIf="hasAccessToken() && !currentGameGroupName">
     <button
         *ngIf="!isSearchingForGame"
@@ -14,12 +17,7 @@
         (click)="redirectToCurrentGame()"
         class="btn btn-secondary mx-4">Продължи игра</button>
 </div>
-<!--<div style="width: 100vw; height: 70vh;" class="d-flex justify-content-center">
-    <app-game-configuration-menu
-        style="width: 100%; height: 100%;"></app-game-configuration-menu>
-</div>-->
-
-<div class="card-columns wrapped">
+<div class="card-columns wrapped mb-4">
     <div *ngFor="let gameMode of gameModes; let cardIndex = index"
         class="flip-card game-mode-card col-md-3 col-lg-3 col-sm-5 col-10"
         (click)="flip('card' + cardIndex)"
