@@ -4,31 +4,17 @@
         <h1>Код: {{partyData.invitationCode}}</h1>
     </div>
     <div class="my-2">
-        <div class="d-flex flex-column align-items-center">
+        <div *ngFor="let matchProp of matchProps" class="d-flex flex-column align-items-center my-2">
             <div>
-                <h2>Вид таймер</h2>
+                <h2>{{matchProp.name}}</h2>
             </div>
-            <div class="option-values">
-                <input type="radio" class="btn-check" name="timer-type" id="standard-timer" autocomplete="off" checked>
-                <label class="btn btn-outline-secondary col-4" for="standard-timer">Стандартен</label>
-
-                <input type="radio" class="btn-check" name="timer-type" id="chess-timer" autocomplete="off">
-                <label class="btn btn-outline-secondary col-4" for="chess-timer">Шах</label>
-            </div>
-        </div>
-        <div class="d-flex flex-column align-items-center">
-            <div>
-                <h2>Време</h2>
-            </div>
-            <div class="option-values">
-                <input type="radio" class="btn-check" name="timer-difficulty" id="fast-time" autocomplete="off">
-                <label class="btn btn-outline-secondary" for="fast-time">1:00</label>
-
-                <input type="radio" class="btn-check" name="timer-difficulty" id="standard-time" autocomplete="off" checked>
-                <label class="btn btn-outline-secondary" for="standard-time">1:30</label>
-
-                <input type="radio" class="btn-check" name="timer-difficulty" id="slow-time" autocomplete="off">
-                <label class="btn btn-outline-secondary" for="slow-time">2:00</label>
+            <div class="option-values wrapped">
+                <div *ngFor="let option of matchProp.values" class="col-3">
+                    <input type="radio" (click)="selectMatchProp(matchProp.name, option.value)" class="btn-check"
+                            name="{{matchProp.name}}" id="{{matchProp.name}}{{option.value}}"
+                            autocomplete="off" [checked]="isMatchPropOptionSelected(matchProp.name, option.value)">
+                    <label style="width: 100%;" class="btn btn-outline-secondary" for="{{matchProp.name}}{{option.value}}">{{option.key}}</label>
+                </div>
             </div>
         </div>
         <div class="d-flex flex-column align-items-center">
@@ -57,7 +43,7 @@
     </div>
     <div class="col-12 d-flex flex-row justify-content-center my-2">
         <button class="col-4 btn btn-info" *ngIf="isOwner && !isPartyReady()">Намери случаен играч</button>
-        <button class="col-4 btn btn-success" *ngIf="isOwner && isPartyReady()">Започни игра</button>
+        <button class="col-4 btn btn-success" *ngIf="isOwner && isPartyReady()" (click)="startGame()">Започни игра</button>
         <button class="col-4 btn btn-danger align-self-end">Излез</button>
     </div>
 </div>
