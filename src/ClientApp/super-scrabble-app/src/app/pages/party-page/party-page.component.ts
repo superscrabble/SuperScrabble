@@ -68,6 +68,19 @@ export class PartyPageComponent implements OnInit {
             value: 3
           }
         ]
+      },
+      {
+        name: "BoardType",
+        values: [
+          {
+            key: "Standard",
+            value: 1
+          },
+          {
+            key: "Circle",
+            value: 2
+          }
+        ]
       }
     ]
   }
