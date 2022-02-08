@@ -40,6 +40,7 @@
 
 .game-mode-card {
     border: 2px;
+    cursor: pointer;
 }
 
 .game-modes {
