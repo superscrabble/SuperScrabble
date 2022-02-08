@@ -14,7 +14,32 @@
         (click)="redirectToCurrentGame()"
         class="btn btn-secondary mx-4">Продължи игра</button>
 </div>
-<div style="width: 100vw; height: 70vh;" class="d-flex justify-content-center">
+<!--<div style="width: 100vw; height: 70vh;" class="d-flex justify-content-center">
     <app-game-configuration-menu
         style="width: 100%; height: 100%;"></app-game-configuration-menu>
+</div>-->
+
+<div class="card-columns wrapped">
+    
+    <div *ngFor="let gameMode of gameModes; let cardIndex = index"
+        class="flip-card game-mode-card col-md-3 col-lg-3 col-sm-5 col-10"
+        (click)="flip('card' + cardIndex)"
+        id="card{{cardIndex}}">
+        <div class="flip-card-inner">
+            <div class="flip-card-front d-flex align-items-center justify-content-center">
+                {{gameMode.name}}
+            </div>
+            <div class="flip-card-back d-flex flex-column align-items-center justify-content-center">
+                <div class="mb-2">
+                    {{gameMode.description}}
+                </div>
+                <div *ngFor="let button of gameMode.buttons"
+                    class="mb-2">
+                    <button class="btn btn-danger" (click)="button.action()">
+                        {{button.text}}
+                    </button>
+                </div>
+            </div>
+          </div>
+    </div>
 </div>

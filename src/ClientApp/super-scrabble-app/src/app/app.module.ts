@@ -37,6 +37,7 @@ import { GameInviteFriendsDialogComponent } from './pages/game-configuration/dia
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { PlayerRackComponent } from './pages/common/player-rack/player-rack.component';
+import { JoinPartyWithCodeDialogComponent } from './pages/game-configuration/dialogs/join-party-with-code-dialog/join-party-with-code-dialog.component';
 
 @NgModule({
   declarations: [
@@ -63,7 +64,8 @@ import { PlayerRackComponent } from './pages/common/player-rack/player-rack.comp
     GameConfigurationComponent,
     GameOptionComponent,
     GameInviteFriendsDialogComponent,
-    PlayerRackComponent
+    PlayerRackComponent,
+    JoinPartyWithCodeDialogComponent
   ],
   imports: [
     CommonModule,

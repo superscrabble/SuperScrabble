@@ -1,0 +1,6 @@
+<h1 mat-dialog-title class="text">Въведи код</h1>
+<input class="form-control" [(ngModel)]="code" type="text"/>
+<div mat-dialog-actions class="d-flex justify-content-center">
+    <button mat-button (click)="joinParty()" class="btn btn-success mt-4">Влез</button>
+    <button mat-button [mat-dialog-close] class="btn btn-danger mt-4">Отказ</button>
+</div>
