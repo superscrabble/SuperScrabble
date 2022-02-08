@@ -7,10 +7,12 @@
 
     using SuperScrabble.Common.Exceptions.Matchmaking;
     using SuperScrabble.Services.Game;
-    using SuperScrabble.Services.Game.Common;
+    using SuperScrabble.Services.Game.Common.Enums;
     using SuperScrabble.Services.Game.Matchmaking;
     using SuperScrabble.Services.Game.Models;
+    using SuperScrabble.Services.Game.Models.Parties;
     using SuperScrabble.WebApi.ViewModels.Game;
+    using SuperScrabble.WebApi.ViewModels.Party;
 
     [Authorize]
     public class GameHub : Hub
@@ -23,6 +25,8 @@
             public const string ReceiveFriendlyGameCode = "ReceiveFriendlyGameCode";
             public const string PlayerJoinedLobby = "PlayerJoinedLobby";
             public const string EnableFriendlyGameStart = "EnableFriendlyGameStart";
+            public const string ReceivePartyData = "ReceivePartyData";
+            public const string PartyCreated = "PartyCreated";
         }
 
         private readonly IMatchmakingService matchmakingService;
@@ -39,30 +43,91 @@
         public string ConnectionId => this.Context.ConnectionId;
 
         [Authorize]
-        public async Task CreateFriendlyGame(FriendlyGameConfiguration gameConfig)
-        {
-            string invitationCode = this.matchmakingService
-                .CreateFriendlyGame(this.UserName!, this.ConnectionId, gameConfig);
-
-            await this.Clients.Caller.SendAsync(Messages.ReceiveFriendlyGameCode, invitationCode);
-        }
-
-        [Authorize]
-        public async Task JoinFriendlyGame(string invitationCode)
+        public async Task CreateParty(PartyType partyType)
         {
             try
             {
-                this.matchmakingService.JoinFriendlyGame(this.UserName!, this.ConnectionId, invitationCode);
-                var gameLobby = this.matchmakingService.GetFriendlyGameLobby(invitationCode);
+                string partyId = this.matchmakingService
+                    .CreateParty(this.UserName!, this.ConnectionId, partyType);
 
-                if (gameLobby.IsAbleToStartGame)
+                await this.Clients.Caller.SendAsync(Messages.PartyCreated, partyId);
+            }
+            catch (MatchmakingFailedException ex)
+            {
+                await this.Clients.Caller.SendAsync(Messages.Error, ex.ErrorCode);
+            }
+        }
+
+        [Authorize]
+        public async Task LoadParty(string partyId)
+        {
+            Party party = default!;
+
+            try
+            {
+                party = this.matchmakingService.GetPartyById(partyId);
+            }
+            catch (MatchmakingFailedException ex)
+            {
+                await this.Clients.Caller.SendAsync(Messages.Error, ex.ErrorCode);
+                return;
+            }
+
+            var viewModel = new FriendPartyViewModel
+            {
+                Owner = party.Owner!.UserName,
+                InvitationCode = party.InvitationCode,
+                IsOwner = party.Owner?.UserName == this.UserName,
+                Members = party.Members.Select(mem => mem.UserName),
+                PartyType = party is FriendParty ? PartyType.Friendly : PartyType.Duo,
+                ConfigSettings = new ConfigSetting[]
+                {
+                    new ConfigSetting()
+                    {
+                        Name = nameof(TimerType),
+                        Options =
+                            Enum.GetValues(typeof(TimerType)).Cast<TimerType>()
+                                .Select(value => new SettingOption
+                            {
+                                Name = value.ToString(),
+                                Value = (int)value,
+                            })
+                    },
+                    new ConfigSetting()
+                    {
+                        Name = nameof(TimerDifficulty),
+                        Options =
+                            Enum.GetValues(typeof(TimerDifficulty)).Cast<TimerDifficulty>()
+                                .Select(value => new SettingOption
+                            {
+                                Name = value.ToString(),
+                                Value = (int)value,
+                            })
+                    }
+                }
+            };
+
+            await this.Clients.Caller.SendAsync(Messages.ReceivePartyData, viewModel);
+        }
+
+        [Authorize]
+        public async Task JoinParty(string invitationCode)
+        {
+            try
+            {
+                this.matchmakingService.JoinParty(
+                    this.UserName!, this.ConnectionId, invitationCode, out bool hasEnoughPlayersToStartGame);
+
+                Party party = this.matchmakingService.GetPartyByInvitationCode(invitationCode);
+
+                if (hasEnoughPlayersToStartGame)
                 {
                     await this.Clients
-                        .Client(gameLobby.Owner.ConnectionId)
+                        .Client(party.Owner!.ConnectionId)
                         .SendAsync(Messages.EnableFriendlyGameStart);
                 }
 
-                var connectionIds = gameLobby.LobbyMembers
+                var connectionIds = party.Members
                         .Where(mem => mem.UserName != this.UserName).Select(mem => mem.ConnectionId);
 
                 await this.Clients.Clients(connectionIds).SendAsync(Messages.PlayerJoinedLobby, this.UserName);
@@ -72,13 +137,20 @@
                 await this.Clients.Caller.SendAsync(Messages.Error, ex.ErrorCode);
             }
         }
-
+        
         [Authorize]
-        public async Task StartFriendlyGame(string invitationCode)
+        public async Task StartGameFromParty(string partyId)
         {
             try
             {
-                this.matchmakingService.StartFriendlyGame(this.UserName!, invitationCode);
+                this.matchmakingService.StartGameFromParty(this.UserName!, partyId, out bool hasGameStarted);
+
+                if (!hasGameStarted)
+                {
+                    // Duo game -> redirect to loading screen
+                    return;
+                }
+
                 var gameState = this.matchmakingService.GetGameState(this.UserName!);
 
                 foreach (Player player in gameState.Teams.SelectMany(team => team.Players))
@@ -91,6 +163,30 @@
                     .SendAsync(Messages.StartGame, gameState.GroupName);
 
                 await this.UpdateGameStateAsync(gameState);
+            }
+            catch (MatchmakingFailedException ex)
+            {
+                await this.Clients.Caller.SendAsync(Messages.Error, ex.ErrorCode);
+            }
+        }
+
+        [Authorize]
+        public async Task SetFriendPartyConfiguration(FriendPartyConfig config, string partyId)
+        {
+            try
+            {
+                Party party = this.matchmakingService.GetPartyById(partyId);
+
+                if (party.Owner?.UserName != this.UserName)
+                {
+                    throw new OnlyOwnerHasAccessException();
+                }
+
+                if (party is FriendParty friendParty)
+                {
+                    friendParty.TimerType = config.TimerType;
+                    friendParty.TimerDifficulty = config.TimerDifficulty;
+                }
             }
             catch (MatchmakingFailedException ex)
             {

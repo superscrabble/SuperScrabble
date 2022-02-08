@@ -1,29 +1,23 @@
 ﻿namespace SuperScrabble.Services.Game.Matchmaking
 {
-    using SuperScrabble.Services.Game.Common;
     using SuperScrabble.Services.Game.Models;
+    using SuperScrabble.Services.Game.Common.Enums;
+    using SuperScrabble.Services.Game.Models.Parties;
 
     public interface IMatchmakingService
     {
-        string CreateFriendlyGame(string creatorUserName,
-            string creatorConnectionId, FriendlyGameConfiguration gameConfig);
+        string CreateParty(string creatorUserName, string creatorConnectionId, PartyType partyType);
 
-        void JoinFriendlyGame(string joinerUserName, string joinerConnectionId, string invitationCode);
+        void JoinParty(
+            string joinerUserName, string joinerConnectionId,
+            string invitationCode, out bool hasEnoughPlayersToStartGame);
 
-        void StartFriendlyGame(string starterUserName, string invitationCode);
-
-        FriendlyGameLobby GetFriendlyGameLobby(string invitationCode);
+        void StartGameFromParty(string starterUserName, string partyId, out bool hasGameStarted);
 
         GameState GetGameState(string userName);
 
-        void AddTeamToWaitingQueue(
-            GameRoomConfiguration roomConfiguration, Team teamToAdd, out bool hasGameStarted);
+        Party GetPartyById(string partyId);
 
-        void AddPlayerToLobby(
-            GameRoomConfiguration roomConfiguration, Player player, out bool isLobbyReady);
-
-        bool IsUserAlreadyWaitingToJoinGame(string userName);
-
-        bool IsUserAlreadyInsideGame(string userName);
+        Party GetPartyByInvitationCode(string invitationCode);
     }
 }

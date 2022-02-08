@@ -38,6 +38,36 @@
             return new GameState(bag, board, groupName, teams, gameplayConstantsProvider);
         }
 
+        public GameState CreateGameState(GameMode gameMode, IEnumerable<WaitingTeam> waitingTeams, string groupName)
+        {
+            GameRoomConfiguration config = default!;
+
+            if (gameMode == GameMode.Duo)
+            {
+                config = new GameRoomConfiguration
+                {
+                    TeamsCount = 2,
+                    TeamType = TeamType.Duo,
+                    TimerDifficulty = TimerDifficulty.Normal,
+                    TimerType = TimerType.Standard,
+                };
+            }
+
+            var teams = waitingTeams.Select(wt =>
+            {
+                var team = new Team();
+
+                foreach (Member member in wt.Members)
+                {
+                    team.AddPlayer(member.UserName, member.ConnectionId);
+                }
+
+                return team;
+            });
+
+            return this.CreateGameState(config, teams, groupName);
+        }
+
         private IBoard CreateBoard(BoardType boardType, IBonusCellsProvider bonusCellsProvider)
         {
             return boardType switch

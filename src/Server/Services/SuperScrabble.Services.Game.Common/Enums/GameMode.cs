@@ -11,5 +11,19 @@
         Friends = 7,
         Random = 8,
         Custom = 9,
+        Duo = 10,
+    }
+
+    public static class GameModeExtensions
+    {
+        public static int GetTeamsCount(this GameMode gameMode)
+        {
+            if (gameMode == GameMode.Duo)
+            {
+                return 2;
+            }
+
+            return 2;
+        }
     }
 }

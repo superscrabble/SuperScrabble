@@ -1,0 +1,70 @@
+﻿namespace SuperScrabble.Services.Game.Models.Parties
+{
+    using SuperScrabble.Common.Exceptions.Matchmaking;
+
+    public abstract class Party
+    {
+        private readonly LinkedList<Member> members = new();
+
+        public Party(
+            Member owner,
+            string invitationCode,
+            int minPlayersToStartGameCount,
+            int maxAllowedPlayersCount)
+        {
+            this.AddMember(owner);
+            this.InvitationCode = invitationCode;
+            this.MinPlayersToStartGameCount = minPlayersToStartGameCount;
+            this.MaxAllowedPlayersCount = maxAllowedPlayersCount;
+        }
+
+        public Member? Owner => this.members.FirstOrDefault();
+
+        public string InvitationCode { get; }
+
+        public int MinPlayersToStartGameCount { get; }
+
+        public int MaxAllowedPlayersCount { get; }
+
+        public IReadOnlyCollection<Member> Members => this.members.ToList().AsReadOnly();
+
+        public bool IsEmpty => this.members.Count <= 0;
+
+        public bool IsFull => this.members.Count >= this.MaxAllowedPlayersCount;
+
+        public bool HasEnoughPlayersToStartGame => this.members.Count >= this.MinPlayersToStartGameCount;
+
+        public bool IsMemberInside(string userName)
+        {
+            return this.members.Any(mem => mem.UserName == userName);
+        }
+
+        public void AddMember(Member member)
+        {
+            if (this.IsFull)
+            {
+                throw new GameLobbyFullException();
+            }
+
+            if (this.IsMemberInside(member.UserName))
+            {
+                throw new PlayerAlreadyInsidePartyException();
+            }
+
+            this.members.AddLast(member);
+        }
+
+        public bool RemoveMember(string memberUserName)
+        {
+            Member? memberToRemove = this.members.FirstOrDefault(mem => mem.UserName == memberUserName);
+
+            if (memberToRemove == null)
+            {
+                return false;
+            }
+
+            this.members.Remove(memberToRemove);
+            return true;
+        }
+    }
+}
