@@ -4,6 +4,7 @@ import { GameSummaryComponent } from './pages/game-summary/game-summary.componen
 import { GameComponent } from './pages/game/game.component';
 import { HomeComponent } from './pages/home/home.component';
 import { LoginFormComponent } from './pages/login-form/login-form.component';
+import { PartyPageComponent } from './pages/party-page/party-page.component';
 import { RegisterFormComponent } from './pages/register-form/register-form.component';
 
 const routes: Routes = [
@@ -13,6 +14,7 @@ const routes: Routes = [
   { path: 'login', component: LoginFormComponent, pathMatch: 'full' },
   { path: 'games/:id', component: GameComponent, pathMatch: 'full' },
   { path: 'games/:id/summary', component: GameSummaryComponent, pathMatch: 'full'},
+  { path: 'party/:id', component: PartyPageComponent, pathMatch: 'full' },
 ];
 
 @NgModule({

@@ -115,4 +115,8 @@ export class SignalrService {
   public leaveGame() {
     this.hubConnection?.invoke("LeaveGame");
   }
+
+  public loadParty(id: string) {
+    this.hubConnection?.invoke("LoadParty", id);
+  }
 }

@@ -1,0 +1,25 @@
+.member-card {
+    background-color: grey;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.member-cards {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+    column-gap: 1rem;
+    row-gap: 1rem;
+    justify-content: center;
+}
+
+.option-values {
+    width: 100vw;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    column-gap: 1rem;
+}

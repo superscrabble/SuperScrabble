@@ -1,0 +1,63 @@
+<div class="d-flex flex-column justify-content-center align-items-center">
+    <h1>Приятелска игра</h1>
+    <div class="my-2 alert alert-danger">
+        <h1>Код: {{partyData.invitationCode}}</h1>
+    </div>
+    <div class="my-2">
+        <div class="d-flex flex-column align-items-center">
+            <div>
+                <h2>Вид таймер</h2>
+            </div>
+            <div class="option-values">
+                <input type="radio" class="btn-check" name="timer-type" id="standard-timer" autocomplete="off" checked>
+                <label class="btn btn-outline-secondary col-4" for="standard-timer">Стандартен</label>
+
+                <input type="radio" class="btn-check" name="timer-type" id="chess-timer" autocomplete="off">
+                <label class="btn btn-outline-secondary col-4" for="chess-timer">Шах</label>
+            </div>
+        </div>
+        <div class="d-flex flex-column align-items-center">
+            <div>
+                <h2>Време</h2>
+            </div>
+            <div class="option-values">
+                <input type="radio" class="btn-check" name="timer-difficulty" id="fast-time" autocomplete="off">
+                <label class="btn btn-outline-secondary" for="fast-time">1:00</label>
+
+                <input type="radio" class="btn-check" name="timer-difficulty" id="standard-time" autocomplete="off" checked>
+                <label class="btn btn-outline-secondary" for="standard-time">1:30</label>
+
+                <input type="radio" class="btn-check" name="timer-difficulty" id="slow-time" autocomplete="off">
+                <label class="btn btn-outline-secondary" for="slow-time">2:00</label>
+            </div>
+        </div>
+        <div class="d-flex flex-column align-items-center">
+            <div>
+                <h2>Дъска</h2>
+            </div>
+            <div class="option-values">
+                <input type="radio" class="btn-check" name="board-type" id="standard-board" autocomplete="off" checked>
+                <label class="btn btn-outline-secondary col-4" for="standard-board">Стандартна</label>
+
+                <input type="radio" class="btn-check" name="board-type" id="circle-board" autocomplete="off">
+                <label class="btn btn-outline-secondary col-4" for="circle-board">Кръгла</label>
+            </div>
+        </div>
+    </div>
+    <div>
+        <h1>Играчи</h1>
+    </div>
+    <div class="member-cards my-2">
+        <div *ngFor="let member of partyData.members"
+            class="member-card col-5 d-flex flex-row">
+            <span *ngIf="isPartyOwner(member)" class="material-icons p-1">star</span>
+            <h2>{{member}}</h2>
+            <span *ngIf="isPartyOwner(member)" class="material-icons p-1">star</span>
+        </div>
+    </div>
+    <div class="col-12 d-flex flex-row justify-content-center my-2">
+        <button class="col-4 btn btn-info" *ngIf="isOwner && !isPartyReady()">Намери случаен играч</button>
+        <button class="col-4 btn btn-success" *ngIf="isOwner && isPartyReady()">Започни игра</button>
+        <button class="col-4 btn btn-danger align-self-end">Излез</button>
+    </div>
+</div>
