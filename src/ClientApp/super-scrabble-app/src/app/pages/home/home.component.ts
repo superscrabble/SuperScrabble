@@ -48,6 +48,12 @@ export class HomeComponent implements OnInit {
           description: "Играй в отбор с твой приятел или случаен играч срещу друг отбор!",
           buttons: [
             {
+              text: "Играй със случаен играч",
+              action: () => {
+                
+              }
+            },
+            {
               text: "Влез с код",
               action: () => {
                 this.dialog.open(JoinPartyWithCodeDialogComponent);
