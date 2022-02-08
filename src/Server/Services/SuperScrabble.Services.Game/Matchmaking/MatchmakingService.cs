@@ -6,14 +6,16 @@
     using SuperScrabble.Services.Game.Common.Enums;
     using SuperScrabble.Services.Game.Factories;
     using SuperScrabble.Services.Game.Models;
+    using System.Collections.Concurrent;
 
     public class MatchmakingService : IMatchmakingService
     {
-        private static readonly Dictionary<
+        private static readonly ConcurrentDictionary<
             string, FriendlyGameLobby> friendlyGameLobbiesByInvitationCodes = new();
 
-        private static readonly Dictionary<string, string> groupNamesByUserNames = new();
-        private static readonly Dictionary<string, GameState> gameStatesByGroupNames = new();
+        private static readonly ConcurrentDictionary<string, string> groupNamesByUserNames = new();
+
+        private static readonly ConcurrentDictionary<string, GameState> gameStatesByGroupNames = new();
 
         private static readonly Dictionary<
             GameRoomConfiguration, List<Team>> waitingTeamsByRoomConfigs = new();
@@ -29,6 +31,8 @@
             this.invitationCodeGenerator = invitationCodeGenerator;
         }
 
+        //check if user is already in lobby or is inside game
+
         public string CreateFriendlyGame(string creatorUserName,
             string creatorConnectionId, FriendlyGameConfiguration gameConfig)
         {
@@ -41,7 +45,7 @@
                     var gameLobby = new FriendlyGameLobby(
                         new Player(creatorUserName, creatorConnectionId), gameConfig);
 
-                    friendlyGameLobbiesByInvitationCodes.Add(invitationCode, gameLobby);
+                    friendlyGameLobbiesByInvitationCodes.TryAdd(invitationCode, gameLobby);
                     return invitationCode;
                 }
             }
@@ -105,15 +109,15 @@
                 teams,
                 groupName);
 
-            gameStatesByGroupNames.Add(groupName, gameState);
-
-            friendlyGameLobbiesByInvitationCodes.Remove(invitationCode);
+            gameStatesByGroupNames.TryAdd(groupName, gameState);
+            
+            friendlyGameLobbiesByInvitationCodes.TryRemove(new(invitationCode, gameLobby));
 
             foreach (Team team in gameState.Teams)
             {
                 foreach (Player player in team.Players)
                 {
-                    groupNamesByUserNames.Add(player.UserName, groupName);
+                    groupNamesByUserNames.TryAdd(player.UserName, groupName);
                 }
             }
         }
@@ -166,13 +170,13 @@
                 roomConfiguration, teams, groupName);
 
             waitingTeamsByRoomConfigs.Remove(roomConfiguration);
-            gameStatesByGroupNames.Add(groupName, gameState);
+            gameStatesByGroupNames.TryAdd(groupName, gameState);
 
             foreach (Team team in gameState.Teams)
             {
                 foreach (Player player in team.Players)
                 {
-                    groupNamesByUserNames.Add(player.UserName, groupName);
+                    groupNamesByUserNames.TryAdd(player.UserName, groupName);
                 }
             }
 
