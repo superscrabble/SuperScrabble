@@ -28,6 +28,8 @@ export class HomeComponent implements OnInit {
   currentGameGroupName: string | null = null;
   gameModes: GameMode[] = [];
 
+  invitationCode: string = "";
+
   constructor(private signalrService: SignalrService, private utilities: Utilities,
               private router: Router, private dialog: MatDialog) {
       this.gameModes = [
@@ -122,6 +124,14 @@ export class HomeComponent implements OnInit {
   attachListeners() : void {
     this.signalrService.hubConnection?.on("UserAlreadyInsideGame", data => {
       this.currentGameGroupName = data;
+    });
+
+    this.signalrService.hubConnection?.on("Error", data => {
+      console.error(data);
+    });
+
+    this.signalrService.hubConnection?.on("ReceiveFriendlyGameCode", data => {
+      console.log(data);
     });
   }
 

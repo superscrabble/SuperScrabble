@@ -5,6 +5,7 @@
 
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.SignalR;
+    using SuperScrabble.Common.Exceptions.Matchmaking;
     using SuperScrabble.Services.Game;
     using SuperScrabble.Services.Game.Common;
     using SuperScrabble.Services.Game.Common.Enums;
@@ -41,7 +42,49 @@
         public string ConnectionId => this.Context.ConnectionId;
 
         [Authorize]
-        public async Task JoinRoom(GameRoomConfiguration input)
+        public async Task JoinFriendlyGame(string invitationCode)
+        {
+            try
+            {
+                this.matchmakingService.JoinFriendlyGame(
+                    this.UserName!, this.ConnectionId, invitationCode, out bool canGameBeStarted);
+
+                if (!canGameBeStarted)
+                {
+                    return;
+                }
+
+                Console.WriteLine("YES");
+
+                GameState? gameState = this.matchmakingService.GetGameState(this.UserName!)
+                    ?? throw new ArgumentException(
+                        $"No game state for the given {nameof(this.UserName)} was found.");
+
+                foreach (Player player in gameState.Teams.SelectMany(team => team.Players))
+                {
+                    this.gameService.FillPlayerTiles(gameState, player);
+                    await this.Groups.AddToGroupAsync(player.ConnectionId, gameState.GroupName);
+                }
+
+                await this.Clients.Group(gameState.GroupName)
+                    .SendAsync(Messages.StartGame, gameState.GroupName);
+
+                await this.UpdateGameStateAsync(gameState);
+            }
+            catch (MatchmakingFailedException ex)
+            {
+                await this.Clients.Caller.SendAsync("Error", ex.ErrorCode);
+            }
+        }
+
+        [Authorize]
+        public async Task CreateFriendlyGame(CreateFriendlyGameInputModel input)
+        {
+            string code = this.matchmakingService.CreateFriendlyGame(this.UserName!, this.ConnectionId, input);
+            await this.Clients.Caller.SendAsync("ReceiveFriendlyGameCode", code);
+        }
+
+        private async Task JoinRoomAsync(GameRoomConfiguration input)
         {
             if (this.matchmakingService.IsUserAlreadyWaitingToJoinGame(this.UserName!))
             {
