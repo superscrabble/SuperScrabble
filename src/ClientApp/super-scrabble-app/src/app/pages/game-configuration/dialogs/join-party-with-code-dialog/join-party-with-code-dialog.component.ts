@@ -1,5 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
+import { Router } from '@angular/router';
+import { HubConnectionState } from '@microsoft/signalr';
+import { MatchmakingService } from 'src/app/services/matchmaking.service';
+import { SignalrService } from 'src/app/services/signalr.service';
 
 @Component({
   selector: 'app-join-party-with-code-dialog',
@@ -10,12 +14,36 @@ export class JoinPartyWithCodeDialogComponent implements OnInit {
 
   code: string = "";
 
-  constructor(public dialogRef: MatDialogRef<JoinPartyWithCodeDialogComponent>) { }
+  constructor(public dialogRef: MatDialogRef<JoinPartyWithCodeDialogComponent>,
+              private matchmakingService: MatchmakingService,
+              private signalrService: SignalrService,
+              private router: Router) { }
 
   ngOnInit(): void {
+    console.log("ConnectING")
+    this.signalrService.startConnection();
+
+    if(this.signalrService.hubConnection
+      && this.signalrService.hubConnection.state == HubConnectionState.Connected) {
+        this.attachListeners();
+    } else {
+        //TODO: Handle slow connection/loading -> showing loading screen
+        this.signalrService.hubConnectionStartPromise?.then( () => {
+          this.attachListeners();
+        })
+    }
+  }
+
+  attachListeners() : void {
+    this.signalrService.hubConnection?.on("PartyJoined", data => {
+      console.log("Party Joined")
+      this.router.navigate(["party/" + data]);
+    });
   }
 
   joinParty() {
-
+    this.matchmakingService.joinParty(this.code);
+    console.log("Join Party");
+    this.dialogRef.close();
   }
 }

@@ -211,4 +211,12 @@ export class MatchmakingService {
   createParty(type: PartyType) {
     this.signalrService.createParty(type);
   }
+
+  joinParty(code: string) {
+    this.signalrService.joinParty(code);
+  }
+
+  StartGameFromParty(partyId: string) {
+    this.signalrService.StartGameFromParty(partyId);
+  }
 }

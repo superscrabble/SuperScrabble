@@ -146,6 +146,11 @@ export class HomeComponent implements OnInit {
       this.router.navigate(["party/" + data]);
     });
 
+    this.signalrService.hubConnection?.on("PlayerJoined", data => {
+      console.log("Party Joined")
+      this.router.navigate(["party/" + data]);
+    });
+
     this.signalrService.hubConnection?.on("ReceiveFriendlyGameCode", code => {
       this.receivedInvitationCode = code;
     });
