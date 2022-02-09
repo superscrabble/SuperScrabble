@@ -5,6 +5,8 @@ import { HubConnectionState } from '@microsoft/signalr';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { JoinPartyWithCodeDialogComponent } from '../game-configuration/dialogs/join-party-with-code-dialog/join-party-with-code-dialog.component';
+import { MatchmakingService } from 'src/app/services/matchmaking.service';
+import { PartyType } from 'src/app/common/enums/party-type';
 
 class GameModeButton {
   text: string = "";
@@ -36,7 +38,7 @@ export class HomeComponent implements OnInit {
   invitationCodeFieldVisible: boolean = false;
 
   constructor(private signalrService: SignalrService, private utilities: Utilities,
-              private router: Router, private dialog: MatDialog) {
+              private router: Router, private dialog: MatDialog, private matchmakingService: MatchmakingService) {
       this.gameModes = [
         {
           name: "Дуел",
@@ -68,7 +70,9 @@ export class HomeComponent implements OnInit {
             },
             {
               text: "Създай отбор",
-              action: () => {}
+              action: () => {
+                this.matchmakingService.createParty(PartyType.Duo);
+              }
             }
           ]
         },
@@ -84,7 +88,9 @@ export class HomeComponent implements OnInit {
             },
             {
               text: "Създай игра",
-              action: () => {}
+              action: () => {
+                this.matchmakingService.createParty(PartyType.Friendly);
+              }
             }
           ]
         },
@@ -135,6 +141,11 @@ export class HomeComponent implements OnInit {
       alert(data);
     });
 
+    this.signalrService.hubConnection?.on("PartyCreated", data => {
+      console.log("Party Created")
+      this.router.navigate(["party/" + data]);
+    });
+
     this.signalrService.hubConnection?.on("ReceiveFriendlyGameCode", code => {
       this.receivedInvitationCode = code;
     });
@@ -142,9 +153,12 @@ export class HomeComponent implements OnInit {
     this.signalrService.hubConnection?.on("EnableFriendlyGameStart", () => {
       this.isStartGameButtonEnabled = true;
     });
+
     this.signalrService.hubConnection?.on("PlayerJoinedLobby", joinedUserName => {
       this.messages.push(`${joinedUserName} се присиедини към лобито`);
     });
+
+
   }
 
   joinRoom() {

@@ -12,10 +12,10 @@
             int minPlayersToStartGameCount,
             int maxAllowedPlayersCount)
         {
-            this.AddMember(owner);
             this.InvitationCode = invitationCode;
             this.MinPlayersToStartGameCount = minPlayersToStartGameCount;
             this.MaxAllowedPlayersCount = maxAllowedPlayersCount;
+            this.AddMember(owner);
         }
 
         public Member? Owner => this.members.FirstOrDefault();

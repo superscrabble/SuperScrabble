@@ -2,21 +2,6 @@
     <h1 class="m-4">Добре дошли в Супер Скрабъл</h1>
     <h2 class="text-center">Изберете вариант на играта</h2>
 </div>
-<div *ngIf="hasAccessToken() && !currentGameGroupName">
-    <button
-        *ngIf="!isSearchingForGame"
-        (click)="joinRoom()"
-        class="btn btn-secondary mx-4">Започни игра</button>
-    <button
-        *ngIf="isSearchingForGame"
-        (click)="leaveQueue()"
-        class="btn btn-secondary mx-4">Отказ</button>
-</div>
-<div *ngIf="currentGameGroupName">
-    <button 
-        (click)="redirectToCurrentGame()"
-        class="btn btn-secondary mx-4">Продължи игра</button>
-</div>
 <div class="card-columns wrapped mb-4">
     <div *ngFor="let gameMode of gameModes; let cardIndex = index"
         class="flip-card game-mode-card col-md-3 col-lg-3 col-sm-5 col-10"

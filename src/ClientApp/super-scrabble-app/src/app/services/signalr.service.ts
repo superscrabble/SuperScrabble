@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import * as signalR from "@microsoft/signalr";
 import { Utilities } from 'src/app/common/utilities';
+import { PartyType } from '../common/enums/party-type';
 import { MatchProps } from '../models/game-configuaration/match-props';
 import { Tile } from '../models/tile';
 
@@ -118,5 +119,9 @@ export class SignalrService {
 
   public loadParty(id: string) {
     this.hubConnection?.invoke("LoadParty", id);
+  }
+
+  public createParty(type: PartyType) {
+    this.hubConnection?.invoke("CreateParty", type);
   }
 }

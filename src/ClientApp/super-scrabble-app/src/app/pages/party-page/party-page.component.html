@@ -1,19 +1,19 @@
 <div class="d-flex flex-column justify-content-center align-items-center">
-    <h1>Приятелска игра</h1>
+    <h1>{{partyTypeString}}</h1>
     <div class="my-2 alert alert-danger">
         <h1>Код: {{partyData.invitationCode}}</h1>
     </div>
     <div class="my-2">
-        <div *ngFor="let matchProp of matchProps" class="d-flex flex-column d-lg-flex flex-lg-row align-items-center my-2">
+        <div *ngFor="let configSetting of partyData.configSettings" class="d-flex flex-column d-lg-flex flex-lg-row align-items-center my-2">
             <div class="col-lg-3">
-                <h2>{{matchProp.name}}</h2>
+                <h2>{{configSetting.name}}</h2>
             </div>
             <div class="option-values wrapped">
-                <div *ngFor="let option of matchProp.values" class="col-3 col-lg-2">
-                    <input type="radio" (click)="selectMatchProp(matchProp.name, option.value)" class="btn-check"
-                            name="{{matchProp.name}}" id="{{matchProp.name}}{{option.value}}"
-                            autocomplete="off" [checked]="isMatchPropOptionSelected(matchProp.name, option.value)">
-                    <label style="width: 100%;" class="btn btn-outline-secondary" for="{{matchProp.name}}{{option.value}}">{{option.key}}</label>
+                <div *ngFor="let option of configSetting.options" class="col-3 col-lg-2">
+                    <input type="radio" (click)="selectMatchProp(configSetting.name, option.value)" class="btn-check"
+                            name="{{configSetting.name}}" id="{{configSetting.name}}{{option.value}}"
+                            autocomplete="off" [checked]="isMatchPropOptionSelected(configSetting.name, option.value)">
+                    <label style="width: 100%;" class="btn btn-outline-secondary" for="{{configSetting.name}}{{option.value}}">{{option.name}}</label>
                 </div>
             </div>
         </div>
@@ -30,7 +30,7 @@
         </div>
     </div>
     <div class="col-12 d-flex flex-row justify-content-center my-2">
-        <button class="col-4 col-md-2 btn btn-success" *ngIf="isOwner && isPartyReady()" (click)="startGame()">Започни игра</button>
+        <button class="col-4 col-md-2 btn btn-success" *ngIf="partyData.isOwner && isPartyReady" (click)="startGame()">Започни игра</button>
         <button class="col-4 col-md-2 btn btn-danger align-self-end">Излез</button>
     </div>
 </div>

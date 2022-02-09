@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { TeamType } from '../common/enums/game-type';
 import { PartnerType } from '../common/enums/partner-type';
+import { PartyType } from '../common/enums/party-type';
 import { TimerDifficulty } from '../common/enums/timer-difficulty';
 import { TimerType } from '../common/enums/timer-type';
 import { ConfigsPath } from '../models/game-configuaration/configs-path';
@@ -205,5 +206,9 @@ export class MatchmakingService {
 
   joinRoom(): void {
     this.signalrService.joinRoomWithProps(this.matchProps);
+  }
+
+  createParty(type: PartyType) {
+    this.signalrService.createParty(type);
   }
 }

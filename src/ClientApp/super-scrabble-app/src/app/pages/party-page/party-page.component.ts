@@ -1,20 +1,24 @@
 import { Component, OnInit } from '@angular/core';
+import { HubConnectionState } from '@microsoft/signalr';
+import { PartyType } from 'src/app/common/enums/party-type';
 import { TimerType } from 'src/app/common/enums/timer-type';
 import { GameConfig } from 'src/app/models/game-configuaration/game-config';
 import { SignalrService } from 'src/app/services/signalr.service';
 
 class PartyData {
   invitationCode: string = "";
-  gameModeName: string = "";
+  partyType: PartyType = PartyType.Duo;
   gameConfig?: GameConfig;
   owner: string = "";
   members: string[] = [];
+  isOwner: boolean = false;
+  configSettings: ConfigSetting[] = [];
 }
 
-class MatchProp {
+class ConfigSetting {
   name: string = "";
-  values: {
-    key: string;
+  options: {
+    name: string;
     value: number;
   }[] = []
 }
@@ -27,18 +31,18 @@ class MatchProp {
 export class PartyPageComponent implements OnInit {
   
   partyData: PartyData = new PartyData();
-  isOwner: boolean = false;
-  matchProps: MatchProp[] = [];
+  isPartyReady: boolean = false;
+  //matchProps: ConfigSetting[] = [];
   selectedMatchProps: Map<string, number> = new Map();
+  partyTypeString: string = "";
 
   constructor(private signalrService: SignalrService) {
     this.partyData.invitationCode = "DSDS121"
     this.partyData.members = ["Denis", "Gosho", "Misho", "Pesho"]
     //this.partyData.members = ["Denis"]
     this.partyData.owner = "Denis";
-    this.isOwner = true;
 
-    this.matchProps = [
+    /*this.matchProps = [
       {
         name: "TimerType",
         values: [
@@ -82,7 +86,7 @@ export class PartyPageComponent implements OnInit {
           }
         ]
       }
-    ]
+    ]*/
   }
 
   ngOnInit(): void {
@@ -92,10 +96,41 @@ export class PartyPageComponent implements OnInit {
     const params = url.split("/");
     let id = params[params.length - 1];
 
-    this.signalrService.loadParty(id);
 
+    if(this.signalrService.hubConnection
+      && this.signalrService.hubConnection.state == HubConnectionState.Connected) {
+        this.signalrService.loadParty(id);
+        this.attachListeners();
+    } else {
+        //TODO: Handle slow connection/loading -> showing loading screen
+        this.signalrService.hubConnectionStartPromise?.then( () => {
+          this.signalrService.loadParty(id);
+          this.attachListeners();
+        })
+    }
+  }
+
+  attachListeners() : void {
     this.signalrService.hubConnection?.on("ReceivePartyData", data => {
+      console.log("Receive Party DatA")
+      console.log(data);
+      this.parsePartyData(data);
     })
+
+    this.signalrService.hubConnection?.on("EnableFriendlyGameStart", () => {
+      this.isPartyReady = true;
+    })
+  }
+
+  parsePartyData(rawServerData: any) {
+    this.partyData.invitationCode = rawServerData.invitationCode;
+    this.partyData.isOwner = rawServerData.isOwner;
+    this.partyData.owner = rawServerData.owner;
+    this.partyData.members = rawServerData.members;
+    this.partyData.partyType = rawServerData.partyType;
+    this.partyData.configSettings = rawServerData.configSettings;
+
+    this.partyTypeString = PartyType[this.partyData.partyType];
   }
 
   selectMatchProp(key: string, value: number) {
@@ -104,13 +139,6 @@ export class PartyPageComponent implements OnInit {
 
   isPartyOwner(member: string) {
     return this.partyData.owner == member;
-  }
-
-  isPartyReady() : boolean {
-    if(this.partyData.members.length >= 2) {
-      return true;
-    }
-    return false;
   }
 
   startGame() {
