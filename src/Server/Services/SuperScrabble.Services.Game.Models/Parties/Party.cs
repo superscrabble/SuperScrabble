@@ -8,10 +8,12 @@
 
         public Party(
             Member owner,
+            string id,
             string invitationCode,
             int minPlayersToStartGameCount,
             int maxAllowedPlayersCount)
         {
+            this.Id = id;
             this.InvitationCode = invitationCode;
             this.MinPlayersToStartGameCount = minPlayersToStartGameCount;
             this.MaxAllowedPlayersCount = maxAllowedPlayersCount;
@@ -19,6 +21,8 @@
         }
 
         public Member? Owner => this.members.FirstOrDefault();
+
+        public string Id { get; }
 
         public string InvitationCode { get; }
 

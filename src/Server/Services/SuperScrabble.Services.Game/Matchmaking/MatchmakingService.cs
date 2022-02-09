@@ -1,14 +1,16 @@
 ﻿namespace SuperScrabble.Services.Game.Matchmaking
 {
+    using System.Collections.Concurrent;
+
     using SuperScrabble.Common.Exceptions.Matchmaking;
     using SuperScrabble.Common.Exceptions.Matchmaking.Party;
+
     using SuperScrabble.Services.Common;
     using SuperScrabble.Services.Game.Common;
     using SuperScrabble.Services.Game.Common.Enums;
     using SuperScrabble.Services.Game.Factories;
     using SuperScrabble.Services.Game.Models;
     using SuperScrabble.Services.Game.Models.Parties;
-    using System.Collections.Concurrent;
 
     public class MatchmakingService : IMatchmakingService
     {
@@ -52,11 +54,11 @@
 
                     if (partyType == PartyType.Friendly)
                     {
-                        party = new FriendParty(owner, invitationCode);
+                        party = new FriendParty(owner, partyId, invitationCode);
                     }
                     else if (partyType == PartyType.Duo)
                     {
-                        party = new DuoParty(owner, invitationCode);
+                        party = new DuoParty(owner, partyId, invitationCode);
                     }
 
                     partyIdsByInvitationCodes.TryAdd(invitationCode, partyId);
@@ -68,15 +70,14 @@
         }
 
         public void JoinParty(
-            string joinerUserName, string joinerConnectionId, string invitationCode, out bool hasEnoughPlayersToStartGame)
+            string joinerUserName, string joinerConnectionId,
+            string invitationCode, out bool hasEnoughPlayersToStartGame)
         {
             ThrowIfInvitationCodeIsNotExisting(invitationCode);
             Party party = this.GetPartyByInvitationCode(invitationCode);
             party.AddMember(new Member(joinerUserName, joinerConnectionId));
             hasEnoughPlayersToStartGame = party.HasEnoughPlayersToStartGame;
         }
-
-        // inside party/waiting queue/game
 
         public void StartGameFromParty(string starterUserName, string partyId, out bool hasGameStarted)
         {

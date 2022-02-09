@@ -6,11 +6,13 @@
     using Microsoft.AspNetCore.SignalR;
 
     using SuperScrabble.Common.Exceptions.Matchmaking;
+
     using SuperScrabble.Services.Game;
     using SuperScrabble.Services.Game.Common.Enums;
     using SuperScrabble.Services.Game.Matchmaking;
     using SuperScrabble.Services.Game.Models;
     using SuperScrabble.Services.Game.Models.Parties;
+
     using SuperScrabble.WebApi.ViewModels.Game;
     using SuperScrabble.WebApi.ViewModels.Party;
 
@@ -19,14 +21,19 @@
     {
         private static class Messages
         {
-            public const string Error = "Error";
+            //Party
+            public const string PartyJoined = "PartyJoined";
+            public const string PartyCreated = "PartyCreated";
+            public const string NewPlayerJoinedParty = "NewPlayerJoinedParty";
+            public const string ReceivePartyData = "ReceivePartyData";
+            public const string EnablePartyStart = "EnablePartyStart";
+
+            //Game
             public const string StartGame = "StartGame";
             public const string UpdateGameState = "UpdateGameState";
-            public const string ReceiveFriendlyGameCode = "ReceiveFriendlyGameCode";
-            public const string PlayerJoinedLobby = "PlayerJoinedLobby";
-            public const string EnableFriendlyGameStart = "EnableFriendlyGameStart";
-            public const string ReceivePartyData = "ReceivePartyData";
-            public const string PartyCreated = "PartyCreated";
+
+            //Common
+            public const string Error = "Error";
         }
 
         private readonly IMatchmakingService matchmakingService;
@@ -124,13 +131,15 @@
                 {
                     await this.Clients
                         .Client(party.Owner!.ConnectionId)
-                        .SendAsync(Messages.EnableFriendlyGameStart);
+                        .SendAsync(Messages.EnablePartyStart);
                 }
 
                 var connectionIds = party.Members
-                        .Where(mem => mem.UserName != this.UserName).Select(mem => mem.ConnectionId);
+                        .Where(mem => mem.UserName != this.UserName)
+                        .Select(mem => mem.ConnectionId);
 
-                await this.Clients.Clients(connectionIds).SendAsync(Messages.PlayerJoinedLobby, this.UserName);
+                await this.Clients.Caller.SendAsync(Messages.PartyJoined, party.Id);
+                await this.Clients.Clients(connectionIds).SendAsync(Messages.NewPlayerJoinedParty, this.UserName);
             }
             catch (MatchmakingFailedException ex)
             {
