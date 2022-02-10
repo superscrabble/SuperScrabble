@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { HubConnectionState } from '@microsoft/signalr';
 import { PartyType } from 'src/app/common/enums/party-type';
 import { TimerType } from 'src/app/common/enums/timer-type';
@@ -38,7 +39,8 @@ export class PartyPageComponent implements OnInit {
   partyTypeString: string = "";
   partyId: string = "";
 
-  constructor(private signalrService: SignalrService, private matchmakingService: MatchmakingService) {
+  constructor(private signalrService: SignalrService, private matchmakingService: MatchmakingService,
+              private router: Router) {
     this.partyData.invitationCode = "DSDS121"
     this.partyData.members = ["Denis", "Gosho", "Misho", "Pesho"]
     //this.partyData.members = ["Denis"]
@@ -113,6 +115,8 @@ export class PartyPageComponent implements OnInit {
   }
 
   attachListeners() : void {
+    //TODO: Handle error, especially on LoadParty error
+
     this.signalrService.hubConnection?.on("ReceivePartyData", data => {
       console.log("Receive Party DatA")
       console.log(data);
@@ -131,8 +135,17 @@ export class PartyPageComponent implements OnInit {
       this.partyData.members.push(data);
     })
 
-    this.signalrService.hubConnection?.on("PlayerLeftParty", data => {
-      this.partyData.members.filter(x => x != data);
+    this.signalrService.hubConnection?.on("PartyLeft", data => {
+      this.router.navigateByUrl('/');
+    })
+
+    this.signalrService.hubConnection?.on("PlayerHasLeftParty", data => {
+      this.partyData.members = data.remainingMembers;
+      this.partyData.isOwner = data.isOwner;
+      this.partyData.owner = data.owner;
+      this.isPartyReady = data.isPartyReady;
+
+      alert(data.leaverUserName + " has left the party");
     })
   }
 
@@ -169,5 +182,9 @@ export class PartyPageComponent implements OnInit {
       return this.selectedMatchProps.get(name) == value;
     }
     return false;
+  }
+
+  isConfigEnabled() : boolean {
+    return (this.partyData.isOwner && (this.partyData.partyType == PartyType.Friendly));
   }
 }
