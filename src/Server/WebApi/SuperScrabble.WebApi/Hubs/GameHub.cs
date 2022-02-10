@@ -100,8 +100,10 @@
                             {
                                 Name = value.ToString(),
                                 Value = (int)value,
+                                IsSelected = value.IsDefault()
                             })
                     },
+
                     new ConfigSetting()
                     {
                         Name = nameof(TimerDifficulty),
@@ -111,6 +113,7 @@
                             {
                                 Name = value.ToString(),
                                 Value = (int)value,
+                                IsSelected = value.IsDefault()
                             })
                     }
                 }

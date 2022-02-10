@@ -5,4 +5,12 @@
         Standard = 1,
         Chess = 2,
     }
+
+    public static class TimerTypeExtensions
+    {
+        public static bool IsDefault(this TimerType timerType)
+        {
+            return timerType == TimerType.Standard;
+        }
+    }
 }

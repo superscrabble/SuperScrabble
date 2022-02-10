@@ -32,5 +32,10 @@
                 _ => throw new NotSupportedException($"Not supported {nameof(TimerType)} enum value."),
             };
         }
+
+        public static bool IsDefault(this TimerDifficulty timerDifficulty)
+        {
+            return timerDifficulty == TimerDifficulty.Normal;
+        }
     }
 }
