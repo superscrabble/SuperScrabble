@@ -129,6 +129,10 @@ export class SignalrService {
     this.hubConnection?.invoke("JoinParty", code);
   }
 
+  public leaveParty(partyId: string) {
+    this.hubConnection?.invoke("LeaveParty", partyId);
+  }
+
   public StartGameFromParty(partyId: string) {
     this.hubConnection?.invoke("StartGameFromParty", partyId);
   }

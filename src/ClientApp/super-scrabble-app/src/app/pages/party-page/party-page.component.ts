@@ -130,6 +130,10 @@ export class PartyPageComponent implements OnInit {
     this.signalrService.hubConnection?.on("NewPlayerJoinedParty", data => {
       this.partyData.members.push(data);
     })
+
+    this.signalrService.hubConnection?.on("PlayerLeftParty", data => {
+      this.partyData.members.filter(x => x != data);
+    })
   }
 
   parsePartyData(rawServerData: any) {
@@ -154,6 +158,10 @@ export class PartyPageComponent implements OnInit {
   startGame() {
     console.log(this.selectedMatchProps);
     this.matchmakingService.StartGameFromParty(this.partyId);
+  }
+
+  leaveParty() {
+    this.signalrService.leaveParty(this.partyId);
   }
 
   isMatchPropOptionSelected(name: string, value: number) : boolean {
