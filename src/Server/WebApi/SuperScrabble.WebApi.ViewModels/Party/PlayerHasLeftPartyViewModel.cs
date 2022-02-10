@@ -9,5 +9,7 @@
         public string Owner { get; set; } = default!;
 
         public bool IsOwner { get; set; } = default!;
+
+        public bool IsPartyReady { get; set; }
     }
 }

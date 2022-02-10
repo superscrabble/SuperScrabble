@@ -171,6 +171,7 @@
                             IsOwner = party.Owner?.UserName == member.UserName,
                             RemainingMembers = party.Members.Select(mem => mem.UserName),
                             LeaverUserName = this.UserName!,
+                            IsPartyReady = party.HasEnoughPlayersToStartGame,
                         };
 
                         await this.Clients.Client(member.ConnectionId)
