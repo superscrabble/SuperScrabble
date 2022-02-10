@@ -14,9 +14,9 @@
             </div>
             <div class="option-values wrapped">
                 <div *ngFor="let option of configSetting.options" class="col-3 col-lg-2">
-                    <input type="radio" (click)="selectMatchProp(configSetting.name, option.value)" class="btn-check"
+                    <input type="radio" (click)="selectConfigSetting(configSetting, option)" class="btn-check"
                             name="{{configSetting.name}}" id="{{configSetting.name}}{{option.value}}" [disabled]="!isConfigEnabled()"
-                            autocomplete="off" [checked]="isMatchPropOptionSelected(configSetting.name, option.value)">
+                            autocomplete="off" [checked]="isConfigSettingOptionSelected(option)">
                     <label style="width: 100%;" class="btn btn-outline-secondary" for="{{configSetting.name}}{{option.value}}">{{option.name}}</label>
                 </div>
             </div>

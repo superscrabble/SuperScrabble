@@ -137,4 +137,9 @@ export class SignalrService {
   public StartGameFromParty(partyId: string) {
     this.hubConnection?.invoke("StartGameFromParty", partyId);
   }
+
+  public setFriendPartyConfiguration(config: any, partyId: string) {
+    //TODO: set config type
+    this.hubConnection?.invoke("SetFriendPartyConfiguration", config, partyId);
+  }
 }

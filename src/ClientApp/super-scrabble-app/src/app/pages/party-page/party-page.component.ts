@@ -148,6 +148,12 @@ export class PartyPageComponent implements OnInit {
 
       alert(data.leaverUserName + " has left the party");
     })
+
+    this.signalrService.hubConnection?.on("UpdateFriendPartyConfigSettings", data => {
+      console.log("UpdateFriendPartyConfigSettings")
+      console.log(data);
+      this.partyData.configSettings = data;
+    })
   }
 
   parsePartyData(rawServerData: any) {
@@ -161,8 +167,23 @@ export class PartyPageComponent implements OnInit {
     this.partyTypeString = PartyType[this.partyData.partyType];
   }
 
-  selectMatchProp(key: string, value: number) {
-    this.selectedMatchProps.set(key, value);
+  selectConfigSetting(configSetting: ConfigSetting, option: any) {
+    configSetting.options.forEach(x => x.isSelected = false);
+    option.isSelected = true;
+    if(this.partyData.partyType == PartyType.Friendly) {
+      let input: Map<string, number> = new Map();
+
+      this.partyData.configSettings.forEach(x => {
+        let value = x.options.filter(x => x.isSelected)[0].value;
+        input.set(x.name, value);
+      })
+
+      console.log(this.partyData.configSettings)
+      console.log("Input")
+      console.log(input);
+
+      this.signalrService.setFriendPartyConfiguration(input, this.partyId);
+    }
   }
 
   isPartyOwner(member: string) {
@@ -178,11 +199,8 @@ export class PartyPageComponent implements OnInit {
     this.signalrService.leaveParty(this.partyId);
   }
 
-  isMatchPropOptionSelected(name: string, value: number) : boolean {
-    if(this.selectedMatchProps.has(name)) {
-      return this.selectedMatchProps.get(name) == value;
-    }
-    return false;
+  isConfigSettingOptionSelected(option: any) : boolean {
+    return option.isSelected;
   }
 
   isConfigEnabled() : boolean {
