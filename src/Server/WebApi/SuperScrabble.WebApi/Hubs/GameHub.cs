@@ -29,6 +29,7 @@
             public const string PlayerHasLeftParty = "PlayerHasLeftParty";
             public const string ReceivePartyData = "ReceivePartyData";
             public const string EnablePartyStart = "EnablePartyStart";
+            public const string UpdateFriendPartyConfigSettings = "UpdateFriendPartyConfigSettings";
 
             //Game
             public const string StartGame = "StartGame";
@@ -139,12 +140,11 @@
                         .SendAsync(Messages.EnablePartyStart);
                 }
 
-                var connectionIds = party.Members
-                        .Where(mem => mem.UserName != this.UserName)
-                        .Select(mem => mem.ConnectionId);
-
                 await this.Clients.Caller.SendAsync(Messages.PartyJoined, party.Id);
-                await this.Clients.Clients(connectionIds).SendAsync(Messages.NewPlayerJoinedParty, this.UserName);
+
+                await this.Clients
+                    .Clients(party.GetConnectionIds(this.UserName!))
+                    .SendAsync(Messages.NewPlayerJoinedParty, this.UserName);
             }
             catch (MatchmakingFailedException ex)
             {
@@ -241,6 +241,40 @@
                 {
                     friendParty.TimerType = config.TimerType;
                     friendParty.TimerDifficulty = config.TimerDifficulty;
+
+                    var configSettings = new ConfigSetting[]
+                    {
+                        new ConfigSetting()
+                        {
+                            Name = nameof(TimerType),
+                            Options =
+                                Enum.GetValues(typeof(TimerType)).Cast<TimerType>()
+                                    .Select(value => new SettingOption
+                                {
+                                    Name = value.ToString(),
+                                    Value = (int)value,
+                                    IsSelected = value == friendParty.TimerType
+                                })
+                        },
+
+                        new ConfigSetting()
+                        {
+                            Name = nameof(TimerDifficulty),
+                            Options =
+                                Enum.GetValues(typeof(TimerDifficulty)).Cast<TimerDifficulty>()
+                                    .Select(value => new SettingOption
+                                {
+                                    Name = TimeSpan.FromSeconds(
+                                        value.GetSeconds(friendParty.TimerType)).ToString("MM:ss"),
+
+                                    Value = (int)value,
+                                    IsSelected = value == friendParty.TimerDifficulty
+                                })
+                        }
+                    };
+
+                    await this.Clients.Clients(friendParty.GetConnectionIds())
+                        .SendAsync(Messages.UpdateFriendPartyConfigSettings, configSettings);
                 }
             }
             catch (MatchmakingFailedException ex)

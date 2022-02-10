@@ -38,6 +38,13 @@
 
         public bool HasEnoughPlayersToStartGame => this.members.Count >= this.MinPlayersToStartGameCount;
 
+        public IEnumerable<string> GetConnectionIds(params string[] memberUserNamesToExclude)
+        {
+            return this.members
+                .Where(mem => !memberUserNamesToExclude.Contains(mem.UserName))
+                .Select(mem => mem.ConnectionId);
+        }
+
         public bool IsMemberInside(string userName)
         {
             return this.members.Any(mem => mem.UserName == userName);
