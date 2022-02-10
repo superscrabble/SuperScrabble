@@ -130,6 +130,7 @@ export class SignalrService {
   }
 
   public leaveParty(partyId: string) {
+    console.log("Party id" + partyId)
     this.hubConnection?.invoke("LeaveParty", partyId);
   }
 
