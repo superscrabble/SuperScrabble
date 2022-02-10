@@ -1,7 +1,11 @@
 <div class="d-flex flex-column justify-content-center align-items-center">
     <h1>{{partyTypeString}}</h1>
-    <div class="my-2 alert alert-danger">
+    <div class="d-flex flex-row my-2 alert alert-danger">
         <h1>Код: {{partyData.invitationCode}}</h1>
+        <span [cdkCopyToClipboard]="partyData.invitationCode"
+            matTooltip="Копирай"
+            [matTooltipPosition]="'right'"
+            class="copy-code-icon material-icons p-1">content_paste</span>
     </div>
     <div class="my-2">
         <div *ngFor="let configSetting of partyData.configSettings" class="d-flex flex-column d-lg-flex flex-lg-row align-items-center my-2">

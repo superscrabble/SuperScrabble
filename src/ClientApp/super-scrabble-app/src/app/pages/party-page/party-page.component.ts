@@ -20,6 +20,7 @@ class PartyData {
 class ConfigSetting {
   name: string = "";
   options: {
+    isSelected: boolean;
     name: string;
     value: number;
   }[] = []

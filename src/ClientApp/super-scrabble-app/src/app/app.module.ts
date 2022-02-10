@@ -36,6 +36,8 @@ import { GameConfigurationMenuComponent } from './pages/game-configuration/game-
 import { GameInviteFriendsDialogComponent } from './pages/game-configuration/dialogs/game-invite-friends-dialog/game-invite-friends-dialog.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { ScrollingModule } from '@angular/cdk/scrolling';
+import { ClipboardModule } from '@angular/cdk/clipboard';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { PlayerRackComponent } from './pages/common/player-rack/player-rack.component';
 import { JoinPartyWithCodeDialogComponent } from './pages/game-configuration/dialogs/join-party-with-code-dialog/join-party-with-code-dialog.component';
 import { PartyPageComponent } from './pages/party-page/party-page.component';
@@ -79,7 +81,9 @@ import { PartyPageComponent } from './pages/party-page/party-page.component';
     MatDialogModule,
     BrowserAnimationsModule,
     DragDropModule,
-    ScrollingModule
+    ScrollingModule,
+    ClipboardModule,
+    MatTooltipModule
   ],
   providers: [ Utilities ],
   bootstrap: [AppComponent]
