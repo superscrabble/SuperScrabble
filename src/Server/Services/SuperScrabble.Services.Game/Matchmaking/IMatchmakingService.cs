@@ -14,6 +14,10 @@
 
         void StartGameFromParty(string starterUserName, string partyId, out bool hasGameStarted);
 
+        void LeaveParty(string leaverUserName, string partyId, out bool shouldDisposeParty);
+
+        void DisposeParty(string partyId);
+
         GameState GetGameState(string userName);
 
         Party GetPartyById(string partyId);

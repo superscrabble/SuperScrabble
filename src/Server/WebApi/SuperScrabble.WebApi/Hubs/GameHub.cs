@@ -23,8 +23,10 @@
         {
             //Party
             public const string PartyJoined = "PartyJoined";
+            public const string PartyLeft = "PartyLeft";
             public const string PartyCreated = "PartyCreated";
             public const string NewPlayerJoinedParty = "NewPlayerJoinedParty";
+            public const string PlayerHasLeftParty = "PlayerHasLeftParty";
             public const string ReceivePartyData = "ReceivePartyData";
             public const string EnablePartyStart = "EnablePartyStart";
 
@@ -147,6 +149,46 @@
             }
         }
         
+        [Authorize]
+        public async Task LeaveParty(string partyId)
+        {
+            try
+            {
+                this.matchmakingService.LeaveParty(
+                    this.UserName!, partyId, out bool shouldDisposeParty);
+
+                await this.Clients.Caller.SendAsync(Messages.PartyLeft);
+
+                if (!shouldDisposeParty)
+                {
+                    Party party = this.matchmakingService.GetPartyById(partyId);
+
+                    foreach (Member member in party.Members)
+                    {
+                        var viewModel = new PlayerHasLeftPartyViewModel
+                        {
+                            Owner = party.Owner?.UserName!,
+                            IsOwner = party.Owner?.UserName == member.UserName,
+                            RemainingMembers = party.Members.Select(mem => mem.UserName),
+                            LeaverUserName = this.UserName!,
+                        };
+
+                        await this.Clients.Client(member.ConnectionId)
+                            .SendAsync(Messages.PlayerHasLeftParty, viewModel);
+                    }
+                }
+
+                if (shouldDisposeParty)
+                {
+                    this.matchmakingService.DisposeParty(partyId);
+                }
+            }
+            catch (MatchmakingFailedException ex)
+            {
+                await this.Clients.Caller.SendAsync(Messages.Error, ex.ErrorCode);
+            }
+        }
+
         [Authorize]
         public async Task StartGameFromParty(string partyId)
         {

@@ -137,6 +137,22 @@
             }
         }
 
+        public void LeaveParty(string leaverUserName, string partyId, out bool shouldDisposeParty)
+        {
+            Party party = this.GetPartyById(partyId);
+
+            party.RemoveMember(leaverUserName);
+
+            shouldDisposeParty = party.IsEmpty;
+        }
+
+        public void DisposeParty(string partyId)
+        {
+            Party party = this.GetPartyById(partyId);
+            partyIdsByInvitationCodes.TryRemove(new(party.InvitationCode, party.Id));
+            partiesByPartyIds.TryRemove(new(party.Id, party));
+        }
+
         public GameState GetGameState(string userName)
         {
             if (!groupNamesByUserNames.ContainsKey(userName))
