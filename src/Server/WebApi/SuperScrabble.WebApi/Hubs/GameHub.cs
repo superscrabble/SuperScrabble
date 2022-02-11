@@ -84,6 +84,8 @@
                 return;
             }
 
+            const TimerType defaultTimerType = TimerType.Standard;
+
             var viewModel = new FriendPartyViewModel
             {
                 Owner = party.Owner!.UserName,
@@ -93,32 +95,10 @@
                 PartyType = party is FriendParty ? PartyType.Friendly : PartyType.Duo,
                 ConfigSettings = new ConfigSetting[]
                 {
-                    new ConfigSetting()
-                    {
-                        Name = nameof(TimerType),
-                        Options =
-                            Enum.GetValues(typeof(TimerType)).Cast<TimerType>()
-                                .Select(value => new SettingOption
-                            {
-                                Name = value.ToString(),
-                                Value = (int)value,
-                                IsSelected = value.IsDefault()
-                            })
-                    },
+                    CreateTimerTypeConfigSetting(defaultTimerType),
 
-                    new ConfigSetting()
-                    {
-                        Name = nameof(TimerDifficulty),
-                        Options =
-                            Enum.GetValues(typeof(TimerDifficulty)).Cast<TimerDifficulty>()
-                                .Select(value => new SettingOption
-                            {
-                                Name = TimeSpan.FromSeconds(
-                                    value.GetSeconds(TimerType.Standard)).ToString("mm':'ss"),
-                                Value = (int)value,
-                                IsSelected = value.IsDefault()
-                            })
-                    }
+                    CreateTimerDifficultyConfigSetting(
+                        TimerType.Standard, TimerDifficulty.Normal),
                 }
             };
 
@@ -152,8 +132,8 @@
             catch (PlayerAlreadyInsidePartyException)
             {
                 Party party = this.matchmakingService.GetPartyByInvitationCode(invitationCode);
-
                 Member? member = party.GetMember(this.UserName!);
+
                 if(member != null)
                 {
                     await this.Clients.Client(member.ConnectionId).SendAsync(Messages.PartyMemberConnectionIdChanged);
@@ -261,33 +241,10 @@
 
                     var configSettings = new ConfigSetting[]
                     {
-                        new ConfigSetting()
-                        {
-                            Name = nameof(TimerType),
-                            Options =
-                                Enum.GetValues(typeof(TimerType)).Cast<TimerType>()
-                                    .Select(value => new SettingOption
-                                {
-                                    Name = value.ToString(),
-                                    Value = (int)value,
-                                    IsSelected = value == friendParty.TimerType
-                                })
-                        },
+                        CreateTimerTypeConfigSetting(friendParty.TimerType),
 
-                        new ConfigSetting()
-                        {
-                            Name = nameof(TimerDifficulty),
-                            Options =
-                                Enum.GetValues(typeof(TimerDifficulty)).Cast<TimerDifficulty>()
-                                    .Select(value => new SettingOption
-                                {
-                                    Name = TimeSpan.FromSeconds(
-                                        value.GetSeconds(friendParty.TimerType)).ToString("mm':'ss"),
-
-                                    Value = (int)value,
-                                    IsSelected = value == friendParty.TimerDifficulty
-                                })
-                        }
+                        CreateTimerDifficultyConfigSetting(
+                            friendParty.TimerType, friendParty.TimerDifficulty),
                     };
 
                     await this.Clients.Clients(friendParty.GetConnectionIds())
@@ -313,6 +270,40 @@
                         .SendAsync(Messages.UpdateGameState, viewModel);
                 }
             }
+        }
+
+        private static ConfigSetting CreateTimerTypeConfigSetting(TimerType selectedTimerType)
+        {
+            return new ConfigSetting
+            {
+                Name = nameof(TimerType),
+                Options = Enum
+                    .GetValues(typeof(TimerType)).Cast<TimerType>()
+                    .Select(value => new SettingOption
+                    {
+                        Value = (int)value,
+                        Name = value.ToString(),
+                        IsSelected = value == selectedTimerType,
+                    })
+            };
+        }
+
+        private static ConfigSetting CreateTimerDifficultyConfigSetting(
+            TimerType selectedTimerType, TimerDifficulty selectedTimerDifficulty)
+        {
+            return new ConfigSetting
+            {
+                Name = nameof(TimerDifficulty),
+                Options = Enum
+                    .GetValues(typeof(TimerDifficulty)).Cast<TimerDifficulty>()
+                    .Select(value => new SettingOption
+                    {
+                        Value = (int)value,
+                        IsSelected = value == selectedTimerDifficulty,
+                        Name = TimeSpan.FromSeconds(
+                            value.GetSeconds(selectedTimerType)).ToString("mm':'ss"),
+                    })
+            };
         }
     }
 }
