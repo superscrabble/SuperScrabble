@@ -197,7 +197,7 @@ export class PartyPageComponent implements OnInit {
 
   startGame() {
     console.log(this.selectedMatchProps);
-    this.matchmakingService.StartGameFromParty(this.partyId);
+    this.matchmakingService.startGameFromParty(this.partyId);
   }
 
   leaveParty() {

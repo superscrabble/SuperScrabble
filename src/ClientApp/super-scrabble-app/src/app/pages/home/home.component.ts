@@ -60,7 +60,7 @@ export class HomeComponent implements OnInit {
             {
               text: "Играй със случаен играч",
               action: () => {
-                
+                this.matchmakingService.joinRandomDuoGame();
               }
             },
             {

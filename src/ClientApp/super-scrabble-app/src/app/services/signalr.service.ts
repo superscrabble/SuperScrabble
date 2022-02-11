@@ -130,12 +130,16 @@ export class SignalrService {
     this.hubConnection?.invoke("JoinParty", code);
   }
 
+  public joinRandomDuoGame() {
+    this.hubConnection?.invoke("JoinRandomDuo");
+  }
+
   public leaveParty(partyId: string) {
     console.log("Party id" + partyId)
     this.hubConnection?.invoke("LeaveParty", partyId);
   }
 
-  public StartGameFromParty(partyId: string) {
+  public startGameFromParty(partyId: string) {
     this.hubConnection?.invoke("StartGameFromParty", partyId);
   }
 
