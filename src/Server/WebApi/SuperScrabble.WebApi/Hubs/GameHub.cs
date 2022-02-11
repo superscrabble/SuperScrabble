@@ -112,7 +112,7 @@
                             Enum.GetValues(typeof(TimerDifficulty)).Cast<TimerDifficulty>()
                                 .Select(value => new SettingOption
                             {
-                                Name = value.ToString(),
+                                Name = TimeSpan.FromSeconds(value.GetSeconds(TimerType.Standard)).ToString("mm':'ss"),
                                 Value = (int)value,
                                 IsSelected = value.IsDefault()
                             })
@@ -228,6 +228,7 @@
         [Authorize]
         public async Task SetFriendPartyConfiguration(FriendPartyConfig config, string partyId)
         {
+            Console.WriteLine(config.TimerDifficulty + " " + config.TimerType);
             try
             {
                 Party party = this.matchmakingService.GetPartyById(partyId);
@@ -265,7 +266,7 @@
                                     .Select(value => new SettingOption
                                 {
                                     Name = TimeSpan.FromSeconds(
-                                        value.GetSeconds(friendParty.TimerType)).ToString("MM:ss"),
+                                        value.GetSeconds(friendParty.TimerType)).ToString("mm':'ss"),
 
                                     Value = (int)value,
                                     IsSelected = value == friendParty.TimerDifficulty

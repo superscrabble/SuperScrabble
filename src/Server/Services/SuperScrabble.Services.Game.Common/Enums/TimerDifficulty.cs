@@ -2,9 +2,10 @@
 {
     public enum TimerDifficulty
     {
-        Slow = 1,
+        Fast = 1,
         Normal = 2,
-        Fast = 3,
+        Slow = 3,
+        ExtraSlow = 4
     }
 
     public static class TimerDifficultyExtensions
@@ -12,15 +13,17 @@
         private static readonly Dictionary<TimerDifficulty, int> standardTimerSeconds = new()
         {
             [TimerDifficulty.Slow] = 120,
-            [TimerDifficulty.Normal] = 80,
+            [TimerDifficulty.Normal] = 90,
             [TimerDifficulty.Fast] = 60,
+            [TimerDifficulty.ExtraSlow] = 180,
         };
 
         private static readonly Dictionary<TimerDifficulty, int> chessTimerSeconds = new()
         {
             [TimerDifficulty.Slow] = 1200,
-            [TimerDifficulty.Normal] = 800,
+            [TimerDifficulty.Normal] = 900,
             [TimerDifficulty.Fast] = 600,
+            [TimerDifficulty.ExtraSlow] = 1500,
         };
 
         public static int GetSeconds(this TimerDifficulty timerDifficulty, TimerType timerType)

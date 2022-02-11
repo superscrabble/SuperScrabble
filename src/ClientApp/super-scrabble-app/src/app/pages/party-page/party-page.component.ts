@@ -104,13 +104,13 @@ export class PartyPageComponent implements OnInit {
 
     if(this.signalrService.hubConnection
       && this.signalrService.hubConnection.state == HubConnectionState.Connected) {
-        this.signalrService.loadParty(id);
         this.attachListeners();
+        this.signalrService.loadParty(id);
     } else {
         //TODO: Handle slow connection/loading -> showing loading screen
         this.signalrService.hubConnectionStartPromise?.then( () => {
-          this.signalrService.loadParty(id);
           this.attachListeners();
+          this.signalrService.loadParty(id);
         })
     }
   }
@@ -177,12 +177,13 @@ export class PartyPageComponent implements OnInit {
         let value = x.options.filter(x => x.isSelected)[0].value;
         input.set(x.name, value);
       })
+      
+      //TODO: Change this
+      let obj = Array.from(input).reduce((obj, [key, value]) => (
+        Object.assign(obj, { [key]: value })
+      ), {});
 
-      console.log(this.partyData.configSettings)
-      console.log("Input")
-      console.log(input);
-
-      this.signalrService.setFriendPartyConfiguration(input, this.partyId);
+      this.signalrService.setFriendPartyConfiguration(obj, this.partyId);
     }
   }
 

@@ -1,5 +1,6 @@
 export enum TimerDifficulty {
-    Slow = 1,
-    Standard = 2,
-    Fast = 3
+    Fast = 1,
+    Normal = 2,
+    Slow = 3,
+    ExtraSlow = 4
 }

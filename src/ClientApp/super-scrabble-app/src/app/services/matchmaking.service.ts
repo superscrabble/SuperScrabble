@@ -97,7 +97,7 @@ export class MatchmakingService {
           new GameOption(
             "Стандартно",
             "Играй заедно с приятел или случаен играч срещу други отбори",
-            TimerDifficulty.Standard,
+            TimerDifficulty.Normal,
           ),
           new GameOption(
             "Бавно",
