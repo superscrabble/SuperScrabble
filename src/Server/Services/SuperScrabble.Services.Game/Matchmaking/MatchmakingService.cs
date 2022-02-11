@@ -83,9 +83,16 @@
             string joinerUserName, string joinerConnectionId,
             string invitationCode, out bool hasEnoughPlayersToStartGame)
         {
+            if (invitationCode == RandomDuoInvitationCode)
+            {
+                throw new UnexistingInvitationCodeException();
+            }
+
             ThrowIfInvitationCodeIsNotExisting(invitationCode);
+
             Party party = this.GetPartyByInvitationCode(invitationCode);
             party.AddMember(new Member(joinerUserName, joinerConnectionId));
+
             hasEnoughPlayersToStartGame = party.HasEnoughPlayersToStartGame;
         }
 
@@ -144,6 +151,9 @@
                 var gameMode = GameMode.Duo;
                 var waitingTeam = new WaitingTeam(party.Members);
                 this.AddToWaitingQueue(waitingTeam, gameMode, out hasGameStarted);
+
+                partyIdsByInvitationCodes.TryRemove(new(party.InvitationCode, partyId));
+                partiesByPartyIds.TryRemove(new(partyId, party));
             }
         }
 
@@ -221,12 +231,9 @@
             string groupName = Guid.NewGuid().ToString();
 
             var gameState = this.gameStateFactory.CreateGameState(
-                gameMode, waitingTeams.Take(gameMode.GetTeamsCount()), groupName);
-
-            var remainingTeams = waitingTeams.Skip(gameMode.GetTeamsCount());
+                gameMode, waitingTeams, groupName);
 
             waitingTeams.Clear();
-            waitingTeams.AddRange(remainingTeams);
 
             gameStatesByGroupNames.TryAdd(groupName, gameState);
 
@@ -245,7 +252,7 @@
         {
             bool isInvitationCodeExisting = partyIdsByInvitationCodes.ContainsKey(invitationCode);
 
-            if (!isInvitationCodeExisting || invitationCode == RandomDuoInvitationCode)
+            if (!isInvitationCodeExisting)
             {
                 throw new UnexistingInvitationCodeException();
             }
@@ -267,6 +274,7 @@
             try
             {
                 party = this.GetPartyByInvitationCode(RandomDuoInvitationCode);
+                party.AddMember(new Member(joinerUserName, joinerConnectionId));
             }
             catch (MatchmakingFailedException)
             {
@@ -278,8 +286,6 @@
                 partyIdsByInvitationCodes.TryAdd(RandomDuoInvitationCode, partyId);
                 party.InvitationCode = RandomDuoInvitationCode;
             }
-
-            party.AddMember(new Member(joinerUserName, joinerConnectionId));
 
             if (!party.IsFull)
             {
