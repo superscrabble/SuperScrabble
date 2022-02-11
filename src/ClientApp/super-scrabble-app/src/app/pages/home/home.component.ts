@@ -7,13 +7,14 @@ import { MatDialog } from '@angular/material/dialog';
 import { JoinPartyWithCodeDialogComponent } from '../game-configuration/dialogs/join-party-with-code-dialog/join-party-with-code-dialog.component';
 import { MatchmakingService } from 'src/app/services/matchmaking.service';
 import { PartyType } from 'src/app/common/enums/party-type';
+import { GameMode } from 'src/app/common/enums/game-mode';
 
 class GameModeButton {
   text: string = "";
   action: Function = () => {};
 }
 
-class GameMode {
+class GameModeInfo {
   name: string = "";
   description?: string;
   buttons: GameModeButton[] = [];
@@ -31,7 +32,7 @@ export class HomeComponent implements OnInit {
   isStartGameButtonEnabled: boolean = false;
   isSearchingForGame: boolean = false;
   currentGameGroupName: string | null = null;
-  gameModes: GameMode[] = [];
+  gameModes: GameModeInfo[] = [];
 
   invitationCode: string = "";
   receivedInvitationCode: string = "";
@@ -47,7 +48,7 @@ export class HomeComponent implements OnInit {
             {
               text: "Играй",
               action: () => {
-                
+                this.joinRoom(GameMode.Duel);
               }
             }
           ]
@@ -100,7 +101,9 @@ export class HomeComponent implements OnInit {
           buttons: [
             {
               text: "Играй",
-              action: () => {}
+              action: () => {
+                this.joinRoom(GameMode.ChessScrabble);
+              }
             }
           ]
         },
@@ -110,7 +113,9 @@ export class HomeComponent implements OnInit {
           buttons: [
             {
               text: "Играй",
-              action: () => {}
+              action: () => {
+                this.joinRoom(GameMode.Classic);
+              }
             }
           ]
         }
@@ -166,8 +171,8 @@ export class HomeComponent implements OnInit {
 
   }
 
-  joinRoom() {
-    this.signalrService.joinRoom();
+  joinRoom(gameMode: GameMode) {
+    this.matchmakingService.joinRoom(gameMode);
     this.isSearchingForGame = true;
   }
 

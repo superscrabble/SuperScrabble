@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import * as signalR from "@microsoft/signalr";
 import { Utilities } from 'src/app/common/utilities';
+import { GameMode } from '../common/enums/game-mode';
 import { PartyType } from '../common/enums/party-type';
 import { MatchProps } from '../models/game-configuaration/match-props';
 import { Tile } from '../models/tile';
@@ -58,11 +59,11 @@ export class SignalrService {
     });
   }
 
-  public joinRoom() {
+  public joinRoom(gameMode: GameMode) {
     console.log(this.hubConnection?.state)
     console.log("Join Room")
     if(this.hubConnection?.state == signalR.HubConnectionState.Connected) {
-      this.hubConnection?.invoke("JoinRoom");
+      this.hubConnection?.invoke("JoinRoom", gameMode);
     }
   }
 

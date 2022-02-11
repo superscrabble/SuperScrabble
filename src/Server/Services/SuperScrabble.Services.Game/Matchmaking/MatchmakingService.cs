@@ -201,7 +201,7 @@
             var waitingTeams = waitingTeamsByGameModes[gameMode];
             waitingTeams.Add(waitingTeam);
 
-            bool isQueueFull = gameMode.GetTeamsCount() > waitingTeams.Count;
+            bool isQueueFull = gameMode.GetTeamsCount() <= waitingTeams.Count;
 
             if (!isQueueFull)
             {
@@ -210,9 +210,9 @@
             }
 
             string groupName = Guid.NewGuid().ToString();
-            var gameState = this.gameStateFactory.CreateGameState(gameMode, waitingTeams, groupName);
+            var gameState = this.gameStateFactory.CreateGameState(gameMode, waitingTeams.Take(gameMode.GetTeamsCount()), groupName);
 
-            waitingTeams.Clear();
+            waitingTeams = waitingTeams.Skip(gameMode.GetTeamsCount()).ToList();
             gameStatesByGroupNames.TryAdd(groupName, gameState);
 
             foreach (Team team in gameState.Teams)

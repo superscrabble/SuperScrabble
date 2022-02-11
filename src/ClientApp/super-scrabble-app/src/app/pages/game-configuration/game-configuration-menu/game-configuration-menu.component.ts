@@ -35,6 +35,6 @@ export class GameConfigurationMenuComponent implements OnInit {
   }
 
   joinRoom() {
-    this.matchmakingService.joinRoom();
+    //this.matchmakingService.joinRoom();
   }
 }

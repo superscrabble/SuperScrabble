@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { GameMode } from '../common/enums/game-mode';
 import { TeamType } from '../common/enums/game-type';
 import { PartnerType } from '../common/enums/partner-type';
 import { PartyType } from '../common/enums/party-type';
@@ -204,8 +205,8 @@ export class MatchmakingService {
     return false;
   }
 
-  joinRoom(): void {
-    this.signalrService.joinRoomWithProps(this.matchProps);
+  joinRoom(gameMode: GameMode): void {
+    this.signalrService.joinRoom(gameMode);
   }
 
   createParty(type: PartyType) {
