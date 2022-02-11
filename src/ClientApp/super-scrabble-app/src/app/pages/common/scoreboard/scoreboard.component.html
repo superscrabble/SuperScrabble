@@ -2,17 +2,21 @@
     <table class="table">
         <th class="ps-3 py-3">Резултат</th>
         <!--Posible way to show player's times-->
-        <!--<tr>
+        <tr>
             <th></th>
             <th>Играч</th>
-            <th>Време</th>
             <th>Точки</th>
-        </tr>-->
-        <!--<tr *ngFor="let pointsByUserName of pointsByUserNames; let i = index">
-            <td class="ps-3 py-2">{{i + 1}}</td>
-            <td>{{modifyCurrentUserName(pointsByUserName.key)}}</td>-->
-            <!--<td>05:42</td>-->
-        <!--    <td>{{pointsByUserName.value}} т.</td>
-        </tr>-->
+            <th *ngIf="isDuoGame">Общо точки</th>
+        </tr>
+        <ng-container *ngFor="let team of teams; let i = index">
+            <th [attr.rowspan]="team.players.length + 1" class="text-center ps-3 py-2">{{i + 1}}</th>
+            <tr *ngFor="let player of team.players; let first = first">
+                
+                <td>{{modifyCurrentUserName(player.userName)}}</td>
+                <!--<td>05:42</td>-->
+                <td>{{player.points}} т.</td>
+                <td [attr.rowspan]="team.players.length + 1" *ngIf="isDuoGame && first" class="text-center ps-3 py-2">{{team.points}}</td>
+            </tr>
+        </ng-container>
     </table>
 </div>

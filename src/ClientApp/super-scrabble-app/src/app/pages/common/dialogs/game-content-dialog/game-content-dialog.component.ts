@@ -8,6 +8,7 @@ interface GameContentDialogData {
   currentUserName: string;
   userNamesOfPlayersWhoHaveLeftTheGame: string[];
   showWordMeaningOf: Function;
+  isDuoGame: boolean;
 }
 
 export enum ShowingComponent {

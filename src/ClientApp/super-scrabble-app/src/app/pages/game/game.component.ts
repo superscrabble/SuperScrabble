@@ -479,6 +479,7 @@ export class GameComponent implements OnInit {
                 userNamesOfPlayersWhoHaveLeftTheGame: this.userNamesOfPlayersWhoHaveLeftTheGame,
                 currentUserName: this.currentUserName,
                 gameLogs: this.gameLogs,
+                isDuoGame: this.isDuoGame(),
                 showWordMeaningOf: this.showWordMeaningOf
             }
         });
@@ -496,6 +497,11 @@ export class GameComponent implements OnInit {
         return this.updatedBoardCells.length > 0;
     }
 
+    isDuoGame() : boolean {
+        //TODO: check if GameMode is duo
+        return false;
+    }
+
     loadMockData(): void {
         let data = 
         {
@@ -504,7 +510,7 @@ export class GameComponent implements OnInit {
             {
                 "players": [
                     {
-                        "UserName": "Gosho2",
+                        "userName": "Gosho2",
                         "points": 20
                     }
                 ]
@@ -512,15 +518,15 @@ export class GameComponent implements OnInit {
             {
                 "players": [
                     {
-                        "UserName": "Gosho1",
+                        "userName": "Gosho1",
                         "points": 10
                     },
                     {
-                        "UserName": "Gosho1",
+                        "userName": "Gosho1",
                         "points": 20
                     },
                     {
-                        "UserName": "Gosho1",
+                        "userName": "Gosho1",
                         "points": 30
                     }
                 ]
@@ -528,7 +534,7 @@ export class GameComponent implements OnInit {
             {
                 "players": [
                     {
-                        "UserName": "Gosho1",
+                        "userName": "Gosho1",
                         "points": 10
                     }
                 ]

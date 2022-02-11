@@ -1,4 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { Player } from 'src/app/models/player';
+import { Team } from 'src/app/models/team';
 
 @Component({
   selector: 'app-scoreboard',
@@ -6,9 +8,10 @@ import { Component, OnInit, Input } from '@angular/core';
   styleUrls: ['./scoreboard.component.css']
 })
 export class ScoreboardComponent implements OnInit {
-  @Input() teams: any[] = [];
+  @Input() teams: Team[] = [];
   @Input() currentUserName: string = "";
   @Input() userNamesOfPlayersWhoHaveLeftTheGame: string[] = [];
+  @Input() isDuoGame: boolean = true;
 
   constructor() { }
 
