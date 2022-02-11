@@ -77,5 +77,10 @@
             this.members.Remove(memberToRemove);
             return true;
         }
+
+        public Member? GetMember(string memberUserName)
+        {
+            return this.members.FirstOrDefault(mem => mem.UserName == memberUserName);
+        }
     }
 }

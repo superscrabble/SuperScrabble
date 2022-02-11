@@ -30,6 +30,7 @@
             public const string ReceivePartyData = "ReceivePartyData";
             public const string EnablePartyStart = "EnablePartyStart";
             public const string UpdateFriendPartyConfigSettings = "UpdateFriendPartyConfigSettings";
+            public const string PartyMemberConnectionIdChanged = "PartyMemberConnectionIdChanged";
 
             //Game
             public const string StartGame = "StartGame";
@@ -151,6 +152,14 @@
             catch (PlayerAlreadyInsidePartyException)
             {
                 Party party = this.matchmakingService.GetPartyByInvitationCode(invitationCode);
+
+                Member? member = party.GetMember(this.UserName!);
+                if(member != null)
+                {
+                    await this.Clients.Client(member.ConnectionId).SendAsync(Messages.PartyMemberConnectionIdChanged);
+                    member.ConnectionId = this.ConnectionId;
+                }
+
                 await this.Clients.Caller.SendAsync(Messages.PartyJoined, party.Id);
             }
             catch (MatchmakingFailedException ex)

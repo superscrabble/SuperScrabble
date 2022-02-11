@@ -10,6 +10,6 @@
 
         public string UserName { get; }
 
-        public string ConnectionId { get; }
+        public string ConnectionId { get; set; }
     }
 }

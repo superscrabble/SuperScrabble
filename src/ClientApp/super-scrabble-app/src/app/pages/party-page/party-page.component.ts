@@ -154,6 +154,10 @@ export class PartyPageComponent implements OnInit {
       console.log(data);
       this.partyData.configSettings = data;
     })
+
+    this.signalrService.hubConnection?.on("PartyMemberConnectionIdChanged", () => {
+      this.router.navigateByUrl('/');
+    })
   }
 
   parsePartyData(rawServerData: any) {
