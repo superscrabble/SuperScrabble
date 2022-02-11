@@ -54,6 +54,25 @@
         public string ConnectionId => this.Context.ConnectionId;
 
         [Authorize]
+        public async Task JoinRoom(GameMode gameMode)
+        {
+            try
+            {
+                this.matchmakingService.JoinRoom(
+                    this.UserName!, this.ConnectionId, gameMode, out bool hasGameStarted);
+
+                if (hasGameStarted)
+                {
+                    await this.StartGameAsync();
+                }
+            }
+            catch (MatchmakingFailedException ex)
+            {
+                await this.SendErrorAsync(ex.ErrorCode);
+            }
+        }
+
+        [Authorize]
         public async Task CreateParty(PartyType partyType)
         {
             try
@@ -65,7 +84,7 @@
             }
             catch (MatchmakingFailedException ex)
             {
-                await this.Clients.Caller.SendAsync(Messages.Error, ex.ErrorCode);
+                await this.SendErrorAsync(ex.ErrorCode);
             }
         }
 
@@ -80,7 +99,7 @@
             }
             catch (MatchmakingFailedException ex)
             {
-                await this.Clients.Caller.SendAsync(Messages.Error, ex.ErrorCode);
+                await this.SendErrorAsync(ex.ErrorCode);
                 return;
             }
 
@@ -144,7 +163,7 @@
             }
             catch (MatchmakingFailedException ex)
             {
-                await this.Clients.Caller.SendAsync(Messages.Error, ex.ErrorCode);
+                await this.SendErrorAsync(ex.ErrorCode);
             }
         }
         
@@ -185,7 +204,7 @@
             }
             catch (MatchmakingFailedException ex)
             {
-                await this.Clients.Caller.SendAsync(Messages.Error, ex.ErrorCode);
+                await this.SendErrorAsync(ex.ErrorCode);
             }
         }
 
@@ -203,22 +222,11 @@
                     return;
                 }
 
-                var gameState = this.matchmakingService.GetGameState(this.UserName!);
-
-                foreach (Player player in gameState.Teams.SelectMany(team => team.Players))
-                {
-                    this.gameService.FillPlayerTiles(gameState, player);
-                    await this.Groups.AddToGroupAsync(player.ConnectionId, gameState.GroupName);
-                }
-
-                await this.Clients.Group(gameState.GroupName)
-                    .SendAsync(Messages.StartGame, gameState.GroupName);
-
-                await this.UpdateGameStateAsync(gameState);
+                await this.StartGameAsync();
             }
             catch (MatchmakingFailedException ex)
             {
-                await this.Clients.Caller.SendAsync(Messages.Error, ex.ErrorCode);
+                await this.SendErrorAsync(ex.ErrorCode);
             }
         }
 
@@ -253,8 +261,29 @@
             }
             catch (MatchmakingFailedException ex)
             {
-                await this.Clients.Caller.SendAsync(Messages.Error, ex.ErrorCode);
+                await this.SendErrorAsync(ex.ErrorCode);
             }
+        }
+
+        private async Task SendErrorAsync(string message)
+        {
+            await this.Clients.Caller.SendAsync(Messages.Error, message);
+        }
+
+        private async Task StartGameAsync()
+        {
+            var gameState = this.matchmakingService.GetGameState(this.UserName!);
+
+            foreach (Player player in gameState.Teams.SelectMany(team => team.Players))
+            {
+                this.gameService.FillPlayerTiles(gameState, player);
+                await this.Groups.AddToGroupAsync(player.ConnectionId, gameState.GroupName);
+            }
+
+            await this.Clients.Group(gameState.GroupName)
+                .SendAsync(Messages.StartGame, gameState.GroupName);
+
+            await this.UpdateGameStateAsync(gameState);
         }
 
         private async Task UpdateGameStateAsync(GameState gameState)

@@ -2,28 +2,34 @@
 {
     public enum GameMode
     {
-        OneVsOne = 1,
-        TwoVsTwo = 2,
-        ChessScrabble = 3,
-        ClassicScrabble = 4,
+        Duel = 1,
+        Duo = 2,
+        Classic = 3,
+        ChessScrabble = 4,
         SuperScrabble = 5,
         MadBoards = 6,
-        Friends = 7,
-        Random = 8,
-        Custom = 9,
-        Duo = 10,
     }
 
     public static class GameModeExtensions
     {
+        private static readonly Dictionary<GameMode, int> teamsCountsByGameModes = new()
+        {
+            [GameMode.Duel] = 2,
+            [GameMode.Duo] = 2,
+            [GameMode.Classic] = 4,
+            [GameMode.ChessScrabble] = 2,
+            [GameMode.SuperScrabble] = 4,
+            [GameMode.MadBoards] = 2,
+        };
+
         public static int GetTeamsCount(this GameMode gameMode)
         {
-            if (gameMode == GameMode.Duo)
+            if (!teamsCountsByGameModes.ContainsKey(gameMode))
             {
-                return 2;
+                throw new NotSupportedException($"Not supported {nameof(GameMode)} enum value.");
             }
 
-            return 2;
+            return teamsCountsByGameModes[gameMode];
         }
     }
 }

@@ -40,17 +40,17 @@
 
         public GameState CreateGameState(GameMode gameMode, IEnumerable<WaitingTeam> waitingTeams, string groupName)
         {
-            GameRoomConfiguration config = default!;
+            var config = new GameRoomConfiguration
+            {
+                TeamType = TeamType.Solo,
+                TeamsCount = gameMode.GetTeamsCount(),
+                TimerType = TimerType.Standard,
+                TimerDifficulty = TimerDifficulty.Normal,
+            };
 
             if (gameMode == GameMode.Duo)
             {
-                config = new GameRoomConfiguration
-                {
-                    TeamsCount = 2,
-                    TeamType = TeamType.Duo,
-                    TimerDifficulty = TimerDifficulty.Normal,
-                    TimerType = TimerType.Standard,
-                };
+                config.TeamType = TeamType.Duo;
             }
 
             var teams = waitingTeams.Select(wt =>

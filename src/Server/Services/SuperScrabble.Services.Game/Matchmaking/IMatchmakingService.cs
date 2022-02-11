@@ -23,5 +23,8 @@
         Party GetPartyById(string partyId);
 
         Party GetPartyByInvitationCode(string invitationCode);
+
+        void JoinRoom(string joinerUserName, string joinerConnectionId,
+            GameMode gameMode, out bool hasGameStarted);
     }
 }

@@ -14,19 +14,20 @@
 
     public class MatchmakingService : IMatchmakingService
     {
-        private static readonly ConcurrentDictionary<string, string> partyIdsByInvitationCodes = new();
-
-        private static readonly ConcurrentDictionary<string, Party> partiesByPartyIds = new();
+        private static readonly ConcurrentDictionary<
+            string, string> partyIdsByInvitationCodes = new();
 
         private static readonly ConcurrentDictionary<
-            GameMode, List<WaitingTeam>> waitingTeamsByGameModes = new();
+            string, Party> partiesByPartyIds = new();
 
-        private static readonly ConcurrentDictionary<string, string> groupNamesByUserNames = new();
+        private static readonly ConcurrentDictionary<
+            string, string> groupNamesByUserNames = new();
 
-        private static readonly ConcurrentDictionary<string, GameState> gameStatesByGroupNames = new();
+        private static readonly ConcurrentDictionary<
+            string, GameState> gameStatesByGroupNames = new();
 
         private static readonly Dictionary<
-            GameRoomConfiguration, List<Team>> waitingTeamsByRoomConfigs = new();
+            GameMode, List<WaitingTeam>> waitingTeamsByGameModes = new();
 
         private readonly IGameStateFactory gameStateFactory;
         private readonly IInvitationCodeGenerator invitationCodeGenerator;
@@ -157,7 +158,8 @@
         {
             if (!groupNamesByUserNames.ContainsKey(userName))
             {
-                throw new ArgumentException($"No {nameof(GameState)} for the given {nameof(userName)} was found.");
+                throw new ArgumentException(
+                    $"No {nameof(GameState)} for the given {nameof(userName)} was found.");
             }
 
             string groupName = groupNamesByUserNames[userName];
@@ -169,6 +171,20 @@
             if (!partiesByPartyIds.ContainsKey(partyId))
             {
                 throw new PartyNotFoundException();
+            }
+
+            return partiesByPartyIds[partyId];
+        }
+
+        public Party GetPartyByInvitationCode(string invitationCode)
+        {
+            ThrowIfInvitationCodeIsNotExisting(invitationCode);
+
+            string partyId = partyIdsByInvitationCodes[invitationCode];
+
+            if (!partiesByPartyIds.ContainsKey(partyId))
+            {
+                throw new ArgumentException($"Party with such {partyId} was not found.");
             }
 
             return partiesByPartyIds[partyId];
@@ -210,20 +226,6 @@
             hasGameStarted = true;
         }
 
-        public Party GetPartyByInvitationCode(string invitationCode)
-        {
-            ThrowIfInvitationCodeIsNotExisting(invitationCode);
-
-            string partyId = partyIdsByInvitationCodes[invitationCode];
-
-            if (!partiesByPartyIds.ContainsKey(partyId))
-            {
-                throw new ArgumentException($"Party with such {partyId} was not found.");
-            }
-
-            return partiesByPartyIds[partyId];
-        }
-
         private static void ThrowIfInvitationCodeIsNotExisting(string invitationCode)
         {
             bool isInvitationCodeExisting = partyIdsByInvitationCodes.ContainsKey(invitationCode);
@@ -232,6 +234,14 @@
             {
                 throw new UnexistingInvitationCodeException();
             }
+        }
+
+        public void JoinRoom(
+            string joinerUserName, string joinerConnectionId, GameMode gameMode, out bool hasGameStarted)
+        {
+            var joiner = new Member(joinerUserName, joinerConnectionId);
+
+            this.AddToWaitingQueue(new WaitingTeam(new[] { joiner }), gameMode, out hasGameStarted);
         }
     }
 }
