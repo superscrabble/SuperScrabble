@@ -24,7 +24,7 @@
 
         public string Id { get; }
 
-        public string InvitationCode { get; }
+        public string InvitationCode { get; set; }
 
         public int MinPlayersToStartGameCount { get; }
 

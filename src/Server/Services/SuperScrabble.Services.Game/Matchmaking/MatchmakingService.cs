@@ -14,6 +14,8 @@
 
     public class MatchmakingService : IMatchmakingService
     {
+        public const string RandomDuoInvitationCode = "RANDDUO";
+
         private static readonly ConcurrentDictionary<
             string, string> partyIdsByInvitationCodes = new();
 
@@ -26,7 +28,7 @@
         private static readonly ConcurrentDictionary<
             string, GameState> gameStatesByGroupNames = new();
 
-        private static readonly Dictionary<
+        private static readonly ConcurrentDictionary<
             GameMode, List<WaitingTeam>> waitingTeamsByGameModes = new();
 
         private readonly IGameStateFactory gameStateFactory;
@@ -40,6 +42,13 @@
             this.invitationCodeGenerator = invitationCodeGenerator;
         }
 
+        /// <summary>
+        /// Creates a new party with the given params
+        /// </summary>
+        /// <param name="creatorUserName"></param>
+        /// <param name="creatorConnectionId"></param>
+        /// <param name="partyType"></param>
+        /// <returns>The id of the newly created party</returns>
         public string CreateParty(string creatorUserName, string creatorConnectionId, PartyType partyType)
         {
             while (true)
@@ -210,9 +219,15 @@
             }
 
             string groupName = Guid.NewGuid().ToString();
-            var gameState = this.gameStateFactory.CreateGameState(gameMode, waitingTeams.Take(gameMode.GetTeamsCount()), groupName);
 
-            waitingTeams = waitingTeams.Skip(gameMode.GetTeamsCount()).ToList();
+            var gameState = this.gameStateFactory.CreateGameState(
+                gameMode, waitingTeams.Take(gameMode.GetTeamsCount()), groupName);
+
+            var remainingTeams = waitingTeams.Skip(gameMode.GetTeamsCount());
+
+            waitingTeams.Clear();
+            waitingTeams.AddRange(remainingTeams);
+
             gameStatesByGroupNames.TryAdd(groupName, gameState);
 
             foreach (Team team in gameState.Teams)
@@ -230,7 +245,7 @@
         {
             bool isInvitationCodeExisting = partyIdsByInvitationCodes.ContainsKey(invitationCode);
 
-            if (!isInvitationCodeExisting)
+            if (!isInvitationCodeExisting || invitationCode == RandomDuoInvitationCode)
             {
                 throw new UnexistingInvitationCodeException();
             }
@@ -242,6 +257,37 @@
             var joiner = new Member(joinerUserName, joinerConnectionId);
 
             this.AddToWaitingQueue(new WaitingTeam(new[] { joiner }), gameMode, out hasGameStarted);
+        }
+
+        public void JoinRandomDuoParty(
+            string joinerUserName, string joinerConnectionId, out bool hasGameStarted)
+        {
+            Party party;
+
+            try
+            {
+                party = this.GetPartyByInvitationCode(RandomDuoInvitationCode);
+            }
+            catch (MatchmakingFailedException)
+            {
+                string partyId = this.CreateParty(
+                    joinerUserName, joinerConnectionId, PartyType.Duo);
+
+                party = this.GetPartyById(partyId);
+                partyIdsByInvitationCodes.TryRemove(new(party.InvitationCode, party.Id));
+                partyIdsByInvitationCodes.TryAdd(RandomDuoInvitationCode, partyId);
+                party.InvitationCode = RandomDuoInvitationCode;
+            }
+
+            party.AddMember(new Member(joinerUserName, joinerConnectionId));
+
+            if (!party.IsFull)
+            {
+                hasGameStarted = false;
+                return;
+            }
+
+            this.StartGameFromParty(party.Owner?.UserName!, party.Id, out hasGameStarted);
         }
     }
 }

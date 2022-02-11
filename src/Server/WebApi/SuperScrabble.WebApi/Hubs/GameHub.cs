@@ -73,6 +73,18 @@
         }
 
         [Authorize]
+        public async Task JoinRandomDuo()
+        {
+            this.matchmakingService.JoinRandomDuoParty(
+                this.UserName!, this.ConnectionId, out bool hasGameStarted);
+
+            if (hasGameStarted)
+            {
+                await this.StartGameAsync();
+            }
+        }
+
+        [Authorize]
         public async Task CreateParty(PartyType partyType)
         {
             try

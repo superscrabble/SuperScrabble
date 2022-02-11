@@ -26,5 +26,8 @@
 
         void JoinRoom(string joinerUserName, string joinerConnectionId,
             GameMode gameMode, out bool hasGameStarted);
+
+        void JoinRandomDuoParty(
+            string joinerUserName, string joinerConnectionId, out bool hasGameStarted);
     }
 }

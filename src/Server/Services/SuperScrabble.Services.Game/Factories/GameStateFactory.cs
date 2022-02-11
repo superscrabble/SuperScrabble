@@ -38,7 +38,8 @@
             return new GameState(bag, board, groupName, teams, gameplayConstantsProvider);
         }
 
-        public GameState CreateGameState(GameMode gameMode, IEnumerable<WaitingTeam> waitingTeams, string groupName)
+        public GameState CreateGameState(
+            GameMode gameMode, IEnumerable<WaitingTeam> waitingTeams, string groupName)
         {
             var config = new GameRoomConfiguration
             {
