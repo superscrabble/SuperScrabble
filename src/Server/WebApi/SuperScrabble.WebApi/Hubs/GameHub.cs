@@ -112,7 +112,8 @@
                             Enum.GetValues(typeof(TimerDifficulty)).Cast<TimerDifficulty>()
                                 .Select(value => new SettingOption
                             {
-                                Name = TimeSpan.FromSeconds(value.GetSeconds(TimerType.Standard)).ToString("mm':'ss"),
+                                Name = TimeSpan.FromSeconds(
+                                    value.GetSeconds(TimerType.Standard)).ToString("mm':'ss"),
                                 Value = (int)value,
                                 IsSelected = value.IsDefault()
                             })
@@ -129,7 +130,8 @@
             try
             {
                 this.matchmakingService.JoinParty(
-                    this.UserName!, this.ConnectionId, invitationCode, out bool hasEnoughPlayersToStartGame);
+                    this.UserName!, this.ConnectionId,
+                    invitationCode, out bool hasEnoughPlayersToStartGame);
 
                 Party party = this.matchmakingService.GetPartyByInvitationCode(invitationCode);
 
@@ -145,6 +147,11 @@
                 await this.Clients
                     .Clients(party.GetConnectionIds(this.UserName!))
                     .SendAsync(Messages.NewPlayerJoinedParty, this.UserName);
+            }
+            catch (PlayerAlreadyInsidePartyException)
+            {
+                Party party = this.matchmakingService.GetPartyByInvitationCode(invitationCode);
+                await this.Clients.Caller.SendAsync(Messages.PartyJoined, party.Id);
             }
             catch (MatchmakingFailedException ex)
             {
@@ -198,7 +205,8 @@
         {
             try
             {
-                this.matchmakingService.StartGameFromParty(this.UserName!, partyId, out bool hasGameStarted);
+                this.matchmakingService.StartGameFromParty(
+                    this.UserName!, partyId, out bool hasGameStarted);
 
                 if (!hasGameStarted)
                 {
@@ -228,7 +236,6 @@
         [Authorize]
         public async Task SetFriendPartyConfiguration(FriendPartyConfig config, string partyId)
         {
-            Console.WriteLine(config.TimerDifficulty + " " + config.TimerType);
             try
             {
                 Party party = this.matchmakingService.GetPartyById(partyId);
