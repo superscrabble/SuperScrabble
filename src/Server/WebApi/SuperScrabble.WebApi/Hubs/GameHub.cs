@@ -76,6 +76,32 @@
         }
 
         [Authorize]
+        public async Task LeaveGame()
+        {
+            var gameState = this.matchmakingService.GetGameState(this.UserName!);
+
+            if (gameState == null)
+            {
+                return;
+            }
+
+            Player rageQuitter = gameState.GetPlayer(this.UserName!)!;
+            rageQuitter.LeaveGame();
+
+            gameState.EndGameIfRoomIsEmpty();
+
+            gameState.CurrentTeam.NextPlayer();
+
+            if (gameState.CurrentTeam.IsTurnFinished)
+            {
+                gameState.NextTeam();
+            }
+
+            //await this.SaveGameIfTheGameIsOverAsync();
+            await this.UpdateGameStateAsync(gameState);
+        }
+
+        [Authorize]
         public async Task ExchangeTiles(ExchangeTilesInputModel input)
         {
             var gameState = this.matchmakingService.GetGameState(this.UserName!);
