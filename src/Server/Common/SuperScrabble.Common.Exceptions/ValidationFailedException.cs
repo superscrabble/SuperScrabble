@@ -2,11 +2,14 @@
 {
     public abstract class ValidationFailedException : Exception
     {
-        protected ValidationFailedException(string errorCode)
+        public string ErrorCode
         {
-            this.ErrorCode = errorCode;
+            get
+            {
+                string name = this.GetType().Name;
+                int lastIndex = name.LastIndexOf("Exception");
+                return name.Remove(lastIndex);
+            }
         }
-
-        public string ErrorCode { get; }
     }
 }

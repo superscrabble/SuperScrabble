@@ -9,9 +9,6 @@
 
         PlayerGameStateViewModel MapFromGameState(GameState gameState, string userName);
 
-        /*
-        void FillPlayerTiles(GameState gameState, string userName);
-
         GameOperationResult WriteWord(
             GameState gameState, WriteWordInputModel input, string authorUserName);
 
@@ -19,6 +16,5 @@
             GameState gameState, ExchangeTilesInputModel input, string exchangerUserName);
 
         GameOperationResult SkipTurn(GameState gameState, string skipperUserName);
-        */
     }
 }

@@ -54,7 +54,7 @@
         {
             if (this.IsFull)
             {
-                throw new GameLobbyFullException();
+                throw new GamePartyFullException();
             }
 
             if (this.IsMemberInside(member.UserName))

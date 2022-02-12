@@ -49,7 +49,8 @@
         /// <param name="creatorConnectionId"></param>
         /// <param name="partyType"></param>
         /// <returns>The id of the newly created party</returns>
-        public string CreateParty(string creatorUserName, string creatorConnectionId, PartyType partyType)
+        public string CreateParty(string creatorUserName,
+            string creatorConnectionId, PartyType partyType)
         {
             while (true)
             {

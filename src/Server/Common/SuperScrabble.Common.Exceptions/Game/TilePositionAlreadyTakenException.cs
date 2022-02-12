@@ -2,8 +2,5 @@
 {
     public class TilePositionAlreadyTakenException : GameValidationFailedException
     {
-        public TilePositionAlreadyTakenException() : base(TilePositionAlreadyTaken)
-        {
-        }
     }
 }

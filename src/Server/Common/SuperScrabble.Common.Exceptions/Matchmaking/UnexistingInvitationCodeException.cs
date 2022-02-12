@@ -2,8 +2,5 @@
 {
     public class UnexistingInvitationCodeException : MatchmakingFailedException
     {
-        public UnexistingInvitationCodeException() : base(UnexistingInvitationCode)
-        {
-        }
     }
 }

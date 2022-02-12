@@ -28,11 +28,6 @@
             this.wordsService = wordsService;
         }
 
-        public void IsPlayerInsideGame(GameState gameState, string playerUserName, out Player player)
-        {
-            throw new NotImplementedException();
-        }
-
         public void IsPlayerOnTurn(GameState gameState, string userName)
         {
             if (gameState.CurrentTeam.CurrentPlayer.UserName != userName)
@@ -41,7 +36,8 @@
             }
         }
 
-        public void ValidateInputTilesCount(int playerTilesCount, int inputTilesCount, bool isBoardEmpty)
+        public void ValidateInputTilesCount(
+            int playerTilesCount, int inputTilesCount, bool isBoardEmpty)
         {
             if (!IsInputTilesCountValid(playerTilesCount, inputTilesCount, isBoardEmpty))
             {
@@ -50,7 +46,8 @@
         }
 
         public void HasPlayerSubmittedTilesWhichHeOwns(
-            Player player, IEnumerable<Tile> submittedTiles, bool isPlayerTryingToExchangeTiles = false)
+            Player player, IEnumerable<Tile> submittedTiles,
+            bool isPlayerTryingToExchangeTiles = false)
         {
             Func<Tile, Tile, bool> playerTileSelector = isPlayerTryingToExchangeTiles
                 ? ExchangeTilesSelector
@@ -85,7 +82,8 @@
             }
         }
 
-        public void AreAllTilesInsideTheBoardRange(IBoard board, IEnumerable<Position> inputTilesPositions)
+        public void AreAllTilesInsideTheBoardRange(
+            IBoard board, IEnumerable<Position> inputTilesPositions)
         {
             foreach (Position position in inputTilesPositions)
             {
@@ -96,7 +94,8 @@
             }
         }
 
-        public void AreAllTilesPositionsFreeBoardCells(IBoard board, IEnumerable<Position> inputTilesPositions)
+        public void AreAllTilesPositionsFreeBoardCells(
+            IBoard board, IEnumerable<Position> inputTilesPositions)
         {
             foreach (Position position in inputTilesPositions)
             {

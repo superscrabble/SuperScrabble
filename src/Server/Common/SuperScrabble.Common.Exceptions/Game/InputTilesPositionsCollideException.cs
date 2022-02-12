@@ -2,8 +2,5 @@
 {
     public class InputTilesPositionsCollideException : GameValidationFailedException
     {
-        public InputTilesPositionsCollideException() : base(InputTilesPositionsCollide)
-        {
-        }
     }
 }

@@ -54,6 +54,28 @@
         public string ConnectionId => this.Context.ConnectionId;
 
         [Authorize]
+        public async Task WriteWord(WriteWordInputModel input)
+        {
+            var gameState = this.matchmakingService.GetGameState(this.UserName!);
+            GameOperationResult result = this.gameService.WriteWord(gameState, input, this.UserName!);
+
+
+            if (!result.IsSucceeded)
+            {
+                await this.SendValidationErrorMessageAsync("InvalidWriteWordInput", result);
+                return;
+            }
+
+            //await this.SaveGameIfTheGameIsOverAsync();
+            await this.UpdateGameStateAsync(gameState);
+        }
+
+        private async Task SendValidationErrorMessageAsync(string methodName, GameOperationResult result)
+        {
+            await this.Clients.Caller.SendAsync(methodName, result);
+        }
+
+        [Authorize]
         public async Task JoinRoom(GameMode gameMode)
         {
             try

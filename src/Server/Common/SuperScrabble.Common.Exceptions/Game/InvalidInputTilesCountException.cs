@@ -2,8 +2,5 @@
 {
     public class InvalidInputTilesCountException : GameValidationFailedException
     {
-        public InvalidInputTilesCountException() : base(InvalidInputTilesCount)
-        {
-        }
     }
 }

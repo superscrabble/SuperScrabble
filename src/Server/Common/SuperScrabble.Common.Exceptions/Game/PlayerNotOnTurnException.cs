@@ -2,8 +2,5 @@
 {
     public class PlayerNotOnTurnException : GameValidationFailedException
     {
-        public PlayerNotOnTurnException() : base(PlayerIsNotOnTurn)
-        {
-        }
     }
 }
