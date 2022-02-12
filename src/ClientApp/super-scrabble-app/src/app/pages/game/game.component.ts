@@ -149,7 +149,7 @@ export class GameComponent implements OnInit {
             this.isTileExchangePossible = data.commonGameState.isTileExchangePossible;
             this.loadScoreBoard(data.commonGameState.teams)
             //TODO: remove updatedBoardCells from board, if there are some
-            this.updatedBoardCells = [];
+            //this.updatedBoardCells = [];
 
             if(data.commonGameState.userNamesOfPlayersWhoHaveLeftTheGame) {
                 this.userNamesOfPlayersWhoHaveLeftTheGame = data.commonGameState.userNamesOfPlayersWhoHaveLeftTheGame;
@@ -175,7 +175,7 @@ export class GameComponent implements OnInit {
                 this.board[this.updatedBoardCells[i].value.row][this.updatedBoardCells[i].value.column].tile = null;
             }
             this.selectedBoardCell = null;
-            this.updatedBoardCells = [];
+            //this.updatedBoardCells = [];
         })
 
         this.signalrService.hubConnection?.on("InvalidExchangeTilesInput", data => {
@@ -203,12 +203,6 @@ export class GameComponent implements OnInit {
             let seconds: string = data.seconds.toString().padStart(maxLength, fillString);
             this.gameTimeAsString = `${minutes}:${seconds}`;
         });
-    }
-
-    loadMockLogs() {
-        for(let i = 0; i < 10; i++) {
-            this.gameLogs.push(new Action("Иван написа ", "здраве"));
-        }
     }
 
     loadBoard(board: any): void {
@@ -258,6 +252,7 @@ export class GameComponent implements OnInit {
         return team;
     }
 
+    /*
     getClassNameIfNewCell(cell: Cell) {
         for(let i = 0; i < this.updatedBoardCells.length; i++) {
             if(this.updatedBoardCells[i].key == cell) {
@@ -270,14 +265,15 @@ export class GameComponent implements OnInit {
 
     getClassNameByCellType(type: number) {
         return this.cellViewDataByType.get(type)?.className;
-    }
+    }*/
 
+    //Useless
     removeTileFromBoard(tile: Tile) {
         console.log("Remove tile from Board")
         //this.boardComponent?.removeTileFromBoard(tile);
     }
 
-    drop(event: CdkDragDrop<Tile[]>) {
+    /*drop(event: CdkDragDrop<Tile[]>) {
         console.log("DROPPING IN PLAYER TILES")
         console.log(event.previousIndex + " " + event.previousContainer.data + " " + event.currentIndex);
         if(event.previousContainer === event.container)
@@ -317,13 +313,13 @@ export class GameComponent implements OnInit {
 
     createPlayerTilePreview() {
         return document.createElement('div');
-    }
+    }*/
 
     isCurrentPlayerOnTurn() : boolean {
         return this.currentUserName == this.playerNameOnTurn;
     }
 
-    clickOnPlayerTile(playerTile: Tile | any) {
+    /*clickOnPlayerTile(playerTile: Tile | any) {
         if(!this.isCurrentPlayerOnTurn()) return;
 
         if(playerTile != null) {
@@ -348,7 +344,7 @@ export class GameComponent implements OnInit {
             this.dialog.open(ChangeWildcardDialogComponent, { data: { tiles: this.wildcardOptions, 
                 tile: playerTile, writeWordInput: null}});
         }
-    }
+    }*/
 
     leaveGame() {
         let dialogRef = this.dialog.open(LeaveGameDialogComponent)
@@ -405,17 +401,19 @@ export class GameComponent implements OnInit {
         this.selectedExchangeTiles = [];
     }
 
+    //TODO: rename here and in the gameboard component to onTileOutside
     addTileToPlayerTiles(tile: Tile) : void {
         this.playerTiles.push(tile);
     }
 
+    //TODO: rename here and in the gameboard component to onTilePlaced
     removeTileFromPlayerTiles(playerTile: Tile) {
         if(playerTile) {
             this.playerTiles = this.playerTiles.filter(item => item !== playerTile);
         }
     }
 
-    getClassNameIfSelected(object: Tile | Cell | any) {
+    /*getClassNameIfSelected(object: Tile | Cell | any) {
         if(object instanceof Tile) {
             if(this.selectedPlayerTile && this.selectedPlayerTile == object) {
                 return "selected-tile";
@@ -426,16 +424,28 @@ export class GameComponent implements OnInit {
             }
         }
         return "";
-    }
+    }*/
 
     showWordMeaningOf(word: string) : void {
         console.log("Show word meaning")
+    }
+
+    checkForWildcards(tiles: Tile[]) : boolean {
+        for(let i = 0; i < tiles.length; i++) {
+            if(tiles[i].letter == AppConfig.WildcardSymbol) {
+                return true;
+            }
+        }
+        return false;
     }
 
     writeWord() : void {     
         if(this.updatedBoardCells.length <= 0) {
             return;
         }
+
+        console.log("Before Anything in Writing Word");
+        console.log(this.updatedBoardCells);
         
         //Check for null tiles
         this.updatedBoardCells = this.updatedBoardCells.filter(item => item.cell.tile !== null);
@@ -446,7 +456,7 @@ export class GameComponent implements OnInit {
         if(!this.checkForWildcards(writeWordInput.map(item => (item.key)))) {
             try {
                 //this.signalrService.writeWord(writeWordInput);
-                this.gameService.writeWord(writeWordInput);
+                //this.gameService.writeWord(writeWordInput);
             }
             catch (ex) {
                 console.log("ERROR");
@@ -461,15 +471,6 @@ export class GameComponent implements OnInit {
                         tile: this.updatedBoardCells[i].key.tile, writeWordInput: writeWordInput}});
             }
         }
-    }
-
-    checkForWildcards(tiles: Tile[]) : boolean {
-        for(let i = 0; i < tiles.length; i++) {
-            if(tiles[i].letter == AppConfig.WildcardSymbol) {
-                return true;
-            }
-        }
-        return false;
     }
 
     openSettings() {
@@ -506,6 +507,12 @@ export class GameComponent implements OnInit {
     isDuoGame() : boolean {
         //TODO: check if GameMode is duo
         return false;
+    }
+
+    loadMockLogs() {
+        for(let i = 0; i < 10; i++) {
+            this.gameLogs.push(new Action("Иван написа ", "здраве"));
+        }
     }
 
     loadMockData(): void {
