@@ -246,7 +246,10 @@ namespace SuperScrabble.Services.Game
                 this.gameValidator.HasPlayerSubmittedTilesWhichHeOwns(
                     exchanger, input.TilesToExchange, isPlayerTryingToExchangeTiles: true);
 
-                gameState.Bag.SwapTiles(input.TilesToExchange);
+                var newTiles = gameState.Bag.SwapTiles(input.TilesToExchange);
+
+                exchanger.RemoveTiles(input.TilesToExchange);
+                exchanger.AddTiles(newTiles);
 
                 gameState.CurrentTeam.NextPlayer();
 
