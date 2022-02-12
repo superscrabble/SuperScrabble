@@ -75,9 +75,20 @@
                 </app-gameboard>
             </div>
         </div>
+        <div *ngIf="teammates.length > 0"
+            class="d-flex flex-column text-center border">
+            <ng-container *ngFor="let teammate of teammates">
+                <h2 style="margin: 0">Плочки на {{teammate.userName}}</h2>
+                <app-player-rack
+                    [playerTiles]="teammate.tiles" [isEnabled]="false" (removeTileFromBoard)="removeTileFromBoard($event)"
+                    (openWildcardDialogEvent)="openWildcardDialogEvent($event)">
+                </app-player-rack>
+            </ng-container>
+        </div>
         <app-player-rack
             [playerTiles]="playerTiles" [isEnabled]="true" (removeTileFromBoard)="removeTileFromBoard($event)"
-            (openWildcardDialogEvent)="openWildcardDialogEvent($event)"></app-player-rack>
+            (openWildcardDialogEvent)="openWildcardDialogEvent($event)">
+        </app-player-rack>
     </div>
     <div class="right-column col-lg-3 d-lg-flex d-md-none d-sm-none d-none order-lg-last">
         <div class="ms-3">

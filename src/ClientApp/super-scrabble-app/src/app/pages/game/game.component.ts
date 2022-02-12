@@ -34,6 +34,12 @@ export class FormatTimePipe implements PipeTransform {
     }
 }
 
+//FIXME
+class Teammate {
+    userName: string = "";
+    tiles: Tile[] = [];
+}
+
 @Component({
 selector: 'app-game',
 templateUrl: './game.component.html',
@@ -46,6 +52,7 @@ export class GameComponent implements OnInit {
     //TODO: create GameService for Join, Leave, ExchangeTiles, WriteWord, SkipTurn
     board: Cell[][] = new Array();
     playerTiles: Tile[] = new Array();
+    teammates: Teammate[] = [];
     cellViewDataByType: Map<number, CellViewData> = new Map();
     remainingTilesCount: number = 0;
     teams: Team[] = new Array();
@@ -2410,5 +2417,11 @@ export class GameComponent implements OnInit {
         this.remainingTilesCount = data.remainingTilesCount;
         this.loadScoreBoard(data.teams)
         console.log("Tiles Count: " + this.remainingTilesCount)
+        this.teammates = [
+            {
+                userName: "Gosho",
+                tiles: this.playerTiles
+            }
+        ]
     }
 }

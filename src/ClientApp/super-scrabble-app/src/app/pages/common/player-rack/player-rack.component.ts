@@ -24,7 +24,8 @@ export class PlayerRackComponent implements OnInit {
   doubleClickOnPlayerTile(playerTile: Tile) {
     if((playerTile.letter == AppConfig.WildcardSymbol
         || playerTile.points == 0)
-        && this.playerTiles.find(item => item == playerTile)) {
+        && this.playerTiles.find(item => item == playerTile)
+        && this.isEnabled) {
           this.openWildcardDialogEvent.emit({tile: playerTile, writeWordInput: null});
     }
   }
@@ -32,6 +33,11 @@ export class PlayerRackComponent implements OnInit {
   drop(event: CdkDragDrop<Tile[]>) {
     console.log("DROPPING IN PLAYER TILES")
     console.log(event.previousIndex + " " + event.previousContainer.data + " " + event.currentIndex);
+
+    if(!this.isEnabled) {
+      return;
+    }
+
     if(event.previousContainer === event.container)
         moveItemInArray(this.playerTiles, event.previousIndex, event.currentIndex);
     else {
