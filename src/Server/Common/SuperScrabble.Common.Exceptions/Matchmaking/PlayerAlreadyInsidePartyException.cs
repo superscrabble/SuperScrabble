@@ -2,8 +2,5 @@
 {
     public class PlayerAlreadyInsidePartyException : MatchmakingFailedException
     {
-        public PlayerAlreadyInsidePartyException() : base(PlayerAlreadyInsideLobby)
-        {
-        }
     }
 }

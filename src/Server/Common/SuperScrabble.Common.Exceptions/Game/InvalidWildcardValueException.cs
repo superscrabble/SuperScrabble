@@ -2,8 +2,5 @@
 {
     public class InvalidWildcardValueException : GameValidationFailedException
     {
-        public InvalidWildcardValueException() : base(InvalidWildcardValue)
-        {
-        }
     }
 }

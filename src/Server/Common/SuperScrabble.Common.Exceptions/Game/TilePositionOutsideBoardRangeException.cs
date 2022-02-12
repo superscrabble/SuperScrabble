@@ -2,8 +2,5 @@
 {
     public class TilePositionOutsideBoardRangeException : GameValidationFailedException
     {
-        public TilePositionOutsideBoardRangeException() : base(TilePositionOutsideBoardRange)
-        {
-        }
     }
 }

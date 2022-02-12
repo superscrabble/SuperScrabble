@@ -2,8 +2,5 @@
 {
     public class GapsBetweenInputTilesNotAllowedException : ValidationFailedAfterInputTilesHaveBeenPlacedException
     {
-        public GapsBetweenInputTilesNotAllowedException() : base(GapsBetweenInputTilesNotAllowed)
-        {
-        }
     }
 }

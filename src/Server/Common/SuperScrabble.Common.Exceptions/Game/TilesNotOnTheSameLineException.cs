@@ -2,8 +2,5 @@
 {
     public class TilesNotOnTheSameLineException : GameValidationFailedException
     {
-        public TilesNotOnTheSameLineException() : base(TilesNotOnTheSameLine)
-        {
-        }
     }
 }

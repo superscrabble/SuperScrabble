@@ -2,8 +2,5 @@
 {
     public class FirstWordMustGoThroughTheBoardCenterException : GameValidationFailedException
     {
-        public FirstWordMustGoThroughTheBoardCenterException() : base(FirstWordMustGoThroughTheBoardCenter)
-        {
-        }
     }
 }

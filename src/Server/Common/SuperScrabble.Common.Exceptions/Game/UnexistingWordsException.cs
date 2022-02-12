@@ -2,7 +2,7 @@
 {
     public class UnexistingWordsException : ValidationFailedAfterInputTilesHaveBeenPlacedException
     {
-        public UnexistingWordsException(IEnumerable<string> unexistingWords) : base(WordsDoNotExist)
+        public UnexistingWordsException(IEnumerable<string> unexistingWords)
         {
             this.UnexistingWords = unexistingWords;
         }

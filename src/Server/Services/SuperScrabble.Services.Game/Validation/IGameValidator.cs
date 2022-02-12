@@ -10,13 +10,6 @@
     public interface IGameValidator
     {
         /// <summary>
-        /// Checks whether the player with the given userName is present inside the given game
-        /// </summary>
-        /// <param name="gameState"></param>
-        /// <param name="playerUserName"></param>
-        void IsPlayerInsideGame(GameState gameState, string playerUserName, out Player player);
-
-        /// <summary>
         /// Checks whether the player with the given userName is on turn.
         /// Otherwise an exception is thrown
         /// </summary>

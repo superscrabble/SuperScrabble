@@ -2,8 +2,5 @@
 {
     public class OnlyOwnerHasAccessException : MatchmakingFailedException
     {
-        public OnlyOwnerHasAccessException() : base("OnlyOwnerHasAccess")
-        {
-        }
     }
 }

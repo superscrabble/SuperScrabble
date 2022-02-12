@@ -2,8 +2,5 @@
 {
     public class GameModeNotSupportedException : MatchmakingFailedException
     {
-        public GameModeNotSupportedException() : base("GameModeNotSupported")
-        {
-        }
     }
 }

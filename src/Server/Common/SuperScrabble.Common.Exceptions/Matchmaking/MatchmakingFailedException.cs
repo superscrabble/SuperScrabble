@@ -2,8 +2,5 @@
 {
     public abstract class MatchmakingFailedException : ValidationFailedException
     {
-        protected MatchmakingFailedException(string errorCode) : base(errorCode)
-        {
-        }
     }
 }
