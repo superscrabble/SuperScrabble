@@ -19,6 +19,7 @@ using SuperScrabble.Services.Game.Common.GameplayConstantsProviders;
 using SuperScrabble.Services.Game.Common.TilesProviders;
 using SuperScrabble.Services.Game.Factories;
 using SuperScrabble.Services.Game.Matchmaking;
+using SuperScrabble.Services.Game.Scoring;
 using SuperScrabble.Services.Game.Validation;
 using SuperScrabble.WebApi.Hubs;
 
@@ -58,7 +59,7 @@ builder.Services.AddTransient<IInvitationCodeGenerator, InvitationCodeGenerator>
 
 // Services.Data
 builder.Services.AddTransient<IUsersService, UsersService>();
-builder.Services.AddTransient<IWordsService, WordsService>();
+builder.Services.AddTransient<IWordsService, AlwaysValidWordsService>();
 
 // Services.Game
 builder.Services.AddTransient<IGameValidator, GameValidator>();
@@ -67,6 +68,7 @@ builder.Services.AddTransient<ITilesProvider, StandardTilesProvider>();
 builder.Services.AddTransient<IMatchmakingService, MatchmakingService>();
 builder.Services.AddTransient<IGameService, GameService>();
 builder.Services.AddTransient<IGameStateFactory, GameStateFactory>();
+builder.Services.AddTransient<IScoringService, ScoringService>();
 
 var app = builder.Build();
 
