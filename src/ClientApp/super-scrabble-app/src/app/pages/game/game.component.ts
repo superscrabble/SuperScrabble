@@ -165,6 +165,7 @@ export class GameComponent implements OnInit {
             console.log(data);
             //TODO: Return all wildcards to their normal state
             let dialogData: ErrorDialogData = { message: Object.values(data.errorsByCodes).toString(), unexistingWords: null };
+            //TODO: Change || to &&
             if(data.unexistingWords || data.unexistingWords.length > 0) {
                 dialogData.unexistingWords = data.unexistingWords;
             }
@@ -431,9 +432,7 @@ export class GameComponent implements OnInit {
         console.log("Show word meaning")
     }
 
-    writeWord() : void {
-        this.dialog.open(ErrorDialogComponent, { data: {}});        
-
+    writeWord() : void {     
         if(this.updatedBoardCells.length <= 0) {
             return;
         }
