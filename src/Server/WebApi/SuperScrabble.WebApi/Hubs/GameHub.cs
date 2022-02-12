@@ -56,6 +56,9 @@
         [Authorize]
         public async Task WriteWord(WriteWordInputModel input)
         {
+            Console.WriteLine("Write Word");
+            Console.WriteLine(input.PositionsByTiles.Count());
+
             var gameState = this.matchmakingService.GetGameState(this.UserName!);
             GameOperationResult result = this.gameService.WriteWord(gameState, input, this.UserName!);
 
@@ -302,6 +305,17 @@
         private async Task SendErrorAsync(string message)
         {
             await this.Clients.Caller.SendAsync(Messages.Error, message);
+        }
+
+        [Authorize]
+        public async Task LoadGame(string groupName)
+        {
+            //if (this.matchmakingService.IsUserInsideGroup(this.UserName, groupName))
+            //{
+                var gameState = this.matchmakingService.GetGameState(this.UserName!);
+                var viewModel = this.gameService.MapFromGameState(gameState, this.UserName!);
+                await this.Clients.Client(this.Context.ConnectionId).SendAsync(Messages.UpdateGameState, viewModel);
+            //}
         }
 
         private async Task StartGameAsync()
