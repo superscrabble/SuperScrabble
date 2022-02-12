@@ -326,6 +326,8 @@
             {
                 foreach (Player player in team.Players)
                 {
+                    this.gameService.FillPlayerTiles(gameState, player);
+
                     PlayerGameStateViewModel viewModel = this.gameService
                         .MapFromGameState(gameState, player.UserName);
 
