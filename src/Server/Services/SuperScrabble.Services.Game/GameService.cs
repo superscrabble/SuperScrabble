@@ -209,12 +209,9 @@ namespace SuperScrabble.Services.Game
             }
             catch (ValidationFailedException ex)
             {
-                Console.WriteLine(ex.ErrorCode);
                 if (ex is ValidationFailedAfterInputTilesHaveBeenPlacedException)
                 {
-                    Console.WriteLine("Restore Board");
                     RestorePreviousBoardState(gameState.Board, input);
-                    Console.WriteLine(gameState.Board.IsCellFree(input.PositionsByTiles.FirstOrDefault()!.Value));
                 }
 
                 var result = new GameOperationResult { IsSucceeded = false };

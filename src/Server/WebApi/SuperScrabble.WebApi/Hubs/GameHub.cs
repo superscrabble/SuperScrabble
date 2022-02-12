@@ -9,6 +9,7 @@
 
     using SuperScrabble.Services.Game;
     using SuperScrabble.Services.Game.Common.Enums;
+    using SuperScrabble.Services.Game.Common.TilesProviders;
     using SuperScrabble.Services.Game.Matchmaking;
     using SuperScrabble.Services.Game.Models;
     using SuperScrabble.Services.Game.Models.Parties;
@@ -42,11 +43,16 @@
 
         private readonly IMatchmakingService matchmakingService;
         private readonly IGameService gameService;
+        private readonly ITilesProvider tilesProvider;
 
-        public GameHub(IMatchmakingService matchmakingService, IGameService gameService)
+        public GameHub(
+            IMatchmakingService matchmakingService,
+            IGameService gameService,
+            ITilesProvider tilesProvider)
         {
             this.matchmakingService = matchmakingService;
             this.gameService = gameService;
+            this.tilesProvider = tilesProvider;
         }
 
         public string? UserName => this.Context.User?.Identity?.Name;
@@ -56,12 +62,8 @@
         [Authorize]
         public async Task WriteWord(WriteWordInputModel input)
         {
-            Console.WriteLine("Write Word");
-            Console.WriteLine(input.PositionsByTiles.Count());
-
             var gameState = this.matchmakingService.GetGameState(this.UserName!);
             GameOperationResult result = this.gameService.WriteWord(gameState, input, this.UserName!);
-
 
             if (!result.IsSucceeded)
             {
@@ -71,6 +73,44 @@
 
             //await this.SaveGameIfTheGameIsOverAsync();
             await this.UpdateGameStateAsync(gameState);
+        }
+
+        [Authorize]
+        public async Task ExchangeTiles(ExchangeTilesInputModel input)
+        {
+            var gameState = this.matchmakingService.GetGameState(this.UserName!);
+            GameOperationResult result = this.gameService.ExchangeTiles(gameState, input, this.UserName!);
+
+            if (!result.IsSucceeded)
+            {
+                await this.SendValidationErrorMessageAsync("InvalidExchangeTilesInput", result);
+                return;
+            }
+
+            await this.UpdateGameStateAsync(gameState);
+        }
+
+        [Authorize]
+        public async Task SkipTurn()
+        {
+            var gameState = this.matchmakingService.GetGameState(this.UserName!);
+            GameOperationResult result = this.gameService.SkipTurn(gameState, this.UserName!);
+
+            if (!result.IsSucceeded)
+            {
+                await this.SendValidationErrorMessageAsync("ImpossibleToSkipTurn", result);
+                return;
+            }
+
+            //await this.SaveGameIfTheGameIsOverAsync();
+            await this.UpdateGameStateAsync(gameState);
+        }
+
+        [Authorize]
+        public async Task GetAllWildcardOptions()
+        {
+            var options = this.tilesProvider.GetAllWildcardOptions();
+            await this.Clients.Caller.SendAsync("ReceiveAllWildcardOptions", options);
         }
 
         private async Task SendValidationErrorMessageAsync(string methodName, GameOperationResult result)
