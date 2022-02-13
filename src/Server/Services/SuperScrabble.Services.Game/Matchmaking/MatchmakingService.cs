@@ -16,20 +16,11 @@
     {
         public const string RandomDuoInvitationCode = "RANDDUO";
 
-        private static readonly ConcurrentDictionary<
-            string, string> partyIdsByInvitationCodes = new();
-
-        private static readonly ConcurrentDictionary<
-            string, Party> partiesByPartyIds = new();
-
-        private static readonly ConcurrentDictionary<
-            string, string> groupNamesByUserNames = new();
-
-        private static readonly ConcurrentDictionary<
-            string, GameState> gameStatesByGroupNames = new();
-
-        private static readonly ConcurrentDictionary<
-            GameMode, List<WaitingTeam>> waitingTeamsByGameModes = new();
+        private static readonly ConcurrentDictionary<string, Party> partiesByPartyIds = new();
+        private static readonly ConcurrentDictionary<string, string> partyIdsByInvitationCodes = new();
+        private static readonly ConcurrentDictionary<string, string> gameIdsByUserNames = new();
+        private static readonly ConcurrentDictionary<string, GameState> gameStatesByGameIds = new();
+        private static readonly ConcurrentDictionary<GameMode, List<WaitingTeam>> waitingTeamsByGameModes = new();
 
         private readonly IGameStateFactory gameStateFactory;
         private readonly IInvitationCodeGenerator invitationCodeGenerator;
@@ -136,11 +127,11 @@
                 partyIdsByInvitationCodes.TryRemove(new(party.InvitationCode, partyId));
                 partiesByPartyIds.TryRemove(new(partyId, party));
 
-                gameStatesByGroupNames.TryAdd(groupName, gameState);
+                gameStatesByGameIds.TryAdd(groupName, gameState);
 
                 foreach (Player player in gameState.Teams.SelectMany(team => team.Players))
                 {
-                    groupNamesByUserNames.TryAdd(player.UserName, groupName);
+                    gameIdsByUserNames.TryAdd(player.UserName, groupName);
                 }
 
                 hasGameStarted = true;
@@ -174,14 +165,14 @@
 
         public GameState GetGameState(string userName)
         {
-            if (!groupNamesByUserNames.ContainsKey(userName))
+            if (!gameIdsByUserNames.ContainsKey(userName))
             {
                 throw new ArgumentException(
                     $"No {nameof(GameState)} for the given {nameof(userName)} was found.");
             }
 
-            string groupName = groupNamesByUserNames[userName];
-            return gameStatesByGroupNames[groupName];
+            string groupName = gameIdsByUserNames[userName];
+            return gameStatesByGameIds[groupName];
         }
 
         public Party GetPartyById(string partyId)
@@ -234,11 +225,11 @@
 
             waitingTeams.Clear();
 
-            gameStatesByGroupNames.TryAdd(groupName, gameState);
+            gameStatesByGameIds.TryAdd(groupName, gameState);
 
             foreach (Player player in gameState.Players)
             {
-                groupNamesByUserNames.TryAdd(player.UserName, groupName);
+                gameIdsByUserNames.TryAdd(player.UserName, groupName);
             }
 
             hasGameStarted = true;
@@ -292,9 +283,19 @@
             this.StartGameFromParty(party.Owner?.UserName!, party.Id, out hasGameStarted);
         }
 
-        public bool IsPlayerInsideGame(string userName)
+        public bool IsUserInsideAnyGame(string userName)
         {
-            return groupNamesByUserNames.ContainsKey(userName);
+            return gameIdsByUserNames.ContainsKey(userName);
+        }
+
+        public bool IsUserInsideGame(string userName, string gameId)
+        {
+            if (!gameIdsByUserNames.ContainsKey(userName))
+            {
+                return false;
+            }
+
+            return gameIdsByUserNames[userName] == gameId;
         }
     }
 }

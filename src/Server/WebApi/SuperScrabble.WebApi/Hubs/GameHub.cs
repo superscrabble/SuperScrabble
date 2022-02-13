@@ -62,7 +62,7 @@
 
         public override async Task OnConnectedAsync()
         {
-            if (this.matchmakingService.IsPlayerInsideGame(this.UserName!))
+            if (this.matchmakingService.IsUserInsideAnyGame(this.UserName!))
             {
                 GameState gameState = this.matchmakingService.GetGameState(this.UserName!);
                 Player player = gameState.GetPlayer(this.UserName!)!;
@@ -78,7 +78,9 @@
 
         public override Task OnDisconnectedAsync(Exception? exception)
         {
-            if (this.matchmakingService.IsPlayerInsideGame(this.UserName!))
+            // Is inside party -> remove it from there (if this connectionId == party.Member.ConnectionId)
+
+            if (this.matchmakingService.IsUserInsideAnyGame(this.UserName!))
             {
                 GameState gameState = this.matchmakingService.GetGameState(this.UserName!);
                 Player player = gameState.GetPlayer(this.UserName!)!;
@@ -190,6 +192,17 @@
                 await this.SendErrorAsync(ex.ErrorCode);
             }
         }
+
+        // [Authorize]
+        // LoadGame(string groupName)
+        // {
+        //      IsUserInsideGame(string userName, string gameId)
+        //      GetGameState(string gameId)
+        //      gameState.GetPlayer(string userName)
+        //      await SendAsync("UserEnteredGameFromAnotherConnectionId", player.ConnectionId)
+        //      player.ConnectionId = this.ConnectionId
+        //      this.Caller.SendAsync("UpdateGameState")
+        // }
 
         [Authorize]
         public async Task JoinRandomDuo()
@@ -400,11 +413,29 @@
         }
 
         [Authorize]
-        public async Task LoadGame(string groupName)
+        public async Task LoadGame(string gameId)
         {
-            var gameState = this.matchmakingService.GetGameState(this.UserName!);
+            if (!this.matchmakingService.IsUserInsideGame(this.UserName!, gameId))
+            {
+                // User is NOT inside the given game
+                return;
+            }
+
+            GameState gameState = this.matchmakingService.GetGameState(this.UserName!);
+
+            Player player = gameState.GetPlayer(this.UserName!)!;
+
+            await this.Clients
+                .Client(player.ConnectionId!)
+                .SendAsync("UserEnteredGameFromAnotherConnectionId", player.ConnectionId);
+
+            player.ConnectionId = this.ConnectionId;
+
             var viewModel = this.gameService.MapFromGameState(gameState, this.UserName!);
-            await this.Clients.Client(this.Context.ConnectionId).SendAsync(Messages.UpdateGameState, viewModel);
+
+            await this.Clients
+                .Client(this.Context.ConnectionId)
+                .SendAsync(Messages.UpdateGameState, viewModel);
         }
 
         private async Task SendValidationErrorMessageAsync(string methodName, GameOperationResult result)
@@ -423,7 +454,7 @@
 
             foreach (Player player in gameState.Teams.SelectMany(team => team.Players))
             {
-                await this.Groups.AddToGroupAsync(player.ConnectionId, gameState.GroupName);
+                await this.Groups.AddToGroupAsync(player.ConnectionId!, gameState.GroupName);
             }
 
             await this.Clients.Group(gameState.GroupName)
@@ -443,7 +474,7 @@
                     PlayerGameStateViewModel viewModel = this.gameService
                         .MapFromGameState(gameState, player.UserName);
 
-                    await this.Clients.Client(player.ConnectionId)
+                    await this.Clients.Client(player.ConnectionId!)
                         .SendAsync(Messages.UpdateGameState, viewModel);
                 }
             }

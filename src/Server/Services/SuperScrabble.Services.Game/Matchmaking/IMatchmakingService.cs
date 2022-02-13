@@ -30,6 +30,8 @@
         void JoinRandomDuoParty(
             string joinerUserName, string joinerConnectionId, out bool hasGameStarted);
 
-        bool IsPlayerInsideGame(string userName);
+        bool IsUserInsideAnyGame(string userName);
+
+        bool IsUserInsideGame(string userName, string gameId);
     }
 }

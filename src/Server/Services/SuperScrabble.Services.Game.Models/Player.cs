@@ -6,7 +6,7 @@
     {
         private readonly List<Tile> tiles = new();
 
-        public Player(string userName, string connectionId)
+        public Player(string userName, string? connectionId)
         {
             this.Points = 0;
             this.UserName = userName;
@@ -19,7 +19,7 @@
 
         public string UserName { get; }
 
-        public string ConnectionId { get; set; }
+        public string? ConnectionId { get; set; }
 
         public int ConsecutiveSkipsCount { get; set; }
 
