@@ -139,11 +139,6 @@
             await this.Clients.Caller.SendAsync("ReceiveAllWildcardOptions", options);
         }
 
-        private async Task SendValidationErrorMessageAsync(string methodName, GameOperationResult result)
-        {
-            await this.Clients.Caller.SendAsync(methodName, result);
-        }
-
         [Authorize]
         public async Task JoinRoom(GameMode gameMode)
         {
@@ -316,12 +311,15 @@
         {
             try
             {
+                Party party = this.matchmakingService.GetPartyById(partyId);
+
                 this.matchmakingService.StartGameFromParty(
                     this.UserName!, partyId, out bool hasGameStarted);
 
                 if (!hasGameStarted)
                 {
-                    // Duo game -> redirect to loading screen
+                    // Duo Game with friend
+                    // TODO: Redirect to loading screen
                     return;
                 }
 
@@ -368,20 +366,22 @@
             }
         }
 
-        private async Task SendErrorAsync(string message)
-        {
-            await this.Clients.Caller.SendAsync(Messages.Error, message);
-        }
-
         [Authorize]
         public async Task LoadGame(string groupName)
         {
-            //if (this.matchmakingService.IsUserInsideGroup(this.UserName, groupName))
-            //{
-                var gameState = this.matchmakingService.GetGameState(this.UserName!);
-                var viewModel = this.gameService.MapFromGameState(gameState, this.UserName!);
-                await this.Clients.Client(this.Context.ConnectionId).SendAsync(Messages.UpdateGameState, viewModel);
-            //}
+            var gameState = this.matchmakingService.GetGameState(this.UserName!);
+            var viewModel = this.gameService.MapFromGameState(gameState, this.UserName!);
+            await this.Clients.Client(this.Context.ConnectionId).SendAsync(Messages.UpdateGameState, viewModel);
+        }
+
+        private async Task SendValidationErrorMessageAsync(string methodName, GameOperationResult result)
+        {
+            await this.Clients.Caller.SendAsync(methodName, result);
+        }
+
+        private async Task SendErrorAsync(string message)
+        {
+            await this.Clients.Caller.SendAsync(Messages.Error, message);
         }
 
         private async Task StartGameAsync()
@@ -390,7 +390,6 @@
 
             foreach (Player player in gameState.Teams.SelectMany(team => team.Players))
             {
-                this.gameService.FillPlayerTiles(gameState, player);
                 await this.Groups.AddToGroupAsync(player.ConnectionId, gameState.GroupName);
             }
 

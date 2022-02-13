@@ -1,37 +1,33 @@
-﻿using SuperScrabble.Common;
-using SuperScrabble.Common.Exceptions;
-using SuperScrabble.Common.Exceptions.Game;
-using SuperScrabble.Services.Game.Common;
-using SuperScrabble.Services.Game.Common.GameplayConstantsProviders;
-using SuperScrabble.Services.Game.Models;
-using SuperScrabble.Services.Game.Models.Boards;
-using SuperScrabble.Services.Game.Scoring;
-using SuperScrabble.Services.Game.Validation;
-using SuperScrabble.WebApi.ViewModels.Game;
-
-using System;
-
-namespace SuperScrabble.Services.Game
+﻿namespace SuperScrabble.Services.Game
 {
+    using SuperScrabble.Common;
+    using SuperScrabble.Common.Exceptions;
+    using SuperScrabble.Common.Exceptions.Game;
+
+    using SuperScrabble.Services.Game.Common;
+    using SuperScrabble.Services.Game.Models;
+    using SuperScrabble.Services.Game.Models.Boards;
+    using SuperScrabble.Services.Game.Scoring;
+    using SuperScrabble.Services.Game.Validation;
+
+    using SuperScrabble.WebApi.ViewModels.Game;
+
     public class GameService : IGameService
     {
-        private readonly IGameplayConstantsProvider gameplayConstantsProvider;
         private readonly IScoringService scoringService;
         private readonly IGameValidator gameValidator;
 
         public GameService(
-            IGameplayConstantsProvider gameplayConstantsProvider,
             IScoringService scoringService,
             IGameValidator gameValidator)
         {
-            this.gameplayConstantsProvider = gameplayConstantsProvider;
             this.scoringService = scoringService;
             this.gameValidator = gameValidator;
         }
 
         public void FillPlayerTiles(GameState gameState, Player player)
         {
-            if (gameState.TilesCount == 0)
+            if (gameState.TilesCount <= 0)
             {
                 return;
             }
@@ -52,9 +48,9 @@ namespace SuperScrabble.Services.Game
 
         public PlayerGameStateViewModel MapFromGameState(GameState gameState, string userName)
         {
-            Player player = gameState.GetPlayer(userName)
-                ?? throw new ArgumentException(
-                    $"No player with such {nameof(userName)} was found inside the {nameof(gameState)}");
+            string message = $"Player with such username was not found.";
+
+            Player player = gameState.GetPlayer(userName) ?? throw new ArgumentException(message);
 
             var commonGameStateViewModel = new CommonGameStateViewModel
             {
@@ -132,15 +128,12 @@ namespace SuperScrabble.Services.Game
             {
                 IBoard board = gameState.Board;
 
-                Player author = gameState.GetPlayer(authorUserName) ??
-                    throw new ArgumentException($"No player with such username was found.");
-
                 var inputTiles = input.PositionsByTiles.Select(x => x.Key);
                 var inputPositions = input.PositionsByTiles.Select(x => x.Value);
 
-                // Validate input model
-
                 this.gameValidator.IsPlayerOnTurn(gameState, authorUserName);
+
+                Player author = gameState.GetPlayer(authorUserName)!;
 
                 this.gameValidator.ValidateInputTilesCount(
                     author.Tiles.Count, inputTiles.Count(), board.IsEmpty());
@@ -176,19 +169,15 @@ namespace SuperScrabble.Services.Game
 
                 author.RemoveTiles(inputTiles);
 
-                // Update score
-
                 int newPoints = this.scoringService
                     .CalculatePointsFromPlayerInput(input, gameState.Board, wordBuilders);
 
-                if (input.PositionsByTiles.Count() == this.gameplayConstantsProvider.PlayerTilesCount)
+                if (input.PositionsByTiles.Count() == gameState.GameplayConstants.PlayerTilesCount)
                 {
-                    newPoints += this.gameplayConstantsProvider.BonusPointsForUsingAllTiles;
+                    newPoints += gameState.GameplayConstants.BonusPointsForUsingAllTiles;
                 }
 
                 author.Points += newPoints;
-
-                // Update game state
 
                 if (author.Tiles.Count <= 0 && gameState.TilesCount <= 0)
                 {
@@ -216,7 +205,6 @@ namespace SuperScrabble.Services.Game
 
                 var result = new GameOperationResult { IsSucceeded = false };
 
-                //TODO: Change return result type properties
                 result.ErrorsByCodes.Add(ex.ErrorCode, ex.ErrorCode);
 
                 if (ex is UnexistingWordsException unexistingWordsException)
@@ -233,10 +221,9 @@ namespace SuperScrabble.Services.Game
         {
             try
             {
-                Player exchanger = gameState.GetPlayer(exchangerUserName) ??
-                    throw new ArgumentException($"No player with such username was found.");
+                this.gameValidator.IsPlayerOnTurn(gameState, exchangerUserName);
 
-                this.gameValidator.IsPlayerOnTurn(gameState, exchanger.UserName);
+                Player exchanger = gameState.GetPlayer(exchangerUserName)!;
 
                 if (!gameState.IsTileExchangePossible)
                 {
@@ -275,15 +262,14 @@ namespace SuperScrabble.Services.Game
             {
                 this.gameValidator.IsPlayerOnTurn(gameState, skipperUserName);
 
-                Player player = gameState.GetPlayer(skipperUserName)
-                    ?? throw new ArgumentException("No player with such username was found inside the game state");
+                Player player = gameState.GetPlayer(skipperUserName)!;
 
                 player.ConsecutiveSkipsCount++;
 
                 bool isGameOver = gameState.Teams
                     .SelectMany(team => team.Players)
-                    .All(p => p.ConsecutiveSkipsCount >= this.gameplayConstantsProvider
-                        .MinSkipsCountForEachPlayerToEndTheGame);
+                    .All(p => p.ConsecutiveSkipsCount >= gameState
+                        .GameplayConstants.MinSkipsCountForEachPlayerToEndTheGame);
 
                 if (isGameOver)
                 {
