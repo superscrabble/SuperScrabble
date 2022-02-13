@@ -139,6 +139,7 @@ export class HomeComponent implements OnInit {
 
   attachListeners() : void {
     this.signalrService.hubConnection?.on("UserAlreadyInsideGame", data => {
+      console.log("UserAlreadyInsideGame");
       this.currentGameGroupName = data;
     });
 
