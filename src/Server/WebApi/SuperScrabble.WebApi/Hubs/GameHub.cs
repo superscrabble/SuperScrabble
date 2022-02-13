@@ -36,6 +36,7 @@
             //Game
             public const string StartGame = "StartGame";
             public const string UpdateGameState = "UpdateGameState";
+            public const string UserAlreadyInsideGame = "UserAlreadyInsideGame";
 
             //Common
             public const string Error = "Error";
@@ -59,16 +60,15 @@
 
         public string ConnectionId => this.Context.ConnectionId;
 
-        public override Task OnConnectedAsync()
+        public override async Task OnConnectedAsync()
         {
             if (this.matchmakingService.IsPlayerInsideGame(this.UserName!))
             {
                 GameState gameState = this.matchmakingService.GetGameState(this.UserName!);
                 Player player = gameState.GetPlayer(this.UserName!)!;
                 player.ConnectionId = this.ConnectionId;
+                await this.Clients.Caller.SendAsync(Messages.UserAlreadyInsideGame, gameState.GroupName);
             }
-
-            return Task.CompletedTask;
         }
 
         [Authorize]
