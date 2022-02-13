@@ -66,9 +66,30 @@
             {
                 GameState gameState = this.matchmakingService.GetGameState(this.UserName!);
                 Player player = gameState.GetPlayer(this.UserName!)!;
-                player.ConnectionId = this.ConnectionId;
+
+                if (player.ConnectionId == null)
+                {
+                    player.ConnectionId = this.ConnectionId;
+                }
+
                 await this.Clients.Caller.SendAsync(Messages.UserAlreadyInsideGame, gameState.GroupName);
             }
+        }
+
+        public override Task OnDisconnectedAsync(Exception? exception)
+        {
+            if (this.matchmakingService.IsPlayerInsideGame(this.UserName!))
+            {
+                GameState gameState = this.matchmakingService.GetGameState(this.UserName!);
+                Player player = gameState.GetPlayer(this.UserName!)!;
+
+                if (player.ConnectionId == this.ConnectionId)
+                {
+                    player.ConnectionId = null;
+                }
+            }
+
+            return Task.CompletedTask;
         }
 
         [Authorize]
