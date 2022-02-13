@@ -149,7 +149,7 @@ export class GameComponent implements OnInit {
             this.isTileExchangePossible = data.commonGameState.isTileExchangePossible;
             this.loadScoreBoard(data.commonGameState.teams)
             //TODO: remove updatedBoardCells from board, if there are some
-            //this.updatedBoardCells = [];
+            this.updatedBoardCells = [];
 
             if(data.commonGameState.userNamesOfPlayersWhoHaveLeftTheGame) {
                 this.userNamesOfPlayersWhoHaveLeftTheGame = data.commonGameState.userNamesOfPlayersWhoHaveLeftTheGame;
@@ -170,10 +170,10 @@ export class GameComponent implements OnInit {
                 dialogData.unexistingWords = data.unexistingWords;
             }
             this.dialog.open(ErrorDialogComponent, { data: dialogData});
-            for(let i = 0; i < this.updatedBoardCells.length; i++) {
+            /*for(let i = 0; i < this.updatedBoardCells.length; i++) {
                 this.playerTiles.push(this.updatedBoardCells[i].key.tile)
                 this.board[this.updatedBoardCells[i].value.row][this.updatedBoardCells[i].value.column].tile = null;
-            }
+            }*/
             this.selectedBoardCell = null;
             //this.updatedBoardCells = [];
         })
@@ -439,6 +439,12 @@ export class GameComponent implements OnInit {
         return false;
     }
 
+    updatedBoardCellsChange(cells: Array<{ cell: Cell, coordinates: { column: number, row: number } }>) {
+        console.log("ON UPDATED BOARD CELLS CHANGE")
+        console.log(cells);
+        this.updatedBoardCells = cells;
+    }
+
     writeWord() : void {     
         if(this.updatedBoardCells.length <= 0) {
             return;
@@ -456,7 +462,7 @@ export class GameComponent implements OnInit {
         if(!this.checkForWildcards(writeWordInput.map(item => (item.key)))) {
             try {
                 //this.signalrService.writeWord(writeWordInput);
-                //this.gameService.writeWord(writeWordInput);
+                this.gameService.writeWord(writeWordInput);
             }
             catch (ex) {
                 console.log("ERROR");
@@ -2423,11 +2429,11 @@ export class GameComponent implements OnInit {
         this.remainingTilesCount = data.remainingTilesCount;
         this.loadScoreBoard(data.teams)
         console.log("Tiles Count: " + this.remainingTilesCount)
-        this.teammates = [
+        /*this.teammates = [
             {
                 userName: "Gosho",
                 tiles: this.playerTiles
             }
-        ]
+        ]*/
     }
 }

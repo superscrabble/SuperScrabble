@@ -18,6 +18,8 @@ export class GameboardComponent implements OnInit {
 
   @Input() board: Cell[][] = new Array();
   @Input() selectedPlayerTile: Tile | null = null;
+
+  @Output() updatedBoardCellsChange: EventEmitter<Array<{ cell: Cell, coordinates: { column: number, row: number } }>> = new EventEmitter(); 
   
   //TODO: maybe move this into a class
   @Input() updatedBoardCells: Array<{ cell: Cell, coordinates: { column: number, row: number } }> = new Array();
@@ -124,6 +126,7 @@ export class GameboardComponent implements OnInit {
     let cell = this.updatedBoardCells.find(x => x.cell.tile == tile)!.cell;
     cell.tile = null;
     this.removeCellFromUpdatedBoardCells(cell);
+    this.updatedBoardCellsChange.next(this.updatedBoardCells);
   }
 
   swapTilesOnBoard(cell: Cell, otherCell: Cell) {
@@ -160,6 +163,8 @@ export class GameboardComponent implements OnInit {
       //swap board tiles
       if(this.isNewPlacedTile(inputTile)) {
         this.swapTilesOnBoard(boardCell, this.updatedBoardCells.find(x => x.cell.tile == inputTile)!.cell);
+        console.log("Swapping")
+        console.log(this.updatedBoardCells);
         return;
       }
 
@@ -272,6 +277,7 @@ export class GameboardComponent implements OnInit {
   removeCellFromUpdatedBoardCells(cell: Cell) {
       if(cell) {
         this.updatedBoardCells = this.updatedBoardCells.filter(item => item.cell !== cell);
+        this.updatedBoardCellsChange.next(this.updatedBoardCells);
       }
   }
 
@@ -283,6 +289,7 @@ export class GameboardComponent implements OnInit {
             }
         }
         this.saveUpdatedBoardCellWithPosition(cell);
+        this.updatedBoardCellsChange.next(this.updatedBoardCells);
     }
   }
 
