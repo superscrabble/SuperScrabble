@@ -155,6 +155,9 @@ export class GameboardComponent implements OnInit {
 
       //If a tile is dropped out of the board => return to the player
       if(!event.isPointerOverContainer) {
+        if(!this.isNewPlacedTile(inputTile)) {
+          return;
+        }
         this.addTileToPlayerTiles.emit(inputTile);
         this.removeTileFromBoard(inputTile);
         return;
