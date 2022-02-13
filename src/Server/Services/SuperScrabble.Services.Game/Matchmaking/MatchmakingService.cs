@@ -291,5 +291,10 @@
 
             this.StartGameFromParty(party.Owner?.UserName!, party.Id, out hasGameStarted);
         }
+
+        public bool IsPlayerInsideGame(string userName)
+        {
+            return groupNamesByUserNames.ContainsKey(userName);
+        }
     }
 }

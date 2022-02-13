@@ -59,6 +59,18 @@
 
         public string ConnectionId => this.Context.ConnectionId;
 
+        public override Task OnConnectedAsync()
+        {
+            if (this.matchmakingService.IsPlayerInsideGame(this.UserName!))
+            {
+                GameState gameState = this.matchmakingService.GetGameState(this.UserName!);
+                Player player = gameState.GetPlayer(this.UserName!)!;
+                player.ConnectionId = this.ConnectionId;
+            }
+
+            return Task.CompletedTask;
+        }
+
         [Authorize]
         public async Task WriteWord(WriteWordInputModel input)
         {
@@ -251,7 +263,7 @@
                 Party party = this.matchmakingService.GetPartyByInvitationCode(invitationCode);
                 Member? member = party.GetMember(this.UserName!);
 
-                if(member != null)
+                if (member != null)
                 {
                     await this.Clients.Client(member.ConnectionId).SendAsync(Messages.PartyMemberConnectionIdChanged);
                     member.ConnectionId = this.ConnectionId;
@@ -264,7 +276,7 @@
                 await this.SendErrorAsync(ex.ErrorCode);
             }
         }
-        
+
         [Authorize]
         public async Task LeaveParty(string partyId)
         {
