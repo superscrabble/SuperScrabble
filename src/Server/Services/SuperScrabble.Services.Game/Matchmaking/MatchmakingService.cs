@@ -99,8 +99,9 @@
 
         public void StartGameFromParty(string starterUserName, string partyId, out bool hasGameStarted)
         {
-            Party party = GetPartyById(partyId);
             hasGameStarted = false;
+
+            Party party = GetPartyById(partyId);
 
             if (!party.HasEnoughPlayersToStartGame)
             {
@@ -137,12 +138,9 @@
 
                 gameStatesByGroupNames.TryAdd(groupName, gameState);
 
-                foreach (Team team in gameState.Teams)
+                foreach (Player player in gameState.Teams.SelectMany(team => team.Players))
                 {
-                    foreach (Player player in team.Players)
-                    {
-                        groupNamesByUserNames.TryAdd(player.UserName, groupName);
-                    }
+                    groupNamesByUserNames.TryAdd(player.UserName, groupName);
                 }
 
                 hasGameStarted = true;
@@ -210,8 +208,7 @@
             return partiesByPartyIds[partyId];
         }
 
-        private void AddToWaitingQueue(
-            WaitingTeam waitingTeam, GameMode gameMode, out bool hasGameStarted)
+        private void AddToWaitingQueue(WaitingTeam waitingTeam, GameMode gameMode, out bool hasGameStarted)
         {
             if (!waitingTeamsByGameModes.ContainsKey(gameMode))
             {
@@ -219,6 +216,7 @@
             }
 
             var waitingTeams = waitingTeamsByGameModes[gameMode];
+
             waitingTeams.Add(waitingTeam);
 
             bool isQueueFull = gameMode.GetTeamsCount() <= waitingTeams.Count;
@@ -231,19 +229,16 @@
 
             string groupName = Guid.NewGuid().ToString();
 
-            var gameState = this.gameStateFactory.CreateGameState(
-                gameMode, waitingTeams, groupName);
+            GameState gameState = this.gameStateFactory
+                .CreateGameState(gameMode, waitingTeams, groupName);
 
             waitingTeams.Clear();
 
             gameStatesByGroupNames.TryAdd(groupName, gameState);
 
-            foreach (Team team in gameState.Teams)
+            foreach (Player player in gameState.Players)
             {
-                foreach (Player player in team.Players)
-                {
-                    groupNamesByUserNames.TryAdd(player.UserName, groupName);
-                }
+                groupNamesByUserNames.TryAdd(player.UserName, groupName);
             }
 
             hasGameStarted = true;

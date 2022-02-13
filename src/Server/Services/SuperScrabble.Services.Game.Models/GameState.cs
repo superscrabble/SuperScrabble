@@ -40,6 +40,9 @@
 
         public IReadOnlyCollection<Team> Teams => this.teams.AsReadOnly();
 
+        public IReadOnlyCollection<Player> Players =>
+            this.teams.SelectMany(team => team.Players).ToList().AsReadOnly();
+
         public Team CurrentTeam => this.teams[this.TeamIndex];
 
         public int TilesCount => this.Bag.TilesCount;
