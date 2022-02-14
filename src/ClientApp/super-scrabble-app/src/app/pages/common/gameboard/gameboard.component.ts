@@ -65,7 +65,8 @@ export class GameboardComponent implements OnInit {
           //TODO: move this into variable
           cellWidth = "1fr";
       }
-
+      
+      //TODO: maybe change this to [style.]=""
       this.renderer.setStyle(this.elementRef.nativeElement, '--cell-width', cellWidth, 2);
       this.renderer.setStyle(this.elementRef.nativeElement, '--cell-height', cellWidth, 2);
   }

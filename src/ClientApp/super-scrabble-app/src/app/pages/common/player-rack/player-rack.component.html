@@ -1,13 +1,29 @@
 <div class="my-3 d-flex justify-content-center flex-wrap"
     cdkDropList #cdkPlayerTiles="cdkDropList" (cdkDropListDropped)="drop($event)"
+    (cdkDropListExited)="onDropListExited()" (cdkDropListEntered)="onDropListEntered($event)"
     [cdkDropListData]="playerTiles" cdkDropListOrientation="horizontal" cdkScrollable> <!--[cdkDropListConnectedTo]="[cdkCustomPlayerTiles]"-->
     <div
         *ngFor="let playerTile of playerTiles"
         class="mx-2 border tile cursor-default rounded-1 p-2 text-center {{getClassOfTile(playerTile)}}"
         (dblclick)="doubleClickOnPlayerTile(playerTile)"
-        cdkDrag [cdkDragData]="playerTile" [cdkDragDisabled]="!isEnabled">
+        cdkDrag [cdkDragData]="playerTile" [cdkDragDisabled]="!isEnabled"
+        (cdkDragMoved)="onDragMoved($event)"
+        (cdkDragEntered)="onDragEntered($event)" (cdkDragDropped)="onDragDropped($event)"> 
         <!--<div style="display: hidden;" *cdkDragPlaceholder></div>-->
-        <div style="display: none;" *cdkDragPlaceholder></div>
+        <!--<ng-container *ngIf="!isInsideCurrentDropList()">
+            <div style="display: none;" *cdkDragPlaceholder></div>
+        </ng-container>
+        <ng-container *ngIf="isInsideCurrentDropList()">-->
+            <!--
+                TODO: Draggable Tile and base Tile
+            -->
+            <div [class]="placeholderClass"  style="transform: translate3d(0);" *cdkDragPlaceholder> <!--class="{{placeholderClass}}" [class]="placeholderClass" id="tilePlaceholder"--> 
+                {{playerTile.letter}}
+                <span style="font-size: 10px">
+                    {{playerTile.points}}
+                </span>
+            </div>
+        <!--</ng-container>-->
         {{playerTile.letter}}
         <span style="font-size: 10px">
             {{playerTile.points}}
