@@ -150,9 +150,7 @@
         public void LeaveParty(string leaverUserName, string partyId, out bool shouldDisposeParty)
         {
             Party party = this.GetPartyById(partyId);
-
             party.RemoveMember(leaverUserName);
-
             shouldDisposeParty = party.IsEmpty;
         }
 
@@ -199,7 +197,8 @@
             return partiesByPartyIds[partyId];
         }
 
-        private void AddToWaitingQueue(WaitingTeam waitingTeam, GameMode gameMode, out bool hasGameStarted)
+        private void AddToWaitingQueue(
+            WaitingTeam waitingTeam, GameMode gameMode, out bool hasGameStarted)
         {
             if (!waitingTeamsByGameModes.ContainsKey(gameMode))
             {
@@ -207,9 +206,7 @@
             }
 
             var waitingTeams = waitingTeamsByGameModes[gameMode];
-
             waitingTeams.Add(waitingTeam);
-
             bool isQueueFull = gameMode.GetTeamsCount() <= waitingTeams.Count;
 
             if (!isQueueFull)
@@ -218,18 +215,17 @@
                 return;
             }
 
-            string groupName = Guid.NewGuid().ToString();
+            string gameId = Guid.NewGuid().ToString();
 
             GameState gameState = this.gameStateFactory
-                .CreateGameState(gameMode, waitingTeams, groupName);
+                .CreateGameState(gameMode, waitingTeams, gameId);
 
             waitingTeams.Clear();
-
-            gameStatesByGameIds.TryAdd(groupName, gameState);
+            gameStatesByGameIds.TryAdd(gameId, gameState);
 
             foreach (Player player in gameState.Players)
             {
-                gameIdsByUserNames.TryAdd(player.UserName, groupName);
+                gameIdsByUserNames.TryAdd(player.UserName, gameId);
             }
 
             hasGameStarted = true;
@@ -246,7 +242,8 @@
         }
 
         public void JoinRoom(
-            string joinerUserName, string joinerConnectionId, GameMode gameMode, out bool hasGameStarted)
+            string joinerUserName, string joinerConnectionId,
+            GameMode gameMode, out bool hasGameStarted)
         {
             var joiner = new Member(joinerUserName, joinerConnectionId);
 
@@ -296,6 +293,28 @@
             }
 
             return gameIdsByUserNames[userName] == gameId;
+        }
+
+        public void RemoveUserFromGame(string userName)
+        {
+            if (!gameIdsByUserNames.ContainsKey(userName))
+            {
+                return;
+            }
+
+            string gameId = gameIdsByUserNames[userName];
+            gameIdsByUserNames.TryRemove(new(userName, gameId));
+        }
+
+        public void RemoveGameState(string gameId)
+        {
+            if (!gameStatesByGameIds.ContainsKey(gameId))
+            {
+                return;
+            }
+
+            var gameState = gameStatesByGameIds[gameId];
+            gameStatesByGameIds.TryRemove(new(gameId, gameState));
         }
     }
 }

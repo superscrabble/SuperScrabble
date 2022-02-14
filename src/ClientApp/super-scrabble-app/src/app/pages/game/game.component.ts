@@ -203,6 +203,10 @@ export class GameComponent implements OnInit {
             let seconds: string = data.seconds.toString().padStart(maxLength, fillString);
             this.gameTimeAsString = `${minutes}:${seconds}`;
         });
+
+        this.signalrService.hubConnection?.on("UserEnteredGameFromAnotherConnectionId", () => {
+            this.router.navigateByUrl("/");
+        });
     }
 
     loadBoard(board: any): void {

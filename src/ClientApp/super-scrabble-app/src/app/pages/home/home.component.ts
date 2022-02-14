@@ -164,12 +164,6 @@ export class HomeComponent implements OnInit {
     this.signalrService.hubConnection?.on("EnableFriendlyGameStart", () => {
       this.isStartGameButtonEnabled = true;
     });
-
-    this.signalrService.hubConnection?.on("PlayerJoinedLobby", joinedUserName => {
-      this.messages.push(`${joinedUserName} се присиедини към лобито`);
-    });
-
-
   }
 
   joinRoom(gameMode: GameMode) {

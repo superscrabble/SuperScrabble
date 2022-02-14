@@ -1,5 +1,4 @@
-﻿namespace SuperScrabble.WebApi.Hubs;
-
+﻿using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Authorization;
@@ -17,6 +16,8 @@ using SuperScrabble.Services.Game.Models.Parties;
 using SuperScrabble.WebApi.HubClients;
 using SuperScrabble.WebApi.ViewModels.Game;
 using SuperScrabble.WebApi.ViewModels.Party;
+
+namespace SuperScrabble.WebApi.Hubs;
 
 [Authorize]
 public class GameHub : Hub<IGameClient>
@@ -43,8 +44,8 @@ public class GameHub : Hub<IGameClient>
     {
         if (_matchmakingService.IsUserInsideAnyGame(UserName!))
         {
-            GameState gameState = _matchmakingService.GetGameState(UserName!);
-            Player player = gameState.GetPlayer(UserName!)!;
+            var gameState = _matchmakingService.GetGameState(UserName!);
+            var player = gameState.GetPlayer(UserName!)!;
 
             if (player.ConnectionId == null)
             {
@@ -59,8 +60,8 @@ public class GameHub : Hub<IGameClient>
     {
         if (_matchmakingService.IsUserInsideAnyGame(UserName!))
         {
-            GameState gameState = _matchmakingService.GetGameState(UserName!);
-            Player player = gameState.GetPlayer(UserName!)!;
+            var gameState = _matchmakingService.GetGameState(UserName!);
+            var player = gameState.GetPlayer(UserName!)!;
 
             if (player.ConnectionId == ConnectionId)
             {
@@ -94,11 +95,8 @@ public class GameHub : Hub<IGameClient>
             return;
         }
 
-        Player rageQuitter = gameState.GetPlayer(UserName!)!;
-        rageQuitter.LeaveGame();
-
+        gameState.GetPlayer(UserName!)!.LeaveGame();
         gameState.EndGameIfRoomIsEmpty();
-
         gameState.CurrentTeam.NextPlayer();
 
         if (gameState.CurrentTeam.IsTurnFinished)
@@ -366,11 +364,14 @@ public class GameHub : Hub<IGameClient>
             return;
         }
 
-        GameState gameState = _matchmakingService.GetGameState(UserName!);
-        Player player = gameState.GetPlayer(UserName!)!;
+        var gameState = _matchmakingService.GetGameState(UserName!);
+        var player = gameState.GetPlayer(UserName!)!;
 
-        await Clients.Client(player.ConnectionId!).UserEnteredGameFromAnotherConnectionId();
-        player.ConnectionId = ConnectionId;
+        if (player.ConnectionId != ConnectionId)
+        {
+            await Clients.Client(player.ConnectionId!).UserEnteredGameFromAnotherConnectionId();
+            player.ConnectionId = ConnectionId;
+        }
 
         var viewModel = _gameService.MapFromGameState(gameState, UserName!);
         await Clients.Client(ConnectionId).UpdateGameState(viewModel);
@@ -402,10 +403,23 @@ public class GameHub : Hub<IGameClient>
             _gameService.FillPlayerTiles(gameState, player);
         }
 
+        string gameId = gameState.GameId;
+
         foreach (Player player in gameState.Players)
         {
             var viewModel = _gameService.MapFromGameState(gameState, player.UserName);
             await Clients.Client(player.ConnectionId!).UpdateGameState(viewModel);
+
+            if (gameState.IsGameOver)
+            {
+                _matchmakingService.RemoveUserFromGame(player.UserName);
+                await Groups.RemoveFromGroupAsync(player.ConnectionId!, gameId);
+            }
+        }
+
+        if (gameState.IsGameOver)
+        {
+            _matchmakingService.RemoveGameState(gameId);
         }
     }
 
