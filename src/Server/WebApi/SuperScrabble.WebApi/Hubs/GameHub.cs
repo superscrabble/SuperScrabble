@@ -1,517 +1,446 @@
-﻿namespace SuperScrabble.WebApi.Hubs
+﻿namespace SuperScrabble.WebApi.Hubs;
+
+using System.Threading.Tasks;
+
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.SignalR;
+
+using SuperScrabble.Common.Exceptions.Matchmaking;
+
+using SuperScrabble.Services.Game;
+using SuperScrabble.Services.Game.Common.Enums;
+using SuperScrabble.Services.Game.Common.TilesProviders;
+using SuperScrabble.Services.Game.Matchmaking;
+using SuperScrabble.Services.Game.Models;
+using SuperScrabble.Services.Game.Models.Parties;
+
+using SuperScrabble.WebApi.HubClients;
+using SuperScrabble.WebApi.ViewModels.Game;
+using SuperScrabble.WebApi.ViewModels.Party;
+
+[Authorize]
+public class GameHub : Hub<IGameClient>
 {
-    using System.Threading.Tasks;
+    private readonly IMatchmakingService _matchmakingService;
+    private readonly IGameService _gameService;
+    private readonly ITilesProvider _tilesProvider;
 
-    using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.SignalR;
-
-    using SuperScrabble.Common.Exceptions.Matchmaking;
-
-    using SuperScrabble.Services.Game;
-    using SuperScrabble.Services.Game.Common.Enums;
-    using SuperScrabble.Services.Game.Common.TilesProviders;
-    using SuperScrabble.Services.Game.Matchmaking;
-    using SuperScrabble.Services.Game.Models;
-    using SuperScrabble.Services.Game.Models.Parties;
-
-    using SuperScrabble.WebApi.ViewModels.Game;
-    using SuperScrabble.WebApi.ViewModels.Party;
-
-    [Authorize]
-    public class GameHub : Hub
+    public GameHub(
+        IMatchmakingService matchmakingService,
+        IGameService gameService,
+        ITilesProvider tilesProvider)
     {
-        private static class Messages
+        _matchmakingService = matchmakingService;
+        _gameService = gameService;
+        _tilesProvider = tilesProvider;
+    }
+
+    public string? UserName => Context.User?.Identity?.Name;
+
+    public string ConnectionId => Context.ConnectionId;
+
+    public override async Task OnConnectedAsync()
+    {
+        if (_matchmakingService.IsUserInsideAnyGame(UserName!))
         {
-            //Party
-            public const string PartyJoined = "PartyJoined";
-            public const string PartyLeft = "PartyLeft";
-            public const string PartyCreated = "PartyCreated";
-            public const string NewPlayerJoinedParty = "NewPlayerJoinedParty";
-            public const string PlayerHasLeftParty = "PlayerHasLeftParty";
-            public const string ReceivePartyData = "ReceivePartyData";
-            public const string EnablePartyStart = "EnablePartyStart";
-            public const string UpdateFriendPartyConfigSettings = "UpdateFriendPartyConfigSettings";
-            public const string PartyMemberConnectionIdChanged = "PartyMemberConnectionIdChanged";
+            GameState gameState = _matchmakingService.GetGameState(UserName!);
+            Player player = gameState.GetPlayer(UserName!)!;
 
-            //Game
-            public const string StartGame = "StartGame";
-            public const string UpdateGameState = "UpdateGameState";
-            public const string UserAlreadyInsideGame = "UserAlreadyInsideGame";
-
-            //Common
-            public const string Error = "Error";
-        }
-
-        private readonly IMatchmakingService matchmakingService;
-        private readonly IGameService gameService;
-        private readonly ITilesProvider tilesProvider;
-
-        public GameHub(
-            IMatchmakingService matchmakingService,
-            IGameService gameService,
-            ITilesProvider tilesProvider)
-        {
-            this.matchmakingService = matchmakingService;
-            this.gameService = gameService;
-            this.tilesProvider = tilesProvider;
-        }
-
-        public string? UserName => this.Context.User?.Identity?.Name;
-
-        public string ConnectionId => this.Context.ConnectionId;
-
-        public override async Task OnConnectedAsync()
-        {
-            if (this.matchmakingService.IsUserInsideAnyGame(this.UserName!))
+            if (player.ConnectionId == null)
             {
-                GameState gameState = this.matchmakingService.GetGameState(this.UserName!);
-                Player player = gameState.GetPlayer(this.UserName!)!;
+                player.ConnectionId = ConnectionId;
+            }
 
-                if (player.ConnectionId == null)
-                {
-                    player.ConnectionId = this.ConnectionId;
-                }
+            await Clients.Caller.UserAlreadyInsideGame(gameState.GameId);
+        }
+    }
 
-                await this.Clients.Caller.SendAsync(Messages.UserAlreadyInsideGame, gameState.GroupName);
+    public override Task OnDisconnectedAsync(Exception? exception)
+    {
+        if (_matchmakingService.IsUserInsideAnyGame(UserName!))
+        {
+            GameState gameState = _matchmakingService.GetGameState(UserName!);
+            Player player = gameState.GetPlayer(UserName!)!;
+
+            if (player.ConnectionId == ConnectionId)
+            {
+                player.ConnectionId = null;
             }
         }
 
-        public override Task OnDisconnectedAsync(Exception? exception)
+        return Task.CompletedTask;
+    }
+
+    public async Task WriteWord(WriteWordInputModel input)
+    {
+        var gameState = _matchmakingService.GetGameState(UserName!);
+        var result = _gameService.WriteWord(gameState, input, UserName!);
+
+        if (!result.IsSucceeded)
         {
-            // Is inside party -> remove it from there (if this connectionId == party.Member.ConnectionId)
-
-            if (this.matchmakingService.IsUserInsideAnyGame(this.UserName!))
-            {
-                GameState gameState = this.matchmakingService.GetGameState(this.UserName!);
-                Player player = gameState.GetPlayer(this.UserName!)!;
-
-                if (player.ConnectionId == this.ConnectionId)
-                {
-                    player.ConnectionId = null;
-                }
-            }
-
-            return Task.CompletedTask;
+            await Clients.Caller.InvalidWriteWordInput(result);
+            return;
         }
 
-        [Authorize]
-        public async Task WriteWord(WriteWordInputModel input)
+        await UpdateGameStateAsync(gameState);
+    }
+
+    public async Task LeaveGame()
+    {
+        var gameState = _matchmakingService.GetGameState(UserName!);
+
+        if (gameState == null)
         {
-            var gameState = this.matchmakingService.GetGameState(this.UserName!);
-            GameOperationResult result = this.gameService.WriteWord(gameState, input, this.UserName!);
-
-            if (!result.IsSucceeded)
-            {
-                await this.SendValidationErrorMessageAsync("InvalidWriteWordInput", result);
-                return;
-            }
-
-            //await this.SaveGameIfTheGameIsOverAsync();
-            await this.UpdateGameStateAsync(gameState);
+            return;
         }
 
-        [Authorize]
-        public async Task LeaveGame()
+        Player rageQuitter = gameState.GetPlayer(UserName!)!;
+        rageQuitter.LeaveGame();
+
+        gameState.EndGameIfRoomIsEmpty();
+
+        gameState.CurrentTeam.NextPlayer();
+
+        if (gameState.CurrentTeam.IsTurnFinished)
         {
-            var gameState = this.matchmakingService.GetGameState(this.UserName!);
-
-            if (gameState == null)
-            {
-                return;
-            }
-
-            Player rageQuitter = gameState.GetPlayer(this.UserName!)!;
-            rageQuitter.LeaveGame();
-
-            gameState.EndGameIfRoomIsEmpty();
-
-            gameState.CurrentTeam.NextPlayer();
-
-            if (gameState.CurrentTeam.IsTurnFinished)
-            {
-                gameState.NextTeam();
-            }
-
-            //await this.SaveGameIfTheGameIsOverAsync();
-            await this.UpdateGameStateAsync(gameState);
+            gameState.NextTeam();
         }
 
-        [Authorize]
-        public async Task ExchangeTiles(ExchangeTilesInputModel input)
+        await UpdateGameStateAsync(gameState);
+    }
+
+    public async Task ExchangeTiles(ExchangeTilesInputModel input)
+    {
+        var gameState = _matchmakingService.GetGameState(UserName!);
+        var result = _gameService.ExchangeTiles(gameState, input, UserName!);
+
+        if (!result.IsSucceeded)
         {
-            var gameState = this.matchmakingService.GetGameState(this.UserName!);
-            GameOperationResult result = this.gameService.ExchangeTiles(gameState, input, this.UserName!);
-
-            if (!result.IsSucceeded)
-            {
-                await this.SendValidationErrorMessageAsync("InvalidExchangeTilesInput", result);
-                return;
-            }
-
-            await this.UpdateGameStateAsync(gameState);
+            await Clients.Caller.InvalidExchangeTilesInput(result);
+            return;
         }
 
-        [Authorize]
-        public async Task SkipTurn()
+        await UpdateGameStateAsync(gameState);
+    }
+
+    public async Task SkipTurn()
+    {
+        var gameState = _matchmakingService.GetGameState(UserName!);
+        var result = _gameService.SkipTurn(gameState, UserName!);
+
+        if (!result.IsSucceeded)
         {
-            var gameState = this.matchmakingService.GetGameState(this.UserName!);
-            GameOperationResult result = this.gameService.SkipTurn(gameState, this.UserName!);
-
-            if (!result.IsSucceeded)
-            {
-                await this.SendValidationErrorMessageAsync("ImpossibleToSkipTurn", result);
-                return;
-            }
-
-            //await this.SaveGameIfTheGameIsOverAsync();
-            await this.UpdateGameStateAsync(gameState);
+            await Clients.Caller.ImpossibleToSkipTurn(result);
+            return;
         }
 
-        [Authorize]
-        public async Task GetAllWildcardOptions()
+        await UpdateGameStateAsync(gameState);
+    }
+
+    public async Task GetAllWildcardOptions()
+    {
+        var options = _tilesProvider.GetAllWildcardOptions();
+        await Clients.Caller.ReceiveAllWildcardOptions(options);
+    }
+
+    public async Task JoinRoom(GameMode gameMode)
+    {
+        try
         {
-            var options = this.tilesProvider.GetAllWildcardOptions();
-            await this.Clients.Caller.SendAsync("ReceiveAllWildcardOptions", options);
-        }
-
-        [Authorize]
-        public async Task JoinRoom(GameMode gameMode)
-        {
-            try
-            {
-                this.matchmakingService.JoinRoom(
-                    this.UserName!, this.ConnectionId, gameMode, out bool hasGameStarted);
-
-                if (hasGameStarted)
-                {
-                    await this.StartGameAsync();
-                }
-            }
-            catch (MatchmakingFailedException ex)
-            {
-                await this.SendErrorAsync(ex.ErrorCode);
-            }
-        }
-
-        // [Authorize]
-        // LoadGame(string groupName)
-        // {
-        //      IsUserInsideGame(string userName, string gameId)
-        //      GetGameState(string gameId)
-        //      gameState.GetPlayer(string userName)
-        //      await SendAsync("UserEnteredGameFromAnotherConnectionId", player.ConnectionId)
-        //      player.ConnectionId = this.ConnectionId
-        //      this.Caller.SendAsync("UpdateGameState")
-        // }
-
-        [Authorize]
-        public async Task JoinRandomDuo()
-        {
-            this.matchmakingService.JoinRandomDuoParty(
-                this.UserName!, this.ConnectionId, out bool hasGameStarted);
+            _matchmakingService.JoinRoom(
+                UserName!, ConnectionId, gameMode, out bool hasGameStarted);
 
             if (hasGameStarted)
             {
-                await this.StartGameAsync();
+                await StartGameAsync();
             }
         }
-
-        [Authorize]
-        public async Task CreateParty(PartyType partyType)
+        catch (MatchmakingFailedException ex)
         {
-            try
-            {
-                string partyId = this.matchmakingService
-                    .CreateParty(this.UserName!, this.ConnectionId, partyType);
+            await SendErrorAsync(ex.ErrorCode);
+        }
+    }
 
-                await this.Clients.Caller.SendAsync(Messages.PartyCreated, partyId);
-            }
-            catch (MatchmakingFailedException ex)
-            {
-                await this.SendErrorAsync(ex.ErrorCode);
-            }
+    public async Task JoinRandomDuo()
+    {
+        _matchmakingService.JoinRandomDuoParty(
+            UserName!, ConnectionId, out bool hasGameStarted);
+
+        if (hasGameStarted)
+        {
+            await StartGameAsync();
+        }
+    }
+
+    public async Task CreateParty(PartyType partyType)
+    {
+        try
+        {
+            string partyId = _matchmakingService
+                .CreateParty(UserName!, ConnectionId, partyType);
+
+            await Clients.Caller.PartyCreated(partyId);
+        }
+        catch (MatchmakingFailedException ex)
+        {
+            await SendErrorAsync(ex.ErrorCode);
+        }
+    }
+
+    public async Task LoadParty(string partyId)
+    {
+        Party party = default!;
+
+        try
+        {
+            party = _matchmakingService.GetPartyById(partyId);
+        }
+        catch (MatchmakingFailedException ex)
+        {
+            await SendErrorAsync(ex.ErrorCode);
+            return;
         }
 
-        [Authorize]
-        public async Task LoadParty(string partyId)
+        const TimerType defaultTimerType = TimerType.Standard;
+
+        var viewModel = new FriendPartyViewModel
         {
-            Party party = default!;
-
-            try
+            Owner = party.Owner!.UserName,
+            InvitationCode = party.InvitationCode,
+            IsOwner = party.Owner?.UserName == UserName,
+            Members = party.Members.Select(mem => mem.UserName),
+            PartyType = party is FriendParty ? PartyType.Friendly : PartyType.Duo,
+            ConfigSettings = new ConfigSetting[]
             {
-                party = this.matchmakingService.GetPartyById(partyId);
-            }
-            catch (MatchmakingFailedException ex)
-            {
-                await this.SendErrorAsync(ex.ErrorCode);
-                return;
-            }
-
-            const TimerType defaultTimerType = TimerType.Standard;
-
-            var viewModel = new FriendPartyViewModel
-            {
-                Owner = party.Owner!.UserName,
-                InvitationCode = party.InvitationCode,
-                IsOwner = party.Owner?.UserName == this.UserName,
-                Members = party.Members.Select(mem => mem.UserName),
-                PartyType = party is FriendParty ? PartyType.Friendly : PartyType.Duo,
-                ConfigSettings = new ConfigSetting[]
-                {
                     CreateTimerTypeConfigSetting(defaultTimerType),
 
                     CreateTimerDifficultyConfigSetting(
                         TimerType.Standard, TimerDifficulty.Normal),
-                }
-            };
+            }
+        };
 
-            await this.Clients.Caller.SendAsync(Messages.ReceivePartyData, viewModel);
-        }
+        await Clients.Caller.ReceivePartyData(viewModel);
+    }
 
-        [Authorize]
-        public async Task JoinParty(string invitationCode)
+    public async Task JoinParty(string invitationCode)
+    {
+        try
         {
-            try
+            _matchmakingService.JoinParty(UserName!, ConnectionId,
+                invitationCode, out bool hasEnoughPlayersToStartGame);
+
+            Party party = _matchmakingService.GetPartyByInvitationCode(invitationCode);
+
+            if (hasEnoughPlayersToStartGame)
             {
-                this.matchmakingService.JoinParty(
-                    this.UserName!, this.ConnectionId,
-                    invitationCode, out bool hasEnoughPlayersToStartGame);
-
-                Party party = this.matchmakingService.GetPartyByInvitationCode(invitationCode);
-
-                if (hasEnoughPlayersToStartGame)
-                {
-                    await this.Clients
-                        .Client(party.Owner!.ConnectionId)
-                        .SendAsync(Messages.EnablePartyStart);
-                }
-
-                await this.Clients.Caller.SendAsync(Messages.PartyJoined, party.Id);
-
-                await this.Clients
-                    .Clients(party.GetConnectionIds(this.UserName!))
-                    .SendAsync(Messages.NewPlayerJoinedParty, this.UserName);
+                await Clients.Client(party.Owner!.ConnectionId).EnablePartyStart();
             }
-            catch (PlayerAlreadyInsidePartyException)
-            {
-                Party party = this.matchmakingService.GetPartyByInvitationCode(invitationCode);
-                Member? member = party.GetMember(this.UserName!);
 
-                if (member != null)
-                {
-                    await this.Clients.Client(member.ConnectionId).SendAsync(Messages.PartyMemberConnectionIdChanged);
-                    member.ConnectionId = this.ConnectionId;
-                }
+            await Clients.Caller.PartyJoined(party.Id);
 
-                await this.Clients.Caller.SendAsync(Messages.PartyJoined, party.Id);
-            }
-            catch (MatchmakingFailedException ex)
-            {
-                await this.SendErrorAsync(ex.ErrorCode);
-            }
+            await Clients.Clients(party.GetConnectionIds(UserName!))
+                .NewPlayerJoinedParty(UserName!);
         }
-
-        [Authorize]
-        public async Task LeaveParty(string partyId)
+        catch (PlayerAlreadyInsidePartyException)
         {
-            try
+            Party party = _matchmakingService.GetPartyByInvitationCode(invitationCode);
+            Member? member = party.GetMember(UserName!);
+
+            if (member != null)
             {
-                this.matchmakingService.LeaveParty(
-                    this.UserName!, partyId, out bool shouldDisposeParty);
+                await Clients.Client(member.ConnectionId).PartyMemberConnectionIdChanged();
+                member.ConnectionId = ConnectionId;
+            }
 
-                await this.Clients.Caller.SendAsync(Messages.PartyLeft);
+            await Clients.Caller.PartyJoined(party.Id);
+        }
+        catch (MatchmakingFailedException ex)
+        {
+            await SendErrorAsync(ex.ErrorCode);
+        }
+    }
 
-                if (!shouldDisposeParty)
+    public async Task LeaveParty(string partyId)
+    {
+        try
+        {
+            _matchmakingService.LeaveParty(
+                UserName!, partyId, out bool shouldDisposeParty);
+
+            await Clients.Caller.PartyLeft();
+
+            if (!shouldDisposeParty)
+            {
+                Party party = _matchmakingService.GetPartyById(partyId);
+
+                foreach (Member member in party.Members)
                 {
-                    Party party = this.matchmakingService.GetPartyById(partyId);
-
-                    foreach (Member member in party.Members)
+                    var viewModel = new PlayerHasLeftPartyViewModel
                     {
-                        var viewModel = new PlayerHasLeftPartyViewModel
-                        {
-                            Owner = party.Owner?.UserName!,
-                            IsOwner = party.Owner?.UserName == member.UserName,
-                            RemainingMembers = party.Members.Select(mem => mem.UserName),
-                            LeaverUserName = this.UserName!,
-                            IsPartyReady = party.HasEnoughPlayersToStartGame,
-                        };
+                        Owner = party.Owner?.UserName!,
+                        IsOwner = party.Owner?.UserName == member.UserName,
+                        RemainingMembers = party.Members.Select(mem => mem.UserName),
+                        LeaverUserName = UserName!,
+                        IsPartyReady = party.HasEnoughPlayersToStartGame,
+                    };
 
-                        await this.Clients.Client(member.ConnectionId)
-                            .SendAsync(Messages.PlayerHasLeftParty, viewModel);
-                    }
-                }
-
-                if (shouldDisposeParty)
-                {
-                    this.matchmakingService.DisposeParty(partyId);
+                    await Clients.Client(member.ConnectionId).PlayerHasLeftParty(viewModel);
                 }
             }
-            catch (MatchmakingFailedException ex)
+
+            if (shouldDisposeParty)
             {
-                await this.SendErrorAsync(ex.ErrorCode);
+                _matchmakingService.DisposeParty(partyId);
             }
         }
-
-        [Authorize]
-        public async Task StartGameFromParty(string partyId)
+        catch (MatchmakingFailedException ex)
         {
-            try
-            {
-                Party party = this.matchmakingService.GetPartyById(partyId);
-
-                this.matchmakingService.StartGameFromParty(
-                    this.UserName!, partyId, out bool hasGameStarted);
-
-                if (!hasGameStarted)
-                {
-                    // Duo Game with friend
-                    // TODO: Redirect to loading screen
-                    return;
-                }
-
-                await this.StartGameAsync();
-            }
-            catch (MatchmakingFailedException ex)
-            {
-                await this.SendErrorAsync(ex.ErrorCode);
-            }
+            await SendErrorAsync(ex.ErrorCode);
         }
+    }
 
-        [Authorize]
-        public async Task SetFriendPartyConfiguration(FriendPartyConfig config, string partyId)
+    public async Task StartGameFromParty(string partyId)
+    {
+        try
         {
-            try
+            Party party = _matchmakingService.GetPartyById(partyId);
+
+            _matchmakingService.StartGameFromParty(
+                UserName!, partyId, out bool hasGameStarted);
+
+            if (!hasGameStarted)
             {
-                Party party = this.matchmakingService.GetPartyById(partyId);
+                // Duo Game with friend
+                // TODO: Redirect to loading screen
+                return;
+            }
 
-                if (party.Owner?.UserName != this.UserName)
+            await StartGameAsync();
+        }
+        catch (MatchmakingFailedException ex)
+        {
+            await SendErrorAsync(ex.ErrorCode);
+        }
+    }
+
+    public async Task SetFriendPartyConfiguration(FriendPartyConfig config, string partyId)
+    {
+        try
+        {
+            Party party = _matchmakingService.GetPartyById(partyId);
+
+            if (party.Owner?.UserName != UserName)
+            {
+                throw new OnlyOwnerHasAccessException();
+            }
+
+            if (party is FriendParty friendParty)
+            {
+                friendParty.TimerType = config.TimerType;
+                friendParty.TimerDifficulty = config.TimerDifficulty;
+
+                var configSettings = new ConfigSetting[]
                 {
-                    throw new OnlyOwnerHasAccessException();
-                }
-
-                if (party is FriendParty friendParty)
-                {
-                    friendParty.TimerType = config.TimerType;
-                    friendParty.TimerDifficulty = config.TimerDifficulty;
-
-                    var configSettings = new ConfigSetting[]
-                    {
                         CreateTimerTypeConfigSetting(friendParty.TimerType),
 
                         CreateTimerDifficultyConfigSetting(
                             friendParty.TimerType, friendParty.TimerDifficulty),
-                    };
+                };
 
-                    await this.Clients.Clients(friendParty.GetConnectionIds())
-                        .SendAsync(Messages.UpdateFriendPartyConfigSettings, configSettings);
-                }
-            }
-            catch (MatchmakingFailedException ex)
-            {
-                await this.SendErrorAsync(ex.ErrorCode);
+                await Clients
+                    .Clients(friendParty.GetConnectionIds())
+                    .UpdateFriendPartyConfigSettings(configSettings);
             }
         }
-
-        [Authorize]
-        public async Task LoadGame(string gameId)
+        catch (MatchmakingFailedException ex)
         {
-            if (!this.matchmakingService.IsUserInsideGame(this.UserName!, gameId))
-            {
-                // User is NOT inside the given game
-                return;
-            }
-
-            GameState gameState = this.matchmakingService.GetGameState(this.UserName!);
-
-            Player player = gameState.GetPlayer(this.UserName!)!;
-
-            await this.Clients
-                .Client(player.ConnectionId!)
-                .SendAsync("UserEnteredGameFromAnotherConnectionId", player.ConnectionId);
-
-            player.ConnectionId = this.ConnectionId;
-
-            var viewModel = this.gameService.MapFromGameState(gameState, this.UserName!);
-
-            await this.Clients
-                .Client(this.Context.ConnectionId)
-                .SendAsync(Messages.UpdateGameState, viewModel);
-        }
-
-        private async Task SendValidationErrorMessageAsync(string methodName, GameOperationResult result)
-        {
-            await this.Clients.Caller.SendAsync(methodName, result);
-        }
-
-        private async Task SendErrorAsync(string message)
-        {
-            await this.Clients.Caller.SendAsync(Messages.Error, message);
-        }
-
-        private async Task StartGameAsync()
-        {
-            var gameState = this.matchmakingService.GetGameState(this.UserName!);
-
-            foreach (Player player in gameState.Teams.SelectMany(team => team.Players))
-            {
-                await this.Groups.AddToGroupAsync(player.ConnectionId!, gameState.GroupName);
-            }
-
-            await this.Clients.Group(gameState.GroupName)
-                .SendAsync(Messages.StartGame, gameState.GroupName);
-
-            await this.UpdateGameStateAsync(gameState);
-        }
-
-        private async Task UpdateGameStateAsync(GameState gameState)
-        {
-            foreach (Team team in gameState.Teams)
-            {
-                foreach (Player player in team.Players)
-                {
-                    this.gameService.FillPlayerTiles(gameState, player);
-
-                    PlayerGameStateViewModel viewModel = this.gameService
-                        .MapFromGameState(gameState, player.UserName);
-
-                    await this.Clients.Client(player.ConnectionId!)
-                        .SendAsync(Messages.UpdateGameState, viewModel);
-                }
-            }
-        }
-
-        private static ConfigSetting CreateTimerTypeConfigSetting(TimerType selectedTimerType)
-        {
-            return new ConfigSetting
-            {
-                Name = nameof(TimerType),
-                Options = Enum
-                    .GetValues(typeof(TimerType)).Cast<TimerType>()
-                    .Select(value => new SettingOption
-                    {
-                        Value = (int)value,
-                        Name = value.ToString(),
-                        IsSelected = value == selectedTimerType,
-                    })
-            };
-        }
-
-        private static ConfigSetting CreateTimerDifficultyConfigSetting(
-            TimerType selectedTimerType, TimerDifficulty selectedTimerDifficulty)
-        {
-            return new ConfigSetting
-            {
-                Name = nameof(TimerDifficulty),
-                Options = Enum
-                    .GetValues(typeof(TimerDifficulty)).Cast<TimerDifficulty>()
-                    .Select(value => new SettingOption
-                    {
-                        Value = (int)value,
-                        IsSelected = value == selectedTimerDifficulty,
-                        Name = TimeSpan.FromSeconds(
-                            value.GetSeconds(selectedTimerType)).ToString("mm':'ss"),
-                    })
-            };
+            await SendErrorAsync(ex.ErrorCode);
         }
     }
+
+    public async Task LoadGame(string gameId)
+    {
+        if (!_matchmakingService.IsUserInsideGame(UserName!, gameId))
+        {
+            // User is NOT inside the given game
+            return;
+        }
+
+        GameState gameState = _matchmakingService.GetGameState(UserName!);
+        Player player = gameState.GetPlayer(UserName!)!;
+
+        await Clients.Client(player.ConnectionId!).UserEnteredGameFromAnotherConnectionId();
+        player.ConnectionId = ConnectionId;
+
+        var viewModel = _gameService.MapFromGameState(gameState, UserName!);
+        await Clients.Client(ConnectionId).UpdateGameState(viewModel);
+    }
+
+    private async Task SendErrorAsync(string message)
+    {
+        await Clients.Caller.Error(message);
+    }
+
+    private async Task StartGameAsync()
+    {
+        var gameState = _matchmakingService.GetGameState(UserName!);
+        string gameId = gameState.GameId;
+
+        foreach (Player player in gameState.Players)
+        {
+            await Groups.AddToGroupAsync(player.ConnectionId!, gameId);
+        }
+
+        await Clients.Group(gameId).StartGame(gameId);
+        await UpdateGameStateAsync(gameState);
+    }
+
+    private async Task UpdateGameStateAsync(GameState gameState)
+    {
+        foreach (Player player in gameState.Players)
+        {
+            _gameService.FillPlayerTiles(gameState, player);
+        }
+
+        foreach (Player player in gameState.Players)
+        {
+            var viewModel = _gameService.MapFromGameState(gameState, player.UserName);
+            await Clients.Client(player.ConnectionId!).UpdateGameState(viewModel);
+        }
+    }
+
+    private static ConfigSetting CreateTimerTypeConfigSetting(TimerType selectedTimerType)
+    {
+        return new ConfigSetting
+        {
+            Name = nameof(TimerType),
+            Options = Enum
+                .GetValues(typeof(TimerType)).Cast<TimerType>()
+                .Select(value => new SettingOption
+                {
+                    Value = (int)value,
+                    Name = value.ToString(),
+                    IsSelected = value == selectedTimerType,
+                })
+        };
+    }
+
+    private static ConfigSetting CreateTimerDifficultyConfigSetting(
+        TimerType selectedTimerType, TimerDifficulty selectedTimerDifficulty)
+    {
+        return new ConfigSetting
+        {
+            Name = nameof(TimerDifficulty),
+            Options = Enum
+                .GetValues(typeof(TimerDifficulty)).Cast<TimerDifficulty>()
+                .Select(value => new SettingOption
+                {
+                    Value = (int)value,
+                    IsSelected = value == selectedTimerDifficulty,
+                    Name = TimeSpan.FromSeconds(
+                        value.GetSeconds(selectedTimerType)).ToString("mm':'ss"),
+                })
+        };
+    }
 }
+

@@ -20,7 +20,7 @@
 
             this.Bag = bag;
             this.Board = board;
-            this.GroupName = groupName;
+            this.GameId = groupName;
             this.TeamIndex = 0;
             this.IsGameOver = false;
             this.GameplayConstants = gameplayConstantsProvider;
@@ -32,7 +32,7 @@
 
         public IBoard Board { get; }
 
-        public string GroupName { get; }
+        public string GameId { get; }
 
         public int TeamIndex { get; private set; }
 
