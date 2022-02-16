@@ -1,3 +1,23 @@
 .scoreboard {
-    background-color: #52B788;
+    background-color: #7EC9AB; /*#52B788;*/
+    color: #245642;
+    border: none;
+    font-size: 1.2rem;
+}
+
+/*
+.custom-row {
+    background-color: #A9DBC6;
+}
+
+.custom-row:nth-child(odd) {background-color: #A9DBC6;}*/
+
+.odd-row {
+    background-color: #7EC9AB;
+    color: #245642;
+}
+
+.even-row {
+    background-color: #A9DBC6;
+    color: #245642;
 }

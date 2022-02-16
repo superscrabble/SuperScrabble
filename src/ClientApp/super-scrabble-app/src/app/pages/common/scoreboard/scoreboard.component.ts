@@ -31,6 +31,13 @@ export class ScoreboardComponent implements OnInit {
     }
 
     return result;
-}
+  }
+
+  getClassByRowIndex(i: number) {
+    if(i % 2 != 0) {
+      return "odd-row";
+    }
+    return "even-row";
+  }
 
 }

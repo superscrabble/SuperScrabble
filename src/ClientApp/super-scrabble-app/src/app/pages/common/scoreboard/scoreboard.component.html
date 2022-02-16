@@ -1,21 +1,20 @@
 <div class="d-flex border border-dark rounded scoreboard">
-    <table class="table">
-        <th class="ps-3 py-3">Резултат</th>
+    <table class="table table-borderless">
         <!--Posible way to show player's times-->
-        <tr>
-            <th></th>
+        <tr style="color: #245642;" class="py-2 text-center">
+            <th class="py-3">Резултат</th>
             <th>Играч</th>
             <th>Точки</th>
             <th *ngIf="isDuoGame">Общо точки</th>
         </tr>
-        <ng-container *ngFor="let team of teams; let i = index">
-            <th [attr.rowspan]="team.players.length + 1" class="text-center ps-3 py-2">{{i + 1}}</th>
-            <tr *ngFor="let player of team.players; let first = first">
+        <ng-container class="custom-row" *ngFor="let team of teams; let i = index">
+            <th class="{{getClassByRowIndex(i)}}" [attr.rowspan]="team.players.length + 1" class="text-center ps-3 py-2">{{i + 1}}</th>
+            <tr class="{{getClassByRowIndex(i)}} text-center" *ngFor="let player of team.players; let first = first">
                 
                 <td>{{modifyCurrentUserName(player.userName)}}</td>
                 <!--<td>05:42</td>-->
-                <td>{{player.points}} т.</td>
-                <td [attr.rowspan]="team.players.length + 1" *ngIf="isDuoGame && first" class="text-center ps-3 py-2">{{team.points}}</td>
+                <td><strong>{{player.points}} т.</strong></td>
+                <td [attr.rowspan]="team.players.length + 1" *ngIf="isDuoGame && first" class="text-center ps-3 py-2"><strong>{{team.points}}</strong></td>
             </tr>
         </ng-container>
     </table>
