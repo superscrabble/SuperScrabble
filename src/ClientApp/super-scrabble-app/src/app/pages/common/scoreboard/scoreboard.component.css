@@ -5,6 +5,10 @@
     font-size: 1.2rem;
 }
 
+table {
+    margin-bottom: 0px;
+}
+
 /*
 .custom-row {
     background-color: #A9DBC6;
