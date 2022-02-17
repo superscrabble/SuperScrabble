@@ -41,6 +41,9 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { PlayerRackComponent } from './pages/common/player-rack/player-rack.component';
 import { JoinPartyWithCodeDialogComponent } from './pages/game-configuration/dialogs/join-party-with-code-dialog/join-party-with-code-dialog.component';
 import { PartyPageComponent } from './pages/party-page/party-page.component';
+import { initializeApp,provideFirebaseApp } from '@angular/fire/app';
+import { environment } from '../environments/environment';
+import { provideRemoteConfig,getRemoteConfig } from '@angular/fire/remote-config';
 
 @NgModule({
   declarations: [
@@ -83,7 +86,9 @@ import { PartyPageComponent } from './pages/party-page/party-page.component';
     DragDropModule,
     ScrollingModule,
     ClipboardModule,
-    MatTooltipModule
+    MatTooltipModule,
+    provideFirebaseApp(() => initializeApp(environment.firebase)),
+    provideRemoteConfig(() => getRemoteConfig())
   ],
   providers: [ Utilities ],
   bootstrap: [AppComponent]
