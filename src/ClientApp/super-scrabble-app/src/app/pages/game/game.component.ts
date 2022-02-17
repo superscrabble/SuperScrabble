@@ -54,7 +54,7 @@ export class GameComponent implements OnInit {
     playerTiles: Tile[] = new Array();
     teammates: Teammate[] = [];
     cellViewDataByType: Map<number, CellViewData> = new Map();
-    remainingTilesCount: number = 0;
+    remainingTilesCount: number = 90;
     teams: Team[] = new Array();
     selectedPlayerTile: Tile | null = null;
     updatedBoardCells: any[] = new Array();
@@ -67,7 +67,7 @@ export class GameComponent implements OnInit {
     wildcardOptions: Tile[] = new Array();
     userNamesOfPlayersWhoHaveLeftTheGame: string[] = [];
     turnRemainingTime: number = 100;
-    gameTimeAsString: string = "";
+    gameTimeAsString: string = "01:30";
     gameLogs: Action[] = [];
     //@ViewChild('boardComponent', {static: false}) boardComponent: GameboardComponent | undefined;
 
@@ -541,16 +541,24 @@ export class GameComponent implements OnInit {
             {
                 "players": [
                     {
-                        "userName": "Gosho1",
-                        "points": 10
+                        "userName": "Gosho1Gosho1Go",
+                        "points": 1000
                     },
-                    {
+                    /*{
                         "userName": "Gosho1",
                         "points": 20
                     },
                     {
                         "userName": "Gosho1",
                         "points": 30
+                    }*/
+                ]
+            },
+            {
+                "players": [
+                    {
+                        "userName": "Gosho1Gosho2",
+                        "points": 990
                     }
                 ]
             },
