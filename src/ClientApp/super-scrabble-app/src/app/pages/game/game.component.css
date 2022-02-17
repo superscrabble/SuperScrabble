@@ -199,3 +199,19 @@ TODO: implement this one
     display: grid;
     grid-template-rows: repeat(15, 2.2rem);
 }
+
+.on-turn-message {
+    color: #D9EFFC;
+    font-size: 2rem;
+    text-align: center;
+    overflow-wrap: break-word;
+    line-height: 2.2rem;
+}
+
+.remaining-time {
+    color: #D9EFFC;
+    font-size: 2rem;
+    text-align: center;
+    overflow-wrap: break-word;
+    line-height: 2.2rem;
+}

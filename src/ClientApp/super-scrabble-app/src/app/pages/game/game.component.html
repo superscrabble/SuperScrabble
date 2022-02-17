@@ -44,16 +44,16 @@
             [isDuoGame]="isDuoGame()"
             class="mx-3">
         </app-scoreboard>
-        <div class="mx-3 rounded">
-            <div *ngIf="isCurrentPlayerOnTurn()">
-                <p class="mat-headline"><mark>Ти си на ред</mark></p>
+        <div class="mx-3 rounded d-flex flex-column">
+            <div *ngIf="isCurrentPlayerOnTurn()" class="on-turn-message mb-3">
+                Ти си на ред
             </div>
-            <div *ngIf="!isCurrentPlayerOnTurn()">
-                <h1><mark>На ред е {{playerNameOnTurn}}</mark></h1>
+            <div *ngIf="!isCurrentPlayerOnTurn()" class="on-turn-message mb-3">
+                На ред е {{playerNameOnTurn}}
             </div>
-            <h1>
-                <mark>ОСТАВАЩО ВРЕМЕ: {{gameTimeAsString}}</mark>
-            </h1>
+            <div class="remaining-time">
+                ОСТАВАЩО ВРЕМЕ: {{gameTimeAsString}}
+            </div>
         </div>
         <app-word-info
             class="mx-3">           
