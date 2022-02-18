@@ -19,6 +19,7 @@ import { CdkDragDrop, CdkDragEnter, moveItemInArray, transferArrayItem } from "@
 import { GameboardComponent } from '../common/gameboard/gameboard.component';
 import { Team } from 'src/app/models/team';
 import { Player } from 'src/app/models/player';
+import { LoadingScreenService } from 'src/app/services/loading-screen.service';
 
 @Pipe({
     name: "formatTime"
@@ -76,9 +77,11 @@ export class GameComponent implements OnInit {
         private signalrService: SignalrService,
         private router: Router,
         public dialog: MatDialog,
-        private elementRef: ElementRef) {}
+        private elementRef: ElementRef,
+        private loadingScreenService: LoadingScreenService) {}
 
     ngOnInit(): void {
+        this.loadingScreenService.showLoadingScreen();
         this.signalrService.startConnection();
 
         const url = window.location.href;
@@ -158,6 +161,7 @@ export class GameComponent implements OnInit {
             if(data.commonGameState.isGameOver == true) {
                 this.router.navigate([this.router.url + "/summary"]);
             }
+            this.loadingScreenService.stopShowingLoadingScreen();
         })
     
         this.signalrService.hubConnection?.on("InvalidWriteWordInput", data => {
