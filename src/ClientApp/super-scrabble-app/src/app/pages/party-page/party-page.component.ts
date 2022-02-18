@@ -4,6 +4,7 @@ import { HubConnectionState } from '@microsoft/signalr';
 import { PartyType } from 'src/app/common/enums/party-type';
 import { TimerType } from 'src/app/common/enums/timer-type';
 import { GameConfig } from 'src/app/models/game-configuaration/game-config';
+import { LoadingScreenService } from 'src/app/services/loading-screen.service';
 import { MatchmakingService } from 'src/app/services/matchmaking.service';
 import { SignalrService } from 'src/app/services/signalr.service';
 
@@ -41,7 +42,7 @@ export class PartyPageComponent implements OnInit {
   partyId: string = "";
 
   constructor(private signalrService: SignalrService, private matchmakingService: MatchmakingService,
-              private router: Router) {
+              private router: Router, private loadingScreenService: LoadingScreenService) {
     this.partyData.invitationCode = "DSDS121"
     this.partyData.members = ["Denis", "Gosho", "Misho", "Pesho"]
     //this.partyData.members = ["Denis"]
@@ -95,6 +96,7 @@ export class PartyPageComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.loadingScreenService.showLoadingScreen();
     this.signalrService.startConnection();
 
     const url = window.location.href;
@@ -122,6 +124,7 @@ export class PartyPageComponent implements OnInit {
       console.log("Receive Party DatA")
       console.log(data);
       this.parsePartyData(data);
+      this.loadingScreenService.stopShowingLoadingScreen();
     })
 
     this.signalrService.hubConnection?.on("EnablePartyStart", () => {

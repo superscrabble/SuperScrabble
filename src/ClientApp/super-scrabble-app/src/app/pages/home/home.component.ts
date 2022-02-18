@@ -8,6 +8,7 @@ import { JoinPartyWithCodeDialogComponent } from '../game-configuration/dialogs/
 import { MatchmakingService } from 'src/app/services/matchmaking.service';
 import { PartyType } from 'src/app/common/enums/party-type';
 import { GameMode } from 'src/app/common/enums/game-mode';
+import { LoadingScreenService } from 'src/app/services/loading-screen.service';
 
 class GameModeButton {
   text: string = "";
@@ -39,7 +40,8 @@ export class HomeComponent implements OnInit {
   invitationCodeFieldVisible: boolean = false;
 
   constructor(private signalrService: SignalrService, private utilities: Utilities,
-              private router: Router, private dialog: MatDialog, private matchmakingService: MatchmakingService) {
+              private router: Router, private dialog: MatDialog, private matchmakingService: MatchmakingService,
+              private loadingScreenService: LoadingScreenService) {
       this.gameModes = [
         {
           name: "Дуел",
@@ -123,6 +125,7 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.loadingScreenService.showLoadingScreen();
     this.signalrService.startConnection();
     this.signalrService.addStartGameListeners();
 
@@ -135,6 +138,7 @@ export class HomeComponent implements OnInit {
           this.attachListeners();
         })
     }
+    this.loadingScreenService.stopShowingLoadingScreen();
   }
 
   attachListeners() : void {
