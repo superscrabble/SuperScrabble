@@ -10,7 +10,7 @@ using SuperScrabble.Data;
 using SuperScrabble.Data.Common.Repositories;
 using SuperScrabble.Data.Models;
 using SuperScrabble.Data.Repositories;
-
+using SuperScrabble.Data.Seeding;
 using SuperScrabble.Services.Common;
 using SuperScrabble.Services.Data.Users;
 using SuperScrabble.Services.Data.Words;
@@ -59,7 +59,7 @@ builder.Services.AddTransient<IInvitationCodeGenerator, InvitationCodeGenerator>
 
 // Services.Data
 builder.Services.AddTransient<IUsersService, UsersService>();
-builder.Services.AddTransient<IWordsService, AlwaysValidWordsService>();
+builder.Services.AddTransient<IWordsService, WordsService>();
 
 // Services.Game
 builder.Services.AddTransient<IGameValidator, GameValidator>();

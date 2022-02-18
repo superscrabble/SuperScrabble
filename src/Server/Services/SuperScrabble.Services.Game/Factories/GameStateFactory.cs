@@ -1,5 +1,6 @@
 ﻿namespace SuperScrabble.Services.Game.Factories
 {
+    using Microsoft.Extensions.DependencyInjection;
     using SuperScrabble.Services.Common;
     using SuperScrabble.Services.Game.Common;
     using SuperScrabble.Services.Game.Common.BonusCellsProviders;

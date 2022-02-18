@@ -1,226 +1,126 @@
-﻿namespace SuperScrabble.Services.Game.Matchmaking
+﻿using System.Collections.Concurrent;
+using SuperScrabble.Common.Exceptions.Matchmaking;
+using SuperScrabble.Common.Exceptions.Matchmaking.Party;
+
+using SuperScrabble.Services.Common;
+using SuperScrabble.Services.Game.Common;
+using SuperScrabble.Services.Game.Common.Enums;
+using SuperScrabble.Services.Game.Factories;
+using SuperScrabble.Services.Game.Models;
+using SuperScrabble.Services.Game.Models.Parties;
+
+namespace SuperScrabble.Services.Game.Matchmaking;
+
+public class MatchmakingService : IMatchmakingService
 {
-    using System.Collections.Concurrent;
+    public const string RandomDuoInvitationCode = "RANDDUO";
 
-    using SuperScrabble.Common.Exceptions.Matchmaking;
-    using SuperScrabble.Common.Exceptions.Matchmaking.Party;
+    private static readonly Dictionary<string, System.Timers.Timer> gameTimersByGameId = new();
 
-    using SuperScrabble.Services.Common;
-    using SuperScrabble.Services.Game.Common;
-    using SuperScrabble.Services.Game.Common.Enums;
-    using SuperScrabble.Services.Game.Factories;
-    using SuperScrabble.Services.Game.Models;
-    using SuperScrabble.Services.Game.Models.Parties;
+    private static readonly ConcurrentDictionary<string, Party> partiesByPartyIds = new();
+    private static readonly ConcurrentDictionary<string, string> partyIdsByInvitationCodes = new();
+    private static readonly ConcurrentDictionary<string, string> gameIdsByUserNames = new();
+    private static readonly ConcurrentDictionary<string, GameState> gameStatesByGameIds = new();
+    private static readonly ConcurrentDictionary<GameMode, List<WaitingTeam>> waitingTeamsByGameModes = new();
 
-    public class MatchmakingService : IMatchmakingService
+    private readonly IGameStateFactory _gameStateFactory;
+    private readonly IInvitationCodeGenerator _invitationCodeGenerator;
+
+    public MatchmakingService(
+        IGameStateFactory gameStateFactory,
+        IInvitationCodeGenerator invitationCodeGenerator)
     {
-        public const string RandomDuoInvitationCode = "RANDDUO";
+        _gameStateFactory = gameStateFactory;
+        _invitationCodeGenerator = invitationCodeGenerator;
+    }
 
-        private static readonly ConcurrentDictionary<string, Party> partiesByPartyIds = new();
-        private static readonly ConcurrentDictionary<string, string> partyIdsByInvitationCodes = new();
-        private static readonly ConcurrentDictionary<string, string> gameIdsByUserNames = new();
-        private static readonly ConcurrentDictionary<string, GameState> gameStatesByGameIds = new();
-        private static readonly ConcurrentDictionary<GameMode, List<WaitingTeam>> waitingTeamsByGameModes = new();
-
-        private readonly IGameStateFactory gameStateFactory;
-        private readonly IInvitationCodeGenerator invitationCodeGenerator;
-
-        public MatchmakingService(
-            IGameStateFactory gameStateFactory,
-            IInvitationCodeGenerator invitationCodeGenerator)
+    public string CreateParty(string creatorUserName,
+        string creatorConnectionId, PartyType partyType)
+    {
+        while (true)
         {
-            this.gameStateFactory = gameStateFactory;
-            this.invitationCodeGenerator = invitationCodeGenerator;
-        }
+            string invitationCode = _invitationCodeGenerator.GenerateInvitationCode();
 
-        /// <summary>
-        /// Creates a new party with the given params
-        /// </summary>
-        /// <param name="creatorUserName"></param>
-        /// <param name="creatorConnectionId"></param>
-        /// <param name="partyType"></param>
-        /// <returns>The id of the newly created party</returns>
-        public string CreateParty(string creatorUserName,
-            string creatorConnectionId, PartyType partyType)
-        {
-            while (true)
+            if (!partyIdsByInvitationCodes.ContainsKey(invitationCode))
             {
-                string invitationCode = this.invitationCodeGenerator.GenerateInvitationCode();
+                Party party = default!;
 
-                if (!partyIdsByInvitationCodes.ContainsKey(invitationCode))
+                var owner = new Member(creatorUserName, creatorConnectionId);
+                var partyId = Guid.NewGuid().ToString();
+
+                if (partyType == PartyType.Friendly)
                 {
-                    Party party = default!;
-
-                    var owner = new Member(creatorUserName, creatorConnectionId);
-                    var partyId = Guid.NewGuid().ToString();
-
-                    if (partyType == PartyType.Friendly)
-                    {
-                        party = new FriendParty(owner, partyId, invitationCode);
-                    }
-                    else if (partyType == PartyType.Duo)
-                    {
-                        party = new DuoParty(owner, partyId, invitationCode);
-                    }
-
-                    partyIdsByInvitationCodes.TryAdd(invitationCode, partyId);
-                    partiesByPartyIds.TryAdd(partyId, party);
-
-                    return partyId;
+                    party = new FriendParty(owner, partyId, invitationCode);
                 }
-            }
-        }
-
-        public void JoinParty(
-            string joinerUserName, string joinerConnectionId,
-            string invitationCode, out bool hasEnoughPlayersToStartGame)
-        {
-            if (invitationCode == RandomDuoInvitationCode)
-            {
-                throw new UnexistingInvitationCodeException();
-            }
-
-            ThrowIfInvitationCodeIsNotExisting(invitationCode);
-
-            Party party = this.GetPartyByInvitationCode(invitationCode);
-            party.AddMember(new Member(joinerUserName, joinerConnectionId));
-
-            hasEnoughPlayersToStartGame = party.HasEnoughPlayersToStartGame;
-        }
-
-        public void StartGameFromParty(string starterUserName, string partyId, out bool hasGameStarted)
-        {
-            hasGameStarted = false;
-
-            Party party = GetPartyById(partyId);
-
-            if (!party.HasEnoughPlayersToStartGame)
-            {
-                throw new NotEnoughPlayersToStartGameException();
-            }
-
-            if (party.Owner?.UserName != starterUserName)
-            {
-                throw new OnlyOwnerHasAccessException();
-            }
-
-            if (party is FriendParty friendParty)
-            {
-                var teams = party.Members.Select(mem =>
+                else if (partyType == PartyType.Duo)
                 {
-                    var team = new Team();
-                    team.AddPlayer(mem.UserName, mem.ConnectionId);
-                    return team;
-                });
-
-                var gameConfig = new GameRoomConfiguration
-                {
-                    TeamsCount = teams.Count(),
-                    TeamType = TeamType.Solo,
-                    TimerDifficulty = friendParty.TimerDifficulty,
-                    TimerType = friendParty.TimerType,
-                };
-
-                string groupName = Guid.NewGuid().ToString();
-                var gameState = this.gameStateFactory.CreateGameState(gameConfig, teams, groupName);
-
-                partyIdsByInvitationCodes.TryRemove(new(party.InvitationCode, partyId));
-                partiesByPartyIds.TryRemove(new(partyId, party));
-
-                gameStatesByGameIds.TryAdd(groupName, gameState);
-
-                foreach (Player player in gameState.Teams.SelectMany(team => team.Players))
-                {
-                    gameIdsByUserNames.TryAdd(player.UserName, groupName);
+                    party = new DuoParty(owner, partyId, invitationCode);
                 }
 
-                hasGameStarted = true;
-            }
-            else if (party is DuoParty)
-            {
-                var gameMode = GameMode.Duo;
-                var waitingTeam = new WaitingTeam(party.Members);
-                this.AddToWaitingQueue(waitingTeam, gameMode, out hasGameStarted);
+                partyIdsByInvitationCodes.TryAdd(invitationCode, partyId);
+                partiesByPartyIds.TryAdd(partyId, party);
 
-                partyIdsByInvitationCodes.TryRemove(new(party.InvitationCode, partyId));
-                partiesByPartyIds.TryRemove(new(partyId, party));
+                return partyId;
             }
         }
+    }
 
-        public void LeaveParty(string leaverUserName, string partyId, out bool shouldDisposeParty)
+    public void JoinParty(
+        string joinerUserName, string joinerConnectionId,
+        string invitationCode, out bool hasEnoughPlayersToStartGame)
+    {
+        if (invitationCode == RandomDuoInvitationCode)
         {
-            Party party = this.GetPartyById(partyId);
-            party.RemoveMember(leaverUserName);
-            shouldDisposeParty = party.IsEmpty;
+            throw new UnexistingInvitationCodeException();
         }
 
-        public void DisposeParty(string partyId)
+        ThrowIfInvitationCodeIsNotExisting(invitationCode);
+
+        Party party = GetPartyByInvitationCode(invitationCode);
+        party.AddMember(new Member(joinerUserName, joinerConnectionId));
+
+        hasEnoughPlayersToStartGame = party.HasEnoughPlayersToStartGame;
+    }
+
+    public void StartGameFromParty(string starterUserName, string partyId, out bool hasGameStarted)
+    {
+        hasGameStarted = false;
+
+        Party party = GetPartyById(partyId);
+
+        if (!party.HasEnoughPlayersToStartGame)
         {
-            Party party = this.GetPartyById(partyId);
-            partyIdsByInvitationCodes.TryRemove(new(party.InvitationCode, party.Id));
-            partiesByPartyIds.TryRemove(new(party.Id, party));
+            throw new NotEnoughPlayersToStartGameException();
         }
 
-        public GameState GetGameState(string userName)
+        if (party.Owner?.UserName != starterUserName)
         {
-            if (!gameIdsByUserNames.ContainsKey(userName))
-            {
-                throw new ArgumentException(
-                    $"No {nameof(GameState)} for the given {nameof(userName)} was found.");
-            }
-
-            string groupName = gameIdsByUserNames[userName];
-            return gameStatesByGameIds[groupName];
+            throw new OnlyOwnerHasAccessException();
         }
 
-        public Party GetPartyById(string partyId)
+        if (party is FriendParty friendParty)
         {
-            if (!partiesByPartyIds.ContainsKey(partyId))
+            var teams = party.Members.Select(mem =>
             {
-                throw new PartyNotFoundException();
-            }
+                var team = new Team();
+                team.AddPlayer(mem.UserName, mem.ConnectionId);
+                return team;
+            });
 
-            return partiesByPartyIds[partyId];
-        }
-
-        public Party GetPartyByInvitationCode(string invitationCode)
-        {
-            ThrowIfInvitationCodeIsNotExisting(invitationCode);
-
-            string partyId = partyIdsByInvitationCodes[invitationCode];
-
-            if (!partiesByPartyIds.ContainsKey(partyId))
+            var gameConfig = new GameRoomConfiguration
             {
-                throw new ArgumentException($"Party with such {partyId} was not found.");
-            }
-
-            return partiesByPartyIds[partyId];
-        }
-
-        private void AddToWaitingQueue(
-            WaitingTeam waitingTeam, GameMode gameMode, out bool hasGameStarted)
-        {
-            if (!waitingTeamsByGameModes.ContainsKey(gameMode))
-            {
-                waitingTeamsByGameModes.TryAdd(gameMode, new());
-            }
-
-            var waitingTeams = waitingTeamsByGameModes[gameMode];
-            waitingTeams.Add(waitingTeam);
-            bool isQueueFull = gameMode.GetTeamsCount() <= waitingTeams.Count;
-
-            if (!isQueueFull)
-            {
-                hasGameStarted = false;
-                return;
-            }
+                TeamsCount = teams.Count(),
+                TeamType = TeamType.Solo,
+                TimerDifficulty = friendParty.TimerDifficulty,
+                TimerType = friendParty.TimerType,
+            };
 
             string gameId = Guid.NewGuid().ToString();
+            var gameState = _gameStateFactory.CreateGameState(gameConfig, teams, gameId);
 
-            GameState gameState = this.gameStateFactory
-                .CreateGameState(gameMode, waitingTeams, gameId);
+            partyIdsByInvitationCodes.TryRemove(new(party.InvitationCode, partyId));
+            partiesByPartyIds.TryRemove(new(partyId, party));
 
-            waitingTeams.Clear();
             gameStatesByGameIds.TryAdd(gameId, gameState);
 
             foreach (Player player in gameState.Players)
@@ -230,91 +130,200 @@
 
             hasGameStarted = true;
         }
-
-        private static void ThrowIfInvitationCodeIsNotExisting(string invitationCode)
+        else if (party is DuoParty)
         {
-            bool isInvitationCodeExisting = partyIdsByInvitationCodes.ContainsKey(invitationCode);
+            var gameMode = GameMode.Duo;
+            var waitingTeam = new WaitingTeam(party.Members);
+            AddToWaitingQueue(waitingTeam, gameMode, out hasGameStarted);
 
-            if (!isInvitationCodeExisting)
-            {
-                throw new UnexistingInvitationCodeException();
-            }
-        }
-
-        public void JoinRoom(
-            string joinerUserName, string joinerConnectionId,
-            GameMode gameMode, out bool hasGameStarted)
-        {
-            var joiner = new Member(joinerUserName, joinerConnectionId);
-
-            this.AddToWaitingQueue(new WaitingTeam(new[] { joiner }), gameMode, out hasGameStarted);
-        }
-
-        public void JoinRandomDuoParty(
-            string joinerUserName, string joinerConnectionId, out bool hasGameStarted)
-        {
-            Party party;
-
-            try
-            {
-                party = this.GetPartyByInvitationCode(RandomDuoInvitationCode);
-                party.AddMember(new Member(joinerUserName, joinerConnectionId));
-            }
-            catch (MatchmakingFailedException)
-            {
-                string partyId = this.CreateParty(
-                    joinerUserName, joinerConnectionId, PartyType.Duo);
-
-                party = this.GetPartyById(partyId);
-                partyIdsByInvitationCodes.TryRemove(new(party.InvitationCode, party.Id));
-                partyIdsByInvitationCodes.TryAdd(RandomDuoInvitationCode, partyId);
-                party.InvitationCode = RandomDuoInvitationCode;
-            }
-
-            if (!party.IsFull)
-            {
-                hasGameStarted = false;
-                return;
-            }
-
-            this.StartGameFromParty(party.Owner?.UserName!, party.Id, out hasGameStarted);
-        }
-
-        public bool IsUserInsideAnyGame(string userName)
-        {
-            return gameIdsByUserNames.ContainsKey(userName);
-        }
-
-        public bool IsUserInsideGame(string userName, string gameId)
-        {
-            if (!gameIdsByUserNames.ContainsKey(userName))
-            {
-                return false;
-            }
-
-            return gameIdsByUserNames[userName] == gameId;
-        }
-
-        public void RemoveUserFromGame(string userName)
-        {
-            if (!gameIdsByUserNames.ContainsKey(userName))
-            {
-                return;
-            }
-
-            string gameId = gameIdsByUserNames[userName];
-            gameIdsByUserNames.TryRemove(new(userName, gameId));
-        }
-
-        public void RemoveGameState(string gameId)
-        {
-            if (!gameStatesByGameIds.ContainsKey(gameId))
-            {
-                return;
-            }
-
-            var gameState = gameStatesByGameIds[gameId];
-            gameStatesByGameIds.TryRemove(new(gameId, gameState));
+            partyIdsByInvitationCodes.TryRemove(new(party.InvitationCode, partyId));
+            partiesByPartyIds.TryRemove(new(partyId, party));
         }
     }
+
+    public void LeaveParty(string leaverUserName, string partyId, out bool shouldDisposeParty)
+    {
+        Party party = GetPartyById(partyId);
+        party.RemoveMember(leaverUserName);
+        shouldDisposeParty = party.IsEmpty;
+    }
+
+    public void DisposeParty(string partyId)
+    {
+        Party party = GetPartyById(partyId);
+        partyIdsByInvitationCodes.TryRemove(new(party.InvitationCode, party.Id));
+        partiesByPartyIds.TryRemove(new(party.Id, party));
+    }
+
+    public GameState GetGameState(string userName)
+    {
+        if (!gameIdsByUserNames.ContainsKey(userName))
+        {
+            throw new ArgumentException(
+                $"No {nameof(GameState)} for the given {nameof(userName)} was found.");
+        }
+
+        string gameId = gameIdsByUserNames[userName];
+        return gameStatesByGameIds[gameId];
+    }
+
+    public Party GetPartyById(string partyId)
+    {
+        if (!partiesByPartyIds.ContainsKey(partyId))
+        {
+            throw new PartyNotFoundException();
+        }
+
+        return partiesByPartyIds[partyId];
+    }
+
+    public Party GetPartyByInvitationCode(string invitationCode)
+    {
+        ThrowIfInvitationCodeIsNotExisting(invitationCode);
+
+        string partyId = partyIdsByInvitationCodes[invitationCode];
+
+        if (!partiesByPartyIds.ContainsKey(partyId))
+        {
+            throw new ArgumentException($"Party with such {partyId} was not found.");
+        }
+
+        return partiesByPartyIds[partyId];
+    }
+
+    private void AddToWaitingQueue(
+        WaitingTeam waitingTeam, GameMode gameMode, out bool hasGameStarted)
+    {
+        if (!waitingTeamsByGameModes.ContainsKey(gameMode))
+        {
+            waitingTeamsByGameModes.TryAdd(gameMode, new());
+        }
+
+        var waitingTeams = waitingTeamsByGameModes[gameMode];
+        waitingTeams.Add(waitingTeam);
+        bool isQueueFull = gameMode.GetTeamsCount() <= waitingTeams.Count;
+
+        if (!isQueueFull)
+        {
+            hasGameStarted = false;
+            return;
+        }
+
+        string gameId = Guid.NewGuid().ToString();
+
+        GameState gameState = _gameStateFactory
+            .CreateGameState(gameMode, waitingTeams, gameId);
+
+        waitingTeams.Clear();
+        gameStatesByGameIds.TryAdd(gameId, gameState);
+
+        foreach (Player player in gameState.Players)
+        {
+            gameIdsByUserNames.TryAdd(player.UserName, gameId);
+        }
+
+        hasGameStarted = true;
+    }
+
+    private static void ThrowIfInvitationCodeIsNotExisting(string invitationCode)
+    {
+        bool isInvitationCodeExisting = partyIdsByInvitationCodes.ContainsKey(invitationCode);
+
+        if (!isInvitationCodeExisting)
+        {
+            throw new UnexistingInvitationCodeException();
+        }
+    }
+
+    public void JoinRoom(
+        string joinerUserName, string joinerConnectionId,
+        GameMode gameMode, out bool hasGameStarted)
+    {
+        var joiner = new Member(joinerUserName, joinerConnectionId);
+
+        AddToWaitingQueue(new WaitingTeam(new[] { joiner }), gameMode, out hasGameStarted);
+    }
+
+    public void JoinRandomDuoParty(
+        string joinerUserName, string joinerConnectionId, out bool hasGameStarted)
+    {
+        Party party;
+
+        try
+        {
+            party = GetPartyByInvitationCode(RandomDuoInvitationCode);
+            party.AddMember(new Member(joinerUserName, joinerConnectionId));
+        }
+        catch (MatchmakingFailedException)
+        {
+            string partyId = CreateParty(
+                joinerUserName, joinerConnectionId, PartyType.Duo);
+
+            party = GetPartyById(partyId);
+            partyIdsByInvitationCodes.TryRemove(new(party.InvitationCode, party.Id));
+            partyIdsByInvitationCodes.TryAdd(RandomDuoInvitationCode, partyId);
+            party.InvitationCode = RandomDuoInvitationCode;
+        }
+
+        if (!party.IsFull)
+        {
+            hasGameStarted = false;
+            return;
+        }
+
+        StartGameFromParty(party.Owner?.UserName!, party.Id, out hasGameStarted);
+    }
+
+    public bool IsUserInsideAnyGame(string userName)
+    {
+        return gameIdsByUserNames.ContainsKey(userName);
+    }
+
+    public bool IsUserInsideGame(string userName, string gameId)
+    {
+        if (!gameIdsByUserNames.ContainsKey(userName))
+        {
+            return false;
+        }
+
+        return gameIdsByUserNames[userName] == gameId;
+    }
+
+    public void RemoveUserFromGame(string userName)
+    {
+        if (!gameIdsByUserNames.ContainsKey(userName))
+        {
+            return;
+        }
+
+        string gameId = gameIdsByUserNames[userName];
+        gameIdsByUserNames.TryRemove(new(userName, gameId));
+    }
+
+    public void RemoveGameState(string gameId)
+    {
+        if (!gameStatesByGameIds.ContainsKey(gameId))
+        {
+            return;
+        }
+
+        var gameState = gameStatesByGameIds[gameId];
+        gameStatesByGameIds.TryRemove(new(gameId, gameState));
+    }
+
+    public void AttachTimerToGameState(System.Timers.Timer timer, string gameId)
+    {
+        if (!gameStatesByGameIds.ContainsKey(gameId))
+        {
+            gameTimersByGameId.Add(gameId, timer);
+        }
+
+        gameTimersByGameId[gameId] = timer;
+    }
+
+    public System.Timers.Timer GetTimer(string gameId)
+    {
+        return gameTimersByGameId[gameId];
+    }
 }
+

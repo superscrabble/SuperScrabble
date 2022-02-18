@@ -55,9 +55,9 @@
                 ОСТАВАЩО ВРЕМЕ: {{gameTimeAsString}}
             </div>
         </div>
-        <app-word-info
+        <!--<app-word-info
             class="mx-3">           
-        </app-word-info>
+        </app-word-info>-->
     </div>
     <!--Board-->
     <div cdkDropListGroup cdkScrollable class="col-lg-6 col-md-12 row-sm-12 row-xs-12 order-2 order-md-last order-sm-last align-self-center mt-md-4">
@@ -123,11 +123,11 @@
             </div>
             <button class="btn btn-danger mb-2 mx-3" [disabled]="!isCurrentPlayerOnTurn() || !areThereNewPlacedTiles()" (click)="writeWord()">Напиши дума</button>
         </div>
-        <app-game-logs
+        <!--<app-game-logs
             [gameLogs]="gameLogs"
             (showWordMeaningOf)="showWordMeaningOf($event)"
             class="mx-3">
-        </app-game-logs>
+        </app-game-logs>-->
     </div>
 </div>
 </div>

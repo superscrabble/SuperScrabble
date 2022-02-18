@@ -1,11 +1,11 @@
 .scoreboard {
-    background-color: #7EC9AB; /*#52B788;*/
+    background-color: #A9DBC6; /*#52B788;*/
     color: #245642;
     border: none;
     font-size: 1.2rem;
 }
 
-table {
+/*table {
     margin-bottom: 0px;
 }
 

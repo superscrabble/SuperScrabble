@@ -14,6 +14,7 @@ using SuperScrabble.Services.Game.Models;
 using SuperScrabble.Services.Game.Models.Parties;
 
 using SuperScrabble.WebApi.HubClients;
+using SuperScrabble.WebApi.Timers;
 using SuperScrabble.WebApi.ViewModels.Game;
 using SuperScrabble.WebApi.ViewModels.Party;
 
@@ -25,15 +26,18 @@ public class GameHub : Hub<IGameClient>
     private readonly IMatchmakingService _matchmakingService;
     private readonly IGameService _gameService;
     private readonly ITilesProvider _tilesProvider;
+    private readonly IServiceProvider _serviceProvider;
 
     public GameHub(
         IMatchmakingService matchmakingService,
         IGameService gameService,
-        ITilesProvider tilesProvider)
+        ITilesProvider tilesProvider,
+        IServiceProvider serviceProvider)
     {
         _matchmakingService = matchmakingService;
         _gameService = gameService;
         _tilesProvider = tilesProvider;
+        _serviceProvider = serviceProvider;
     }
 
     public string? UserName => Context.User?.Identity?.Name;
@@ -392,8 +396,14 @@ public class GameHub : Hub<IGameClient>
             await Groups.AddToGroupAsync(player.ConnectionId!, gameId);
         }
 
+        var timer = ActivatorUtilities.CreateInstance<StandardTimer>(_serviceProvider, gameState);
+        
+        _matchmakingService.AttachTimerToGameState(timer, gameId);
+
         await Clients.Group(gameId).StartGame(gameId);
         await UpdateGameStateAsync(gameState);
+
+        timer.Start();
     }
 
     private async Task UpdateGameStateAsync(GameState gameState)
@@ -404,6 +414,9 @@ public class GameHub : Hub<IGameClient>
         }
 
         string gameId = gameState.GameId;
+
+        StandardTimer timer = (StandardTimer)_matchmakingService.GetTimer(gameId);
+        timer.Reset();
 
         foreach (Player player in gameState.Players)
         {

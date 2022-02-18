@@ -1,12 +1,11 @@
-﻿namespace SuperScrabble.Data
+﻿using static SuperScrabble.Common.GlobalConstants;
+
+namespace SuperScrabble.Data;
+
+public static class DatabaseConfig
 {
-    using static SuperScrabble.Common.GlobalConstants;
+    public static readonly string ConnectionString =
+        $"Server={ServerName};Database={SystemName};Integrated Security=True;";
 
-    public static class DatabaseConfig
-    {
-        public static readonly string ConnectionString =
-            $"Server={ServerName};Database={SystemName};Integrated Security=True;";
-
-        public const string ServerName = ".\\SQLEXPRESS";
-    }
+    public const string ServerName = ".\\SQLEXPRESS";
 }

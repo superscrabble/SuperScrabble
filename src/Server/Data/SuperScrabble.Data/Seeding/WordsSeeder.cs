@@ -6,7 +6,7 @@
     {
         public async Task SeedAsync(AppDbContext dbContext, IServiceProvider serviceProvider)
         {
-            string[] files = Directory.GetFiles("../../../resources/final-list/all", "*.txt");
+            string[] files = Directory.GetFiles("../../../../resources/final-list/all", "*.txt");
 
             foreach (string file in files)
             {

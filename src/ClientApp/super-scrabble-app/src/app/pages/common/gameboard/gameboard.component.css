@@ -34,7 +34,7 @@
     left: 0;
     position: absolute;
     display: grid;
-    
+    cursor: grab;
     grid-template-rows: repeat(15, var(--cell-height, 2.2rem));
 }
 

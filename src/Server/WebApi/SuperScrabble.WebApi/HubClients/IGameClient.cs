@@ -42,4 +42,6 @@ public interface IGameClient
     Task InvalidExchangeTilesInput(GameOperationResult result);
 
     Task InvalidWriteWordInput(GameOperationResult result);
+
+    Task UpdateGameTimer(UpdateGameTimerViewModel viewModel);
 }
