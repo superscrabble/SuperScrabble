@@ -41,6 +41,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { PlayerRackComponent } from './pages/common/player-rack/player-rack.component';
 import { JoinPartyWithCodeDialogComponent } from './pages/game-configuration/dialogs/join-party-with-code-dialog/join-party-with-code-dialog.component';
 import { PartyPageComponent } from './pages/party-page/party-page.component';
+import { LoadingScreenComponent } from './pages/loading-screen/loading-screen.component';
 
 @NgModule({
   declarations: [
@@ -69,7 +70,8 @@ import { PartyPageComponent } from './pages/party-page/party-page.component';
     GameInviteFriendsDialogComponent,
     PlayerRackComponent,
     JoinPartyWithCodeDialogComponent,
-    PartyPageComponent
+    PartyPageComponent,
+    LoadingScreenComponent
   ],
   imports: [
     CommonModule,

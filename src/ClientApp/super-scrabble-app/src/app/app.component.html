@@ -1,6 +1,6 @@
 <app-navbar></app-navbar>
 <ng-container *ngIf="showLoading()">
-    Loading
+    <app-loading-screen></app-loading-screen>
 </ng-container>
 <ng-container *ngIf="!showLoading()">
     <router-outlet></router-outlet>
