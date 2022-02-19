@@ -2,7 +2,7 @@
 {
     public class CommonGameStateViewModel
     {
-        public IEnumerable<KeyValuePair<string, int>>? RemainingSecondsByUserNames { get; set; }
+        public Dictionary<string, int>? RemainingSecondsByUserNames { get; set; }
 
         public int RemainingTilesCount { get; set; }
 
