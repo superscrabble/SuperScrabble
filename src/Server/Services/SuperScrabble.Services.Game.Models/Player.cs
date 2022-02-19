@@ -1,69 +1,68 @@
-﻿namespace SuperScrabble.Services.Game.Models
+﻿using SuperScrabble.Services.Game.Common;
+
+namespace SuperScrabble.Services.Game.Models;
+
+public class Player
 {
-    using SuperScrabble.Services.Game.Common;
+    private readonly List<Tile> _tiles = new();
 
-    public class Player
+    public Player(string userName, string? connectionId)
     {
-        private readonly List<Tile> tiles = new();
+        Points = 0;
+        UserName = userName;
+        ConnectionId = connectionId;
+        ConsecutiveSkipsCount = 0;
+        HasLeftTheGame = false;
+    }
 
-        public Player(string userName, string? connectionId)
+    public int Points { get; set; }
+
+    public string UserName { get; }
+
+    public string? ConnectionId { get; set; }
+
+    public int ConsecutiveSkipsCount { get; set; }
+
+    public bool HasLeftTheGame { get; private set; }
+
+    public IReadOnlyCollection<Tile> Tiles => _tiles.AsReadOnly();
+
+    public int TilesPointsSum => _tiles.Sum(tile => tile.Points);
+
+    public void LeaveGame()
+    {
+        HasLeftTheGame = true;
+    }
+
+    public void AddTile(Tile tile)
+    {
+        _tiles.Add(tile);
+    }
+
+    public void AddTiles(IEnumerable<Tile> tiles)
+    {
+        foreach (Tile tile in tiles)
         {
-            this.Points = 0;
-            this.UserName = userName;
-            this.ConnectionId = connectionId;
-            this.ConsecutiveSkipsCount = 0;
-            this.HasLeftTheGame = false;
+            AddTile(tile);
         }
+    }
 
-        public int Points { get; set; }
+    public void RemoveTile(Tile tile)
+    {
+        var tileToRemove = _tiles.FirstOrDefault(playerTile => playerTile.Equals(tile)
+            || (tile?.Points == 0 && playerTile.IsWildcard));
 
-        public string UserName { get; }
-
-        public string? ConnectionId { get; set; }
-
-        public int ConsecutiveSkipsCount { get; set; }
-
-        public bool HasLeftTheGame { get; private set; }
-
-        public IReadOnlyCollection<Tile> Tiles => this.tiles.AsReadOnly();
-
-        public int TilesPointsSum => this.Tiles.Sum(tile => tile.Points);
-
-        public void LeaveGame()
+        if (tileToRemove != null)
         {
-            this.HasLeftTheGame = true;
+            _tiles.Remove(tileToRemove);
         }
+    }
 
-        public void AddTile(Tile tile)
+    public void RemoveTiles(IEnumerable<Tile> tiles)
+    {
+        foreach (Tile tile in tiles)
         {
-            this.tiles.Add(tile);
-        }
-
-        public void RemoveTile(Tile tile)
-        {
-            Tile? tileToRemove = this.tiles.FirstOrDefault(playerTile
-                => playerTile.Equals(tile) || (tile?.Points == 0 && playerTile.IsWildcard));
-
-            if (tileToRemove != null)
-            {
-                this.tiles.Remove(tileToRemove);
-            }
-        }
-
-        public void RemoveTiles(IEnumerable<Tile> tiles)
-        {
-            foreach (Tile tile in tiles)
-            {
-                this.RemoveTile(tile);
-            }
-        }
-
-        public void AddTiles(IEnumerable<Tile> tiles)
-        {
-            foreach (Tile tile in tiles)
-            {
-                this.AddTile(tile);
-            }
+            RemoveTile(tile);
         }
     }
 }
