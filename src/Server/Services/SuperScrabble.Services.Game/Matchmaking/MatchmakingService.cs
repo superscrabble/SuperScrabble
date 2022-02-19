@@ -15,8 +15,6 @@ public class MatchmakingService : IMatchmakingService
 {
     public const string RandomDuoInvitationCode = "RANDDUO";
 
-    private static readonly Dictionary<string, System.Timers.Timer> gameTimersByGameId = new();
-
     private static readonly ConcurrentDictionary<string, Party> partiesByPartyIds = new();
     private static readonly ConcurrentDictionary<string, string> partyIdsByInvitationCodes = new();
     private static readonly ConcurrentDictionary<string, string> gameIdsByUserNames = new();
@@ -309,21 +307,6 @@ public class MatchmakingService : IMatchmakingService
 
         var gameState = gameStatesByGameIds[gameId];
         gameStatesByGameIds.TryRemove(new(gameId, gameState));
-    }
-
-    public void AttachTimerToGameState(System.Timers.Timer timer, string gameId)
-    {
-        if (!gameStatesByGameIds.ContainsKey(gameId))
-        {
-            gameTimersByGameId.Add(gameId, timer);
-        }
-
-        gameTimersByGameId[gameId] = timer;
-    }
-
-    public System.Timers.Timer GetTimer(string gameId)
-    {
-        return gameTimersByGameId[gameId];
     }
 }
 

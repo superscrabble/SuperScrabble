@@ -7,7 +7,7 @@
 
     public class GameState
     {
-        private readonly List<Team> teams = new();
+        private readonly List<Team> _teams = new();
 
         public GameState(
             IBag bag,
@@ -16,15 +16,17 @@
             IEnumerable<Team> teams,
             IGameplayConstantsProvider gameplayConstantsProvider)
         {
-            this.teams.AddRange(teams);
+            _teams.AddRange(teams);
 
-            this.Bag = bag;
-            this.Board = board;
-            this.GameId = groupName;
-            this.TeamIndex = 0;
-            this.IsGameOver = false;
-            this.GameplayConstants = gameplayConstantsProvider;
+            Bag = bag;
+            Board = board;
+            GameId = groupName;
+            TeamIndex = 0;
+            IsGameOver = false;
+            GameplayConstants = gameplayConstantsProvider;
         }
+
+        public Dictionary<string, int> SecondsRemainingByUserNames { get; } = new();
 
         public IGameplayConstantsProvider GameplayConstants { get; set; }
 
@@ -38,12 +40,12 @@
 
         public bool IsGameOver { get; private set; }
 
-        public IReadOnlyCollection<Team> Teams => this.teams.AsReadOnly();
+        public IReadOnlyCollection<Team> Teams => this._teams.AsReadOnly();
 
         public IReadOnlyCollection<Player> Players =>
-            this.teams.SelectMany(team => team.Players).ToList().AsReadOnly();
+            this._teams.SelectMany(team => team.Players).ToList().AsReadOnly();
 
-        public Team CurrentTeam => this.teams[this.TeamIndex];
+        public Team CurrentTeam => this._teams[this.TeamIndex];
 
         public int TilesCount => this.Bag.TilesCount;
 
@@ -59,9 +61,10 @@
         {
             int remainingTeamsCount = 0;
 
-            foreach (Team team in this.teams)
+            foreach (Team team in this._teams)
             {
-                if (!team.HasSurrendered)
+                if (!team.HasSurrendered
+                    && HasPlayerTime(team.CurrentPlayer.UserName))
                 {
                     remainingTeamsCount++;
                     break;
@@ -70,13 +73,13 @@
 
             if (remainingTeamsCount <= 1)
             {
-                this.EndGame();
+                EndGame();
             }
         }
 
         public void ResetConsecutiveSkipsCount()
         {
-            foreach (Team team in this.teams)
+            foreach (Team team in this._teams)
             {
                 team.ResetConsecutiveSkipsCount();
             }
@@ -84,20 +87,31 @@
 
         public void NextTeam()
         {
-            while (this.teams.Count > 1)
+            while (_teams.Count > 1)
             {
-                this.TeamIndex++;
+                TeamIndex++;
 
-                if (this.TeamIndex >= this.teams.Count)
+                if (TeamIndex >= _teams.Count)
                 {
-                    this.TeamIndex = 0;
+                    TeamIndex = 0;
                 }
 
-                if (!this.CurrentTeam.HasSurrendered)
+                if (!CurrentTeam.HasSurrendered
+                    && HasPlayerTime(CurrentTeam.CurrentPlayer.UserName))
                 {
                     break;
                 }
             }
+        }
+
+        private bool HasPlayerTime(string userName)
+        {
+            if (SecondsRemainingByUserNames.Count == 0)
+            {
+                return true;
+            }
+
+            return SecondsRemainingByUserNames[userName] > 0;
         }
 
         public Player? GetPlayer(string userName)

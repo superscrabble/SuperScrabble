@@ -14,29 +14,37 @@
 
     public class GameStateFactory : IGameStateFactory
     {
-        private readonly IShuffleService shuffleService;
+        private readonly IShuffleService _shuffleService;
 
         public GameStateFactory(IShuffleService shuffleService)
         {
-            this.shuffleService = shuffleService;
+            _shuffleService = shuffleService;
         }
 
         public GameState CreateGameState(
-            GameRoomConfiguration roomConfiguration, IEnumerable<Team> teams, string groupName)
+            GameRoomConfiguration config, IEnumerable<Team> teams, string gameId)
         {
             var bonusCellsProvider = new StandardBonusCellsProvider();
             IBoard board = new StandardBoard(bonusCellsProvider);
 
-            var gameplayConstantsProvider = new StandardGameplayConstantsProvider(
-                    roomConfiguration.TeamsCount,
-                    roomConfiguration.TimerDifficulty.GetSeconds(roomConfiguration.TimerType));
+            var gameplayConstants = new StandardGameplayConstants(
+                    config.TeamsCount,
+                    config.TimerDifficulty.GetSeconds(config.TimerType));
 
             var shuffledTilesProvider = new ShuffledTilesProvider(
-                    this.shuffleService, new StandardTilesProvider());
+                    _shuffleService, new StandardTilesProvider());
 
             IBag bag = new Bag(shuffledTilesProvider);
 
-            return new GameState(bag, board, groupName, teams, gameplayConstantsProvider);
+            var gameState = new GameState(bag, board, gameId, teams, gameplayConstants);
+
+            foreach (var player in gameState.Players)
+            {
+                gameState.SecondsRemainingByUserNames.Add(
+                    player.UserName, gameState.GameplayConstants.GameTimerSeconds);
+            }
+
+            return gameState;
         }
 
         public GameState CreateGameState(
@@ -55,6 +63,11 @@
                 config.TeamType = TeamType.Duo;
             }
 
+            if (gameMode == GameMode.ChessScrabble)
+            {
+                config.TimerType = TimerType.Chess;
+            }
+
             var teams = waitingTeams.Select(wt =>
             {
                 var team = new Team();
@@ -67,7 +80,7 @@
                 return team;
             });
 
-            return this.CreateGameState(config, teams, groupName);
+            return CreateGameState(config, teams, groupName);
         }
 
         private IBoard CreateBoard(BoardType boardType, IBonusCellsProvider bonusCellsProvider)

@@ -22,6 +22,7 @@ using SuperScrabble.Services.Game.Matchmaking;
 using SuperScrabble.Services.Game.Scoring;
 using SuperScrabble.Services.Game.Validation;
 using SuperScrabble.WebApi.Hubs;
+using SuperScrabble.WebApi.Timers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -62,6 +63,7 @@ builder.Services.AddTransient<IUsersService, UsersService>();
 builder.Services.AddTransient<IWordsService, WordsService>();
 
 // Services.Game
+builder.Services.AddTransient<TimerManager>();
 builder.Services.AddTransient<IGameValidator, GameValidator>();
 builder.Services.AddTransient<IGameplayConstantsProvider, GameplayConstantsProvider>();
 builder.Services.AddTransient<ITilesProvider, StandardTilesProvider>();

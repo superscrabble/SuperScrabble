@@ -1,36 +1,31 @@
-﻿using System.Timers;
-
-using Microsoft.AspNetCore.SignalR;
-
+﻿using Microsoft.AspNetCore.SignalR;
 using SuperScrabble.Services.Game;
 using SuperScrabble.Services.Game.Matchmaking;
 using SuperScrabble.Services.Game.Models;
-
 using SuperScrabble.WebApi.HubClients;
 using SuperScrabble.WebApi.Hubs;
 using SuperScrabble.WebApi.ViewModels.Game;
+using System.Timers;
 
 namespace SuperScrabble.WebApi.Timers;
 
-public class StandardTimer : GameTimer
+public class ChessTimer : GameTimer
 {
-    private const int IntervalSeconds = 1;
-
     private readonly GameState _gameState;
     private readonly IGameService _gameService;
-    private readonly IMatchmakingService _matchmakingService;
     private readonly IHubContext<GameHub, IGameClient> _hubContext;
+    private readonly IMatchmakingService _matchmakingService;
 
-    public StandardTimer(
+    public ChessTimer(
         GameState gameState,
         IGameService gameService,
-        IMatchmakingService matchmakingService,
-        IHubContext<GameHub, IGameClient> hubContext)
+        IHubContext<GameHub, IGameClient> hubContext,
+        IMatchmakingService matchmakingService)
     {
         _gameState = gameState;
         _gameService = gameService;
-        _matchmakingService = matchmakingService;
         _hubContext = hubContext;
+        _matchmakingService = matchmakingService;
 
         Reset();
 
@@ -41,7 +36,8 @@ public class StandardTimer : GameTimer
 
     public override void Reset()
     {
-        SecondsRemaining = _gameState.GameplayConstants.GameTimerSeconds;
+        string currentPlayerName = _gameState.CurrentTeam.CurrentPlayer.UserName;
+        SecondsRemaining = _gameState.SecondsRemainingByUserNames[currentPlayerName];
         base.Reset();
     }
 
@@ -49,6 +45,9 @@ public class StandardTimer : GameTimer
     {
         if (SecondsRemaining >= 0)
         {
+            string currentPlayerUserName = _gameState.CurrentTeam.CurrentPlayer.UserName;
+            _gameState.SecondsRemainingByUserNames[currentPlayerUserName] = SecondsRemaining;
+
             int minutes = SecondsRemaining / 60;
             int seconds = SecondsRemaining % 60;
 
@@ -74,7 +73,14 @@ public class StandardTimer : GameTimer
             return;
         }
 
-        _gameState.NextTeam();
+        if (_gameState.SecondsRemainingByUserNames.All(x => x.Value <= 0))
+        {
+            _gameState.EndGame();
+        }
+        else
+        {
+            _gameState.NextTeam();
+        }
 
         foreach (Player player in _gameState.Players)
         {
@@ -109,6 +115,7 @@ public class StandardTimer : GameTimer
             _matchmakingService.RemoveGameState(_gameState.GameId);
         }
 
+        _timer.Dispose();
         Reset();
     }
 }

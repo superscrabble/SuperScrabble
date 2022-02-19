@@ -37,9 +37,5 @@
         void RemoveUserFromGame(string userName);
 
         void RemoveGameState(string gameId);
-
-        void AttachTimerToGameState(System.Timers.Timer timer, string gameId);
-
-        System.Timers.Timer GetTimer(string gameId);
     }
 }

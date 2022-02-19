@@ -1,8 +1,8 @@
 ﻿namespace SuperScrabble.Services.Game.Common.GameplayConstantsProviders
 {
-    public class StandardGameplayConstantsProvider : IGameplayConstantsProvider
+    public class StandardGameplayConstants : IGameplayConstantsProvider
     {
-        public StandardGameplayConstantsProvider(int playersPerGameCount, int gameTimerSeconds)
+        public StandardGameplayConstants(int playersPerGameCount, int gameTimerSeconds)
         {
             this.PlayersPerGameCount = playersPerGameCount;
             this.GameTimerSeconds = gameTimerSeconds;

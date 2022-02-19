@@ -22,7 +22,7 @@
         {
             [TimerDifficulty.Slow] = 1200,
             [TimerDifficulty.Normal] = 900,
-            [TimerDifficulty.Fast] = 600,
+            [TimerDifficulty.Fast] = 60,
             [TimerDifficulty.ExtraSlow] = 1500,
         };
 

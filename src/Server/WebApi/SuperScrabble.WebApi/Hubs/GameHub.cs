@@ -27,29 +27,32 @@ public class GameHub : Hub<IGameClient>
     private readonly IGameService _gameService;
     private readonly ITilesProvider _tilesProvider;
     private readonly IServiceProvider _serviceProvider;
+    private readonly TimerManager _timerManager;
 
     public GameHub(
         IMatchmakingService matchmakingService,
         IGameService gameService,
         ITilesProvider tilesProvider,
-        IServiceProvider serviceProvider)
+        IServiceProvider serviceProvider,
+        TimerManager timerManager)
     {
         _matchmakingService = matchmakingService;
         _gameService = gameService;
         _tilesProvider = tilesProvider;
         _serviceProvider = serviceProvider;
+        _timerManager = timerManager;
     }
 
-    public string? UserName => Context.User?.Identity?.Name;
+    public string UserName => Context.User?.Identity?.Name!;
 
     public string ConnectionId => Context.ConnectionId;
 
     public override async Task OnConnectedAsync()
     {
-        if (_matchmakingService.IsUserInsideAnyGame(UserName!))
+        if (_matchmakingService.IsUserInsideAnyGame(UserName))
         {
-            var gameState = _matchmakingService.GetGameState(UserName!);
-            var player = gameState.GetPlayer(UserName!)!;
+            var gameState = _matchmakingService.GetGameState(UserName);
+            var player = gameState.GetPlayer(UserName)!;
 
             if (player.ConnectionId == null)
             {
@@ -214,10 +217,10 @@ public class GameHub : Hub<IGameClient>
             PartyType = party is FriendParty ? PartyType.Friendly : PartyType.Duo,
             ConfigSettings = new ConfigSetting[]
             {
-                    CreateTimerTypeConfigSetting(defaultTimerType),
+                CreateTimerTypeConfigSetting(defaultTimerType),
 
-                    CreateTimerDifficultyConfigSetting(
-                        TimerType.Standard, TimerDifficulty.Normal),
+                CreateTimerDifficultyConfigSetting(
+                    TimerType.Standard, TimerDifficulty.Normal),
             }
         };
 
@@ -364,7 +367,6 @@ public class GameHub : Hub<IGameClient>
     {
         if (!_matchmakingService.IsUserInsideGame(UserName!, gameId))
         {
-            // User is NOT inside the given game
             return;
         }
 
@@ -396,9 +398,9 @@ public class GameHub : Hub<IGameClient>
             await Groups.AddToGroupAsync(player.ConnectionId!, gameId);
         }
 
-        var timer = ActivatorUtilities.CreateInstance<StandardTimer>(_serviceProvider, gameState);
-        
-        _matchmakingService.AttachTimerToGameState(timer, gameId);
+        var timer = _timerManager.CreateTimer(gameState);
+
+        _timerManager.AttachTimerToGameState(timer, gameId);
 
         await Clients.Group(gameId).StartGame(gameId);
         await UpdateGameStateAsync(gameState);
@@ -415,7 +417,7 @@ public class GameHub : Hub<IGameClient>
 
         string gameId = gameState.GameId;
 
-        StandardTimer timer = (StandardTimer)_matchmakingService.GetTimer(gameId);
+        var timer = _timerManager.GetTimer(gameId)!;
         timer.Reset();
 
         foreach (Player player in gameState.Players)
