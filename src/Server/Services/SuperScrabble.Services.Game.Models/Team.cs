@@ -1,67 +1,78 @@
-﻿namespace SuperScrabble.Services.Game.Models
+﻿namespace SuperScrabble.Services.Game.Models;
+
+public class Team
 {
-    public class Team
+    private readonly List<Player> _players = new();
+
+    public Team()
     {
-        private readonly List<Player> players = new();
+        PlayerIndex = 0;
+        IsTurnFinished = false;
+    }
 
-        public Team()
+    public int PlayerIndex { get; private set; }
+
+    public bool IsTurnFinished { get; private set; }
+
+    public Player CurrentPlayer => _players[PlayerIndex];
+
+    /// <summary>
+    /// Determines whether all players of the team have left the game
+    /// </summary>
+    public bool HasSurrendered => _players.All(pl => pl.HasLeftTheGame);
+
+    public IEnumerable<Player> Players => _players.AsReadOnly();
+
+    /// <summary>
+    /// Sets the ConsecutiveSkipsCount property of all players of the team to zero
+    /// </summary>
+    public void ResetConsecutiveSkipsCount()
+    {
+        foreach (Player player in _players)
         {
-            this.PlayerIndex = 0;
-            this.IsTurnFinished = false;
+            player.ConsecutiveSkipsCount = 0;
         }
+    }
 
-        public int PlayerIndex { get; private set; }
+    public void NextPlayer()
+    {
+        IsTurnFinished = false;
 
-        public bool IsTurnFinished { get; private set; }
-
-        public Player CurrentPlayer => this.players[this.PlayerIndex];
-
-        public bool HasSurrendered => this.players.All(pl => pl.HasLeftTheGame);
-
-        public IEnumerable<Player> Players => this.players.AsReadOnly();
-
-        public void ResetConsecutiveSkipsCount()
+        while (_players.Count >= 1)
         {
-            foreach (Player player in this.players)
+            PlayerIndex++;
+
+            if (PlayerIndex >= _players.Count)
             {
-                player.ConsecutiveSkipsCount = 0;
-            }
-        }
-
-        public void NextPlayer()
-        {
-            this.IsTurnFinished = false;
-
-            while (this.players.Count >= 1)
-            {
-                this.PlayerIndex++;
-
-                if (this.PlayerIndex >= this.players.Count)
-                {
-                    this.IsTurnFinished = true;
-                    this.PlayerIndex = 0;
-                    break;
-                }
-
-                if (!this.CurrentPlayer.HasLeftTheGame)
-                {
-                    break;
-                }
-            }
-        }
-
-        public bool AddPlayer(string userName, string connectionId)
-        {
-            bool isPlayerAlreadyAdded = this.players.Any(
-                pl => pl.UserName == userName || pl.ConnectionId == connectionId);
-
-            if (isPlayerAlreadyAdded)
-            {
-                return false;
+                IsTurnFinished = true;
+                PlayerIndex = 0;
+                break;
             }
 
-            this.players.Add(new Player(userName, connectionId));
-            return true;
+            if (!CurrentPlayer.HasLeftTheGame)
+            {
+                break;
+            }
         }
+    }
+
+    /// <summary>
+    /// Adds a new player to the team
+    /// </summary>
+    /// <param name="userName"></param>
+    /// <param name="connectionId"></param>
+    /// <returns>False if the player has already been added, otherwise True</returns>
+    public bool AddPlayer(string userName, string connectionId)
+    {
+        bool isPlayerAlreadyAdded = _players.Any(
+            pl => pl.UserName == userName || pl.ConnectionId == connectionId);
+
+        if (isPlayerAlreadyAdded)
+        {
+            return false;
+        }
+
+        _players.Add(new Player(userName, connectionId));
+        return true;
     }
 }
