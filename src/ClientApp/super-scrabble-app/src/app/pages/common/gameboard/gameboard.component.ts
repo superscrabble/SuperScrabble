@@ -174,6 +174,9 @@ export class GameboardComponent implements OnInit {
 
       //swap the tile and the board tile
       if(boardCell.tile) {
+        if(!this.isNewPlacedTile(boardCell.tile)) {
+          return;
+        }
         this.removeTileFromPlayerTiles.emit(inputTile);
         this.addTileToPlayerTiles.emit(boardCell.tile);
         this.placeTileOnBoard(inputTile, row, column);
