@@ -113,9 +113,9 @@ public class ChessTimer : GameTimer
         if (_gameState.IsGameOver)
         {
             _matchmakingService.RemoveGameState(_gameState.GameId);
+            _timer.Dispose();
         }
 
-        _timer.Dispose();
         Reset();
     }
 }
