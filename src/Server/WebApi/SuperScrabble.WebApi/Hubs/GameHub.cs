@@ -206,7 +206,14 @@ public class GameHub : Hub<IGameClient>
             return;
         }
 
-        const TimerType defaultTimerType = TimerType.Standard;
+        TimerType selectedTimerType = TimerType.Standard;
+        TimerDifficulty selectedTimerDifficulty = TimerDifficulty.Normal;
+
+        if (party is FriendParty friendParty)
+        {
+            selectedTimerType = friendParty.TimerType;
+            selectedTimerDifficulty = friendParty.TimerDifficulty;
+        }
 
         var viewModel = new FriendPartyViewModel
         {
@@ -217,10 +224,10 @@ public class GameHub : Hub<IGameClient>
             PartyType = party is FriendParty ? PartyType.Friendly : PartyType.Duo,
             ConfigSettings = new ConfigSetting[]
             {
-                CreateTimerTypeConfigSetting(defaultTimerType),
+                CreateTimerTypeConfigSetting(selectedTimerType),
 
                 CreateTimerDifficultyConfigSetting(
-                    TimerType.Standard, TimerDifficulty.Normal),
+                    selectedTimerType, selectedTimerDifficulty),
             }
         };
 
@@ -346,10 +353,10 @@ public class GameHub : Hub<IGameClient>
 
                 var configSettings = new ConfigSetting[]
                 {
-                        CreateTimerTypeConfigSetting(friendParty.TimerType),
+                    CreateTimerTypeConfigSetting(friendParty.TimerType),
 
-                        CreateTimerDifficultyConfigSetting(
-                            friendParty.TimerType, friendParty.TimerDifficulty),
+                    CreateTimerDifficultyConfigSetting(
+                        friendParty.TimerType, friendParty.TimerDifficulty),
                 };
 
                 await Clients
@@ -424,7 +431,7 @@ public class GameHub : Hub<IGameClient>
         {
             var viewModel = _gameService.MapFromGameState(gameState, player.UserName);
             await Clients.Client(player.ConnectionId!).UpdateGameState(viewModel);
-
+            
             if (gameState.IsGameOver)
             {
                 _matchmakingService.RemoveUserFromGame(player.UserName);
