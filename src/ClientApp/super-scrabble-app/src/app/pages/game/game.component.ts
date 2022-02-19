@@ -155,6 +155,13 @@ export class GameComponent implements OnInit {
                 this.userNamesOfPlayersWhoHaveLeftTheGame = data.commonGameState.userNamesOfPlayersWhoHaveLeftTheGame;
             }
 
+            if(data.commonGameState.remainingSecondsByUserNames) {
+                console.log("Seconds remaining")
+                console.log(data.commonGameState.remainingSecondsByUserNames);
+                this.parseRemainingSeconds(data.commonGameState.remainingSecondsByUserNames);
+                console.log(this.teams[0].players[0].remainingSeconds);
+            }
+
             if(data.commonGameState.isGameOver == true) {
                 this.router.navigate([this.router.url + "/summary"]);
             }
@@ -254,6 +261,14 @@ export class GameComponent implements OnInit {
         })
 
         return team;
+    }
+
+    parseRemainingSeconds(secondsRemainingByUserNames: any) {
+        this.teams.forEach( team => {
+            team.players.forEach(player => {
+                player.remainingSeconds = secondsRemainingByUserNames[player.userName];
+            })
+        })
     }
 
     /*
@@ -2441,6 +2456,17 @@ export class GameComponent implements OnInit {
         this.remainingTilesCount = data.remainingTilesCount;
         this.loadScoreBoard(data.teams)
         console.log("Tiles Count: " + this.remainingTilesCount)
+        
+        this.parseRemainingSeconds([
+            {
+                "key": "Gosho",
+                "value": 60
+            },
+            {
+                "key": "Alex",
+                "value": 60
+            }
+        ]);
         /*this.teammates = [
             {
                 userName: "Gosho",
