@@ -69,6 +69,7 @@ export class GameComponent implements OnInit {
     turnRemainingTime: number = 100;
     gameTimeAsString: string = "01:30";
     gameLogs: Action[] = [];
+    playerOnTurn: Player = new Player("", 0);
     //@ViewChild('boardComponent', {static: false}) boardComponent: GameboardComponent | undefined;
 
     constructor(
@@ -155,6 +156,15 @@ export class GameComponent implements OnInit {
                 this.userNamesOfPlayersWhoHaveLeftTheGame = data.commonGameState.userNamesOfPlayersWhoHaveLeftTheGame;
             }
 
+            this.teams.forEach(team => {
+                team.players.forEach(player => {
+                    if(player.userName == this.playerNameOnTurn) {
+                        this.playerOnTurn = player;
+                        return;
+                    }
+                })
+            })
+
             if(data.commonGameState.remainingSecondsByUserNames) {
                 console.log("Seconds remaining")
                 console.log(data.commonGameState.remainingSecondsByUserNames);
@@ -209,6 +219,7 @@ export class GameComponent implements OnInit {
             let minutes: string = data.minutes.toString().padStart(maxLength, fillString);
             let seconds: string = data.seconds.toString().padStart(maxLength, fillString);
             this.gameTimeAsString = `${minutes}:${seconds}`;
+            this.playerOnTurn.remainingSeconds = data.minutes * 60 + data.seconds;
         });
 
         this.signalrService.hubConnection?.on("UserEnteredGameFromAnotherConnectionId", () => {
