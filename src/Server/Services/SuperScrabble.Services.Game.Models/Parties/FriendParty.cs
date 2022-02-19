@@ -1,21 +1,20 @@
-﻿namespace SuperScrabble.Services.Game.Models.Parties
+﻿using SuperScrabble.Services.Game.Common.Enums;
+
+namespace SuperScrabble.Services.Game.Models.Parties;
+
+public class FriendParty : Party
 {
-    using SuperScrabble.Services.Game.Common.Enums;
+    public const int MinPlayersToStartGame = 2;
+    public const int MaxAllowedPlayers = 4;
 
-    public class FriendParty : Party
+    public FriendParty(Member owner, string id, string invitationCode)
+        : base(owner, id, invitationCode, MinPlayersToStartGame, MaxAllowedPlayers)
     {
-        public const int MinPlayersToStartGame = 2;
-        public const int MaxAllowedPlayers = 4;
-
-        public FriendParty(Member owner, string id, string invitationCode)
-            : base(owner, id, invitationCode, MinPlayersToStartGame, MaxAllowedPlayers)
-        {
-            this.TimerType = TimerType.Standard;
-            this.TimerDifficulty = TimerDifficulty.Normal;
-        }
-
-        public TimerType TimerType { get; set; }
-
-        public TimerDifficulty TimerDifficulty { get; set; }
+        TimerType = TimerType.Standard;
+        TimerDifficulty = TimerDifficulty.Normal;
     }
+
+    public TimerType TimerType { get; set; }
+
+    public TimerDifficulty TimerDifficulty { get; set; }
 }

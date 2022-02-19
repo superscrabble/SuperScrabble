@@ -103,7 +103,7 @@ public class GameHub : Hub<IGameClient>
         }
 
         gameState.GetPlayer(UserName!)!.LeaveGame();
-        gameState.EndGameIfRoomIsEmpty();
+        gameState.EndGameIfRoomIsEmptyOrAllPlayersHaveRunOutOfTime();
         gameState.CurrentTeam.NextPlayer();
 
         if (gameState.CurrentTeam.IsTurnFinished)

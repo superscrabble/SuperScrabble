@@ -1,15 +1,14 @@
-﻿namespace SuperScrabble.Services.Game.Models.Boards
+﻿using SuperScrabble.Services.Game.Common.BonusCellsProviders;
+
+namespace SuperScrabble.Services.Game.Models.Boards;
+
+public class GiantBoard : Board
 {
-    using SuperScrabble.Services.Game.Common.BonusCellsProviders;
+    private const int GiantBoardWidth = 21;
+    private const int GiantBoardHeight = 21;
 
-    public class GiantBoard : Board
+    public GiantBoard(IBonusCellsProvider bonusCellsProvider)
+        : base(GiantBoardWidth, GiantBoardHeight, bonusCellsProvider)
     {
-        private const int GiantBoardWidth = 21;
-        private const int GiantBoardHeight = 21;
-
-        public GiantBoard(IBonusCellsProvider bonusCellsProvider)
-            : base(GiantBoardWidth, GiantBoardHeight, bonusCellsProvider)
-        {
-        }
     }
 }

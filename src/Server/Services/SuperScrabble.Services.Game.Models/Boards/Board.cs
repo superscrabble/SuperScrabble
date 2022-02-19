@@ -1,91 +1,98 @@
-﻿namespace SuperScrabble.Services.Game.Models.Boards
+﻿using SuperScrabble.Common;
+using SuperScrabble.Services.Game.Common;
+using SuperScrabble.Services.Game.Common.BonusCellsProviders;
+using SuperScrabble.Services.Game.Common.Enums;
+
+namespace SuperScrabble.Services.Game.Models.Boards;
+
+public abstract class Board : IBoard
 {
-    using SuperScrabble.Common;
-    using SuperScrabble.Services.Game.Common;
-    using SuperScrabble.Services.Game.Common.BonusCellsProviders;
-    using SuperScrabble.Services.Game.Common.Enums;
+    private readonly Cell[,] _cells;
+    private readonly Dictionary<CellType, List<Position>> positionsByBonusCellTypes;
 
-    public abstract class Board : IBoard
+    protected Board(int width, int height, IBonusCellsProvider bonusCellsProvider)
     {
-        private readonly Cell[,] cells;
-        private readonly Dictionary<CellType, List<Position>> positionsByBonusCellTypes;
+        _cells = new Cell[width, height];
+        positionsByBonusCellTypes = bonusCellsProvider.GetPositionsByBonusCells();
 
-        protected Board(int width, int height, IBonusCellsProvider bonusCellsProvider)
+        InitializeAllCellsAsBasic();
+        InitializeBonusCells();
+    }
+
+    private Position Center => new(Height / 2, Width / 2);
+
+    public int Height => _cells.GetLength(0);
+
+    public int Width => _cells.GetLength(1);
+
+    public Cell this[Position position]
+    {
+        get => this[position.Row, position.Column];
+
+        set => this[position.Row, position.Column] = value;
+    }
+
+    public Cell this[int row, int column]
+    {
+        get => _cells[row, column];
+
+        set => _cells[row, column] = value;
+    }
+
+    public bool IsCellFree(Position position)
+    {
+        Cell cell = this[position.Row, position.Column];
+        return cell.Tile == null;
+    }
+
+    public bool IsPositionInside(Position position)
+    {
+        return position.Row >= 0 && position.Column >= 0
+            && position.Row < Height && position.Column < Width;
+    }
+
+    /// <summary>
+    /// Sets the tile on the cell with the given position to null
+    /// </summary>
+    /// <param name="position"></param>
+    public void FreeCell(Position position)
+    {
+        this[position].Tile = null;
+    }
+
+    /// <summary>
+    /// </summary>
+    /// <param name="position"></param>
+    /// <returns>True if the given position is the center of the board, otherwise False</returns>
+    public virtual bool IsPositionCenter(Position position)
+    {
+        return Center.Equals(position);
+    }
+
+    public virtual bool IsEmpty()
+    {
+        return this[Height / 2, Width / 2].Tile == null;
+    }
+
+    private void InitializeAllCellsAsBasic()
+    {
+        for (int row = 0; row < Height; row++)
         {
-            this.cells = new Cell[width, height];
-            this.positionsByBonusCellTypes = bonusCellsProvider.GetPositionsByBonusCells();
-
-            this.InitializeAllCellsAsBasic();
-            this.InitializeBonusCells();
-        }
-
-        private Position Center => new(this.Height / 2, this.Width / 2);
-
-        public int Height => this.cells.GetLength(0);
-
-        public int Width => this.cells.GetLength(1);
-
-        public Cell this[Position position]
-        {
-            get => this[position.Row, position.Column];
-
-            set => this[position.Row, position.Column] = value;
-        }
-
-        public Cell this[int row, int column]
-        {
-            get => this.cells[row, column];
-
-            set => this.cells[row, column] = value;
-        }
-
-        private void InitializeAllCellsAsBasic()
-        {
-            for (int row = 0; row < this.Height; row++)
+            for (int col = 0; col < Width; col++)
             {
-                for (int col = 0; col < this.Width; col++)
-                {
-                    this[row, col] = new Cell(CellType.Basic);
-                }
+                this[row, col] = new Cell(CellType.Basic);
             }
         }
+    }
 
-        private void InitializeBonusCells()
+    private void InitializeBonusCells()
+    {
+        foreach (var positionsByCellType in positionsByBonusCellTypes)
         {
-            foreach (var positionsByCellType in this.positionsByBonusCellTypes)
+            foreach (Position position in positionsByCellType.Value)
             {
-                foreach (Position position in positionsByCellType.Value)
-                {
-                    this[position.Row, position.Column] = new Cell(positionsByCellType.Key);
-                }
+                this[position.Row, position.Column] = new Cell(positionsByCellType.Key);
             }
-        }
-
-        public bool IsCellFree(Position position)
-        {
-            Cell cell = this[position.Row, position.Column];
-            return cell.Tile == null;
-        }
-
-        public bool IsPositionInside(Position position)
-        {
-            return position.Row >= 0 && position.Column >= 0
-                && position.Row < this.Height && position.Column < this.Width;
-        }
-
-        public void FreeCell(Position position)
-        {
-            this[position].Tile = null;
-        }
-
-        public virtual bool IsEmpty()
-        {
-            return this[this.Height / 2, this.Width / 2].Tile == null;
-        }
-
-        public bool IsPositionCenter(Position position)
-        {
-            return this.Center.Equals(position);
         }
     }
 }

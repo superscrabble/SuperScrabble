@@ -1,15 +1,14 @@
-﻿namespace SuperScrabble.Services.Game.Models.Boards
+﻿using SuperScrabble.Services.Game.Common.BonusCellsProviders;
+
+namespace SuperScrabble.Services.Game.Models.Boards;
+
+public class StandardBoard : Board
 {
-    using SuperScrabble.Services.Game.Common.BonusCellsProviders;
+    private const int StandardBoardWidth = 15;
+    private const int StandardBoardHeight = 15;
 
-    public class StandardBoard : Board
+    public StandardBoard(IBonusCellsProvider bonusCellsProvider)
+        : base(StandardBoardWidth, StandardBoardHeight, bonusCellsProvider)
     {
-        private const int StandardBoardWidth = 15;
-        private const int StandardBoardHeight = 15;
-
-        public StandardBoard(IBonusCellsProvider bonusCellsProvider)
-            : base(StandardBoardWidth, StandardBoardHeight, bonusCellsProvider)
-        {
-        }
     }
 }

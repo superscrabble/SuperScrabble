@@ -1,151 +1,143 @@
-﻿namespace SuperScrabble.Services.Game.Models
+﻿namespace SuperScrabble.Services.Game.Models;
+
+using SuperScrabble.Services.Game.Common.GameplayConstantsProviders;
+
+using SuperScrabble.Services.Game.Models.Bags;
+using SuperScrabble.Services.Game.Models.Boards;
+
+public class GameState
 {
-    using SuperScrabble.Services.Game.Common.GameplayConstantsProviders;
+    private readonly List<Team> _teams = new();
 
-    using SuperScrabble.Services.Game.Models.Bags;
-    using SuperScrabble.Services.Game.Models.Boards;
-
-    public class GameState
+    public GameState(
+        IBag bag,
+        IBoard board,
+        string groupName,
+        IEnumerable<Team> teams,
+        IGameplayConstantsProvider gameplayConstantsProvider)
     {
-        private readonly List<Team> _teams = new();
+        _teams.AddRange(teams);
 
-        public GameState(
-            IBag bag,
-            IBoard board,
-            string groupName,
-            IEnumerable<Team> teams,
-            IGameplayConstantsProvider gameplayConstantsProvider)
+        Bag = bag;
+        Board = board;
+        GameId = groupName;
+        TeamIndex = 0;
+        IsGameOver = false;
+        GameplayConstants = gameplayConstantsProvider;
+    }
+
+    public Dictionary<string, int> RemainingSecondsByUserNames { get; } = new();
+
+    public IGameplayConstantsProvider GameplayConstants { get; set; }
+
+    public IBag Bag { get; }
+
+    public IBoard Board { get; }
+
+    public string GameId { get; }
+
+    public int TeamIndex { get; private set; }
+
+    public bool IsGameOver { get; private set; }
+
+    public IReadOnlyCollection<Team> Teams => _teams.AsReadOnly();
+
+    public IReadOnlyCollection<Player> Players =>
+        _teams.SelectMany(team => team.Players).ToList().AsReadOnly();
+
+    public Team CurrentTeam => _teams[TeamIndex];
+
+    public int TilesCount => Bag.TilesCount;
+
+    public bool IsTileExchangePossible =>
+        TilesCount >= GameplayConstants.PlayerTilesCount;
+
+    public void EndGame()
+    {
+        IsGameOver = true;
+    }
+
+    public void EndGameIfRoomIsEmptyOrAllPlayersHaveRunOutOfTime()
+    {
+        int remainingTeamsCount = _teams.Count(team => !team.HasSurrendered
+                && HasPlayerTime(team.CurrentPlayer.UserName));
+
+        if (remainingTeamsCount <= 1)
         {
-            _teams.AddRange(teams);
-
-            Bag = bag;
-            Board = board;
-            GameId = groupName;
-            TeamIndex = 0;
-            IsGameOver = false;
-            GameplayConstants = gameplayConstantsProvider;
+            EndGame();
         }
+    }
 
-        public Dictionary<string, int> RemainingSecondsByUserNames { get; } = new();
-
-        public IGameplayConstantsProvider GameplayConstants { get; set; }
-
-        public IBag Bag { get; }
-
-        public IBoard Board { get; }
-
-        public string GameId { get; }
-
-        public int TeamIndex { get; private set; }
-
-        public bool IsGameOver { get; private set; }
-
-        public IReadOnlyCollection<Team> Teams => this._teams.AsReadOnly();
-
-        public IReadOnlyCollection<Player> Players =>
-            this._teams.SelectMany(team => team.Players).ToList().AsReadOnly();
-
-        public Team CurrentTeam => this._teams[this.TeamIndex];
-
-        public int TilesCount => this.Bag.TilesCount;
-
-        public bool IsTileExchangePossible =>
-            this.TilesCount >= this.GameplayConstants.PlayerTilesCount;
-
-        public void EndGame()
+    public void ResetConsecutiveSkipsCount()
+    {
+        foreach (Team team in _teams)
         {
-            this.IsGameOver = true;
+            team.ResetConsecutiveSkipsCount();
         }
+    }
 
-        public void EndGameIfRoomIsEmpty()
+    public void NextTeam()
+    {
+        while (_teams.Count > 1)
         {
-            int remainingTeamsCount = 0;
+            TeamIndex++;
 
-            foreach (Team team in this._teams)
+            if (TeamIndex >= _teams.Count)
             {
-                if (!team.HasSurrendered
-                    && HasPlayerTime(team.CurrentPlayer.UserName))
-                {
-                    remainingTeamsCount++;
-                    break;
-                }
+                TeamIndex = 0;
             }
 
-            if (remainingTeamsCount <= 1)
+            if (!CurrentTeam.HasSurrendered
+                && HasPlayerTime(CurrentTeam.CurrentPlayer.UserName))
             {
-                EndGame();
+                break;
             }
         }
+    }
 
-        public void ResetConsecutiveSkipsCount()
+    public Player? GetPlayer(string userName)
+    {
+        foreach (Player player in _teams.SelectMany(team => team.Players))
         {
-            foreach (Team team in this._teams)
+            if (player.UserName == userName)
             {
-                team.ResetConsecutiveSkipsCount();
-            }
-        }
-
-        public void NextTeam()
-        {
-            while (_teams.Count > 1)
-            {
-                TeamIndex++;
-
-                if (TeamIndex >= _teams.Count)
-                {
-                    TeamIndex = 0;
-                }
-
-                if (!CurrentTeam.HasSurrendered
-                    && HasPlayerTime(CurrentTeam.CurrentPlayer.UserName))
-                {
-                    break;
-                }
+                return player;
             }
         }
 
-        private bool HasPlayerTime(string userName)
-        {
-            if (RemainingSecondsByUserNames.Count == 0)
-            {
-                return true;
-            }
+        return null;
+    }
 
-            return RemainingSecondsByUserNames[userName] > 0;
+    /// <summary>
+    /// </summary>
+    /// <param name="userName"></param>
+    /// <returns>The team of user with the given username if such exists, otherwise null</returns>
+    public Team? GetTeam(string userName)
+    {
+        return _teams.FirstOrDefault(
+            team => team.Players.Any(pl => pl.UserName == userName));
+    }
+
+    public IEnumerable<string> GetUserNamesOfPlayersWhoHaveLeftTheGame()
+    {
+        var playersWhoHaveLeft = new List<string>();
+
+        foreach (Team team in _teams)
+        {
+            playersWhoHaveLeft.AddRange(team.Players
+                .Where(pl => pl.HasLeftTheGame).Select(pl => pl.UserName));
         }
 
-        public Player? GetPlayer(string userName)
+        return playersWhoHaveLeft;
+    }
+
+    private bool HasPlayerTime(string userName)
+    {
+        if (RemainingSecondsByUserNames.Count == 0)
         {
-            foreach (Team team in this.Teams)
-            {
-                Player? player = team.Players.FirstOrDefault(pl => pl.UserName == userName);
-
-                if (player != null)
-                {
-                    return player;
-                }
-            }
-
-            return null;
+            return true;
         }
 
-        public Team? GetTeam(string userName)
-        {
-            return this.Teams.FirstOrDefault(
-                team => team.Players.Any(pl => pl.UserName == userName));
-        }
-
-        public IEnumerable<string> GetUserNamesOfPlayersWhoHaveLeftTheGame()
-        {
-            var playersWhoHaveLeft = new List<string>();
-
-            foreach (Team team in this.Teams)
-            {
-                playersWhoHaveLeft.AddRange(team.Players
-                    .Where(pl => pl.HasLeftTheGame).Select(pl => pl.UserName));
-            }
-
-            return playersWhoHaveLeft;
-        }
+        return RemainingSecondsByUserNames[userName] > 0;
     }
 }

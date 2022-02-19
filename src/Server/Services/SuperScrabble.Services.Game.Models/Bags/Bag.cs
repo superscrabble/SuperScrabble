@@ -1,64 +1,63 @@
-﻿namespace SuperScrabble.Services.Game.Models.Bags
+﻿using SuperScrabble.Services.Game.Common;
+using SuperScrabble.Services.Game.Common.TilesProviders;
+
+namespace SuperScrabble.Services.Game.Models.Bags;
+
+public class Bag : IBag
 {
-    using SuperScrabble.Services.Game.Common;
-    using SuperScrabble.Services.Game.Common.TilesProviders;
+    private readonly List<Tile> _tiles = new();
 
-    public class Bag : IBag
+    public Bag(ITilesProvider tilesProvider)
     {
-        private readonly List<Tile> tiles = new();
+        InitializeTiles(tilesProvider);
+    }
 
-        public Bag(ITilesProvider tilesProvider)
+    public int TilesCount => _tiles.Count;
+
+    public Tile? DrawTile()
+    {
+        if (TilesCount <= 0)
         {
-            this.InitializeTiles(tilesProvider);
+            return null;
         }
 
-        public int TilesCount => this.tiles.Count;
+        var random = new Random();
+        int index = random.Next(TilesCount);
 
-        public Tile? DrawTile()
+        Tile tile = _tiles[index];
+        _tiles.RemoveAt(index);
+
+        return tile;
+    }
+
+    public IEnumerable<Tile> SwapTiles(IEnumerable<Tile> tiles)
+    {
+        var drawnTiles = new List<Tile>();
+
+        for (int i = 0; i < tiles.Count(); i++)
         {
-            if (this.TilesCount <= 0)
+            Tile? drawnTile = DrawTile();
+
+            if (drawnTile == null)
             {
-                return null;
+                break;
             }
 
-            var random = new Random();
-            int index = random.Next(this.TilesCount);
-
-            Tile tile = this.tiles[index];
-            this.tiles.RemoveAt(index);
-
-            return tile;
+            drawnTiles.Add(drawnTile);
         }
 
-        public IEnumerable<Tile> SwapTiles(IEnumerable<Tile> tiles)
+        _tiles.AddRange(tiles);
+        return drawnTiles;
+    }
+
+    private void InitializeTiles(ITilesProvider tilesProvider)
+    {
+        foreach (var tileInfoByLetter in tilesProvider.GetTiles())
         {
-            var drawnTiles = new List<Tile>();
-
-            for (int i = 0; i < tiles.Count(); i++)
+            for (int i = 0; i < tileInfoByLetter.Value.Count; i++)
             {
-                Tile? drawnTile = this.DrawTile();
-
-                if (drawnTile == null)
-                {
-                    break;
-                }
-
-                drawnTiles.Add(drawnTile);
-            }
-
-            this.tiles.AddRange(tiles);
-            return drawnTiles;
-        }
-
-        private void InitializeTiles(ITilesProvider tilesProvider)
-        {
-            foreach (var tileInfoByLetter in tilesProvider.GetTiles())
-            {
-                for (int i = 0; i < tileInfoByLetter.Value.Count; i++)
-                {
-                    var tile = new Tile(tileInfoByLetter.Key, tileInfoByLetter.Value.Points);
-                    this.tiles.Add(tile);
-                }
+                var tile = new Tile(tileInfoByLetter.Key, tileInfoByLetter.Value.Points);
+                _tiles.Add(tile);
             }
         }
     }
