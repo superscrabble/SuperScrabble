@@ -36,7 +36,7 @@ public class TimerManager
 
     public GameTimer CreateTimer(GameState gameState)
     {
-        if (gameState.SecondsRemainingByUserNames.Count == 0)
+        if (gameState.RemainingSecondsByUserNames.Count == 0)
         {
             return ActivatorUtilities.CreateInstance<StandardTimer>(_serviceProvider, gameState);
         }

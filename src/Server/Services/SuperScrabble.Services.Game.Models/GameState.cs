@@ -26,7 +26,7 @@
             GameplayConstants = gameplayConstantsProvider;
         }
 
-        public Dictionary<string, int> SecondsRemainingByUserNames { get; } = new();
+        public Dictionary<string, int> RemainingSecondsByUserNames { get; } = new();
 
         public IGameplayConstantsProvider GameplayConstants { get; set; }
 
@@ -106,12 +106,12 @@
 
         private bool HasPlayerTime(string userName)
         {
-            if (SecondsRemainingByUserNames.Count == 0)
+            if (RemainingSecondsByUserNames.Count == 0)
             {
                 return true;
             }
 
-            return SecondsRemainingByUserNames[userName] > 0;
+            return RemainingSecondsByUserNames[userName] > 0;
         }
 
         public Player? GetPlayer(string userName)

@@ -40,7 +40,7 @@
 
             foreach (var player in gameState.Players)
             {
-                gameState.SecondsRemainingByUserNames.Add(
+                gameState.RemainingSecondsByUserNames.Add(
                     player.UserName, gameState.GameplayConstants.GameTimerSeconds);
             }
 

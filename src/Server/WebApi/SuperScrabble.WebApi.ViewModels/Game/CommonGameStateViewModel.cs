@@ -2,6 +2,8 @@
 {
     public class CommonGameStateViewModel
     {
+        public IEnumerable<KeyValuePair<string, int>>? RemainingSecondsByUserNames { get; set; }
+
         public int RemainingTilesCount { get; set; }
 
         public IEnumerable<TeamViewModel> Teams { get; set; } = default!;

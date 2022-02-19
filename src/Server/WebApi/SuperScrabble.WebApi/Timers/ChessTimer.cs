@@ -37,7 +37,7 @@ public class ChessTimer : GameTimer
     public override void Reset()
     {
         string currentPlayerName = _gameState.CurrentTeam.CurrentPlayer.UserName;
-        SecondsRemaining = _gameState.SecondsRemainingByUserNames[currentPlayerName];
+        SecondsRemaining = _gameState.RemainingSecondsByUserNames[currentPlayerName];
         base.Reset();
     }
 
@@ -46,7 +46,7 @@ public class ChessTimer : GameTimer
         if (SecondsRemaining >= 0)
         {
             string currentPlayerUserName = _gameState.CurrentTeam.CurrentPlayer.UserName;
-            _gameState.SecondsRemainingByUserNames[currentPlayerUserName] = SecondsRemaining;
+            _gameState.RemainingSecondsByUserNames[currentPlayerUserName] = SecondsRemaining;
 
             int minutes = SecondsRemaining / 60;
             int seconds = SecondsRemaining % 60;
@@ -73,7 +73,7 @@ public class ChessTimer : GameTimer
             return;
         }
 
-        if (_gameState.SecondsRemainingByUserNames.All(x => x.Value <= 0))
+        if (_gameState.RemainingSecondsByUserNames.All(x => x.Value <= 0))
         {
             _gameState.EndGame();
         }

@@ -61,6 +61,8 @@
                 IsTileExchangePossible = gameState.IsTileExchangePossible,
                 PlayerOnTurnUserName = gameState.CurrentTeam.CurrentPlayer.UserName,
                 UserNamesOfPlayersWhoHaveLeftTheGame = gameState.GetUserNamesOfPlayersWhoHaveLeftTheGame(),
+                RemainingSecondsByUserNames = gameState.RemainingSecondsByUserNames.Count > 0
+                    ? gameState.RemainingSecondsByUserNames : null
             };
 
             return new PlayerGameStateViewModel
