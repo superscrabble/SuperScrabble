@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import * as signalR from "@microsoft/signalr";
 import { Utilities } from 'src/app/common/utilities';
+import { AppConfig } from '../app-config';
 import { GameMode } from '../common/enums/game-mode';
 import { PartyType } from '../common/enums/party-type';
 import { MatchProps } from '../models/game-configuaration/match-props';
@@ -24,7 +25,8 @@ export class SignalrService {
     }
 
     this.hubConnection = new signalR.HubConnectionBuilder()
-                            .withUrl('https://localhost:7168/gamehub',  { accessTokenFactory: () => this.utilities.getAccessToken()})
+                            .withUrl(AppConfig.ServerUrl + ':' + AppConfig.ServerPort + '/gamehub',
+                            { accessTokenFactory: () => this.utilities.getAccessToken()})
                             .build();
 
     this.hubConnectionStartPromise = this.hubConnection.start();

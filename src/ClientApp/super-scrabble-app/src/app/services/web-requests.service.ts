@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { AppConfig } from '../app-config';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +10,7 @@ export class WebRequestsService {
   readonly ROOT_URL;
 
   constructor(private http: HttpClient) {
-    this.ROOT_URL = "https://localhost:7168";
+    this.ROOT_URL = AppConfig.ServerUrl + ":" + AppConfig.ServerPort;
   }
 
   get(url: string) {
