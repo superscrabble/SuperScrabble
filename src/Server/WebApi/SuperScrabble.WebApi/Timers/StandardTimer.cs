@@ -14,8 +14,6 @@ namespace SuperScrabble.WebApi.Timers;
 
 public class StandardTimer : GameTimer
 {
-    private const int IntervalSeconds = 1;
-
     private readonly GameState _gameState;
     private readonly IGameService _gameService;
     private readonly IMatchmakingService _matchmakingService;

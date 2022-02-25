@@ -406,7 +406,7 @@ public class GameHub : Hub<IGameClient>
         }
 
         var timer = _timerManager.CreateTimer(gameState);
-
+        Console.WriteLine(timer.GetType().Name);
         _timerManager.AttachTimerToGameState(timer, gameId);
 
         await Clients.Group(gameId).StartGame(gameId);

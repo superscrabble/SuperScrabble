@@ -1,6 +1,5 @@
 ﻿namespace SuperScrabble.Services.Game.Factories
 {
-    using Microsoft.Extensions.DependencyInjection;
     using SuperScrabble.Services.Common;
     using SuperScrabble.Services.Game.Common;
     using SuperScrabble.Services.Game.Common.BonusCellsProviders;
@@ -38,10 +37,13 @@
 
             var gameState = new GameState(bag, board, gameId, teams, gameplayConstants);
 
-            foreach (var player in gameState.Players)
+            if (config.TimerType == TimerType.Chess)
             {
-                gameState.RemainingSecondsByUserNames.Add(
-                    player.UserName, gameState.GameplayConstants.GameTimerSeconds);
+                foreach (var player in gameState.Players)
+                {
+                    gameState.RemainingSecondsByUserNames.Add(
+                        player.UserName, gameState.GameplayConstants.GameTimerSeconds);
+                }
             }
 
             return gameState;
