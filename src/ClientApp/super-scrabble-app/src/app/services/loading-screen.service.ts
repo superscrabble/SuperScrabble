@@ -5,30 +5,19 @@ import { Injectable } from '@angular/core';
 })
 export class LoadingScreenService {
 
-  constructor() {
-    localStorage.setItem('showLoading', "false");
-  }
+  isShowingLoading: boolean = false;
+
+  constructor() {}
 
   showLoadingScreen() {
-    localStorage.setItem('showLoading', "true");
+    this.isShowingLoading = true;
   }
 
   stopShowingLoadingScreen() {
-    localStorage.setItem('showLoading', "false");
+    this.isShowingLoading = false;
   }
 
   isShowingLoadingScreen() : boolean {
-    let lsShowLoading =  localStorage.getItem('showLoading')
-    if(lsShowLoading && lsShowLoading == "true") {      
-      console.log("Show loading")
-      console.log(lsShowLoading);
-      return true;
-    } else {
-      console.log("dont Show loading")
-      console.log(lsShowLoading);
-      lsShowLoading =  localStorage.getItem('showLoading')
-      console.log(lsShowLoading);
-      return false;
-    }
+    return this.isShowingLoading;
   }
 }
