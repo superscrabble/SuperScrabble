@@ -42,6 +42,7 @@ import { PlayerRackComponent } from './pages/common/player-rack/player-rack.comp
 import { JoinPartyWithCodeDialogComponent } from './pages/game-configuration/dialogs/join-party-with-code-dialog/join-party-with-code-dialog.component';
 import { PartyPageComponent } from './pages/party-page/party-page.component';
 import { LoadingScreenComponent } from './pages/loading-screen/loading-screen.component';
+import { ToastrModule } from 'ngx-toastr';
 
 @NgModule({
   declarations: [
@@ -85,7 +86,12 @@ import { LoadingScreenComponent } from './pages/loading-screen/loading-screen.co
     DragDropModule,
     ScrollingModule,
     ClipboardModule,
-    MatTooltipModule
+    MatTooltipModule,
+    ToastrModule.forRoot({
+      timeOut: 10000,
+      positionClass: 'toast-top-right',
+      preventDuplicates: true,
+    })
   ],
   providers: [ Utilities ],
   bootstrap: [AppComponent]
