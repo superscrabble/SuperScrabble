@@ -9,6 +9,7 @@ import { LoadingScreenService } from './services/loading-screen.service';
 export class AppComponent {
   title = 'super-scrabble-app';
   
+  
   constructor(private loadingScreenService: LoadingScreenService) {
     this.loadingScreenService.stopShowingLoadingScreen();
   }

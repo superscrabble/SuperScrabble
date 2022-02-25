@@ -71,7 +71,7 @@ import { LoadingScreenComponent } from './pages/loading-screen/loading-screen.co
     PlayerRackComponent,
     JoinPartyWithCodeDialogComponent,
     PartyPageComponent,
-    LoadingScreenComponent
+    LoadingScreenComponent,
   ],
   imports: [
     CommonModule,

@@ -1,7 +1,3 @@
 <app-navbar></app-navbar>
-<ng-container *ngIf="showLoading()">
-    <app-loading-screen></app-loading-screen>
-</ng-container>
-<ng-container *ngIf="!showLoading()">
-    <router-outlet></router-outlet>
-</ng-container>
+<app-loading-screen [hidden]="!showLoading()"></app-loading-screen>
+<router-outlet [hidden]="showLoading()"></router-outlet>

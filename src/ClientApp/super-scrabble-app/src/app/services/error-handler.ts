@@ -10,6 +10,7 @@ export class ErrorHandler {
 
     handle(error: number) {
         if(error == 401) {
+            //Show toast
             this.router.navigateByUrl("/login");
         }
         else if(error == 404) {
