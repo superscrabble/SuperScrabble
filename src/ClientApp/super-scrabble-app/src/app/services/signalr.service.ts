@@ -14,6 +14,8 @@ class CustomLogger implements signalR.ILogger {
   log(logLevel: signalR.LogLevel, message: string): void {
     let statusCode: number;
     
+    //TODO: catch when server is down
+
     let statusCodeSplit = message.split("Status code");
     if(statusCodeSplit.length > 1) {
       statusCode = parseInt(statusCodeSplit[1].replace("'", ""))
