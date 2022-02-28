@@ -14,4 +14,9 @@ public abstract class GameTimer
     {
         _timer.Start();
     }
+
+    public virtual void Dispose()
+    {
+        _timer.Dispose();
+    }
 }
