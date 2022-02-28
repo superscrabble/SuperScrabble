@@ -1,4 +1,4 @@
-﻿namespace SuperScrabble.WebApi.ViewModels.Game
+﻿namespace SuperScrabble.WebApi.ViewModels.Games
 {
     using SuperScrabble.Services.Game.Common;
 

@@ -2,7 +2,7 @@
 
 using SuperScrabble.Services.Game.Common;
 
-using SuperScrabble.WebApi.ViewModels.Game;
+using SuperScrabble.WebApi.ViewModels.Games;
 using SuperScrabble.WebApi.ViewModels.Party;
 
 public interface IGameClient

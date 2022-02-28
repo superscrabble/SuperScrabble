@@ -8,7 +8,7 @@ using SuperScrabble.Services.Game.Models;
 
 using SuperScrabble.WebApi.HubClients;
 using SuperScrabble.WebApi.Hubs;
-using SuperScrabble.WebApi.ViewModels.Game;
+using SuperScrabble.WebApi.ViewModels.Games;
 
 namespace SuperScrabble.WebApi.Timers;
 

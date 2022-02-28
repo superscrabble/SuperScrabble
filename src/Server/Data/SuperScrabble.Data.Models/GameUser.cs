@@ -8,7 +8,7 @@
         [ForeignKey(nameof(Game))]
         public string GameId { get; set; } = default!;
 
-        public virtual Game Game { get; set; } = default!;
+        public virtual PlayedGame Game { get; set; } = default!;
 
         [ForeignKey(nameof(User))]
         public string UserId { get; set; } = default!;

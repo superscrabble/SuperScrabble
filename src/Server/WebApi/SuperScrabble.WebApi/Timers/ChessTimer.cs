@@ -4,7 +4,7 @@ using SuperScrabble.Services.Game.Matchmaking;
 using SuperScrabble.Services.Game.Models;
 using SuperScrabble.WebApi.HubClients;
 using SuperScrabble.WebApi.Hubs;
-using SuperScrabble.WebApi.ViewModels.Game;
+using SuperScrabble.WebApi.ViewModels.Games;
 using System.Timers;
 
 namespace SuperScrabble.WebApi.Timers;

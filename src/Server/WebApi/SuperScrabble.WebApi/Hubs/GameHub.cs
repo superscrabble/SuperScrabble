@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 
 using SuperScrabble.Common.Exceptions.Matchmaking;
-
+using SuperScrabble.Services.Data.Games;
 using SuperScrabble.Services.Game;
 using SuperScrabble.Services.Game.Common.Enums;
 using SuperScrabble.Services.Game.Common.TilesProviders;
@@ -15,7 +15,7 @@ using SuperScrabble.Services.Game.Models.Parties;
 
 using SuperScrabble.WebApi.HubClients;
 using SuperScrabble.WebApi.Timers;
-using SuperScrabble.WebApi.ViewModels.Game;
+using SuperScrabble.WebApi.ViewModels.Games;
 using SuperScrabble.WebApi.ViewModels.Party;
 
 namespace SuperScrabble.WebApi.Hubs;
@@ -28,19 +28,22 @@ public class GameHub : Hub<IGameClient>
     private readonly ITilesProvider _tilesProvider;
     private readonly IServiceProvider _serviceProvider;
     private readonly TimerManager _timerManager;
+    private readonly IGamesService _gamesService;
 
     public GameHub(
         IMatchmakingService matchmakingService,
         IGameService gameService,
         ITilesProvider tilesProvider,
         IServiceProvider serviceProvider,
-        TimerManager timerManager)
+        TimerManager timerManager,
+        IGamesService gamesService)
     {
         _matchmakingService = matchmakingService;
         _gameService = gameService;
         _tilesProvider = tilesProvider;
         _serviceProvider = serviceProvider;
         _timerManager = timerManager;
+        _gamesService = gamesService;
     }
 
     public string UserName => Context.User?.Identity?.Name!;
@@ -65,10 +68,10 @@ public class GameHub : Hub<IGameClient>
 
     public override Task OnDisconnectedAsync(Exception? exception)
     {
-        if (_matchmakingService.IsUserInsideAnyGame(UserName!))
+        if (_matchmakingService.IsUserInsideAnyGame(UserName))
         {
-            var gameState = _matchmakingService.GetGameState(UserName!);
-            var player = gameState.GetPlayer(UserName!)!;
+            var gameState = _matchmakingService.GetGameState(UserName);
+            var player = gameState.GetPlayer(UserName)!;
 
             if (player.ConnectionId == ConnectionId)
             {
@@ -81,8 +84,8 @@ public class GameHub : Hub<IGameClient>
 
     public async Task WriteWord(WriteWordInputModel input)
     {
-        var gameState = _matchmakingService.GetGameState(UserName!);
-        var result = _gameService.WriteWord(gameState, input, UserName!);
+        var gameState = _matchmakingService.GetGameState(UserName);
+        var result = _gameService.WriteWord(gameState, input, UserName);
 
         if (!result.IsSucceeded)
         {
@@ -90,19 +93,20 @@ public class GameHub : Hub<IGameClient>
             return;
         }
 
+        await SaveGameIfTheGameIsOverAsync();
         await UpdateGameStateAsync(gameState);
     }
 
     public async Task LeaveGame()
     {
-        var gameState = _matchmakingService.GetGameState(UserName!);
+        var gameState = _matchmakingService.GetGameState(UserName);
 
         if (gameState == null)
         {
             return;
         }
 
-        gameState.GetPlayer(UserName!)!.LeaveGame();
+        gameState.GetPlayer(UserName)!.LeaveGame();
         gameState.EndGameIfRoomIsEmptyOrAllPlayersHaveRunOutOfTime();
         gameState.CurrentTeam.NextPlayer();
 
@@ -111,13 +115,14 @@ public class GameHub : Hub<IGameClient>
             gameState.NextTeam();
         }
 
+        await SaveGameIfTheGameIsOverAsync();
         await UpdateGameStateAsync(gameState);
     }
 
     public async Task ExchangeTiles(ExchangeTilesInputModel input)
     {
-        var gameState = _matchmakingService.GetGameState(UserName!);
-        var result = _gameService.ExchangeTiles(gameState, input, UserName!);
+        var gameState = _matchmakingService.GetGameState(UserName);
+        var result = _gameService.ExchangeTiles(gameState, input, UserName);
 
         if (!result.IsSucceeded)
         {
@@ -130,8 +135,8 @@ public class GameHub : Hub<IGameClient>
 
     public async Task SkipTurn()
     {
-        var gameState = _matchmakingService.GetGameState(UserName!);
-        var result = _gameService.SkipTurn(gameState, UserName!);
+        var gameState = _matchmakingService.GetGameState(UserName);
+        var result = _gameService.SkipTurn(gameState, UserName);
 
         if (!result.IsSucceeded)
         {
@@ -139,6 +144,7 @@ public class GameHub : Hub<IGameClient>
             return;
         }
 
+        await SaveGameIfTheGameIsOverAsync();
         await UpdateGameStateAsync(gameState);
     }
 
@@ -153,7 +159,7 @@ public class GameHub : Hub<IGameClient>
         try
         {
             _matchmakingService.JoinRoom(
-                UserName!, ConnectionId, gameMode, out bool hasGameStarted);
+                UserName, ConnectionId, gameMode, out bool hasGameStarted);
 
             if (hasGameStarted)
             {
@@ -169,7 +175,7 @@ public class GameHub : Hub<IGameClient>
     public async Task JoinRandomDuo()
     {
         _matchmakingService.JoinRandomDuoParty(
-            UserName!, ConnectionId, out bool hasGameStarted);
+            UserName, ConnectionId, out bool hasGameStarted);
 
         if (hasGameStarted)
         {
@@ -182,7 +188,7 @@ public class GameHub : Hub<IGameClient>
         try
         {
             string partyId = _matchmakingService
-                .CreateParty(UserName!, ConnectionId, partyType);
+                .CreateParty(UserName, ConnectionId, partyType);
 
             await Clients.Caller.PartyCreated(partyId);
         }
@@ -238,29 +244,29 @@ public class GameHub : Hub<IGameClient>
     {
         try
         {
-            _matchmakingService.JoinParty(UserName!, ConnectionId,
+            _matchmakingService.JoinParty(UserName, ConnectionId,
                 invitationCode, out bool hasEnoughPlayersToStartGame);
 
             Party party = _matchmakingService.GetPartyByInvitationCode(invitationCode);
 
             if (hasEnoughPlayersToStartGame)
             {
-                await Clients.Client(party.Owner!.ConnectionId).EnablePartyStart();
+                await Clients.Client(party.Owner!.ConnectionId!).EnablePartyStart();
             }
 
             await Clients.Caller.PartyJoined(party.Id);
 
-            await Clients.Clients(party.GetConnectionIds(UserName!))
-                .NewPlayerJoinedParty(UserName!);
+            await Clients.Clients(party.GetConnectionIds(UserName))
+                .NewPlayerJoinedParty(UserName);
         }
         catch (PlayerAlreadyInsidePartyException)
         {
             Party party = _matchmakingService.GetPartyByInvitationCode(invitationCode);
-            Member? member = party.GetMember(UserName!);
+            Member? member = party.GetMember(UserName);
 
             if (member != null)
             {
-                await Clients.Client(member.ConnectionId).PartyMemberConnectionIdChanged();
+                await Clients.Client(member.ConnectionId!).PartyMemberConnectionIdChanged();
                 member.ConnectionId = ConnectionId;
             }
 
@@ -277,7 +283,7 @@ public class GameHub : Hub<IGameClient>
         try
         {
             _matchmakingService.LeaveParty(
-                UserName!, partyId, out bool shouldDisposeParty);
+                UserName, partyId, out bool shouldDisposeParty);
 
             await Clients.Caller.PartyLeft();
 
@@ -292,11 +298,11 @@ public class GameHub : Hub<IGameClient>
                         Owner = party.Owner?.UserName!,
                         IsOwner = party.Owner?.UserName == member.UserName,
                         RemainingMembers = party.Members.Select(mem => mem.UserName),
-                        LeaverUserName = UserName!,
+                        LeaverUserName = UserName,
                         IsPartyReady = party.HasEnoughPlayersToStartGame,
                     };
 
-                    await Clients.Client(member.ConnectionId).PlayerHasLeftParty(viewModel);
+                    await Clients.Client(member.ConnectionId!).PlayerHasLeftParty(viewModel);
                 }
             }
 
@@ -318,7 +324,7 @@ public class GameHub : Hub<IGameClient>
             Party party = _matchmakingService.GetPartyById(partyId);
 
             _matchmakingService.StartGameFromParty(
-                UserName!, partyId, out bool hasGameStarted);
+                UserName, partyId, out bool hasGameStarted);
 
             if (!hasGameStarted)
             {
@@ -372,13 +378,13 @@ public class GameHub : Hub<IGameClient>
 
     public async Task LoadGame(string gameId)
     {
-        if (!_matchmakingService.IsUserInsideGame(UserName!, gameId))
+        if (!_matchmakingService.IsUserInsideGame(UserName, gameId))
         {
             return;
         }
 
-        var gameState = _matchmakingService.GetGameState(UserName!);
-        var player = gameState.GetPlayer(UserName!)!;
+        var gameState = _matchmakingService.GetGameState(UserName);
+        var player = gameState.GetPlayer(UserName)!;
 
         if (player.ConnectionId != ConnectionId)
         {
@@ -386,8 +392,24 @@ public class GameHub : Hub<IGameClient>
             player.ConnectionId = ConnectionId;
         }
 
-        var viewModel = _gameService.MapFromGameState(gameState, UserName!);
+        var viewModel = _gameService.MapFromGameState(gameState, UserName);
         await Clients.Client(ConnectionId).UpdateGameState(viewModel);
+    }
+
+    private async Task SaveGameIfTheGameIsOverAsync()
+    {
+        var gameState = _matchmakingService.GetGameState(UserName);
+
+        if (gameState.IsGameOver)
+        {
+            var saveGameInput = new SaveGameInputModel
+            {
+                Players = gameState.Players,
+                GameId = gameState.GameId
+            };
+
+            await _gamesService.SaveGameAsync(saveGameInput);
+        }
     }
 
     private async Task SendErrorAsync(string message)
@@ -397,7 +419,7 @@ public class GameHub : Hub<IGameClient>
 
     private async Task StartGameAsync()
     {
-        var gameState = _matchmakingService.GetGameState(UserName!);
+        var gameState = _matchmakingService.GetGameState(UserName);
         string gameId = gameState.GameId;
 
         foreach (Player player in gameState.Players)

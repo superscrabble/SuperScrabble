@@ -19,7 +19,7 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, string>
 
     public DbSet<Word> Words { get; set; } = default!;
 
-    public DbSet<Game> Games { get; set; } = default!;
+    public DbSet<PlayedGame> Games { get; set; } = default!;
 
     public DbSet<GameUser> GamesUsers { get; set; } = default!;
 

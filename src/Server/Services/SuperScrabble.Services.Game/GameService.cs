@@ -10,7 +10,7 @@
     using SuperScrabble.Services.Game.Scoring;
     using SuperScrabble.Services.Game.Validation;
 
-    using SuperScrabble.WebApi.ViewModels.Game;
+    using SuperScrabble.WebApi.ViewModels.Games;
 
     public class GameService : IGameService
     {

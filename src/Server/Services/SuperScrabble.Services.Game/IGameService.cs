@@ -1,7 +1,7 @@
 ﻿namespace SuperScrabble.Services.Game
 {
     using SuperScrabble.Services.Game.Models;
-    using SuperScrabble.WebApi.ViewModels.Game;
+    using SuperScrabble.WebApi.ViewModels.Games;
 
     public interface IGameService
     {

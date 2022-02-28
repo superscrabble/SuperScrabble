@@ -5,7 +5,7 @@
     using SuperScrabble.Services.Game.Models;
     using SuperScrabble.Services.Game.Models.Boards;
 
-    using SuperScrabble.WebApi.ViewModels.Game;
+    using SuperScrabble.WebApi.ViewModels.Games;
 
     public class ScoringService : IScoringService
     {

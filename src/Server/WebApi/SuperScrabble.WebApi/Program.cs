@@ -12,6 +12,7 @@ using SuperScrabble.Data.Models;
 using SuperScrabble.Data.Repositories;
 using SuperScrabble.Data.Seeding;
 using SuperScrabble.Services.Common;
+using SuperScrabble.Services.Data.Games;
 using SuperScrabble.Services.Data.Users;
 using SuperScrabble.Services.Data.Words;
 using SuperScrabble.Services.Game;
@@ -71,6 +72,7 @@ builder.Services.AddTransient<IMatchmakingService, MatchmakingService>();
 builder.Services.AddTransient<IGameService, GameService>();
 builder.Services.AddTransient<IGameStateFactory, GameStateFactory>();
 builder.Services.AddTransient<IScoringService, ScoringService>();
+builder.Services.AddTransient<IGamesService, GamesService>();
 
 var app = builder.Build();
 
