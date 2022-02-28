@@ -10,25 +10,16 @@
 
             foreach (string file in files)
             {
-                string[] lines = await File.ReadAllLinesAsync(file);
-                await AddWordsToDbContextAsync(lines, dbContext);
+                string[] uniqueWords = await File.ReadAllLinesAsync(file);
+                await AddWordsToDbContextAsync(uniqueWords.Distinct(), dbContext);
             }
         }
 
-        private static async Task AddWordsToDbContextAsync(string[] words, AppDbContext dbContext)
+        private static async Task AddWordsToDbContextAsync(IEnumerable<string> words, AppDbContext dbContext)
         {
             foreach (string word in words)
             {
-                string trimmedWord = word.Trim();
-
-                bool doesWordExist = dbContext.Words.FirstOrDefault(w => w.Value == trimmedWord) != null;
-
-                if (doesWordExist)
-                {
-                    continue;
-                }
-
-                await dbContext.Words.AddAsync(new Word { Value = trimmedWord });
+                await dbContext.Words.AddAsync(new Word { Value = word });
             }
 
             await dbContext.SaveChangesAsync();

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using SuperScrabble.Services.Data.Games;
 using SuperScrabble.Services.Game;
 using SuperScrabble.Services.Game.Matchmaking;
 using SuperScrabble.Services.Game.Models;
@@ -15,17 +16,20 @@ public class ChessTimer : GameTimer
     private readonly IGameService _gameService;
     private readonly IHubContext<GameHub, IGameClient> _hubContext;
     private readonly IMatchmakingService _matchmakingService;
+    private readonly IGamesService _gamesService;
 
     public ChessTimer(
         GameState gameState,
         IGameService gameService,
         IHubContext<GameHub, IGameClient> hubContext,
-        IMatchmakingService matchmakingService)
+        IMatchmakingService matchmakingService,
+        IGamesService gamesService)
     {
         _gameState = gameState;
         _gameService = gameService;
         _hubContext = hubContext;
         _matchmakingService = matchmakingService;
+        _gamesService = gamesService;
 
         Reset();
 
@@ -114,6 +118,11 @@ public class ChessTimer : GameTimer
         {
             _matchmakingService.RemoveGameState(_gameState.GameId);
             _timer.Dispose();
+            await _gamesService.SaveGameAsync(new SaveGameInputModel
+            {
+                GameId = _gameState.GameId,
+                Players = _gameState.Players
+            });
         }
 
         Reset();
