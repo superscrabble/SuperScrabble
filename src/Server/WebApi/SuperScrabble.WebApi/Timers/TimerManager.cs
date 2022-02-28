@@ -42,7 +42,7 @@ public class TimerManager
         }
         else
         {
-            return ActivatorUtilities.CreateInstance<ChessTimer>(_serviceProvider, gameState);
+            return ActivatorUtilities.CreateInstance<ChessTimer>(_serviceProvider, gameState, _serviceProvider);
         }
     }
 }

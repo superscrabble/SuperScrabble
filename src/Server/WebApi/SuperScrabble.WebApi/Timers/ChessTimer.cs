@@ -16,20 +16,20 @@ public class ChessTimer : GameTimer
     private readonly IGameService _gameService;
     private readonly IHubContext<GameHub, IGameClient> _hubContext;
     private readonly IMatchmakingService _matchmakingService;
-    private readonly IGamesService _gamesService;
+    private readonly IServiceProvider _serviceProvider;
 
     public ChessTimer(
         GameState gameState,
+        IServiceProvider serviceProvider,
         IGameService gameService,
         IHubContext<GameHub, IGameClient> hubContext,
-        IMatchmakingService matchmakingService,
-        IGamesService gamesService)
+        IMatchmakingService matchmakingService)
     {
         _gameState = gameState;
         _gameService = gameService;
         _hubContext = hubContext;
         _matchmakingService = matchmakingService;
-        _gamesService = gamesService;
+        _serviceProvider = serviceProvider;
 
         Reset();
 
@@ -117,12 +117,15 @@ public class ChessTimer : GameTimer
         if (_gameState.IsGameOver)
         {
             _matchmakingService.RemoveGameState(_gameState.GameId);
-            _timer.Dispose();
-            await _gamesService.SaveGameAsync(new SaveGameInputModel
+
+            var gamesService = _serviceProvider.GetService<IGamesService>();
+            await gamesService!.SaveGameAsync(new SaveGameInputModel
             {
                 GameId = _gameState.GameId,
                 Players = _gameState.Players
             });
+
+            Dispose();
         }
 
         Reset();

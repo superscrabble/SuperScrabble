@@ -399,8 +399,6 @@ public class GameHub : Hub<IGameClient>
     private async Task SaveGameIfTheGameIsOverAsync()
     {
         var gameState = _matchmakingService.GetGameState(UserName);
-        var timer = _timerManager.GetTimer(gameState.GameId);
-        timer.Dispose();
 
         if (gameState.IsGameOver)
         {
@@ -410,6 +408,8 @@ public class GameHub : Hub<IGameClient>
                 GameId = gameState.GameId
             };
 
+            var timer = _timerManager.GetTimer(gameState.GameId);
+            timer!.Dispose();
             await _gamesService.SaveGameAsync(saveGameInput);
         }
     }
