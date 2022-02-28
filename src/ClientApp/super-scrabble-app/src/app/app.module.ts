@@ -43,6 +43,8 @@ import { JoinPartyWithCodeDialogComponent } from './pages/game-configuration/dia
 import { PartyPageComponent } from './pages/party-page/party-page.component';
 import { MatchesDashboardComponent } from './pages/common/matches-dashboard/matches-dashboard.component';
 import { MatchComponent } from './pages/common/match/match.component';
+import { LoadingScreenComponent } from './pages/loading-screen/loading-screen.component';
+import { ToastrModule } from 'ngx-toastr';
 
 @NgModule({
   declarations: [
@@ -73,7 +75,8 @@ import { MatchComponent } from './pages/common/match/match.component';
     JoinPartyWithCodeDialogComponent,
     PartyPageComponent,
     MatchesDashboardComponent,
-    MatchComponent
+    MatchComponent,
+    LoadingScreenComponent,
   ],
   imports: [
     CommonModule,
@@ -87,7 +90,12 @@ import { MatchComponent } from './pages/common/match/match.component';
     DragDropModule,
     ScrollingModule,
     ClipboardModule,
-    MatTooltipModule
+    MatTooltipModule,
+    ToastrModule.forRoot({
+      timeOut: 10000,
+      positionClass: 'toast-top-right',
+      preventDuplicates: true,
+    })
   ],
   providers: [ Utilities ],
   bootstrap: [AppComponent]

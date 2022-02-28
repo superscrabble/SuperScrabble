@@ -7,13 +7,31 @@ import { GameMode } from '../common/enums/game-mode';
 import { PartyType } from '../common/enums/party-type';
 import { MatchProps } from '../models/game-configuaration/match-props';
 import { Tile } from '../models/tile';
+import { ErrorHandler } from './error-handler'
+
+class CustomLogger implements signalR.ILogger {
+  constructor(private errorHandler: ErrorHandler) {}
+
+  log(logLevel: signalR.LogLevel, message: string): void {
+    let statusCode: number;
+    
+    //TODO: catch when server is down
+
+    let statusCodeSplit = message.split("Status code");
+    if(statusCodeSplit.length > 1) {
+      statusCode = parseInt(statusCodeSplit[1].replace("'", ""))
+      console.log(statusCode);
+      this.errorHandler.handle(statusCode);
+    }
+  }
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class SignalrService {
 
-  constructor(private utilities: Utilities, private router: Router) { }
+  constructor(private utilities: Utilities, private router: Router, private errorHandler: ErrorHandler) { }
 
   //FIXME: change the access modifier
   public hubConnection?: signalR.HubConnection;
@@ -27,11 +45,17 @@ export class SignalrService {
     this.hubConnection = new signalR.HubConnectionBuilder()
                             .withUrl(AppConfig.ServerUrl + ':' + AppConfig.ServerPort + '/gamehub',
                             { accessTokenFactory: () => this.utilities.getAccessToken()})
+                            .configureLogging(signalR.LogLevel.Critical)
+                            .configureLogging(new CustomLogger(this.errorHandler))
                             .build();
 
-    this.hubConnectionStartPromise = this.hubConnection.start();
+    this.hubConnectionStartPromise = this.hubConnection.start().then(() => {}, (err) => {
+      console.log('ERROR IN CATCH: ' + err);      
+    });
 
-    this.hubConnectionStartPromise.catch(err => console.log('Error while starting connection: ' + err));
+    this.hubConnectionStartPromise.catch(err => {
+      console.log('Error while starting connection: ' + err.toString())
+    });
     //TODO: assure that everything about connection is working
     /*console.log("Before start connection")
     this.hubConnection
@@ -65,7 +89,7 @@ export class SignalrService {
     console.log(this.hubConnection?.state)
     console.log("Join Room")
     if(this.hubConnection?.state == signalR.HubConnectionState.Connected) {
-      this.hubConnection?.invoke("JoinRoom", gameMode);
+      this.hubConnection?.invoke("JoinRoom", gameMode)
     }
   }
 

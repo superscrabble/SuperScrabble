@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { WebRequestsService } from 'src/app/services/web-requests.service';
 import { ErrorHandler } from 'src/app/services/error-handler';
+import { LoadingScreenService } from 'src/app/services/loading-screen.service';
 
 @Component({
   selector: 'app-game-summary',
@@ -11,7 +12,8 @@ import { ErrorHandler } from 'src/app/services/error-handler';
 })
 export class GameSummaryComponent implements OnInit {
 
-  constructor(private router: Router, private webRequestsService: WebRequestsService, private errorHandler: ErrorHandler) { }
+  constructor(private router: Router, private webRequestsService: WebRequestsService,
+              private errorHandler: ErrorHandler, private loadingScreenService: LoadingScreenService) { }
 
   pointsByUserNames: any[] = new Array();
   gameOutcomeMessage: string = "";
@@ -26,6 +28,7 @@ export class GameSummaryComponent implements OnInit {
   }
 
   loadGameSummary(id: string) {
+    this.loadingScreenService.showLoadingScreen();
     const url = 'api/games/summary/' + id;
     
     this.webRequestsService.getAuthorized(url)
@@ -41,6 +44,7 @@ export class GameSummaryComponent implements OnInit {
     this.loadScoreBoard(summaryModel.pointsByUserNames);
     this.gameOutcomeNumber = summaryModel.gameOutcomeNumber;
     this.gameOutcomeMessage = summaryModel.gameOutcomeMessage;
+    this.loadingScreenService.stopShowingLoadingScreen();
   }
 
   handleLoadGameSummaryError(error: any): void {
