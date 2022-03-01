@@ -13,6 +13,7 @@ export class ErrorHandler {
         if(error == 401) {
             //TODO: move this into a service
             //TODO: get his message from Remote Config
+            //TODO: clear the accessToken
             //Show toast
             this.toastr.error('Трябва да влезнете в акаунта си или да си направите такъв, за да ползвате тази функционалност!', '', {
                 progressBar: true,
