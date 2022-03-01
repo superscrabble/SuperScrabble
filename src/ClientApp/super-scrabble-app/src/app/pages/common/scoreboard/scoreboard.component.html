@@ -3,7 +3,7 @@
         <!--Posible way to show player's times-->
         <tr style="color: white; background-color: black;" class="py-2 text-center">
             <!--<th class="py-3 px-4">Място</th>-->
-            <th class="py-3 px-4">Време</th>
+            <th *ngIf="doAllPlayersHaveTimer()" class="py-3 px-4">Време</th>
             <th class="py-3 px-4">Играч</th>
             <th class="py-3 px-4">Точки</th>
             <th *ngIf="isDuoGame">Общо точки</th>
@@ -11,7 +11,7 @@
         <ng-container class="custom-row" *ngFor="let team of teams; let i = index">
             <!--<th class="{{getClassByRowIndex(i)}}" [attr.rowspan]="team.players.length + 1" class="text-center ps-3 py-3">{{i + 1}}</th>-->
             <tr class="{{getClassByRowIndex(i)}} text-center py-4" *ngFor="let player of team.players; let first = first">
-                <td class="py-3">{{player.remainingSeconds! | formatTime}}</td>
+                <td *ngIf="doAllPlayersHaveTimer()" class="py-3">{{player.remainingSeconds! | formatTime}}</td>
                 <td class="py-3"><strong>{{modifyCurrentUserName(player.userName)}}</strong></td>
                 <!--<td>05:42</td>-->
                 <td><strong>{{player.points}} т.</strong></td>

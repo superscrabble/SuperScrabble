@@ -54,4 +54,7 @@ export class ScoreboardComponent implements OnInit {
     return "even-row";
   }
 
+  doAllPlayersHaveTimer() : boolean {
+    return true;
+  }
 }
