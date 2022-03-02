@@ -55,6 +55,9 @@ export class LoginFormComponent implements OnInit {
   }
 
   handleError(error: any): void {
+    console.log("LOGIN ERROR")
+    console.log(error);
+
     if (error.status == 400) {
       const errors = JSON.parse(error.error);
       for (let i = 0; i < errors.length; i++) {
@@ -64,7 +67,7 @@ export class LoginFormComponent implements OnInit {
       }
     }
     else {
-      this.errorHandler.handle(error.status);
+      //this.errorHandler.handle(error.status);
     }
   }
 }

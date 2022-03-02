@@ -66,6 +66,9 @@ export class RegisterFormComponent implements OnInit {
   }
 
   handleError(error: any): void {
+    console.log("ERRORS IN REGIS")
+    console.log(error);
+
     if (error.status == 400) {
       const errors = JSON.parse(error.error);
       for (let i = 0; i < errors.length; i++) {
