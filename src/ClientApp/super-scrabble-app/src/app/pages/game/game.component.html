@@ -81,13 +81,13 @@
             <ng-container *ngFor="let teammate of teammates">
                 <h2 style="margin: 0">Плочки на {{teammate.userName}}</h2>
                 <app-player-rack
-                    [playerTiles]="teammate.tiles" [isEnabled]="false" (removeTileFromBoard)="removeTileFromBoard($event)"
+                    [playerTiles]="teammate.tiles" [isEnabled]="false"
                     (openWildcardDialogEvent)="openWildcardDialogEvent($event)">
                 </app-player-rack>
             </ng-container>
         </div>
         <app-player-rack
-            [playerTiles]="playerTiles" [isEnabled]="true" (removeTileFromBoard)="removeTileFromBoard($event)"
+            [playerTiles]="playerTiles" [isEnabled]="true"
             (openWildcardDialogEvent)="openWildcardDialogEvent($event)">
         </app-player-rack>
     </div>

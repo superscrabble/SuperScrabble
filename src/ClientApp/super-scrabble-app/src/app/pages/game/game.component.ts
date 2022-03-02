@@ -57,6 +57,7 @@ export class GameComponent implements OnInit {
     cellViewDataByType: Map<number, CellViewData> = new Map();
     remainingTilesCount: number = 90;
     teams: Team[] = new Array();
+    //this one
     selectedPlayerTile: Tile | null = null;
     updatedBoardCells: any[] = new Array();
     selectedBoardCell: Cell | null = null;
@@ -82,7 +83,7 @@ export class GameComponent implements OnInit {
         private loadingScreenService: LoadingScreenService) {}
 
     ngOnInit(): void {
-        this.loadingScreenService.showLoadingScreen();
+        //this.loadingScreenService.showLoadingScreen();
         this.signalrService.startConnection();
 
         const url = window.location.href;
@@ -286,99 +287,15 @@ export class GameComponent implements OnInit {
         })
     }
 
-    /*
-    getClassNameIfNewCell(cell: Cell) {
-        for(let i = 0; i < this.updatedBoardCells.length; i++) {
-            if(this.updatedBoardCells[i].key == cell) {
-                //TODO: think how to show that a cell is new
-                //return "border border-info";
-            }
-        }
-        return "";
-    }
-
-    getClassNameByCellType(type: number) {
-        return this.cellViewDataByType.get(type)?.className;
-    }*/
-
     //Useless
     removeTileFromBoard(tile: Tile) {
         console.log("Remove tile from Board")
         //this.boardComponent?.removeTileFromBoard(tile);
     }
 
-    /*drop(event: CdkDragDrop<Tile[]>) {
-        console.log("DROPPING IN PLAYER TILES")
-        console.log(event.previousIndex + " " + event.previousContainer.data + " " + event.currentIndex);
-        if(event.previousContainer === event.container)
-            moveItemInArray(this.playerTiles, event.previousIndex, event.currentIndex);
-        else {
-            transferArrayItem(event.previousContainer.data, event.container.data, event.previousIndex, event.currentIndex);
-        }
-    }
-
-    customPlayerTiles: Tile[] = [];
-
-    customDrop(event: CdkDragDrop<Tile[]>) {
-        console.log("In Custom Drop")
-        console.log(event.previousContainer);
-        console.log(event.previousContainer.data)
-        //this.customPlayerTiles.push(event.item.data);
-        //this.customPlayerTiles.push(new Tile("", 2));
-        transferArrayItem(event.previousContainer.data,
-                            this.customPlayerTiles,
-                            event.previousIndex,
-                            this.customPlayerTiles.length - 1);
-        console.log(this.customPlayerTiles);
-    }
-
-    show: boolean = false;
-
-    onDropEntered(event: CdkDragEnter<Tile[]>) {
-        if(document.getElementById("playerTilePreview")) {
-            //document.getElementById("playerTilePreview")!.style.display = 'none'
-            this.show = true;
-        }
-    }
-
-    showEmptyPlaceholder() {
-        return this.show;
-    }
-
-    createPlayerTilePreview() {
-        return document.createElement('div');
-    }*/
-
     isCurrentPlayerOnTurn() : boolean {
         return this.currentUserName == this.playerNameOnTurn;
     }
-
-    /*clickOnPlayerTile(playerTile: Tile | any) {
-        if(!this.isCurrentPlayerOnTurn()) return;
-
-        if(playerTile != null) {
-            if(playerTile == this.selectedPlayerTile) {
-                this.selectedPlayerTile = null;
-                return;
-            }   
-            //Check whether the player has the tile
-            for(let i = 0; i < this.playerTiles.length; i++) {
-            if(this.playerTiles[i] == playerTile) {
-                this.selectedPlayerTile = playerTile;
-                return;
-            }
-            }
-        }
-    }
-
-    doubleClickOnPlayerTile(playerTile: Tile) {
-        if((playerTile.letter == AppConfig.WildcardSymbol
-            || playerTile.points == 0)
-            && this.playerTiles.find(item => item == playerTile)) {
-            this.dialog.open(ChangeWildcardDialogComponent, { data: { tiles: this.wildcardOptions, 
-                tile: playerTile, writeWordInput: null}});
-        }
-    }*/
 
     leaveGame() {
         let dialogRef = this.dialog.open(LeaveGameDialogComponent)
@@ -446,19 +363,6 @@ export class GameComponent implements OnInit {
             this.playerTiles = this.playerTiles.filter(item => item !== playerTile);
         }
     }
-
-    /*getClassNameIfSelected(object: Tile | Cell | any) {
-        if(object instanceof Tile) {
-            if(this.selectedPlayerTile && this.selectedPlayerTile == object) {
-                return "selected-tile";
-            }
-        } else if(object instanceof Cell) {
-            if(this.selectedBoardCell && this.selectedBoardCell == object) {
-                return "selected-cell";
-            }
-        }
-        return "";
-    }*/
 
     showWordMeaningOf(word: string) : void {
         console.log("Show word meaning")
