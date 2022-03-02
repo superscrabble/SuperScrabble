@@ -1,4 +1,10 @@
 /*TODO: This should be in a global file*/
+.tile {
+    background-color: #E3CFAA; /*#D3EEDC;*/
+    box-shadow: 2px 2px 2px black;
+    color: black;
+}
+
 .selected-tile {
     background-color: #F97362;
 }
