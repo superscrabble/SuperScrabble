@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Output, EventEmitter, NgZone, ElementRef, Renderer2 } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter, NgZone, ElementRef, Renderer2, ChangeDetectorRef } from '@angular/core';
 import { Cell } from 'src/app/models/cell';
 import { CellViewData } from 'src/app/models/cellViewData';
 import { Tile } from 'src/app/models/tile';
@@ -36,8 +36,10 @@ export class GameboardComponent implements OnInit {
     .subscribe(() => this.ngZone.run(() => this.onSizeChange()));
 
   constructor(private viewportRuler: ViewportRuler, private ngZone: NgZone,
-              private elementRef: ElementRef, private renderer: Renderer2) {
+              private elementRef: ElementRef, private renderer: Renderer2,
+              private changeDetect: ChangeDetectorRef) {
       this.loadCellViewDataByType();
+      this.onSizeChange();
   }
 
   onSizeChange() : void {      
@@ -54,11 +56,20 @@ export class GameboardComponent implements OnInit {
       let minNeededBoardWidth = AppConfig.BoardCellMinWidth * horizontalCellsCount;
       let minNeededBoardHeight = AppConfig.BoardCellMinHeight * verticalCellsCount;
 
+      this.changeDetect.detectChanges();
+
       const screenWidth = this.elementRef.nativeElement.offsetWidth;
       const screenHeight = this.elementRef.nativeElement.offsetHeight;
 
       //TODO: move this into variable
       let cellWidth = '2.2rem';
+
+      console.log("Screen height: " + screenHeight + " and min: " + minNeededBoardHeight);
+      console.log("Screen width: " + screenWidth + " and min: " + minNeededBoardWidth);
+
+      if(screenHeight == 0 || screenWidth == 0) {
+        
+      }
 
       if((screenHeight > minNeededBoardHeight)
             && (screenWidth > minNeededBoardWidth)) {
