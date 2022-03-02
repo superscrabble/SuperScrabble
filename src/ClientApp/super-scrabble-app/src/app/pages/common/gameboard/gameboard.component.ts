@@ -113,14 +113,17 @@ export class GameboardComponent implements OnInit {
   }
 
   placeTileOnBoard(tile: Tile, row: number, column: number) {
-    //validate row and column
-    //if not free and not new => exception
+    //TODO: validate row and column
+    //TODO: if not free and not new => exception
     this.board[row][column].tile = tile;
     this.addCellToUpdatedBoardCells(this.board[row][column]);
   }
 
   cellTileDropped(dropped: CdkDragDrop<Tile>) {
-
+    //For now this is the way to detect when out of the board
+    if(dropped.container) {
+      this.removeTileFromBoard(dropped.item.data);
+    }
   }
 
   removeTileFromBoard(tile: Tile) {
