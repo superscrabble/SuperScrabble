@@ -1,7 +1,7 @@
 @use '@angular/material' as mat;
 
 $my-custom-level: mat.define-typography-level(
-  $font-family: Regular,
+  $font-family: ADYS-Regular,
   $font-weight: 400,
   $font-size: 1rem,
   $line-height: 1,
@@ -9,25 +9,36 @@ $my-custom-level: mat.define-typography-level(
 );
 
 @font-face {
-    font-family: Regular;
+    font-family: ADYS-Regular;
     src: url("./assets/fonts/static/ADYS-Regular-V5-4.ttf");
 }
 
 @font-face {
-    font-family: Bold;
+    font-family: ADYS-Bold;
     src: url("./assets/fonts/static/ADYS-Bold-V5-4.ttf");
 }
 
 * {
-    font-family: 'Regular', sans-serif;
+    font-family: ADYS-Regular, sans-serif !important;
 }
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: ADYS-Bold, sans-serif !important;
+}
+
+h1 {
+    font-size: calc(1.375rem + 1.5vw) !important;
+}
+
+
+
 
 .identity-form {
     background-color: #F2F2F2;
     font-size: 1.1rem;
 }
 html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+//body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+//body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

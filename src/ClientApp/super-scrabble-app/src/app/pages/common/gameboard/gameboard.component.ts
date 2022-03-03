@@ -56,7 +56,7 @@ export class GameboardComponent implements OnInit {
       let minNeededBoardWidth = AppConfig.BoardCellMinWidth * horizontalCellsCount;
       let minNeededBoardHeight = AppConfig.BoardCellMinHeight * verticalCellsCount;
 
-      this.changeDetect.detectChanges();
+      //this.changeDetect.detectChanges();
 
       const screenWidth = this.elementRef.nativeElement.offsetWidth;
       const screenHeight = this.elementRef.nativeElement.offsetHeight;
