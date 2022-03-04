@@ -1,6 +1,6 @@
 <div class="d-flex flex-column justify-content-center align-items-center my-4 text-center">
-    <h1 class="m-4">Добре дошли в Супер Скрабъл</h1>
-    <h2 class="text-center">Изберете вариант на играта</h2>
+    <h1 class="m-4">{{welcomeMessageText}}</h1>
+    <h2 class="text-center">{{chooseGamemodeMessageText}}</h2>
 </div>
 <div class="d-flex align-items-center justify-content-center my-3" *ngIf="currentGameGroupName">
     <button class="py-2" (click)="redirectToCurrentGame()">Продължи твоята игра</button>

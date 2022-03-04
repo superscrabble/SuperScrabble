@@ -4,6 +4,7 @@ import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorHandler } from 'src/app/services/error-handler';
 import { WebRequestsService } from 'src/app/services/web-requests.service';
+import { AngularFireRemoteConfig } from '@angular/fire/compat/remote-config';
 
 @Component({
   selector: 'app-register-form',
@@ -21,10 +22,36 @@ export class RegisterFormComponent implements OnInit {
   }
 
   propertyErrorMessages = new Map();
+  errors: string[] = [];
 
-  constructor(private webRequestsService: WebRequestsService, private router: Router, private errorHandler: ErrorHandler) {}
+  registerPageTitle: string = "";
+  registerPageUsername: string = "";
+  registerPageEmail: string = "";
+  registerPagePassword: string = "";
+  registerPageRepeatPassword: string = "";
+  registerBtnText: string = "";
+
+  constructor(private webRequestsService: WebRequestsService, private router: Router, private errorHandler: ErrorHandler,
+      private remoteConfig: AngularFireRemoteConfig) {
+    this.loadRemoteConfigTexts();
+  }
 
   ngOnInit(): void {}
+
+  private loadRemoteConfigTexts() {
+    //AppConfig.isRemoteConfigFetched = false;
+    this.remoteConfig.fetchAndActivate().then(hasActivatedTheFetch => {
+      this.remoteConfig.getAll().then(all => {
+        //AppConfig.isRemoteConfigFetched = true;
+        this.registerPageTitle = all["RegisterPageTitle"].asString()!;
+        this.registerPageUsername = all["RegisterPageUsername"].asString()!;
+        this.registerPageEmail = all["RegisterPageEmail"].asString()!;
+        this.registerPagePassword = all["RegisterPagePassword"].asString()!;
+        this.registerPageRepeatPassword = all["RegisterPageRepeatPassword"].asString()!;
+        this.registerBtnText = all["RegisterBtnText"].asString()!;
+      })
+    })
+  }
 
   userNameErrorMessages(): string[] {
     return this.propertyErrorMessages.get("UserName");
@@ -66,13 +93,30 @@ export class RegisterFormComponent implements OnInit {
   }
 
   handleError(error: any): void {
+    console.log("ERRORS IN REGIS")
+    console.log(error);
+
     if (error.status == 400) {
-      const errors = JSON.parse(error.error);
+      console.log(error.error);
+      //let re = /\"/gi;
+      //this.errors = error.error.replace('\[', '').replace('\]', '').trim().replace(re, '').split(',');
+      
+      console.log(JSON.parse(error.error));
+      this.errors = JSON.parse(error.error)
+      this.remoteConfig.fetchAndActivate().then(hasActivatedTheFetch => {
+        this.remoteConfig.getAll().then(all => {
+          for(let i = 0; i < this.errors.length; i++) {
+            this.errors[i] = all[this.errors[i]].asString();
+          }
+        })
+      })
+
+      /*const errors = JSON.parse(error.error);
       for (let i = 0; i < errors.length; i++) {
         let propertyName = errors[i].propertyName;
         let errorMessages = errors[i].errorMessages;
         this.propertyErrorMessages.set(propertyName, errorMessages);
-      }
+      }*/
     }
     else {
       this.errorHandler.handle(error.status);

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { AngularFireRemoteConfig } from '@angular/fire/compat/remote-config';
 import { Router } from '@angular/router';
 import { HubConnectionState } from '@microsoft/signalr';
 import { PartyType } from 'src/app/common/enums/party-type';
@@ -42,11 +43,16 @@ export class PartyPageComponent implements OnInit {
   partyId: string = "";
 
   constructor(private signalrService: SignalrService, private matchmakingService: MatchmakingService,
-              private router: Router, private loadingScreenService: LoadingScreenService) {
-    this.partyData.invitationCode = "DSDS121"
-    this.partyData.members = ["Denis", "Gosho", "Misho", "Pesho"]
+              private router: Router, private loadingScreenService: LoadingScreenService,
+              private remoteConfig: AngularFireRemoteConfig) {
+    //this.partyData.invitationCode = "DSDS121"
+    //this.partyData.members = ["Denis", "Gosho", "Misho", "Pesho"]
+    this.loadRemoteConfigTexts();
+    
+    //this.partyData.invitationCode = "DSDS121"
+    //this.partyData.members = ["Denis", "Gosho", "Misho", "Pesho"]
     //this.partyData.members = ["Denis"]
-    this.partyData.owner = "Denis";
+    //this.partyData.owner = "Denis";
 
     /*this.matchProps = [
       {
@@ -93,6 +99,66 @@ export class PartyPageComponent implements OnInit {
         ]
       }
     ]*/
+  }
+
+  partyTypeText: string = "";
+  codeLabelText: string = "";
+  copyBtnText: string = "";
+  timerTypeLabel: string = "";
+  timerTypeStandardText: string = "";
+  timerTypeChessText: string = "";
+  timerDifficultyLabel: string = "";
+  playersLabel: string = "";
+  leaveBtnText: string = "";
+  startGameBtnText: string = "";
+
+  private loadRemoteConfigTexts() {
+    //AppConfig.isRemoteConfigFetched = false;
+    this.remoteConfig.fetchAndActivate().then(hasActivatedTheFetch => {
+      this.remoteConfig.getAll().then(all => {
+        //AppConfig.isRemoteConfigFetched = true;
+        switch(this.partyData.partyType) {
+          case(PartyType.Duo): {
+            this.partyTypeText = all["PartyTypeDuoText"].asString()!;
+            break;
+          }
+          case(PartyType.Friendly): {
+            this.partyTypeText = all["PartyTypeFriendlyText"].asString()!;
+            break;
+          }
+        }
+
+        this.codeLabelText = all["CodeLabelText"].asString()!;
+        this.copyBtnText = all["CopyBtnText"].asString()!;
+        this.timerTypeLabel = all["TimerTypeLabel"].asString()!;
+        this.timerTypeStandardText = all["TimerTypeStandardText"].asString()!;
+        this.timerTypeChessText = all["TimerTypeChessText"].asString()!;
+        this.timerDifficultyLabel = all["TimerDifficultyLabel"].asString()!;
+        this.playersLabel = all["PlayersLabel"].asString()!;
+        this.startGameBtnText = all["StartGameBtnText"].asString()!;
+        this.leaveBtnText = all["LeaveBtnText"].asString()!;
+      })
+    })
+  }
+
+  getConfigSettingName(name: string) {
+    if(name == "TimerType") {
+      return this.timerTypeLabel;
+    } else if(name == "TimerDifficulty") {
+      return this.timerDifficultyLabel;
+    } else {
+      return name;
+    }
+  }
+
+  getOptionName(name: string) {
+    if(name == "Standard") {
+      return this.timerTypeStandardText;
+    } else if (name == "Chess") {
+      return this.timerTypeChessText;
+    } else {
+      return name;
+    }
   }
 
   ngOnInit(): void {

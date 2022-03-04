@@ -94,11 +94,12 @@
             }
             catch (UserNotFoundException ex)
             {
-                return this.NotFound(ex.PropertyNamesByErrorCodes);
+                return this.NotFound(ex.PropertyNamesByErrorCodes.Values.SelectMany(d => d).ToList());
             }
             catch (UserOperationFailedException ex)
             {
-                return this.BadRequest(ex.PropertyNamesByErrorCodes);
+                return this.BadRequest(ex.PropertyNamesByErrorCodes.Values.SelectMany(d => d).ToList());
+                //return this.BadRequest(ex.PropertyNamesByErrorCodes);
             }
         }
 

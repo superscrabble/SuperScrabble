@@ -1,29 +1,29 @@
 <div class="d-flex flex-column justify-content-center align-items-center">
-    <h1>{{partyTypeString}}</h1>
+    <h1>{{partyTypeText}}</h1>
     <div class="d-flex flex-row my-2 alert alert-danger">
-        <h1>Код: {{partyData.invitationCode}}</h1>
+        <h1>{{codeLabelText}} {{partyData.invitationCode}}</h1>
         <span [cdkCopyToClipboard]="partyData.invitationCode"
-            matTooltip="Копирай"
+            matTooltip={{copyBtnText}}
             [matTooltipPosition]="'right'"
             class="copy-code-icon material-icons p-1">content_paste</span>
     </div>
     <div class="my-2">
         <div *ngFor="let configSetting of partyData.configSettings" class="d-flex flex-column d-lg-flex flex-lg-row align-items-center my-2">
             <div class="col-lg-3">
-                <h2>{{configSetting.name}}</h2>
+                <h2>{{getConfigSettingName(configSetting.name)}}</h2>
             </div>
             <div class="option-values wrapped">
                 <div *ngFor="let option of configSetting.options" class="col-3 col-lg-2">
                     <input type="radio" (click)="selectConfigSetting(configSetting, option)" class="btn-check"
                             name="{{configSetting.name}}" id="{{configSetting.name}}{{option.value}}" [disabled]="!isConfigEnabled()"
                             autocomplete="off" [checked]="isConfigSettingOptionSelected(option)">
-                    <label style="width: 100%;" class="btn btn-outline-secondary" for="{{configSetting.name}}{{option.value}}">{{option.name}}</label>
+                    <label style="width: 100%;" class="btn btn-outline-secondary" for="{{configSetting.name}}{{option.value}}">{{getOptionName(option.name)}}</label>
                 </div>
             </div>
         </div>
     </div>
     <div>
-        <h1>Играчи</h1>
+        <h1>{{playersLabel}}</h1>
     </div>
     <div class="member-cards my-2">
         <div *ngFor="let member of partyData.members"
@@ -34,7 +34,7 @@
         </div>
     </div>
     <div class="col-12 d-flex flex-row justify-content-center my-2">
-        <button class="col-4 col-md-2 btn btn-success" *ngIf="partyData.isOwner && isPartyReady" (click)="startGame()">Започни игра</button>
-        <button class="col-4 col-md-2 btn btn-danger align-self-end" (click)="leaveParty()">Излез</button>
+        <button class="col-4 col-md-2 btn btn-success" *ngIf="partyData.isOwner && isPartyReady" (click)="startGame()">{{startGameBtnText}}</button>
+        <button class="col-4 col-md-2 btn btn-danger align-self-end" (click)="leaveParty()">{{leaveBtnText}}</button>
     </div>
 </div>

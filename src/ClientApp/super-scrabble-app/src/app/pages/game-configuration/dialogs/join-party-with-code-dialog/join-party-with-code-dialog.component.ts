@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { AngularFireRemoteConfig } from '@angular/fire/compat/remote-config';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { HubConnectionState } from '@microsoft/signalr';
@@ -14,10 +15,28 @@ export class JoinPartyWithCodeDialogComponent implements OnInit {
 
   code: string = "";
 
+  enterCodeText: string = "";
+  enterCodeBtnText: string = "";
+  denialBtnText: string = "";
+
   constructor(public dialogRef: MatDialogRef<JoinPartyWithCodeDialogComponent>,
               private matchmakingService: MatchmakingService,
               private signalrService: SignalrService,
-              private router: Router) { }
+              private router: Router, private remoteConfig: AngularFireRemoteConfig) {
+    this.loadRemoteConfigTexts();
+  }
+
+  private loadRemoteConfigTexts() {
+    //AppConfig.isRemoteConfigFetched = false;
+    this.remoteConfig.fetchAndActivate().then(hasActivatedTheFetch => {
+      this.remoteConfig.getAll().then(all => {
+        //AppConfig.isRemoteConfigFetched = true;
+        this.enterCodeText = all["EnterCodeText"].asString()!;
+        this.enterCodeBtnText = all["EnterCodeBtnText"].asString()!;
+        this.denialBtnText = all["DenialBtnText"].asString()!;
+      })
+    })
+  }
 
   ngOnInit(): void {
     console.log("ConnectING")

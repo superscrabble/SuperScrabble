@@ -9,6 +9,7 @@ import { MatchmakingService } from 'src/app/services/matchmaking.service';
 import { PartyType } from 'src/app/common/enums/party-type';
 import { GameMode } from 'src/app/common/enums/game-mode';
 import { LoadingScreenService } from 'src/app/services/loading-screen.service';
+import { AngularFireRemoteConfig } from '@angular/fire/compat/remote-config';
 
 class GameModeButton {
   text: string = "";
@@ -39,10 +40,14 @@ export class HomeComponent implements OnInit {
   receivedInvitationCode: string = "";
   invitationCodeFieldVisible: boolean = false;
 
+  welcomeMessageText: string = "";
+  chooseGamemodeMessageText: string = "";
+
   constructor(private signalrService: SignalrService, private utilities: Utilities,
               private router: Router, private dialog: MatDialog, private matchmakingService: MatchmakingService,
-              private loadingScreenService: LoadingScreenService) {
-      this.gameModes = [
+              private loadingScreenService: LoadingScreenService,
+              private remoteConfig: AngularFireRemoteConfig) {
+      /*this.gameModes = [
         {
           name: "Дуел",
           description: "Играй стандартен Скрабъл срещу друг играч!",
@@ -75,53 +80,100 @@ export class HomeComponent implements OnInit {
               text: "Създай отбор",
               action: () => {
                 this.matchmakingService.createParty(PartyType.Duo);
+      */
+              
+      this.loadRemoteConfigTexts();
+  }
+
+  private loadRemoteConfigTexts() {
+    //AppConfig.isRemoteConfigFetched = false;
+    this.remoteConfig.fetchAndActivate().then(hasActivatedTheFetch => {
+      this.remoteConfig.getAll().then(all => {
+        //AppConfig.isRemoteConfigFetched = true;
+        this.welcomeMessageText = all["WelcomeMessage"].asString()!;
+        this.chooseGamemodeMessageText = all["ChooseGamemodeMessage"].asString()!;
+        this.gameModes = [
+          {
+            name: all["DuelGamemodeLabel"].asString()!,
+            description: all["DuelGamemodeDesc"].asString()!,
+            buttons: [
+              {
+                text: all["PlayBtnText"].asString()!,
+                action: () => {
+                  this.joinRoom(GameMode.Duel);
+                }
               }
-            }
-          ]
-        },
-        {
-          name: "Приятелска игра",
-          description: "Играй с приятели!",
-          buttons: [
-            {
-              text: "Влез с код",
-              action: () => {
-                this.dialog.open(JoinPartyWithCodeDialogComponent);
+            ]
+          },
+          {
+            name: all["DuoGamemodeLabel"].asString()!,
+            description: all["DuoGamemodeDesc"].asString()!,
+            buttons: [
+              {
+                text: all["PlayWithRandomBtnText"].asString()!,
+                action: () => {
+                  this.matchmakingService.joinRandomDuoGame();
+                }
+              },
+              {
+                text: all["JoinWithCodeBtnText"].asString()!,
+                action: () => {
+                  this.dialog.open(JoinPartyWithCodeDialogComponent);
+                }
+              },
+              {
+                text: all["CreatePartyBtnText"].asString()!,
+                action: () => {
+                  this.matchmakingService.createParty(PartyType.Duo);
+                }
               }
-            },
-            {
-              text: "Създай игра",
-              action: () => {
-                this.matchmakingService.createParty(PartyType.Friendly);
+            ]
+          },
+          {
+            name: all["FriendlyGamemodeLabel"].asString()!,
+            description: all["FriendlyGamemodeDesc"].asString()!,
+            buttons: [
+              {
+                text: all["JoinWithCodeBtnText"].asString()!,
+                action: () => {
+                  this.dialog.open(JoinPartyWithCodeDialogComponent);
+                }
+              },
+              {
+                text: all["CreatePartyBtnText"].asString()!,
+                action: () => {
+                  this.matchmakingService.createParty(PartyType.Friendly);
+                }
               }
-            }
-          ]
-        },
-        {
-          name: "Шах-Скрабъл",
-          description: "Играй Скрабъл с таймер, който отмерва времето както в шах, срещу друг играч!",
-          buttons: [
-            {
-              text: "Играй",
-              action: () => {
-                this.joinRoom(GameMode.ChessScrabble);
+            ]
+          },
+          {
+            name: all["ChessScrabbleGamemodeLabel"].asString()!,
+            description: all["ChessScrabbleGamemodeDesc"].asString()!,
+            buttons: [
+              {
+                text: all["PlayBtnText"].asString()!,
+                action: () => {
+                  this.joinRoom(GameMode.ChessScrabble);
+                }
               }
-            }
-          ]
-        },
-        {
-          name: "Класически Скрабъл",
-          description: "Играй Скрабъл с други трима играчи!",
-          buttons: [
-            {
-              text: "Играй",
-              action: () => {
-                this.joinRoom(GameMode.Classic);
+            ]
+          },
+          {
+            name: all["ClassicGamemodeLabel"].asString()!,
+            description: all["ClassicGamemodeDesc"].asString()!,
+            buttons: [
+              {
+                text: all["PlayBtnText"].asString()!,
+                action: () => {
+                  this.joinRoom(GameMode.Classic);
+                }
               }
-            }
-          ]
-        }
-      ]
+            ]
+          }
+        ]
+      })
+    })
   }
 
   ngOnInit(): void {
