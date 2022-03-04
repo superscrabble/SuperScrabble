@@ -3,10 +3,10 @@
         <!--Posible way to show player's times-->
         <tr style="color: white; background-color: black;" class="py-2 text-center">
             <!--<th class="py-3 px-4">Място</th>-->
-            <th *ngIf="doAllPlayersHaveTimer()" class="py-3 px-4">Време</th>
-            <th class="py-3 px-4">Играч</th>
-            <th class="py-3 px-4">Точки</th>
-            <th *ngIf="isDuoGame">Общо точки</th>
+            <th *ngIf="doAllPlayersHaveTimer()" class="py-3 px-4">{{scoreboardTimeLabel}}</th>
+            <th class="py-3 px-4">{{scoreboardPlayerLabel}}</th>
+            <th class="py-3 px-4">{{scoreboardPointsLabel}}</th>
+            <th *ngIf="isDuoGame">Общо точки</th> <!--For now this does not need a translation-->
         </tr>
         <ng-container class="custom-row" *ngFor="let team of teams; let i = index">
             <!--<th class="{{getClassByRowIndex(i)}}" [attr.rowspan]="team.players.length + 1" class="text-center ps-3 py-3">{{i + 1}}</th>-->
@@ -14,7 +14,7 @@
                 <td *ngIf="doAllPlayersHaveTimer()" class="py-3">{{player.remainingSeconds! | formatTime}}</td>
                 <td class="py-3"><strong>{{modifyCurrentUserName(player.userName)}}</strong></td>
                 <!--<td>05:42</td>-->
-                <td><strong>{{player.points}} т.</strong></td>
+                <td><strong>{{player.points}} {{scoreboardPointsAbreviation}}</strong></td>
                 <td [attr.rowspan]="team.players.length + 1" *ngIf="isDuoGame && first" class="text-center ps-3 py-4"><strong>{{team.points}}</strong></td>
             </tr>
         </ng-container>

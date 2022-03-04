@@ -1,4 +1,5 @@
 import { Component, OnInit, Input, Pipe, PipeTransform } from '@angular/core';
+import { AngularFireRemoteConfig } from '@angular/fire/compat/remote-config';
 import { Player } from 'src/app/models/player';
 import { Team } from 'src/app/models/team';
 
@@ -27,7 +28,31 @@ export class ScoreboardComponent implements OnInit {
   @Input() userNamesOfPlayersWhoHaveLeftTheGame: string[] = [];
   @Input() isDuoGame: boolean = true;
 
-  constructor() { }
+  scoreboardTimeLabel: string = "";
+  scoreboardPlayerLabel: string = "";
+  scoreboardPointsLabel: string = "";
+  scoreboardPointsAbreviation: string = "";
+  scoreboardLeftPlayerText: string = "";
+  scoreboardCurrentPlayerText: string = "";
+
+  constructor(private remoteConfig: AngularFireRemoteConfig) {
+    this.loadRemoteConfigTexts();
+  }
+
+  private loadRemoteConfigTexts() {
+    //AppConfig.isRemoteConfigFetched = false;
+    this.remoteConfig.fetchAndActivate().then(hasActivatedTheFetch => {
+      this.remoteConfig.getAll().then(all => {
+      //AppConfig.isRemoteConfigFetched = true;
+      this.scoreboardTimeLabel = all["ScoreboardTimeLabel"].asString()!;
+      this.scoreboardPlayerLabel = all["ScoreboardPlayerLabel"].asString()!;
+      this.scoreboardPointsLabel = all["ScoreboardPointsLabel"].asString()!;
+      this.scoreboardPointsAbreviation = all["ScoreboardPointsAbreviation"].asString()!;
+      this.scoreboardLeftPlayerText = all["ScoreboardLeftPlayerText"].asString()!;
+      this.scoreboardCurrentPlayerText = all["ScoreboardCurrentPlayerText"].asString()!;
+    })
+  })
+}
 
   ngOnInit(): void {
   }
@@ -35,12 +60,12 @@ export class ScoreboardComponent implements OnInit {
   modifyCurrentUserName(playerName: string) {
     let result = playerName;
     if(playerName == this.currentUserName) {
-      result += " (аз)"; 
+      result += " (" + this.scoreboardCurrentPlayerText + ")"; 
       return result;
     } 
     
     if(this.userNamesOfPlayersWhoHaveLeftTheGame.find(x => x == playerName)) {
-        result += " (напуснал)";
+        result += " (" + this.scoreboardLeftPlayerText + ")";
         return result;
     }
 

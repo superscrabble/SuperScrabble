@@ -20,6 +20,7 @@ import { GameboardComponent } from '../common/gameboard/gameboard.component';
 import { Team } from 'src/app/models/team';
 import { Player } from 'src/app/models/player';
 import { LoadingScreenService } from 'src/app/services/loading-screen.service';
+import { AngularFireRemoteConfig } from '@angular/fire/compat/remote-config';
 
 @Pipe({
     name: "formatTime"
@@ -74,13 +75,36 @@ export class GameComponent implements OnInit {
     playerOnTurn: Player = new Player("", 0);
     //@ViewChild('boardComponent', {static: false}) boardComponent: GameboardComponent | undefined;
 
+    leaveGameBtnLabel: string = "";
+    skipTurnBtnLabel: string = "";
+    changeLetterBtnLabel: string = "";
+    changeLetterSecondBtnLabel: string = "";
+    writeWordBtnLabel: string = "";
+    
     constructor(
         private gameService: GameService,
         private signalrService: SignalrService,
         private router: Router,
         public dialog: MatDialog,
         private elementRef: ElementRef,
-        private loadingScreenService: LoadingScreenService) {}
+        private loadingScreenService: LoadingScreenService,
+        private remoteConfig: AngularFireRemoteConfig) {
+        this.loadRemoteConfigTexts();
+    }
+
+    private loadRemoteConfigTexts() {
+        //AppConfig.isRemoteConfigFetched = false;
+        this.remoteConfig.fetchAndActivate().then(hasActivatedTheFetch => {
+            this.remoteConfig.getAll().then(all => {
+            //AppConfig.isRemoteConfigFetched = true;
+            this.leaveGameBtnLabel = all["LeaveGameBtnLabel"].asString()!;
+            this.skipTurnBtnLabel = all["SkipTurnBtnLabel"].asString()!;
+            this.changeLetterBtnLabel = all["ChangeLetterBtnLabel"].asString()!;
+            this.changeLetterSecondBtnLabel = all["ChangeLetterSecondBtnLabel"].asString()!;
+            this.writeWordBtnLabel = all["WriteWordBtnLabel"].asString()!;
+            })
+        })
+    }
 
     ngOnInit(): void {
         //this.loadingScreenService.showLoadingScreen();
