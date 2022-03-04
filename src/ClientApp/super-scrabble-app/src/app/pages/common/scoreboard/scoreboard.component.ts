@@ -43,15 +43,15 @@ export class ScoreboardComponent implements OnInit {
     //AppConfig.isRemoteConfigFetched = false;
     this.remoteConfig.fetchAndActivate().then(hasActivatedTheFetch => {
       this.remoteConfig.getAll().then(all => {
-      //AppConfig.isRemoteConfigFetched = true;
-      this.scoreboardTimeLabel = all["ScoreboardTimeLabel"].asString()!;
-      this.scoreboardPlayerLabel = all["ScoreboardPlayerLabel"].asString()!;
-      this.scoreboardPointsLabel = all["ScoreboardPointsLabel"].asString()!;
-      this.scoreboardPointsAbreviation = all["ScoreboardPointsAbreviation"].asString()!;
-      this.scoreboardLeftPlayerText = all["ScoreboardLeftPlayerText"].asString()!;
-      this.scoreboardCurrentPlayerText = all["ScoreboardCurrentPlayerText"].asString()!;
+        //AppConfig.isRemoteConfigFetched = true;
+        this.scoreboardTimeLabel = all["ScoreboardTimeLabel"].asString()!;
+        this.scoreboardPlayerLabel = all["ScoreboardPlayerLabel"].asString()!;
+        this.scoreboardPointsLabel = all["ScoreboardPointsLabel"].asString()!;
+        this.scoreboardPointsAbreviation = all["ScoreboardPointsAbreviation"].asString()!;
+        this.scoreboardLeftPlayerText = all["ScoreboardLeftPlayerText"].asString()!;
+        this.scoreboardCurrentPlayerText = all["ScoreboardCurrentPlayerText"].asString()!;
+      })
     })
-  })
 }
 
   ngOnInit(): void {
