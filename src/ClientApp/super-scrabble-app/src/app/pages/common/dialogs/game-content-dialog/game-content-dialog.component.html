@@ -1,13 +1,13 @@
 <div class="d-flex flex-column page row-10">
     <div class="buttons">
         <button (click)="changeShowingComponent(showingComponentType.Scoreboard)">
-            Резултат
+            {{scoreboardLabel}}
         </button>
         <button (click)="changeShowingComponent(showingComponentType.GameLogs)">
-            История
+            {{gameLogsLabel}}
         </button>
         <button (click)="changeShowingComponent(showingComponentType.WordInfo)">
-            Дума
+            {{wordInfoLabel}}
         </button>
     </div>
     <div [ngSwitch]="showingComponent">

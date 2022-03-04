@@ -52,7 +52,7 @@ export class ScoreboardComponent implements OnInit {
         this.scoreboardCurrentPlayerText = all["ScoreboardCurrentPlayerText"].asString()!;
       })
     })
-}
+  }
 
   ngOnInit(): void {
   }
