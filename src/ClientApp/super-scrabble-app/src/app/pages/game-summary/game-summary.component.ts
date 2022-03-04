@@ -4,6 +4,7 @@ import { HttpClient, HttpResponse } from '@angular/common/http';
 import { WebRequestsService } from 'src/app/services/web-requests.service';
 import { ErrorHandler } from 'src/app/services/error-handler';
 import { LoadingScreenService } from 'src/app/services/loading-screen.service';
+import { AngularFireRemoteConfig } from '@angular/fire/compat/remote-config';
 
 @Component({
   selector: 'app-game-summary',
@@ -11,13 +12,38 @@ import { LoadingScreenService } from 'src/app/services/loading-screen.service';
   styleUrls: ['./game-summary.component.css']
 })
 export class GameSummaryComponent implements OnInit {
-
-  constructor(private router: Router, private webRequestsService: WebRequestsService,
-              private errorHandler: ErrorHandler, private loadingScreenService: LoadingScreenService) { }
-
+  
   pointsByUserNames: any[] = new Array();
   gameOutcomeMessage: string = "";
   gameOutcomeNumber: number = 0;
+
+  summaryWinText: string = "";
+  summaryDefeatText: string = "";
+  summaryDrawText: string = "";
+  summaryPageCaption: string = "";
+  summaryScoreboardPlayerLabel: string = "";
+  summaryScoreboardPointsLabel: string = "";
+
+  constructor(private router: Router, private webRequestsService: WebRequestsService,
+              private errorHandler: ErrorHandler, private loadingScreenService: LoadingScreenService,
+              private remoteConfig: AngularFireRemoteConfig) { 
+    this.loadRemoteConfigTexts();
+  }
+  
+  private loadRemoteConfigTexts() {
+    //AppConfig.isRemoteConfigFetched = false;
+    this.remoteConfig.fetchAndActivate().then(hasActivatedTheFetch => {
+      this.remoteConfig.getAll().then(all => {
+        //AppConfig.isRemoteConfigFetched = true;
+        this.summaryWinText = all["SummaryWinText"].asString()!;
+        this.summaryDefeatText = all["SummaryDefeatText"].asString()!;
+        this.summaryDrawText = all["SummaryDrawText"].asString()!;
+        this.summaryPageCaption = all["SummaryPageCaption"].asString()!;
+        this.summaryScoreboardPlayerLabel = all["SummaryScoreboardPlayerLabel"].asString()!;
+        this.summaryScoreboardPointsLabel = all["SummaryScoreboardPointsLabel"].asString()!;
+      })
+    })
+  }
 
   ngOnInit(): void {
     const url = window.location.href;
@@ -44,7 +70,27 @@ export class GameSummaryComponent implements OnInit {
     this.loadScoreBoard(summaryModel.pointsByUserNames);
     this.gameOutcomeNumber = summaryModel.gameOutcomeNumber;
     this.gameOutcomeMessage = summaryModel.gameOutcomeMessage;
+    
+    this.gameOutcomeMessage = this.getRemoteConfigGameOutcomeMessage(this.gameOutcomeMessage);
+    
     this.loadingScreenService.stopShowingLoadingScreen();
+  }
+
+  getRemoteConfigGameOutcomeMessage(gameOutcomeMessage: string) : string {
+    switch(gameOutcomeMessage) {
+      case("Win"): {
+        return this.summaryWinText;
+      }
+      case("Defeat"): {
+        return this.summaryDefeatText;
+      }
+      case("Draw"): {
+        return this.summaryDrawText;
+      }
+      default: {
+        return this.summaryDrawText;
+      }
+    }
   }
 
   handleLoadGameSummaryError(error: any): void {
