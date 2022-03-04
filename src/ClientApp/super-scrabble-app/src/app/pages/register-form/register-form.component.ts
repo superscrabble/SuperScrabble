@@ -4,6 +4,7 @@ import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorHandler } from 'src/app/services/error-handler';
 import { WebRequestsService } from 'src/app/services/web-requests.service';
+import { AngularFireRemoteConfig } from '@angular/fire/compat/remote-config';
 
 @Component({
   selector: 'app-register-form',
@@ -21,8 +22,10 @@ export class RegisterFormComponent implements OnInit {
   }
 
   propertyErrorMessages = new Map();
+  errors: string[] = [];
 
-  constructor(private webRequestsService: WebRequestsService, private router: Router, private errorHandler: ErrorHandler) {}
+  constructor(private webRequestsService: WebRequestsService, private router: Router, private errorHandler: ErrorHandler,
+      private remoteConfig: AngularFireRemoteConfig) {}
 
   ngOnInit(): void {}
 
@@ -70,12 +73,26 @@ export class RegisterFormComponent implements OnInit {
     console.log(error);
 
     if (error.status == 400) {
-      const errors = JSON.parse(error.error);
+      console.log(error.error);
+      //let re = /\"/gi;
+      //this.errors = error.error.replace('\[', '').replace('\]', '').trim().replace(re, '').split(',');
+      
+      console.log(JSON.parse(error.error));
+      this.errors = JSON.parse(error.error)
+      this.remoteConfig.fetchAndActivate().then(hasActivatedTheFetch => {
+        this.remoteConfig.getAll().then(all => {
+          for(let i = 0; i < this.errors.length; i++) {
+            this.errors[i] = all[this.errors[i]].asString();
+          }
+        })
+      })
+
+      /*const errors = JSON.parse(error.error);
       for (let i = 0; i < errors.length; i++) {
         let propertyName = errors[i].propertyName;
         let errorMessages = errors[i].errorMessages;
         this.propertyErrorMessages.set(propertyName, errorMessages);
-      }
+      }*/
     }
     else {
       this.errorHandler.handle(error.status);

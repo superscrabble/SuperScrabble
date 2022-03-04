@@ -5,6 +5,7 @@ import { fetchAndActivate, getAll, getAllChanges, getRemoteConfig, getValue, Rem
 import { Router } from '@angular/router';
 import { fetchConfig } from 'firebase/remote-config';
 import { EMPTY, filter, first, last, map, Observable, scan, tap } from 'rxjs';
+import { AppConfig } from './app-config';
 
 @Component({
   selector: 'app-root',
@@ -18,8 +19,20 @@ export class AppComponent {
 
   //constructor(remoteConfig: RemoteConfig, router: Router) {
   constructor(remoteConfig: AngularFireRemoteConfig, router: Router) {
-
+    /*
+    console.log(Date.now());
     remoteConfig.getValue("")
+
+    AppConfig.isRemoteConfigFetched = false;
+    remoteConfig.fetchAndActivate().then(hasActivatedTheFetch => {
+      console.log("READY FOR WORK");
+      remoteConfig.getAll().then(all => {
+        console.log("After ready");
+        console.log(all);
+        AppConfig.isRemoteConfigFetched = true;
+        
+      })
+    })
 
     remoteConfig.changes.pipe(
       filterFresh(172_800_000), // ensure we have values from at least 48 hours ago
@@ -36,7 +49,10 @@ export class AppComponent {
       console.log(value);
     });
 
-    remoteConfig.strings.subscribe()
+    remoteConfig.strings.subscribe((data) => {
+      console.log("STRING SUBSCRIBING")
+      console.log(data)
+    })
     remoteConfig.booleans.subscribe(); // as booleans
     remoteConfig.numbers.subscribe(); // as numbers
   
@@ -59,6 +75,7 @@ export class AppComponent {
     remoteConfig.parameters.subscribe(all => {
       console.log("AFTER PARAMETERS: " + all.length);
       console.log(all);
+      AppConfig.remoteConfigData = new Map<string, string>(all.map(obj => [obj.key, obj._value]));
     });
   
     // or make promisified firebase().remoteConfig() calls direct off AngularFireRemoteConfig
@@ -69,7 +86,7 @@ export class AppComponent {
     });
     remoteConfig.lastFetchStatus.then(status => {
       console.log("REMOTE CONFIG STATUS: " + status)
-    });
+    });*/
 
     // fetchConfig(remoteConfig).then(() => {
     //   console.log("FETCHED");

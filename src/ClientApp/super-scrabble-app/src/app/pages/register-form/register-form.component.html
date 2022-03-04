@@ -57,6 +57,13 @@
                 {{errorMessage}}
             </div>
         </div>
+        <ng-container *ngIf="errors">
+            <div 
+                class="text-danger mb-2" 
+                *ngFor="let error of errors">
+                {{error}}
+            </div>
+        </ng-container>
         <div class="d-flex justify-content-center">
             <button 
                 type="submit"

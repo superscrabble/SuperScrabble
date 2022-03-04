@@ -103,7 +103,7 @@ import { AngularFireModule } from '@angular/fire/compat';
     { provide: DEFAULTS, useValue: { enableAwesome: true } },
     {
       provide: SETTINGS,
-      useFactory: () => isDevMode() ? { minimumFetchIntervalMillis: 10_000 } : {}
+      useFactory: () => isDevMode() ? { minimumFetchIntervalMillis: 10000, fetchTimeoutMillis: 60000 } : {}
     },
    ],
   bootstrap: [AppComponent]
