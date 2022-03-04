@@ -24,10 +24,34 @@ export class RegisterFormComponent implements OnInit {
   propertyErrorMessages = new Map();
   errors: string[] = [];
 
+  registerPageTitle: string = "";
+  registerPageUsername: string = "";
+  registerPageEmail: string = "";
+  registerPagePassword: string = "";
+  registerPageRepeatPassword: string = "";
+  registerBtnText: string = "";
+
   constructor(private webRequestsService: WebRequestsService, private router: Router, private errorHandler: ErrorHandler,
-      private remoteConfig: AngularFireRemoteConfig) {}
+      private remoteConfig: AngularFireRemoteConfig) {
+    this.loadRemoteConfigTexts();
+  }
 
   ngOnInit(): void {}
+
+  private loadRemoteConfigTexts() {
+    //AppConfig.isRemoteConfigFetched = false;
+    this.remoteConfig.fetchAndActivate().then(hasActivatedTheFetch => {
+      this.remoteConfig.getAll().then(all => {
+        //AppConfig.isRemoteConfigFetched = true;
+        this.registerPageTitle = all["RegisterPageTitle"].asString()!;
+        this.registerPageUsername = all["RegisterPageUsername"].asString()!;
+        this.registerPageEmail = all["RegisterPageEmail"].asString()!;
+        this.registerPagePassword = all["RegisterPagePassword"].asString()!;
+        this.registerPageRepeatPassword = all["RegisterPageRepeatPassword"].asString()!;
+        this.registerBtnText = all["RegisterBtnText"].asString()!;
+      })
+    })
+  }
 
   userNameErrorMessages(): string[] {
     return this.propertyErrorMessages.get("UserName");
