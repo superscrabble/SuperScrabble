@@ -38,10 +38,10 @@ export class LoginFormComponent implements OnInit {
   }
 
   private loadRemoteConfigTexts() {
-    AppConfig.isRemoteConfigFetched = false;
+    //AppConfig.isRemoteConfigFetched = false;
     this.remoteConfig.fetchAndActivate().then(hasActivatedTheFetch => {
       this.remoteConfig.getAll().then(all => {
-        AppConfig.isRemoteConfigFetched = true;
+        //AppConfig.isRemoteConfigFetched = true;
         this.loginPageTitle = all["LoginPageTitle"].asString()!;
         this.loginPageUsername = all["LoginPageUsername"].asString()!;
         this.loginPagePassword = all["LoginPagePassword"].asString()!;

@@ -28,10 +28,10 @@ export class NavbarComponent implements OnInit {
   }
 
   private loadRemoteConfigTexts() {
-    AppConfig.isRemoteConfigFetched = false;
+    //AppConfig.isRemoteConfigFetched = false;
     this.remoteConfig.fetchAndActivate().then(hasActivatedTheFetch => {
       this.remoteConfig.getAll().then(all => {
-        AppConfig.isRemoteConfigFetched = true;
+        //AppConfig.isRemoteConfigFetched = true;
         this.appName = all["AppName"].asString()!;
         this.navHomeLabel = all["NavHomeLabel"].asString()!;
         this.navLoginLabel = all["NavLoginLabel"].asString()!;
