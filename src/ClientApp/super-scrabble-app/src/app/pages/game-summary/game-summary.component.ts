@@ -41,6 +41,8 @@ export class GameSummaryComponent implements OnInit {
         this.summaryPageCaption = all["SummaryPageCaption"].asString()!;
         this.summaryScoreboardPlayerLabel = all["SummaryScoreboardPlayerLabel"].asString()!;
         this.summaryScoreboardPointsLabel = all["SummaryScoreboardPointsLabel"].asString()!;
+
+        this.gameOutcomeMessage = this.getRemoteConfigGameOutcomeMessage(this.gameOutcomeMessage);
       })
     })
   }
@@ -71,8 +73,8 @@ export class GameSummaryComponent implements OnInit {
     this.gameOutcomeNumber = summaryModel.gameOutcomeNumber;
     this.gameOutcomeMessage = summaryModel.gameOutcomeMessage;
     
-    this.gameOutcomeMessage = this.getRemoteConfigGameOutcomeMessage(this.gameOutcomeMessage);
-    
+    //this.gameOutcomeMessage = this.getRemoteConfigGameOutcomeMessage(this.gameOutcomeMessage);    
+
     this.loadingScreenService.stopShowingLoadingScreen();
   }
 
