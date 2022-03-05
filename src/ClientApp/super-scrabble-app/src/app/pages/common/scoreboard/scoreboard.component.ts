@@ -80,6 +80,16 @@ export class ScoreboardComponent implements OnInit {
   }
 
   doAllPlayersHaveTimer() : boolean {
-    return true;
+    let result = true;
+    
+    this.teams.forEach(team => {
+      team.players.forEach(player => {
+        if(!player.remainingSeconds) {
+          result = false;
+        }
+      })
+    })
+
+    return result;
   }
 }
