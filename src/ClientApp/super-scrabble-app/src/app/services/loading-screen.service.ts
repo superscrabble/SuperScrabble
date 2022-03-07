@@ -10,11 +10,21 @@ export class LoadingScreenService {
   constructor() {}
 
   showLoadingScreen() {
-    this.isShowingLoading = true;
+    if(this.isShowingLoading) return;
+
+    setTimeout(() => {
+      this.isShowingLoading = true;
+    }, 0)
+    
   }
 
   stopShowingLoadingScreen() {
-    this.isShowingLoading = false;
+    if(!this.isShowingLoading) return;
+
+    setTimeout(() => {
+      this.isShowingLoading = false;
+    }, 0)
+    //this.isShowingLoading = false;
   }
 
   isShowingLoadingScreen() : boolean {
