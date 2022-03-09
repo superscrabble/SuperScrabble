@@ -309,5 +309,14 @@ public class MatchmakingService : IMatchmakingService
         var gameState = gameStatesByGameIds[gameId];
         gameStatesByGameIds.TryRemove(new(gameId, gameState));
     }
+
+    public bool IsUserInsideAnyParty(string userName)
+        => partiesByPartyIds.Values
+            .SelectMany(p => p.Members)
+            .FirstOrDefault(m => m.UserName == userName) != null;
+
+    public Party? GetPartyByUserName(string userName)
+        => partiesByPartyIds.Values
+            .FirstOrDefault(p => p.IsMemberInside(userName));
 }
 

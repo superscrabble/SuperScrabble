@@ -64,6 +64,12 @@ public class GameHub : Hub<IGameClient>
 
             await Clients.Caller.UserAlreadyInsideGame(gameState.GameId);
         }
+        else if (_matchmakingService.IsUserInsideAnyParty(UserName))
+        {
+            var party = _matchmakingService.GetPartyByUserName(UserName)!;
+            var member = party.GetMember(UserName)!;
+            member.ConnectionId = ConnectionId;
+        }
     }
 
     public override Task OnDisconnectedAsync(Exception? exception)
@@ -77,6 +83,12 @@ public class GameHub : Hub<IGameClient>
             {
                 player.ConnectionId = null;
             }
+        }
+        else if (_matchmakingService.IsUserInsideAnyParty(UserName))
+        {
+            var party = _matchmakingService.GetPartyByUserName(UserName)!;
+            var member = party.GetMember(UserName)!;
+            member.ConnectionId = null;
         }
 
         return Task.CompletedTask;

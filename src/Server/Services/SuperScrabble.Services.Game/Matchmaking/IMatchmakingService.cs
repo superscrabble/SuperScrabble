@@ -37,5 +37,9 @@
         void RemoveUserFromGame(string userName);
 
         void RemoveGameState(string gameId);
+
+        bool IsUserInsideAnyParty(string userName);
+
+        Party? GetPartyByUserName(string userName);
     }
 }
