@@ -133,6 +133,7 @@ export class GameboardComponent implements OnInit {
   cellTileDropped(dropped: CdkDragDrop<Tile>) {
     //For now this is the way to detect when out of the board
     if(dropped.container) {
+      this.addTileToPlayerTiles.emit(dropped.item.data);
       this.removeTileFromBoard(dropped.item.data);
     }
   }
@@ -141,7 +142,7 @@ export class GameboardComponent implements OnInit {
     let cell = this.updatedBoardCells.find(x => x.cell.tile == tile)!.cell;
     cell.tile = null;
     this.removeCellFromUpdatedBoardCells(cell);
-    this.updatedBoardCellsChange.next(this.updatedBoardCells);
+    //this.updatedBoardCellsChange.next(this.updatedBoardCells);
   }
 
   swapTilesOnBoard(cell: Cell, otherCell: Cell) {
@@ -173,6 +174,7 @@ export class GameboardComponent implements OnInit {
         if(!this.isNewPlacedTile(inputTile)) {
           return;
         }
+        
         this.addTileToPlayerTiles.emit(inputTile);
         this.removeTileFromBoard(inputTile);
         return;
@@ -298,7 +300,7 @@ export class GameboardComponent implements OnInit {
   removeCellFromUpdatedBoardCells(cell: Cell) {
       if(cell) {
         this.updatedBoardCells = this.updatedBoardCells.filter(item => item.cell !== cell);
-        this.updatedBoardCellsChange.next(this.updatedBoardCells);
+        //this.updatedBoardCellsChange.next(this.updatedBoardCells);
       }
   }
 
@@ -310,7 +312,7 @@ export class GameboardComponent implements OnInit {
             }
         }
         this.saveUpdatedBoardCellWithPosition(cell);
-        this.updatedBoardCellsChange.next(this.updatedBoardCells);
+        //this.updatedBoardCellsChange.next(this.updatedBoardCells);
     }
   }
 
