@@ -1,6 +1,6 @@
 <div class="d-flex flex-column justify-content-center align-items-center">
-    <h1>{{partyTypeText}}</h1>
-    <div class="d-flex flex-row my-2 alert alert-danger">
+    <h1 class="my-3">{{partyTypeText}}</h1>
+    <div class="d-flex flex-row my-2 alert alert-warning">
         <h1>{{codeLabelText}} {{partyData.invitationCode}}</h1>
         <span [cdkCopyToClipboard]="partyData.invitationCode"
             matTooltip={{copyBtnText}}
@@ -17,7 +17,7 @@
                     <input type="radio" (click)="selectConfigSetting(configSetting, option)" class="btn-check"
                             name="{{configSetting.name}}" id="{{configSetting.name}}{{option.value}}" [disabled]="!isConfigEnabled()"
                             autocomplete="off" [checked]="isConfigSettingOptionSelected(option)">
-                    <label style="width: 100%;" class="btn btn-outline-secondary" for="{{configSetting.name}}{{option.value}}">{{getOptionName(option.name)}}</label>
+                    <label style="width: 100%;" class="btn btn-warning" for="{{configSetting.name}}{{option.value}}">{{getOptionName(option.name)}}</label>
                 </div>
             </div>
         </div>

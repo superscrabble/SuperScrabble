@@ -28,6 +28,12 @@
     cursor: pointer;
 }
 
+.btn-check:checked + .btn-warning {
+    background-color: green;
+    border-color: green;
+    color: white;
+}
+
 @media only screen and (min-width: 992px) {
     .member-card {
         height: 300px;
