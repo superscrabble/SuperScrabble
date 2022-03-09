@@ -21,6 +21,7 @@ public class MatchmakingService : IMatchmakingService
     private static readonly ConcurrentDictionary<string, GameState> gameStatesByGameIds = new();
     private static readonly ConcurrentDictionary<GameMode, List<WaitingTeam>> waitingTeamsByGameModes = new();
 
+    // Mediator/Observer pattern
     private readonly IGameStateFactory _gameStateFactory;
     private readonly IInvitationCodeGenerator _invitationCodeGenerator;
 

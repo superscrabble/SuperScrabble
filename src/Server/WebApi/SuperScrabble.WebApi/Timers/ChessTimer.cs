@@ -16,11 +16,11 @@ public class ChessTimer : GameTimer
     private readonly IGameService _gameService;
     private readonly IHubContext<GameHub, IGameClient> _hubContext;
     private readonly IMatchmakingService _matchmakingService;
-    private readonly IServiceProvider _serviceProvider;
+    private readonly IGamesService _gamesService;
 
     public ChessTimer(
         GameState gameState,
-        IServiceProvider serviceProvider,
+        IGamesService gamesService,
         IGameService gameService,
         IHubContext<GameHub, IGameClient> hubContext,
         IMatchmakingService matchmakingService)
@@ -29,8 +29,7 @@ public class ChessTimer : GameTimer
         _gameService = gameService;
         _hubContext = hubContext;
         _matchmakingService = matchmakingService;
-        _serviceProvider = serviceProvider;
-
+        _gamesService = gamesService;
         Reset();
 
         _timer.Elapsed += async (sender, args) => await OnTimedEvent(sender, args);
@@ -44,6 +43,8 @@ public class ChessTimer : GameTimer
         SecondsRemaining = _gameState.RemainingSecondsByUserNames[currentPlayerName];
         base.Reset();
     }
+
+    // BackgroundService
 
     private async Task OnTimedEvent(object? sender, ElapsedEventArgs args)
     {
@@ -118,8 +119,9 @@ public class ChessTimer : GameTimer
         {
             _matchmakingService.RemoveGameState(_gameState.GameId);
 
-            var gamesService = _serviceProvider.GetService<IGamesService>();
-            await gamesService!.SaveGameAsync(new SaveGameInputModel
+            // UserManager is Disposed
+            // Database service
+            await _gamesService!.SaveGameAsync(new SaveGameInputModel
             {
                 GameId = _gameState.GameId,
                 Players = _gameState.Players

@@ -10,7 +10,7 @@ export class WebRequestsService {
   readonly ROOT_URL;
 
   constructor(private http: HttpClient) {
-    this.ROOT_URL = AppConfig.ServerUrl + ":" + AppConfig.ServerPort;
+    this.ROOT_URL = AppConfig.ServerUrl + AppConfig.ServerPort;
   }
 
   get(url: string) {

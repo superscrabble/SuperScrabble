@@ -1,4 +1,5 @@
-﻿using SuperScrabble.Services.Game.Models;
+﻿using SuperScrabble.Services.Data.Games;
+using SuperScrabble.Services.Game.Models;
 
 namespace SuperScrabble.WebApi.Timers;
 
@@ -7,10 +8,14 @@ public class TimerManager
     private static readonly Dictionary<string, GameTimer> gameTimersByGameIds = new();
 
     private readonly IServiceProvider _serviceProvider;
+    private readonly IGamesService _gamesService;
 
-    public TimerManager(IServiceProvider serviceProvider)
+    public TimerManager(
+        IServiceProvider serviceProvider,
+        IGamesService gamesService)
     {
         _serviceProvider = serviceProvider;
+        _gamesService = gamesService;
     }
 
     public void AttachTimerToGameState(GameTimer timer, string gameId)
@@ -42,7 +47,7 @@ public class TimerManager
         }
         else
         {
-            return ActivatorUtilities.CreateInstance<ChessTimer>(_serviceProvider, gameState, _serviceProvider);
+            return ActivatorUtilities.CreateInstance<ChessTimer>(_serviceProvider, gameState, _gamesService);
         }
     }
 }

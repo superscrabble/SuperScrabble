@@ -43,7 +43,7 @@ export class SignalrService {
     }
 
     this.hubConnection = new signalR.HubConnectionBuilder()
-                            .withUrl(AppConfig.ServerUrl + ':' + AppConfig.ServerPort + '/gamehub',
+                            .withUrl(AppConfig.ServerUrl + AppConfig.ServerPort + '/gamehub',
                             { accessTokenFactory: () => this.utilities.getAccessToken()})
                             .configureLogging(signalR.LogLevel.Critical)
                             .configureLogging(new CustomLogger(this.errorHandler))

@@ -46,6 +46,8 @@ builder.Services.AddSignalR();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// builder.Services.AddHostedService<GameBackgroundService>();
+
 builder.Services
         .AddAuthentication(CertificateAuthenticationDefaults.AuthenticationScheme)
         .AddCertificate();
@@ -60,19 +62,24 @@ builder.Services.AddTransient<IEncryptionKeyProvider, InMemoryEncryptionKeyProvi
 builder.Services.AddTransient<IInvitationCodeGenerator, InvitationCodeGenerator>();
 
 // Services.Data
-builder.Services.AddTransient<IUsersService, UsersService>();
-builder.Services.AddTransient<IWordsService, WordsService>();
+builder.Services.AddScoped<IUsersService, UsersService>();
+builder.Services.AddScoped<IWordsService, WordsService>();
 
 // Services.Game
-builder.Services.AddTransient<TimerManager>();
-builder.Services.AddTransient<IGameValidator, GameValidator>();
-builder.Services.AddTransient<IGameplayConstantsProvider, GameplayConstantsProvider>();
-builder.Services.AddTransient<ITilesProvider, StandardTilesProvider>();
-builder.Services.AddTransient<IMatchmakingService, MatchmakingService>();
-builder.Services.AddTransient<IGameService, GameService>();
-builder.Services.AddTransient<IGameStateFactory, GameStateFactory>();
-builder.Services.AddTransient<IScoringService, ScoringService>();
-builder.Services.AddTransient<IGamesService, GamesService>();
+builder.Services.AddScoped<TimerManager>();
+builder.Services.AddScoped<IGameValidator, GameValidator>();
+builder.Services.AddScoped<IGameplayConstantsProvider, GameplayConstantsProvider>();
+builder.Services.AddScoped<ITilesProvider, StandardTilesProvider>();
+builder.Services.AddScoped<IMatchmakingService, MatchmakingService>();
+builder.Services.AddScoped<IGameService, GameService>();
+builder.Services.AddScoped<IGameStateFactory, GameStateFactory>();
+builder.Services.AddScoped<IScoringService, ScoringService>();
+builder.Services.AddScoped<IGamesService, GamesService>();
+
+//builder.Services.AddSpaStaticFiles(options =>
+//{
+//    options.RootPath = "ClientApp/dist";
+//});
 
 var app = builder.Build();
 
@@ -90,6 +97,12 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
+
+if (!app.Environment.IsDevelopment())
+{
+    app.UseSpaStaticFiles();
+}
 
 app.UseRouting();
 
@@ -105,6 +118,11 @@ app.UseEndpoints(endpoints =>
     endpoints.MapControllers();
     endpoints.MapHub<GameHub>("/gamehub");
 });
+
+//app.UseSpa(options =>
+//{
+//    options.Options.SourcePath = "ClientApp";
+//});
 
 app.Run();
 
@@ -130,6 +148,8 @@ static void AddIdentityOptions(IServiceCollection services)
         .AddEntityFrameworkStores<AppDbContext>()
         .AddDefaultTokenProviders();
 }
+
+// Backend publish in the same folder put /dist (angular)
 
 static void AddCors(IServiceCollection services)
 {
