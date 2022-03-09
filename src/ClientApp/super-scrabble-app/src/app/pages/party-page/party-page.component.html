@@ -1,7 +1,7 @@
 <div class="d-flex flex-column justify-content-center align-items-center">
     <h1 class="my-3">{{partyTypeText}}</h1>
     <div class="d-flex flex-row my-2 alert alert-warning">
-        <h1>{{codeLabelText}} {{partyData.invitationCode}}</h1>
+        <h2>{{codeLabelText}} {{partyData.invitationCode}}</h2>
         <span [cdkCopyToClipboard]="partyData.invitationCode"
             matTooltip={{copyBtnText}}
             [matTooltipPosition]="'right'"
