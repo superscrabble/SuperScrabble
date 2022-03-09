@@ -479,7 +479,7 @@ export class GameComponent implements OnInit {
 
     loadMockLogs() {
         for(let i = 0; i < 10; i++) {
-            this.gameLogs.push(new Action("Иван написа ", "здраве"));
+            this.gameLogs.push(new Action("Иван написа ", "ЗДРАВЕ"));
         }
     }
 
