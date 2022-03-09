@@ -83,7 +83,7 @@ export class GameSummaryComponent implements OnInit {
       case("Win"): {
         return this.summaryWinText;
       }
-      case("Defeat"): {
+      case("Loss"): {
         return this.summaryDefeatText;
       }
       case("Draw"): {
