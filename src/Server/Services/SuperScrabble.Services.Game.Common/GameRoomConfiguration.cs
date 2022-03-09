@@ -18,6 +18,6 @@
 
         public TimerType TimerType { get; set; }
 
-        //GameMode = Classic, MadBoards, 
+        public GameMode GameMode { get; set; }
     }
 }

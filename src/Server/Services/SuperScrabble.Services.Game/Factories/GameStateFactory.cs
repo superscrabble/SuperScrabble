@@ -46,6 +46,7 @@
                 }
             }
 
+            gameState.GameMode = config.GameMode;
             return gameState;
         }
 
@@ -58,6 +59,7 @@
                 TeamsCount = gameMode.GetTeamsCount(),
                 TimerType = TimerType.Standard,
                 TimerDifficulty = TimerDifficulty.Normal,
+                GameMode = gameMode,
             };
 
             if (gameMode == GameMode.Duo)
@@ -76,7 +78,7 @@
 
                 foreach (Member member in wt.Members)
                 {
-                    team.AddPlayer(member.UserName, member.ConnectionId);
+                    team.AddPlayer(member.UserName, member.ConnectionId!);
                 }
 
                 return team;

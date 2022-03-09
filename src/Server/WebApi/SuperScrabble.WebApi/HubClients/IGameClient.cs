@@ -19,7 +19,7 @@ public interface IGameClient
 
     Task ReceivePartyData(FriendPartyViewModel viewModel);
 
-    Task UserAlreadyInsideGame(string gameId);
+    Task UserAlreadyInsideGame(dynamic payload);
 
     Task StartGame(string gameId);
 

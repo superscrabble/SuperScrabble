@@ -72,6 +72,9 @@ public class StandardTimer : GameTimer
             return;
         }
 
+        // AFK procedure
+        _gameState.CurrentTeam.CurrentPlayer.ConsecutiveSkipsCount++;
+
         _gameState.NextTeam();
 
         foreach (Player player in _gameState.Players)

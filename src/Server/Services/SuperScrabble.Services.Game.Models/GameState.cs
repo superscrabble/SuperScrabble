@@ -1,5 +1,6 @@
 ﻿namespace SuperScrabble.Services.Game.Models;
 
+using SuperScrabble.Services.Game.Common.Enums;
 using SuperScrabble.Services.Game.Common.GameplayConstantsProviders;
 
 using SuperScrabble.Services.Game.Models.Bags;
@@ -39,6 +40,8 @@ public class GameState
     public int TeamIndex { get; private set; }
 
     public bool IsGameOver { get; private set; }
+
+    public GameMode GameMode { get; set; }
 
     public IReadOnlyCollection<Team> Teams => _teams.AsReadOnly();
 

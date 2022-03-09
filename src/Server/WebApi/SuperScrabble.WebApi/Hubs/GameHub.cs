@@ -62,7 +62,11 @@ public class GameHub : Hub<IGameClient>
                 player.ConnectionId = ConnectionId;
             }
 
-            await Clients.Caller.UserAlreadyInsideGame(gameState.GameId);
+            await Clients.Caller.UserAlreadyInsideGame(new
+            {
+                GameId = gameState.GameId,
+                GameMode = (int)gameState.GameMode,
+            });
         }
         else if (_matchmakingService.IsUserInsideAnyParty(UserName))
         {
