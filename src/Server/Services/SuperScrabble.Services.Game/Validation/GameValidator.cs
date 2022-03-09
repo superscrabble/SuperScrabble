@@ -11,6 +11,7 @@
 
     using SuperScrabble.Services.Game.Models;
     using SuperScrabble.Services.Game.Models.Boards;
+    using System.Diagnostics.CodeAnalysis;
 
     public class GameValidator : IGameValidator
     {
@@ -122,16 +123,9 @@
 
         public void DoInputTilesHaveDuplicatePositions(IEnumerable<Position> inputTilesPositions)
         {
-            var uniqueRows = inputTilesPositions.Select(pos => pos.Row).Distinct();
-            var uniqueColumns = inputTilesPositions.Select(pos => pos.Column).Distinct();
+            var uniquePositions = inputTilesPositions.Distinct(new PositionComparer());
 
-            bool hasDuplicateHorizontalPositions = uniqueRows.Count() == 1
-                && uniqueColumns.Count() != inputTilesPositions.Count();
-
-            bool hasDuplicateVerticalPositions = uniqueColumns.Count() == 1
-                && uniqueRows.Count() != inputTilesPositions.Count();
-
-            if (hasDuplicateHorizontalPositions || hasDuplicateVerticalPositions)
+            if (uniquePositions.Count() != inputTilesPositions.Count())
             {
                 throw new InputTilesPositionsCollideException();
             }
