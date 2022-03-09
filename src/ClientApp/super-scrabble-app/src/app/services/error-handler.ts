@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
+import { LoadingScreenService } from './loading-screen.service';
 
 @Injectable({
     providedIn: 'root'
 })
 export class ErrorHandler {
 
-    constructor(private router: Router, private toastr: ToastrService) {}
+    constructor(private router: Router, private toastr: ToastrService, private loadingScreenService: LoadingScreenService) {}
 
     handle(error: number) {
         if(error == 401) {
@@ -22,6 +23,7 @@ export class ErrorHandler {
                 tapToDismiss: true,
             });
             this.router.navigateByUrl("/login");
+            this.loadingScreenService.stopShowingLoadingScreen();
         }
         else if(error == 404) {
             this.router.navigateByUrl("/notfound");
