@@ -28,8 +28,15 @@
   }
   
   .flip-card-front {
-    background-color: #bbb;
+    /* background-color: #536DFE; */
+    background-color: #8BC34A;
+    /* background-color: #AFB42B; */
+    /* background-color: #448AFF; */
+    /* background-color: #4CAF50; */
+    /* background-color: #bbb; */
     color: black;
+    font-size: 1.7rem;
+    font-family: ADYS-Bold, sans-serif !important;
   }
   
   .flip-card-back {

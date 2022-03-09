@@ -11,10 +11,10 @@
         (click)="flip('card' + cardIndex)"
         id="card{{cardIndex}}">
         <div class="flip-card-inner">
-            <div class="flip-card-front d-flex align-items-center justify-content-center">
+            <div class="flip-card-front d-flex align-items-center justify-content-center rounded">
                 {{gameMode.name}}
             </div>
-            <div class="flip-card-back d-flex flex-column align-items-center justify-content-center">
+            <div class="flip-card-back d-flex flex-column align-items-center justify-content-center rounded">
                 <div class="mb-2">
                     {{gameMode.description}}
                 </div>
