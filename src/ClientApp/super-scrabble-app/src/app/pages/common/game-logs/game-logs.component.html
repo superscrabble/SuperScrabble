@@ -1,14 +1,14 @@
 <div class="logs">
     <div class="card border border-dark rounded" style="width: 100%;">
-        <div class="card-body">
+        <div style="color: white; background-color: black; padding-top: 1rem;" > <!-- class="card-body" -->
             <h1 class="logs-title card-title text-center"><b>{{gameLogsLabel}}</b></h1>
         </div>
-        <ul style="max-height: 20vh;" class="logs-history-group list-group list-group-flush">
+        <ul style="max-height: 20vh;" class="logs-history-group list-group list-group-flush striped-list">
             <li class="log list-group-item"
                 *ngFor="let gameLog of gameLogs">
                 <div class="d-flex flex-row flex-wrap">
                     <p>
-                        {{gameLog.text}} <b class="text-secondary"
+                        {{gameLog.text}} <b style="cursor: pointer;"
                         (click)="showWordMeaningOf(gameLog.word)">{{gameLog.word}}</b>
                     </p>
                 </div>

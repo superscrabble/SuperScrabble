@@ -1,12 +1,12 @@
 .logs {
     width: 100%;
     height: 100%;
-    background-color: #52B788;
+    /* background-color: #52B788; */
 }
 
-.logs-title {
+/* .logs-title {
     background-color: #52B788;
-}
+} */
 
 .card-body {
     background-color: #52B788;
@@ -19,5 +19,31 @@
 }
 
 .log {
-    background-color: #52B788;
+    /* background-color: #52B788; */
+    background-color: #7EC9AB;
+    font-size: 1.1rem;
+}
+
+ul.striped-list > li:nth-of-type(odd) {
+    background-color: #A9DBC6 ;
+}
+
+/* width */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: #f1f1f1; 
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #888; 
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #555; 
 }
