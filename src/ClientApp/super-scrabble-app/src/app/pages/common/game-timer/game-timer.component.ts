@@ -65,14 +65,15 @@ export class GameTimerComponent implements OnInit, OnChanges {
 
     if(changes['time'].isFirstChange()) {
       //console.log("First Change " + changes['time'].currentValue + " " + changes['time'].previousValue)
-      this.timePassed = 0;
-      this.timeLeft = changes['time'].currentValue;
-      this.timerMaxSeconds = changes['time'].currentValue;
+      //this.timePassed = 0;
+      //this.timeLeft = changes['time'].currentValue;
+      //this.timerMaxSeconds = changes['time'].currentValue;
     }
 
     if(Math.abs(changes['time'].currentValue - changes['time'].previousValue) > 1) {
       if(this.timerMaxSeconds == changes['time'].currentValue) {
         this.timePassed = 0;
+        this.remainingPathColor = this.COLOR_CODES.info.color;
       } else {
         this.timePassed = this.timerMaxSeconds - changes['time'].currentValue;
       }
@@ -144,6 +145,8 @@ export class GameTimerComponent implements OnInit, OnChanges {
       // document
       //   .getElementById("base-timer-path-remaining")
       //   .classList.add(warning.color);
+    } else {
+      this.remainingPathColor = info.color;
     }
   }
 
