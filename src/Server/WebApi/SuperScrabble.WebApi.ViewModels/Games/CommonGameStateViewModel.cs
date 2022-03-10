@@ -1,4 +1,6 @@
-﻿namespace SuperScrabble.WebApi.ViewModels.Games
+﻿using SuperScrabble.Services.Game.Common;
+
+namespace SuperScrabble.WebApi.ViewModels.Games
 {
     public class CommonGameStateViewModel
     {
@@ -19,5 +21,7 @@
         public bool IsGameOver { get; set; }
 
         public int MaxTimerSeconds { get; set; }
+
+        public IEnumerable<GameHistoryLog> Logs { get; set; } = default!;
     }
 }
