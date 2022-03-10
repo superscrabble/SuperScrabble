@@ -1,5 +1,6 @@
 ﻿namespace SuperScrabble.Services.Game.Models;
 
+using SuperScrabble.Services.Game.Common;
 using SuperScrabble.Services.Game.Common.Enums;
 using SuperScrabble.Services.Game.Common.GameplayConstantsProviders;
 
@@ -9,6 +10,7 @@ using SuperScrabble.Services.Game.Models.Boards;
 public class GameState
 {
     private readonly List<Team> _teams = new();
+    private readonly List<GameHistoryLog> _historyLogs = new();
 
     public GameState(
         IBag bag,
@@ -30,6 +32,8 @@ public class GameState
     public Dictionary<string, int> RemainingSecondsByUserNames { get; } = new();
 
     public IGameplayConstantsProvider GameplayConstants { get; set; }
+
+    public IReadOnlyCollection<GameHistoryLog> HistoryLogs => _historyLogs.AsReadOnly();
 
     public IBag Bag { get; }
 
@@ -58,6 +62,11 @@ public class GameState
     public void EndGame()
     {
         IsGameOver = true;
+    }
+
+    public void AddHistoryLog(GameHistoryLog historyLog)
+    {
+        _historyLogs.Add(historyLog);
     }
 
     public void EndGameIfRoomIsEmptyOrAllPlayersHaveRunOutOfTime()

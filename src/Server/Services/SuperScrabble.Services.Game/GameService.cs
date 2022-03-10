@@ -5,6 +5,7 @@
     using SuperScrabble.Common.Exceptions.Game;
 
     using SuperScrabble.Services.Game.Common;
+    using SuperScrabble.Services.Game.Common.Enums;
     using SuperScrabble.Services.Game.Models;
     using SuperScrabble.Services.Game.Models.Boards;
     using SuperScrabble.Services.Game.Scoring;
@@ -62,6 +63,7 @@
                 PlayerOnTurnUserName = gameState.CurrentTeam.CurrentPlayer.UserName,
                 MaxTimerSeconds = gameState.GameplayConstants.GameTimerSeconds,
                 UserNamesOfPlayersWhoHaveLeftTheGame = gameState.GetUserNamesOfPlayersWhoHaveLeftTheGame(),
+                Logs = gameState.HistoryLogs,
                 RemainingSecondsByUserNames = gameState.RemainingSecondsByUserNames.Count > 0
                     ? gameState.RemainingSecondsByUserNames : null,
             };
@@ -168,7 +170,9 @@
                 var wordBuilders = GetAllNewWords(
                     board, sortedPositionsByTiles, areTilesAllignedVertically, goesThroughCenter);
 
-                this.gameValidator.ValidateWhetherWordsExist(wordBuilders.Select(wb => wb.ToString()));
+                var words = wordBuilders.Select(wb => wb.ToString());
+
+                this.gameValidator.ValidateWhetherWordsExist(words);
 
                 author.RemoveTiles(inputTiles);
 
@@ -181,6 +185,13 @@
                 }
 
                 author.Points += newPoints;
+
+                gameState.AddHistoryLog(new GameHistoryLog
+                {
+                    Status = HistoryLogStatus.WriteWord,
+                    UserName = author.UserName,
+                    NewlyWrittenWords = words
+                });
 
                 if (author.Tiles.Count <= 0 && gameState.TilesCount <= 0)
                 {
@@ -243,6 +254,13 @@
 
                 gameState.CurrentTeam.NextPlayer();
 
+                gameState.AddHistoryLog(new GameHistoryLog
+                {
+                    Status = HistoryLogStatus.ChangeTiles,
+                    UserName = exchanger.UserName,
+                    ChangedTilesCount = newTiles.Count()
+                });
+
                 if (gameState.CurrentTeam.IsTurnFinished)
                 {
                     gameState.CurrentTeam.ResetConsecutiveSkipsCount();
@@ -273,6 +291,12 @@
                     .SelectMany(team => team.Players)
                     .All(p => p.ConsecutiveSkipsCount >= gameState
                         .GameplayConstants.MinSkipsCountForEachPlayerToEndTheGame);
+
+                gameState.AddHistoryLog(new GameHistoryLog
+                {
+                    Status = HistoryLogStatus.Skip,
+                    UserName = player.UserName
+                });
 
                 if (isGameOver)
                 {

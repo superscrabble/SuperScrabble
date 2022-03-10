@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.SignalR;
 using SuperScrabble.Common.Exceptions.Matchmaking;
 using SuperScrabble.Services.Data.Games;
 using SuperScrabble.Services.Game;
+using SuperScrabble.Services.Game.Common;
 using SuperScrabble.Services.Game.Common.Enums;
 using SuperScrabble.Services.Game.Common.TilesProviders;
 using SuperScrabble.Services.Game.Matchmaking;
@@ -120,6 +121,12 @@ public class GameHub : Hub<IGameClient>
         }
 
         gameState.GetPlayer(UserName)!.LeaveGame();
+        gameState.AddHistoryLog(new GameHistoryLog
+        {
+            Status = HistoryLogStatus.WriteWord,
+            UserName = UserName,
+        });
+        
         gameState.EndGameIfRoomIsEmptyOrAllPlayersHaveRunOutOfTime();
         gameState.CurrentTeam.NextPlayer();
 
