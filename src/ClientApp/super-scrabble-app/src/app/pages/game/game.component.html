@@ -51,10 +51,17 @@
             <div *ngIf="!isCurrentPlayerOnTurn()" class="on-turn-message mb-3">
                 На ред е {{playerNameOnTurn}}
             </div>
-            <div class="remaining-time">
+            <!-- <div class="remaining-time">
                 {{gameTimeAsString}}
-            </div>
+            </div> -->
+            <app-game-timer
+                [time]="turnRemainingTime"
+                [isNewGame]="isNewGame"
+                style="height: 150px; width: 150px;"
+                class="d-flex align-self-center"
+            ></app-game-timer>
         </div>
+        
         <!--<app-word-info
             class="mx-3">           
         </app-word-info>-->

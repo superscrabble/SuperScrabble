@@ -75,6 +75,8 @@ export class GameComponent implements OnInit {
     playerOnTurn: Player = new Player("", 0);
     //@ViewChild('boardComponent', {static: false}) boardComponent: GameboardComponent | undefined;
 
+    isNewGame: boolean = false;
+
     leaveGameBtnLabel: string = "";
     skipTurnBtnLabel: string = "";
     changeLetterBtnLabel: string = "";
@@ -108,6 +110,8 @@ export class GameComponent implements OnInit {
 
     ngOnInit(): void {
         //this.loadingScreenService.showLoadingScreen();
+        console.log("NEW GAME");
+        this.isNewGame = true;
         this.signalrService.startConnection();
 
         const url = window.location.href;
@@ -127,6 +131,8 @@ export class GameComponent implements OnInit {
                 this.signalrService.getAllWildcardOptions();
             })
         }
+
+        this.isNewGame = false;
 
         //this.loadCellViewDataByType();
         this.loadMockLogs();
@@ -248,6 +254,7 @@ export class GameComponent implements OnInit {
             let minutes: string = data.minutes.toString().padStart(maxLength, fillString);
             let seconds: string = data.seconds.toString().padStart(maxLength, fillString);
             this.gameTimeAsString = `${minutes}:${seconds}`;
+            this.turnRemainingTime = data.minutes * 60 + data.seconds;
             this.playerOnTurn.remainingSeconds = data.minutes * 60 + data.seconds;
         });
 
