@@ -41,5 +41,7 @@
         bool IsUserInsideAnyParty(string userName);
 
         Party? GetPartyByUserName(string userName);
+
+        IEnumerable<string> LeaveRoom(string userName);
     }
 }

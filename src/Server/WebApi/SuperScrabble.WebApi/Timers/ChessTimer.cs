@@ -121,11 +121,12 @@ public class ChessTimer : GameTimer
 
             // UserManager is Disposed
             // Database service
-            await _gamesService!.SaveGameAsync(new SaveGameInputModel
-            {
-                GameId = _gameState.GameId,
-                Players = _gameState.Players
-            });
+
+            // await _gamesService!.SaveGameAsync(new SaveGameInputModel
+            // {
+            //     GameId = _gameState.GameId,
+            //     Players = _gameState.Players
+            // });
 
             Dispose();
         }

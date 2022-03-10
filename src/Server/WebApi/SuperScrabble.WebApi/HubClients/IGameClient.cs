@@ -44,4 +44,8 @@ public interface IGameClient
     Task InvalidWriteWordInput(GameOperationResult result);
 
     Task UpdateGameTimer(UpdateGameTimerViewModel viewModel);
+
+    Task WaitingQueueJoined();
+
+    Task SearchingStopped();
 }
