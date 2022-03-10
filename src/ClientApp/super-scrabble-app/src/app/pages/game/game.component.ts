@@ -76,6 +76,7 @@ export class GameComponent implements OnInit {
     //@ViewChild('boardComponent', {static: false}) boardComponent: GameboardComponent | undefined;
 
     isNewGame: boolean = false;
+    timerMaxSeconds: number = 0;
 
     leaveGameBtnLabel: string = "";
     skipTurnBtnLabel: string = "";
@@ -198,6 +199,8 @@ export class GameComponent implements OnInit {
                     }
                 })
             })
+
+            this.timerMaxSeconds = data.commonGameState.maxTimerSeconds;
 
             if(data.commonGameState.remainingSecondsByUserNames) {
                 console.log("Seconds remaining")
