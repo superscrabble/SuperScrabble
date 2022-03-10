@@ -33,7 +33,7 @@
             <span *ngIf="isPartyOwner(member)" class="material-icons p-1">star</span>
         </div>
     </div>
-    <div class="col-12 d-flex flex-row justify-content-center my-2">
+    <div class="buttons col-12 d-flex flex-row justify-content-center my-2">
         <button class="col-4 col-md-2 btn btn-success" *ngIf="partyData.isOwner && isPartyReady" (click)="startGame()">{{startGameBtnText}}</button>
         <button class="col-4 col-md-2 btn btn-danger align-self-end" (click)="leaveParty()">{{leaveBtnText}}</button>
     </div>

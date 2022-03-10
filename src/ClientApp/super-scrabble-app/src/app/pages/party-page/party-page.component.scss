@@ -35,6 +35,10 @@
     color: white;
 }
 
+.buttons {
+    column-gap: 1rem;
+}
+
 @media only screen and (min-width: 992px) {
     .member-card {
         height: 300px;
