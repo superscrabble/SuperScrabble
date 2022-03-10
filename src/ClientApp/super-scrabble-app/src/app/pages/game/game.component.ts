@@ -21,6 +21,7 @@ import { Team } from 'src/app/models/team';
 import { Player } from 'src/app/models/player';
 import { LoadingScreenService } from 'src/app/services/loading-screen.service';
 import { AngularFireRemoteConfig } from '@angular/fire/compat/remote-config';
+import { Log } from 'src/app/common/enums/log';
 
 @Pipe({
     name: "formatTime"
@@ -71,12 +72,12 @@ export class GameComponent implements OnInit {
     userNamesOfPlayersWhoHaveLeftTheGame: string[] = [];
     turnRemainingTime: number = 100;
     gameTimeAsString: string = "01:30";
-    gameLogs: Action[] = [];
+    gameLogs: Log[] = [];
     playerOnTurn: Player = new Player("", 0);
     //@ViewChild('boardComponent', {static: false}) boardComponent: GameboardComponent | undefined;
 
     isNewGame: boolean = false;
-    timerMaxSeconds: number = 0;
+    timerMaxSeconds: number = 90;
 
     leaveGameBtnLabel: string = "";
     skipTurnBtnLabel: string = "";
@@ -201,6 +202,20 @@ export class GameComponent implements OnInit {
             })
 
             this.timerMaxSeconds = data.commonGameState.maxTimerSeconds;
+
+            if(data.commonGameState.logs) {
+                console.log("Server LOGS: ");
+                console.log(data.commonGameState.logs);
+                
+                this.gameLogs
+
+                let logs: Log[] = data.commonGameState.logs;
+                
+                this.gameLogs = data.commonGameState.logs;
+
+                console.log("MY LOGS: ");
+                console.log(logs);
+            }
 
             if(data.commonGameState.remainingSecondsByUserNames) {
                 console.log("Seconds remaining")
@@ -489,7 +504,7 @@ export class GameComponent implements OnInit {
 
     loadMockLogs() {
         for(let i = 0; i < 10; i++) {
-            this.gameLogs.push(new Action("Иван написа ", "ЗДРАВЕ"));
+            //this.gameLogs.push(new Action("Иван написа ", "ЗДРАВЕ"));
         }
     }
 

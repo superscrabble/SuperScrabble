@@ -8,8 +8,12 @@
                 *ngFor="let gameLog of gameLogs">
                 <div class="d-flex flex-row flex-wrap">
                     <p>
-                        {{gameLog.text}} <b style="cursor: pointer;"
-                        (click)="showWordMeaningOf(gameLog.word)">{{gameLog.word}}</b>
+                        {{gameLog.userName}} {{getTextByStatus(gameLog.status)}}
+                        <b *ngIf="isChangeTilesStatus(gameLog.status)">
+                            {{gameLog.changedTilesCount}}
+                        </b>
+                        <b *ngIf="isWriteWordStatus(gameLog.status)" style="cursor: pointer;"
+                        (click)="showWordMeaningOf('sa')">{{gameLog.newlyWrittenWords}}</b>
                     </p>
                 </div>
             </li>
