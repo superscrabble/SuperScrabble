@@ -19,6 +19,7 @@ export class GameLogsComponent implements OnInit {
   gameLogsSkipTurnText: string = "";
   gameLogsLeaveGameText: string = "";
   gameLogsChangeTilesText: string = "";
+  gameLogsNoLogsText: string = "";
 
   constructor(private remoteConfig: AngularFireRemoteConfig) {
     this.loadRemoteConfigTexts();
@@ -34,6 +35,7 @@ export class GameLogsComponent implements OnInit {
         this.gameLogsSkipTurnText = all["GameLogsSkipTurnText"].asString()!;
         this.gameLogsLeaveGameText = all["GameLogsLeaveGameText"].asString()!;
         this.gameLogsChangeTilesText = all["GameLogsChangeTilesText"].asString()!;
+        this.gameLogsNoLogsText = all["GameLogsNoLogsText"].asString()!;
       })
     })
   }
@@ -45,9 +47,11 @@ export class GameLogsComponent implements OnInit {
     this._showWordMeaningOf.emit(value);
   }
 
-  getTextByStatus(status: LogStatus) {
+  getTextByGameLog(log: Log) {
+    const status = log.status;
     switch(status) {
       case(LogStatus.WriteWord): {
+
         return this.gameLogsWriteWordText;
       }
       case(LogStatus.Leave): {
@@ -57,22 +61,21 @@ export class GameLogsComponent implements OnInit {
         return this.gameLogsSkipTurnText;
       }
       case(LogStatus.ChangeTiles): {
-        return this.gameLogsChangeTilesText;
+        let changedTilesCountAsText = log.changedTilesCount?.toString()!;
+        return this.gameLogsChangeTilesText.replace("{0}", changedTilesCountAsText);
       }
     }
   }
 
   isChangeTilesStatus(status: LogStatus) {
-    if(status == LogStatus.ChangeTiles) {
-      return true;
-    }
-    return false;
+    return status == LogStatus.ChangeTiles;
   }
 
   isWriteWordStatus(status: LogStatus) {
-    if(status == LogStatus.WriteWord) {
-      return true;
-    }
-    return false;
+    return status == LogStatus.WriteWord;
+  }
+
+  isLogListEmpty() {
+    return this.gameLogs.length == 0;
   }
 }

@@ -210,9 +210,9 @@ export class GameComponent implements OnInit {
                 this.gameLogs
 
                 let logs: Log[] = data.commonGameState.logs;
-                
-                this.gameLogs = data.commonGameState.logs;
-
+                // Game logs are reversed in order to show the latest ones on the list bottom
+                this.gameLogs = logs.reverse();
+                //GameLogsNoLogsText
                 console.log("MY LOGS: ");
                 console.log(logs);
             }

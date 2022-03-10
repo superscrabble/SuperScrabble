@@ -3,17 +3,23 @@
         <div style="color: white; background-color: black; padding-top: 1rem;" > <!-- class="card-body" -->
             <h1 class="logs-title card-title text-center"><b>{{gameLogsLabel}}</b></h1>
         </div>
-        <ul style="max-height: 20vh;" class="logs-history-group list-group list-group-flush striped-list">
+        <div *ngIf="isLogListEmpty()" class="log d-flex flex-row flex-wrap justify-content-center p-4">
+            <strong>{{gameLogsNoLogsText}}</strong>
+        </div>
+        <ul *ngIf="!isLogListEmpty()" style="max-height: 20vh; display: flex; flex-direction: column-reverse;" class="logs-history-group list-group list-group-flush striped-list">
             <li class="log list-group-item"
                 *ngFor="let gameLog of gameLogs">
                 <div class="d-flex flex-row flex-wrap">
                     <p>
-                        {{gameLog.userName}} {{getTextByStatus(gameLog.status)}}
-                        <b *ngIf="isChangeTilesStatus(gameLog.status)">
-                            {{gameLog.changedTilesCount}}
-                        </b>
-                        <b *ngIf="isWriteWordStatus(gameLog.status)" style="cursor: pointer;"
-                        (click)="showWordMeaningOf('sa')">{{gameLog.newlyWrittenWords}}</b>
+                        <strong>{{gameLog.userName}}</strong> {{getTextByGameLog(gameLog)}}
+                        <!-- <b *ngIf="isWriteWordStatus(gameLog.status)" style="cursor: pointer;">
+                            {{gameLog.newlyWrittenWords}}
+                        </b> -->
+                        <span *ngFor="let newWord of gameLog.newlyWrittenWords; let last = last">
+                            <strong>
+                                {{newWord}}<span *ngIf="!last">, </span>
+                            </strong>
+                        </span>
                     </p>
                 </div>
             </li>
