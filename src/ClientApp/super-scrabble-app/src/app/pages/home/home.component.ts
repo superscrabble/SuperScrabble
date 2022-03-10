@@ -172,8 +172,30 @@ export class HomeComponent implements OnInit {
             ]
           }
         ]
+
+        for(let i = 0; i < this.gameModes.length % 3; i++) {
+          this.gameModes.push({
+            name: "FillingCard",
+            description: "",
+            buttons: [
+              {
+                text: all["PlayBtnText"].asString()!,
+                action: () => {
+                  
+                }
+              }
+            ]
+          })
+        }
       })
     })
+  }
+
+  getClassNameByGameModeName(name: string) {
+    if(name == "FillingCard") {
+      return "invisible-card";
+    }
+    return "";
   }
 
   ngOnInit(): void {

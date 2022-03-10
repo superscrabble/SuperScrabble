@@ -51,8 +51,8 @@ export class PartyPageComponent implements OnInit {
     
     //this.partyData.invitationCode = "DSDS121"
     //this.partyData.members = ["Denis", "Gosho", "Misho", "Pesho"]
-    //this.partyData.members = ["Denis"]
-    //this.partyData.owner = "Denis";
+    this.partyData.members = ["Denis"]
+    this.partyData.owner = "Denis";
 
     /*this.matchProps = [
       {

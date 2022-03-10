@@ -1,6 +1,13 @@
 .page {
-    background-color: #1B4A4B;
+    /*background-color: #1B4A4B;*/
     overflow-x: clip;
+    /* background-image: linear-gradient(#795548, #5D4037); */
+    /* background-image: linear-gradient(#00796B, #5D4037); */
+    /* background-image: linear-gradient(#009688, #388E3C); */
+    /* background-image: linear-gradient(#795548, #5D4037); */
+    /* background-image: linear-gradient(#009688, #61be65); */
+    /* background-image: repeating-linear-gradient(90deg, #795548, #795548 75px, #5D4037 75px, #5D4037 150px); */
+    background-image: repeating-linear-gradient(90deg, #795548, #795548 50px, #5D4037 50px, #5D4037 100px);
 }
 
 .board-cell {
@@ -201,7 +208,8 @@ TODO: implement this one
 }
 
 .on-turn-message {
-    color: #D9EFFC;
+    /* color: #D9EFFC; */
+    color: black;
     font-size: 2rem;
     text-align: center;
     overflow-wrap: break-word;
@@ -209,9 +217,17 @@ TODO: implement this one
 }
 
 .remaining-time {
-    color: #D9EFFC;
+    /* color: #D9EFFC; */
+    color: black;
     font-size: 2rem;
     text-align: center;
     overflow-wrap: break-word;
     line-height: 2.2rem;
+}
+
+.turn-info {
+    background-color: #A9DBC6;
+    color: black;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
 }

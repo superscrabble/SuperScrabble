@@ -8,6 +8,7 @@ import { PartyType } from '../common/enums/party-type';
 import { MatchProps } from '../models/game-configuaration/match-props';
 import { Tile } from '../models/tile';
 import { ErrorHandler } from './error-handler'
+import { LoadingScreenService } from './loading-screen.service';
 
 class CustomLogger implements signalR.ILogger {
   constructor(private errorHandler: ErrorHandler) {}
@@ -31,7 +32,7 @@ class CustomLogger implements signalR.ILogger {
 })
 export class SignalrService {
 
-  constructor(private utilities: Utilities, private router: Router, private errorHandler: ErrorHandler) { }
+  constructor(private utilities: Utilities, private router: Router, private errorHandler: ErrorHandler, private loadingScreenService: LoadingScreenService) { }
 
   //FIXME: change the access modifier
   public hubConnection?: signalR.HubConnection;
@@ -49,7 +50,9 @@ export class SignalrService {
                             .configureLogging(new CustomLogger(this.errorHandler))
                             .build();
 
-    this.hubConnectionStartPromise = this.hubConnection.start().then(() => {}, (err) => {
+    this.hubConnectionStartPromise = this.hubConnection.start().then(() => {
+      this.loadingScreenService.stopShowingLoadingScreen();
+    }, (err) => {
       console.log('ERROR IN CATCH: ' + err);      
     });
 
@@ -171,6 +174,11 @@ export class SignalrService {
 
   public setFriendPartyConfiguration(config: any, partyId: string) {
     //TODO: set config type
-    this.hubConnection?.invoke("SetFriendPartyConfiguration", config, partyId);
+    if(this.hubConnection?.state == signalR.HubConnectionState.Connected) {
+      this.hubConnection?.invoke("SetFriendPartyConfiguration", config, partyId);
+    } else {
+      console.log("Disconnected");
+    }
+
   }
 }

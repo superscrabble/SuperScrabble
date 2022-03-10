@@ -4,6 +4,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    background-color: #8BC34A;
 }
 
 .member-cards {
@@ -26,6 +27,12 @@
 
 .copy-code-icon {
     cursor: pointer;
+}
+
+.btn-check:checked + .btn-warning {
+    background-color: green;
+    border-color: green;
+    color: white;
 }
 
 @media only screen and (min-width: 992px) {
