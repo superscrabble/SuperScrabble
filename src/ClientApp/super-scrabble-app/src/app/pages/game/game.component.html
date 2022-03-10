@@ -44,6 +44,11 @@
             [isDuoGame]="isDuoGame()"
             class="mx-3">
         </app-scoreboard>
+        <div class="ms-3 remaining-tiles rounded mx-3">
+            <span class="d-flex justify-content-center">
+                <span>Оставащи букви - <b>{{remainingTilesCount}}</b></span>
+            </span>
+        </div>
         <div class="turn-info mx-3 rounded d-flex flex-column">
             <div *ngIf="isCurrentPlayerOnTurn()" class="on-turn-message mb-3">
                 Ти си на ред
@@ -100,11 +105,6 @@
         </app-player-rack>
     </div>
     <div class="right-column col-lg-3 d-lg-flex d-md-none d-sm-none d-none order-lg-last">
-        <div class="ms-3">
-            <span class="alert alert-warning">
-                <span>Оставащи букви - <b>{{remainingTilesCount}}</b></span>
-            </span>
-        </div>
         <button class="btn btn-danger mx-3" (click)="leaveGame()">{{leaveGameBtnLabel}}</button>
         <div class="d-flex flex-column">
             <button class="btn btn-warning mb-3 mx-3" [disabled]="!isCurrentPlayerOnTurn()" (click)="skipTurn()">{{skipTurnBtnLabel}}</button>

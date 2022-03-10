@@ -231,3 +231,11 @@ TODO: implement this one
     padding-top: 1rem;
     padding-bottom: 1rem;
 }
+
+.remaining-tiles {
+    background-color: #A9DBC6;
+    color: black;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    font-size: 1rem;
+}
