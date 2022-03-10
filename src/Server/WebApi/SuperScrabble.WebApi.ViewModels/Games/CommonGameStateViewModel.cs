@@ -17,5 +17,7 @@
         public bool IsTileExchangePossible { get; set; }
 
         public bool IsGameOver { get; set; }
+
+        public int MaxTimerSeconds { get; set; }
     }
 }

@@ -60,9 +60,10 @@
                 IsGameOver = gameState.IsGameOver,
                 IsTileExchangePossible = gameState.IsTileExchangePossible,
                 PlayerOnTurnUserName = gameState.CurrentTeam.CurrentPlayer.UserName,
+                MaxTimerSeconds = gameState.GameplayConstants.GameTimerSeconds,
                 UserNamesOfPlayersWhoHaveLeftTheGame = gameState.GetUserNamesOfPlayersWhoHaveLeftTheGame(),
                 RemainingSecondsByUserNames = gameState.RemainingSecondsByUserNames.Count > 0
-                    ? gameState.RemainingSecondsByUserNames : null
+                    ? gameState.RemainingSecondsByUserNames : null,
             };
 
             return new PlayerGameStateViewModel

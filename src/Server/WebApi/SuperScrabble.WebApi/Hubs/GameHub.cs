@@ -1,7 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Threading.Tasks;
-
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 
 using SuperScrabble.Common.Exceptions.Matchmaking;
@@ -244,6 +241,7 @@ public class GameHub : Hub<IGameClient>
             IsOwner = party.Owner?.UserName == UserName,
             Members = party.Members.Select(mem => mem.UserName),
             PartyType = party is FriendParty ? PartyType.Friendly : PartyType.Duo,
+            IsPartyReady = party.HasEnoughPlayersToStartGame,
             ConfigSettings = new ConfigSetting[]
             {
                 CreateTimerTypeConfigSetting(selectedTimerType),

@@ -236,7 +236,7 @@ export class PartyPageComponent implements OnInit {
     this.partyData.members = rawServerData.members;
     this.partyData.partyType = rawServerData.partyType;
     this.partyData.configSettings = rawServerData.configSettings;
-
+    this.isPartyOwner = rawServerData.isPartyReady;
     this.partyTypeString = PartyType[this.partyData.partyType];
   }
 
