@@ -57,28 +57,34 @@
 }
 
 .basic-cell {
-    background-color: #52B788;
+    /* background-color: #009688; */
+    background-color: #52B788; /*#52B788;*/
 }
 
 .center-cell {
-    background-color: #FA9789;
+    background-color: #FA9789; /*#FA9789;*/
 }
 
 .x2-letter-cell {
+    /* background-color: #B3E5FC; #61C7FA; */
     background-color: #61C7FA;
 }
 
 .x3-letter-cell {
     color: white;
+    /* background-color: #0288D1; #0D6896; */
     background-color: #0D6896;
 }
 
 .x2-word-cell {
+    /* background-color: #FFCDD2; #FA9789; */
     background-color: #FA9789;
 }
 
 .x3-word-cell {
-    background-color: #F97362;
+    /* background-color: #D32F2F; #F97362; */
+    background-color: #F97362;  
+    color: white;
 }
 
 .selected-tile {
