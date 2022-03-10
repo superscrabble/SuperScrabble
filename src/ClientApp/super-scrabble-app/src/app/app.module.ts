@@ -53,6 +53,7 @@ import { tap } from 'rxjs/operators';
 import { filter, first, map, last, } from 'rxjs/operators';
 import { AngularFireRemoteConfig, AngularFireRemoteConfigModule, budget, DEFAULTS, filterFresh, scanToObject, SETTINGS } from '@angular/fire/compat/remote-config';
 import { AngularFireModule } from '@angular/fire/compat';
+import { GameTimerComponent } from './pages/common/game-timer/game-timer.component';
 
 @NgModule({
   declarations: [
@@ -85,6 +86,7 @@ import { AngularFireModule } from '@angular/fire/compat';
     MatchesDashboardComponent,
     MatchComponent,
     LoadingScreenComponent,
+    GameTimerComponent,
   ],
   imports: [
     CommonModule,
