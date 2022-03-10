@@ -126,7 +126,7 @@ public class GameHub : Hub<IGameClient>
             Status = HistoryLogStatus.WriteWord,
             UserName = UserName,
         });
-        
+
         gameState.EndGameIfRoomIsEmptyOrAllPlayersHaveRunOutOfTime();
         gameState.CurrentTeam.NextPlayer();
 
@@ -185,11 +185,21 @@ public class GameHub : Hub<IGameClient>
             {
                 await StartGameAsync();
             }
+            else
+            {
+                await Clients.Caller.WaitingQueueJoined();
+            }
         }
         catch (MatchmakingFailedException ex)
         {
             await SendErrorAsync(ex.ErrorCode);
         }
+    }
+
+    public async Task StopSearching()
+    {
+        var connectionIds = _matchmakingService.LeaveRoom(UserName);
+        await Clients.Clients(connectionIds).SearchingStopped();
     }
 
     public async Task JoinRandomDuo()
@@ -401,6 +411,7 @@ public class GameHub : Hub<IGameClient>
     {
         if (!_matchmakingService.IsUserInsideGame(UserName, gameId))
         {
+            //TODO: add and remove spectators
             return;
         }
 
@@ -476,7 +487,7 @@ public class GameHub : Hub<IGameClient>
         {
             var viewModel = _gameService.MapFromGameState(gameState, player.UserName);
             await Clients.Client(player.ConnectionId!).UpdateGameState(viewModel);
-            
+
             if (gameState.IsGameOver)
             {
                 _matchmakingService.RemoveUserFromGame(player.UserName);

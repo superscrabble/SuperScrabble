@@ -102,7 +102,7 @@ public class MatchmakingService : IMatchmakingService
             var teams = party.Members.Select(mem =>
             {
                 var team = new Team();
-                team.AddPlayer(mem.UserName, mem.ConnectionId);
+                team.AddPlayer(mem.UserName, mem.ConnectionId!);
                 return team;
             });
 
@@ -241,6 +241,29 @@ public class MatchmakingService : IMatchmakingService
         var joiner = new Member(joinerUserName, joinerConnectionId);
 
         AddToWaitingQueue(new WaitingTeam(new[] { joiner }), gameMode, out hasGameStarted);
+    }
+
+    // returns connection ids
+    public IEnumerable<string> LeaveRoom(string userName)
+    {
+        GameMode? nullableMode = waitingTeamsByGameModes.Keys
+            .FirstOrDefault(key => waitingTeamsByGameModes[key]
+            .Any(t => t.Members.Any(m => m.UserName == userName)));
+            
+
+        if (nullableMode == null)
+        {
+            return new List<string>();
+        }
+
+        GameMode mode = nullableMode.Value;
+
+        WaitingTeam team = waitingTeamsByGameModes[mode]
+            .FirstOrDefault(t => t.Members.Any(m => m.UserName == userName))!;
+
+        waitingTeamsByGameModes[mode].Remove(team);
+
+        return team.Members.Select(m => m.UserName);
     }
 
     public void JoinRandomDuoParty(
