@@ -84,6 +84,9 @@ export class GameComponent implements OnInit {
     changeLetterBtnLabel: string = "";
     changeLetterSecondBtnLabel: string = "";
     writeWordBtnLabel: string = "";
+    youAreOnTurnText: string = "";
+    onTurnIsText: string = "";
+    leftLettersText: string = "";
     
     constructor(
         private gameService: GameService,
@@ -106,6 +109,9 @@ export class GameComponent implements OnInit {
             this.changeLetterBtnLabel = all["ChangeLetterBtnLabel"].asString()!;
             this.changeLetterSecondBtnLabel = all["ChangeLetterSecondBtnLabel"].asString()!;
             this.writeWordBtnLabel = all["WriteWordBtnLabel"].asString()!;
+            this.youAreOnTurnText = all["YouAreOnTurnText"].asString()!;
+            this.onTurnIsText = all["OnTurnIsText"].asString()!;
+            this.leftLettersText = all["LeftLettersText"].asString()!;
             })
         })
     }

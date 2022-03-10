@@ -46,15 +46,15 @@
         </app-scoreboard>
         <div class="ms-3 remaining-tiles rounded mx-3">
             <span class="d-flex justify-content-center">
-                <span>Оставащи букви - <b>{{remainingTilesCount}}</b></span>
+                <span>{{leftLettersText}} - <b>{{remainingTilesCount}}</b></span>
             </span>
         </div>
         <div class="turn-info mx-3 rounded d-flex flex-column">
             <div *ngIf="isCurrentPlayerOnTurn()" class="on-turn-message mb-3">
-                Ти си на ред
+                {{youAreOnTurnText}}
             </div>
             <div *ngIf="!isCurrentPlayerOnTurn()" class="on-turn-message mb-3">
-                На ред е {{playerNameOnTurn}}
+                {{onTurnIsText}} {{playerNameOnTurn}}
             </div>
             <!-- <div class="remaining-time">
                 {{gameTimeAsString}}
