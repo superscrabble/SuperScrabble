@@ -132,7 +132,16 @@ export class GameboardComponent implements OnInit {
 
   cellTileDropped(dropped: CdkDragDrop<Tile>) {
     //For now this is the way to detect when out of the board
-    if(dropped.container) {
+    console.log("On cell dropped");
+    console.log(dropped.container);
+    console.log(dropped.container.id);
+
+    if(dropped.container.id == "playerTiles") {
+      this.removeTileFromBoard(dropped.item.data);
+      return;
+    }
+
+    if(!dropped.container) {
       this.addTileToPlayerTiles.emit(dropped.item.data);
       this.removeTileFromBoard(dropped.item.data);
     }
@@ -142,13 +151,17 @@ export class GameboardComponent implements OnInit {
     let cell = this.updatedBoardCells.find(x => x.cell.tile == tile)!.cell;
     cell.tile = null;
     this.removeCellFromUpdatedBoardCells(cell);
-    //this.updatedBoardCellsChange.next(this.updatedBoardCells);
+    this.updatedBoardCellsChange.next(this.updatedBoardCells);
   }
 
   swapTilesOnBoard(cell: Cell, otherCell: Cell) {
     let tempTile = cell.tile;
     cell.tile = otherCell.tile;
     otherCell.tile = tempTile;
+
+    console.log("SWAPPING: ");
+    console.log(cell);
+    console.log(otherCell);
 
     if(cell.tile == null) {
       this.removeCellFromUpdatedBoardCells(cell);  
@@ -160,6 +173,9 @@ export class GameboardComponent implements OnInit {
       this.removeCellFromUpdatedBoardCells(otherCell);
       this.addCellToUpdatedBoardCells(cell);
     }
+
+    console.log("After swapping");
+    console.log(this.updatedBoardCells);
   }
 
   drop(event: CdkDragDrop<Tile[]>) {
@@ -180,6 +196,10 @@ export class GameboardComponent implements OnInit {
         return;
       }
 
+      console.log("BEFORE SWAPPING")
+      console.log(inputTile);
+      console.log(this.updatedBoardCells)
+
       //swap board tiles
       if(this.isNewPlacedTile(inputTile)) {
         this.swapTilesOnBoard(boardCell, this.updatedBoardCells.find(x => x.cell.tile == inputTile)!.cell);
@@ -187,6 +207,8 @@ export class GameboardComponent implements OnInit {
         console.log(this.updatedBoardCells);
         return;
       }
+
+      console.log("AFTER SWAPPING")
 
       //swap the tile and the board tile
       if(boardCell.tile) {
@@ -199,9 +221,11 @@ export class GameboardComponent implements OnInit {
         return;
       }
 
+      console.log("FINAL PART")
+
       this.removeTileFromPlayerTiles.emit(inputTile);
       this.placeTileOnBoard(inputTile, row, column);
-      this.addCellToUpdatedBoardCells(boardCell);
+      //this.addCellToUpdatedBoardCells(boardCell);
   }
 
   getValueWhenEmptyByCellType(type: number) {
@@ -299,8 +323,12 @@ export class GameboardComponent implements OnInit {
 
   removeCellFromUpdatedBoardCells(cell: Cell) {
       if(cell) {
+        console.trace("HERE");
+        console.log("REMOVE CELL FROM UPDATED BOARD CELLS: ");
+        console.log(this.updatedBoardCells);
+        console.log(cell);
         this.updatedBoardCells = this.updatedBoardCells.filter(item => item.cell !== cell);
-        //this.updatedBoardCellsChange.next(this.updatedBoardCells);
+        this.updatedBoardCellsChange.next(this.updatedBoardCells);
       }
   }
 
@@ -312,7 +340,7 @@ export class GameboardComponent implements OnInit {
             }
         }
         this.saveUpdatedBoardCellWithPosition(cell);
-        //this.updatedBoardCellsChange.next(this.updatedBoardCells);
+        this.updatedBoardCellsChange.next(this.updatedBoardCells);
     }
   }
 
