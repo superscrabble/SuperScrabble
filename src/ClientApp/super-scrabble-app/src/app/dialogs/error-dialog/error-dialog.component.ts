@@ -17,6 +17,7 @@ export class ErrorDialogComponent implements OnInit {
   settingsTitle: string = "";
   errorDialogOkButton: string = "";
   unexistingWords: string = "";
+  errors: Map<string, string> = new Map();
 
   constructor(public dialogRef: MatDialogRef<ErrorDialogComponent>, 
     @Inject(MAT_DIALOG_DATA) public data: ErrorDialogData, private remoteConfig: AngularFireRemoteConfig) {
@@ -33,17 +34,23 @@ export class ErrorDialogComponent implements OnInit {
         //AppConfig.isRemoteConfigFetched = true;
         this.settingsTitle = all["SettingsTitle"].asString()!;
         this.errorDialogOkButton = all["ErrorDialogOkButton"].asString()!;
-        this.unexistingWords = all["UnexistingWords"].asString()!;
+
+        this.errors.set("UnexistingWords", all["UnexistingWords"].asString()!);
+        this.errors.set("InvalidInputTilesCount", all["InvalidInputTilesCount"].asString()!);
+        this.errors.set("FirstWordMustGoThroughTheBoardCenter", all["FirstWordMustGoThroughTheBoardCenter"].asString()!);
+        this.errors.set("GapsBetweenInputTilesNotAllowed", all["GapsBetweenInputTilesNotAllowed"].asString()!);
+        this.errors.set("ImpossibleTileExchange", all["ImpossibleTileExchange"].asString()!);
+        this.errors.set("InputTilesPositionsCollide", all["InputTilesPositionsCollide"].asString()!);
+        this.errors.set("NewTilesNotConnectedToTheOldOnes", all["NewTilesNotConnectedToTheOldOnes"].asString()!);
+        this.errors.set("TilePositionAlreadyTaken", all["TilePositionAlreadyTaken"].asString()!);
+        this.errors.set("TilesNotOnTheSameLine", all["TilesNotOnTheSameLine"].asString()!);
       })
     })
   }
 
   convertMessage(message: string) {
-    switch(message) {
-      case("UnexistingWords"): {
-        return this.unexistingWords;
-        break;
-      }
+    if(this.errors.has(message)) {
+      return this.errors.get(message);
     }
     return "";
   }
