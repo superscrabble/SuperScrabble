@@ -2,3 +2,8 @@
     max-width: 100vw;
     min-height: 10vh;
 }
+
+.logo {
+    width: auto;
+    height: 10vh;    
+}
