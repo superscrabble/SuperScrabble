@@ -14,7 +14,7 @@ export interface ErrorDialogData {
 })
 export class ErrorDialogComponent implements OnInit {
 
-  settingsTitle: string = "";
+  errorDialogTitle: string = "";
   errorDialogOkButton: string = "";
   unexistingWords: string = "";
   errors: Map<string, string> = new Map();
@@ -32,7 +32,7 @@ export class ErrorDialogComponent implements OnInit {
     this.remoteConfig.fetchAndActivate().then(hasActivatedTheFetch => {
       this.remoteConfig.getAll().then(all => {
         //AppConfig.isRemoteConfigFetched = true;
-        this.settingsTitle = all["SettingsTitle"].asString()!;
+        this.errorDialogTitle = all["ErrorDialogTitle"].asString()!;
         this.errorDialogOkButton = all["ErrorDialogOkButton"].asString()!;
 
         this.errors.set("UnexistingWords", all["UnexistingWords"].asString()!);
@@ -44,6 +44,7 @@ export class ErrorDialogComponent implements OnInit {
         this.errors.set("NewTilesNotConnectedToTheOldOnes", all["NewTilesNotConnectedToTheOldOnes"].asString()!);
         this.errors.set("TilePositionAlreadyTaken", all["TilePositionAlreadyTaken"].asString()!);
         this.errors.set("TilesNotOnTheSameLine", all["TilesNotOnTheSameLine"].asString()!);
+        this.errors.set("PlayerNotOnTurn", all["PlayerNotOnTurn"].asString()!);
       })
     })
   }
