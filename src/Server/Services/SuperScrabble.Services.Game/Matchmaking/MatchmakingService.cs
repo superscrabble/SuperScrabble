@@ -246,17 +246,14 @@ public class MatchmakingService : IMatchmakingService
     // returns connection ids
     public IEnumerable<string> LeaveRoom(string userName)
     {
-        GameMode? nullableMode = waitingTeamsByGameModes.Keys
+        GameMode mode = waitingTeamsByGameModes.Keys
             .FirstOrDefault(key => waitingTeamsByGameModes[key]
             .Any(t => t.Members.Any(m => m.UserName == userName)));
-            
 
-        if (nullableMode == null)
+        if (mode == default)
         {
             return new List<string>();
         }
-
-        GameMode mode = nullableMode.Value;
 
         WaitingTeam team = waitingTeamsByGameModes[mode]
             .FirstOrDefault(t => t.Members.Any(m => m.UserName == userName))!;

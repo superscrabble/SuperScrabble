@@ -76,10 +76,10 @@ builder.Services.AddScoped<IGameStateFactory, GameStateFactory>();
 builder.Services.AddScoped<IScoringService, ScoringService>();
 builder.Services.AddScoped<IGamesService, GamesService>();
 
-//builder.Services.AddSpaStaticFiles(options =>
-//{
-//    options.RootPath = "ClientApp/dist";
-//});
+builder.Services.AddSpaStaticFiles(options =>
+{
+    options.RootPath = "ClientApp/dist";
+});
 
 var app = builder.Build();
 
@@ -87,7 +87,10 @@ using (var serviceScope = app.Services.CreateScope())
 {
     AppDbContext dbContext = serviceScope.ServiceProvider.GetRequiredService<AppDbContext>();
     dbContext.Database.Migrate();
-    //new AppSeeder().SeedAsync(dbContext, serviceScope.ServiceProvider).GetAwaiter().GetResult();
+    if (!dbContext.Words.Any())
+    {
+        new AppSeeder().SeedAsync(dbContext, serviceScope.ServiceProvider).GetAwaiter().GetResult();
+    }
 }
 
 if (app.Environment.IsDevelopment())
@@ -119,10 +122,15 @@ app.UseEndpoints(endpoints =>
     endpoints.MapHub<GameHub>("/gamehub");
 });
 
-//app.UseSpa(options =>
+//if (!app.Environment.IsDevelopment())
 //{
-//    options.Options.SourcePath = "ClientApp";
-//});
+
+//}
+
+app.UseSpa(options =>
+{
+    options.Options.SourcePath = "ClientApp";
+});
 
 app.Run();
 
