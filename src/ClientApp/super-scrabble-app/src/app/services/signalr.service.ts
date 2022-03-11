@@ -3,9 +3,9 @@ import { Router } from '@angular/router';
 import * as signalR from "@microsoft/signalr";
 import { Utilities } from 'src/app/common/utilities';
 import { AppConfig } from '../app-config';
-import { GameMode } from '../common/enums/game-mode';
-import { PartyType } from '../common/enums/party-type';
-import { MatchProps } from '../models/game-configuaration/match-props';
+import { GameMode } from '../models/enums/game-mode';
+import { PartyType } from '../models/enums/party-type';
+//import { MatchProps } from '../models/game-configuaration/match-props';
 import { Tile } from '../models/tile';
 import { ErrorHandler } from './error-handler'
 import { LoadingScreenService } from './loading-screen.service';
@@ -96,13 +96,13 @@ export class SignalrService {
     }
   }
 
-  public joinRoomWithProps(props: MatchProps) {
+  /*public joinRoomWithProps(props: MatchProps) {
     if(this.hubConnection?.state == signalR.HubConnectionState.Connected) {
       console.log("Join room with props")
       console.log(props)
       this.hubConnection?.invoke("JoinRoom", props);
     }
-  }
+  }*/
 
   public leaveQueue() {
     console.log("Leave Room")

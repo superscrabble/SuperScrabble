@@ -8,20 +8,19 @@ import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { Action } from 'src/app/models/action';
 import { AppConfig } from 'src/app/app-config';
-import { ChangeWildcardDialogComponent } from '../common/dialogs/change-wildcard-dialog/change-wildcard-dialog.component';
-import { SettingsDialogComponent } from '../common/dialogs/settings-dialog/settings-dialog.component';
-import { LeaveGameDialogComponent } from '../common/dialogs/leave-game-dialog/leave-game-dialog.component';
-import { ErrorDialogComponent, ErrorDialogData } from '../common/dialogs/error-dialog/error-dialog.component';
-import { GameContentDialogComponent } from '../common/dialogs/game-content-dialog/game-content-dialog.component';
-import { ExchangeTilesDialogComponent } from '../common/dialogs/exchange-tiles-dialog/exchange-tiles-dialog.component';
+import { ChangeWildcardDialogComponent } from '../../dialogs/change-wildcard-dialog/change-wildcard-dialog.component';
+import { SettingsDialogComponent } from '../../dialogs/settings-dialog/settings-dialog.component';
+import { LeaveGameDialogComponent } from '../../dialogs/leave-game-dialog/leave-game-dialog.component';
+import { ErrorDialogComponent, ErrorDialogData } from '../../dialogs/error-dialog/error-dialog.component';
+import { GameContentDialogComponent } from '../../dialogs/game-content-dialog/game-content-dialog.component';
+import { ExchangeTilesDialogComponent } from '../../dialogs/exchange-tiles-dialog/exchange-tiles-dialog.component';
 import { GameService } from 'src/app/services/game.service';
 import { CdkDragDrop, CdkDragEnter, moveItemInArray, transferArrayItem } from "@angular/cdk/drag-drop";
-import { GameboardComponent } from '../common/gameboard/gameboard.component';
 import { Team } from 'src/app/models/team';
 import { Player } from 'src/app/models/player';
 import { LoadingScreenService } from 'src/app/services/loading-screen.service';
 import { AngularFireRemoteConfig } from '@angular/fire/compat/remote-config';
-import { Log } from 'src/app/common/enums/log';
+import { Log } from 'src/app/models/enums/log';
 
 @Pipe({
     name: "formatTime"

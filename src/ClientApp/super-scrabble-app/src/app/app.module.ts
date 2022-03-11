@@ -19,30 +19,26 @@ import { GameSummaryComponent } from './pages/game-summary/game-summary.componen
 import { MatDialogModule } from '@angular/material/dialog';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'; 
 import { CommonModule } from '@angular/common';
-import { ScoreboardComponent } from './pages/common/scoreboard/scoreboard.component';
-import { WordInfoComponent } from './pages/common/word-info/word-info.component';
-import { GameLogsComponent } from './pages/common/game-logs/game-logs.component';
-import { GameboardComponent } from './pages/common/gameboard/gameboard.component';
-import { ErrorDialogComponent } from './pages/common/dialogs/error-dialog/error-dialog.component';
-import { SettingsDialogComponent } from './pages/common/dialogs/settings-dialog/settings-dialog.component';
-import { ChangeWildcardDialogComponent } from './pages/common/dialogs/change-wildcard-dialog/change-wildcard-dialog.component';
-import { LeaveGameDialogComponent } from './pages/common/dialogs/leave-game-dialog/leave-game-dialog.component';
-import { GameContentDialogComponent } from './pages/common/dialogs/game-content-dialog/game-content-dialog.component';
-import { ExchangeTilesDialogComponent } from './pages/common/dialogs/exchange-tiles-dialog/exchange-tiles-dialog.component';
-import { ExchangeTilesComponent } from './pages/common/exchange-tiles/exchange-tiles.component';
-import { GameConfigurationComponent } from './pages/game-configuration/game-configuration/game-configuration.component';
-import { GameOptionComponent } from './pages/game-configuration/game-option/game-option.component';
-import { GameConfigurationMenuComponent } from './pages/game-configuration/game-configuration-menu/game-configuration-menu.component';
-import { GameInviteFriendsDialogComponent } from './pages/game-configuration/dialogs/game-invite-friends-dialog/game-invite-friends-dialog.component';
+import { ScoreboardComponent } from './common/scoreboard/scoreboard.component';
+import { WordInfoComponent } from './common/word-info/word-info.component';
+import { GameLogsComponent } from './common/game-logs/game-logs.component';
+import { GameboardComponent } from './common/gameboard/gameboard.component';
+import { ErrorDialogComponent } from './dialogs/error-dialog/error-dialog.component';
+import { SettingsDialogComponent } from './dialogs/settings-dialog/settings-dialog.component';
+import { ChangeWildcardDialogComponent } from './dialogs/change-wildcard-dialog/change-wildcard-dialog.component';
+import { LeaveGameDialogComponent } from './dialogs/leave-game-dialog/leave-game-dialog.component';
+import { GameContentDialogComponent } from './dialogs/game-content-dialog/game-content-dialog.component';
+import { ExchangeTilesDialogComponent } from './dialogs/exchange-tiles-dialog/exchange-tiles-dialog.component';
+import { ExchangeTilesComponent } from './common/exchange-tiles/exchange-tiles.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { ClipboardModule } from '@angular/cdk/clipboard';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { PlayerRackComponent } from './pages/common/player-rack/player-rack.component';
-import { JoinPartyWithCodeDialogComponent } from './pages/game-configuration/dialogs/join-party-with-code-dialog/join-party-with-code-dialog.component';
+import { PlayerRackComponent } from './common/player-rack/player-rack.component';
+import { JoinPartyWithCodeDialogComponent } from './dialogs/join-party-with-code-dialog/join-party-with-code-dialog.component';
 import { PartyPageComponent } from './pages/party-page/party-page.component';
-import { MatchesDashboardComponent } from './pages/common/matches-dashboard/matches-dashboard.component';
-import { MatchComponent } from './pages/common/match/match.component';
+import { MatchesDashboardComponent } from './common/matches-dashboard/matches-dashboard.component';
+import { MatchComponent } from './common/match/match.component';
 import { LoadingScreenComponent } from './pages/loading-screen/loading-screen.component';
 import { ToastrModule } from 'ngx-toastr';
 import { initializeApp,provideFirebaseApp } from '@angular/fire/app';
@@ -53,7 +49,7 @@ import { tap } from 'rxjs/operators';
 import { filter, first, map, last, } from 'rxjs/operators';
 import { AngularFireRemoteConfig, AngularFireRemoteConfigModule, budget, DEFAULTS, filterFresh, scanToObject, SETTINGS } from '@angular/fire/compat/remote-config';
 import { AngularFireModule } from '@angular/fire/compat';
-import { GameTimerComponent } from './pages/common/game-timer/game-timer.component';
+import { GameTimerComponent } from './common/game-timer/game-timer.component';
 
 @NgModule({
   declarations: [
@@ -76,10 +72,6 @@ import { GameTimerComponent } from './pages/common/game-timer/game-timer.compone
     GameContentDialogComponent,
     ExchangeTilesDialogComponent,
     ExchangeTilesComponent,
-    GameConfigurationMenuComponent,
-    GameConfigurationComponent,
-    GameOptionComponent,
-    GameInviteFriendsDialogComponent,
     PlayerRackComponent,
     JoinPartyWithCodeDialogComponent,
     PartyPageComponent,

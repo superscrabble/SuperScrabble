@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Inject, Input, OnInit, Output } from '@angular/core';
 import { AngularFireRemoteConfig } from '@angular/fire/compat/remote-config';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Log } from 'src/app/common/enums/log';
+import { Log } from 'src/app/models/enums/log';
 import { Action } from 'src/app/models/action';
 
 interface GameContentDialogData {

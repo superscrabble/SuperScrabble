@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { AngularFireRemoteConfig } from '@angular/fire/compat/remote-config';
-import { Log } from 'src/app/common/enums/log';
-import { LogStatus } from 'src/app/common/enums/log-status';
+import { Log } from 'src/app/models/enums/log';
+import { LogStatus } from 'src/app/models/enums/log-status';
 import { Action } from 'src/app/models/action';
 
 @Component({

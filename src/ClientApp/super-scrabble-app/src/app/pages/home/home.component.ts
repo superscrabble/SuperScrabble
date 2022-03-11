@@ -4,10 +4,10 @@ import { SignalrService } from 'src/app/services/signalr.service';
 import { HubConnectionState } from '@microsoft/signalr';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { JoinPartyWithCodeDialogComponent } from '../game-configuration/dialogs/join-party-with-code-dialog/join-party-with-code-dialog.component';
+import { JoinPartyWithCodeDialogComponent } from '../../dialogs/join-party-with-code-dialog/join-party-with-code-dialog.component';
 import { MatchmakingService } from 'src/app/services/matchmaking.service';
-import { PartyType } from 'src/app/common/enums/party-type';
-import { GameMode } from 'src/app/common/enums/game-mode';
+import { PartyType } from 'src/app/models/enums/party-type';
+import { GameMode } from 'src/app/models/enums/game-mode';
 import { LoadingScreenService } from 'src/app/services/loading-screen.service';
 import { AngularFireRemoteConfig } from '@angular/fire/compat/remote-config';
 
