@@ -1,4 +1,4 @@
-<h1 mat-dialog-title class="text">Избери буква</h1>
+<h1 mat-dialog-title class="text">{{changeWildcardTitle}}</h1>
 <div class="d-flex flex-wrap">
     <span
         *ngFor="let tile of tiles"
@@ -11,5 +11,5 @@
     </span>
 </div>
 <div mat-dialog-actions>
-    <button mat-button (click)="close()" [mat-dialog-close] class="btn btn-danger mt-4">Ок</button>
+    <button mat-button (click)="close()" [mat-dialog-close] class="btn btn-danger mt-4">{{changeWildcardOkButton}}</button>
 </div>

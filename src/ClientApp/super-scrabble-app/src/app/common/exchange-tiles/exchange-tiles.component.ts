@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { AngularFireRemoteConfig } from '@angular/fire/compat/remote-config';
 import { Tile } from 'src/app/models/tile';
 
 @Component({
@@ -11,10 +12,23 @@ export class ExchangeTilesComponent implements OnInit {
   @Input() playerTiles: Tile[] = [];
 
   selectedExchangeTiles: Tile[] = new Array();
+  changeLetterSecondBtnLabel: string = "";
 
-  constructor() { }
+  constructor(private remoteConfig: AngularFireRemoteConfig) {
+    this.loadRemoteConfigTexts();
+  }
 
   ngOnInit(): void {
+  }
+
+  private loadRemoteConfigTexts() {
+    //AppConfig.isRemoteConfigFetched = false;
+    this.remoteConfig.fetchAndActivate().then(hasActivatedTheFetch => {
+      this.remoteConfig.getAll().then(all => {
+        //AppConfig.isRemoteConfigFetched = true;
+        this.changeLetterSecondBtnLabel = all["ChangeLetterSecondBtnLabel"].asString()!;
+      })
+    })
   }
 
   getClassNameIfSelectedExchangeTile(tile: Tile) {
