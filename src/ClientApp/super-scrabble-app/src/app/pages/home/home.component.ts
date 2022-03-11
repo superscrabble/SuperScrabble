@@ -206,8 +206,6 @@ export class HomeComponent implements OnInit {
     this.signalrService.startConnection();
     this.signalrService.addStartGameListeners();
 
-    this.currentGameGroupName = "131";
-
     if(this.signalrService.hubConnection
       && this.signalrService.hubConnection.state == HubConnectionState.Connected) {
         this.attachListeners();
