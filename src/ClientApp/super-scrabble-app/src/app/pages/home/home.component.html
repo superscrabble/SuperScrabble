@@ -3,7 +3,7 @@
     <h2 class="text-center">{{chooseGamemodeMessageText}}</h2>
 </div>
 <div class="d-flex align-items-center justify-content-center my-3" *ngIf="currentGameGroupName">
-    <button class="py-2" (click)="redirectToCurrentGame()">Продължи твоята игра</button>
+    <button class="btn btn-danger py-2" (click)="redirectToCurrentGame()">{{continueYourGameText}}</button>
 </div>
 <div class="card-columns wrapped my-4">
     <div *ngFor="let gameMode of gameModes; let cardIndex = index"

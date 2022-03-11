@@ -42,6 +42,7 @@ export class HomeComponent implements OnInit {
 
   welcomeMessageText: string = "";
   chooseGamemodeMessageText: string = "";
+  continueYourGameText: string = "";
 
   constructor(private signalrService: SignalrService, private utilities: Utilities,
               private router: Router, private dialog: MatDialog, private matchmakingService: MatchmakingService,
@@ -92,6 +93,8 @@ export class HomeComponent implements OnInit {
         //AppConfig.isRemoteConfigFetched = true;
         this.welcomeMessageText = all["WelcomeMessage"].asString()!;
         this.chooseGamemodeMessageText = all["ChooseGamemodeMessage"].asString()!;
+        this.continueYourGameText = all["ContinueYourGameText"].asString()!;
+
         this.gameModes = [
           {
             name: all["DuelGamemodeLabel"].asString()!,
@@ -202,6 +205,8 @@ export class HomeComponent implements OnInit {
     this.loadingScreenService.showLoadingScreen();
     this.signalrService.startConnection();
     this.signalrService.addStartGameListeners();
+
+    this.currentGameGroupName = "131";
 
     if(this.signalrService.hubConnection
       && this.signalrService.hubConnection.state == HubConnectionState.Connected) {
