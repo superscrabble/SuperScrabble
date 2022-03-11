@@ -178,6 +178,18 @@ public class GameHub : Hub<IGameClient>
     {
         try
         {
+            if (_matchmakingService.IsUserInsideAnyGame(UserName))
+            {
+                return;
+            }
+
+            if (_matchmakingService.IsUserInsideAnyParty(UserName))
+            {
+                return;
+            }
+
+            await StopSearching();
+
             _matchmakingService.JoinRoom(
                 UserName, ConnectionId, gameMode, out bool hasGameStarted);
 
@@ -204,19 +216,48 @@ public class GameHub : Hub<IGameClient>
 
     public async Task JoinRandomDuo()
     {
-        _matchmakingService.JoinRandomDuoParty(
-            UserName, ConnectionId, out bool hasGameStarted);
-
-        if (hasGameStarted)
+        try
         {
-            await StartGameAsync();
+            if (_matchmakingService.IsUserInsideAnyGame(UserName))
+            {
+                return;
+            }
+
+            if (_matchmakingService.IsUserInsideAnyParty(UserName))
+            {
+                return;
+            }
+
+            _matchmakingService.JoinRandomDuoParty(
+                UserName, ConnectionId, out bool hasGameStarted);
+
+            if (hasGameStarted)
+            {
+                await StartGameAsync();
+            }
         }
+        catch (MatchmakingFailedException ex)
+        {
+            await SendErrorAsync(ex.ErrorCode);
+        }
+        
     }
 
     public async Task CreateParty(PartyType partyType)
     {
         try
         {
+
+            if (_matchmakingService.IsUserInsideAnyGame(UserName))
+            {
+                return;
+            }
+
+            if (_matchmakingService.IsUserInsideAnyParty(UserName))
+            {
+                return;
+            }
+
             string partyId = _matchmakingService
                 .CreateParty(UserName, ConnectionId, partyType);
 
@@ -407,7 +448,7 @@ public class GameHub : Hub<IGameClient>
         }
     }
 
-    public async Task LoadGame(string gameId)
+    public async Task LoadGame(string gameId) 
     {
         if (!_matchmakingService.IsUserInsideGame(UserName, gameId))
         {
@@ -425,7 +466,8 @@ public class GameHub : Hub<IGameClient>
         }
 
         var viewModel = _gameService.MapFromGameState(gameState, UserName);
-        await Clients.Client(ConnectionId).UpdateGameState(viewModel);
+        Console.WriteLine("LoadGame");
+        await Clients.Client(player.ConnectionId).UpdateGameState(viewModel);
     }
 
     private async Task SaveGameIfTheGameIsOverAsync()

@@ -4,8 +4,11 @@ namespace SuperScrabble.Data;
 
 public static class DatabaseConfig
 {
-    public static readonly string ConnectionString =
-        $"Server={ServerName};Database={SystemName};Integrated Security=True;";
+    public static string ConnectionString => !IsProduction
+        ? $"Server={ServerName};Database={SystemName};Integrated Security=True;"
+        : $"Server=my-server\\SQLEXPRESS;Database={SystemName};Integrated Security=True;";
+
+    public static bool IsProduction = false;
 
     public const string ServerName = ".\\SQLEXPRESS";
 }
