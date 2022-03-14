@@ -87,7 +87,7 @@ export class PlayerRackComponent implements OnInit {
       console.log("Inside")
       this.isInside = true;
       //event.container.element.nativeElement.classList.remove("d-none")
-      this.placeholderClass = "d-flex";
+      this.placeholderClass = "mx-2 border tile cursor-default rounded-1 p-2 text-center {{getClassOfTile(playerTile)}} d-flex";
       console.log(event.item.getPlaceholderElement())
       //document.querySelector('#tilePlaceholder')?.classList.remove('d-none');
       //document.querySelector('#tilePlaceholder')?.classList.add('d-flex');
@@ -97,13 +97,13 @@ export class PlayerRackComponent implements OnInit {
       //event.container.element.nativeElement.classList.add("d-none")
       //document.querySelector('#tilePlaceholder')?.classList.remove('d-flex');
       //document.querySelector('#tilePlaceholder')?.classList.add('d-none');
-      this.placeholderClass = "d-none";
+      this.placeholderClass = "mx-2 border tile cursor-default rounded-1 p-2 text-center {{getClassOfTile(playerTile)}} d-none";
     }
   }
 
   onDragDropped(event: CdkDragDrop<any>) {
     this.isInside = true;
-    this.placeholderClass = "d-flex";
+    this.placeholderClass = "mx-2 border tile cursor-default rounded-1 p-2 text-center {{getClassOfTile(playerTile)}} d-flex";
     console.log("Dropped")
     console.log(event.dropPoint)    
     //document.querySelector('#tilePlaceholder')?.classList.remove('d-none');
