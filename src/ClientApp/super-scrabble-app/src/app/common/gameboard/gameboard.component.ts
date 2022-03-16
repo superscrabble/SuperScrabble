@@ -5,6 +5,7 @@ import { Tile } from 'src/app/models/tile';
 import { AppConfig } from 'src/app/app-config';
 import { ViewportRuler } from '@angular/cdk/scrolling';
 import { CdkDragDrop, CdkDragEnter } from '@angular/cdk/drag-drop';
+import { AngularFireRemoteConfig } from '@angular/fire/compat/remote-config';
 
 @Component({
   selector: 'app-gameboard',
@@ -37,7 +38,7 @@ export class GameboardComponent implements OnInit {
 
   constructor(private viewportRuler: ViewportRuler, private ngZone: NgZone,
               private elementRef: ElementRef, private renderer: Renderer2,
-              private changeDetect: ChangeDetectorRef) {
+              private changeDetect: ChangeDetectorRef, private remoteConfig: AngularFireRemoteConfig) {
       this.loadCellViewDataByType();
       this.onSizeChange();
   }
@@ -96,6 +97,21 @@ export class GameboardComponent implements OnInit {
       [4, new CellViewData("x2-word-cell", "x2")],
       [5, new CellViewData("x3-word-cell", "x3")],
     ]);
+
+    this.loadCellHints();
+  }
+
+  loadCellHints() {
+    this.remoteConfig.fetchAndActivate().then(hasActivatedTheFetch => {
+      this.remoteConfig.getAll().then((all) => {
+        this.cellViewDataByType.get(0)!.hint = ""; //all["basicCellHint"].asString()!;
+        this.cellViewDataByType.get(1)!.hint = all["GameboardCenterCellHint"].asString()!;
+        this.cellViewDataByType.get(2)!.hint = all["GameboardX2LetterHint"].asString()!;
+        this.cellViewDataByType.get(3)!.hint = all["GameboardX3LetterHint"].asString()!;
+        this.cellViewDataByType.get(4)!.hint = all["GameboardX2WordHint"].asString()!;
+        this.cellViewDataByType.get(5)!.hint = all["GameboardX3WordHint"].asString()!;
+      })
+    })
   }
 
   currentMouseOverPosition: any = {};
@@ -226,6 +242,14 @@ export class GameboardComponent implements OnInit {
       this.removeTileFromPlayerTiles.emit(inputTile);
       this.placeTileOnBoard(inputTile, row, column);
       //this.addCellToUpdatedBoardCells(boardCell);
+  }
+
+  getHint(cell: Cell) {
+    if(cell.tile) {
+      return;
+    }
+
+    return this.cellViewDataByType.get(cell.type)?.hint;
   }
 
   getValueWhenEmptyByCellType(type: number) {

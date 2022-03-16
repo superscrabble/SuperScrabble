@@ -10,7 +10,9 @@
                 (contextmenu)="rightClickOnBoardCell(cell)"
                 (click)="clickOnBoardCell(cell)"
                 (dblclick)="doubleClickOnBoardCell(cell)"
-                (mouseover)="setCurrentMouseOverPosition(rowIndex, colIndex)">
+                (mouseover)="setCurrentMouseOverPosition(rowIndex, colIndex)"
+                matTooltip={{getHint(cell)}}
+                [matTooltipPosition]="'right'">
                         <div *ngIf="cell.tile" class="placed-tile"> <!--class="board-cell">-->
                             <div class="placed-tile text-center justify-content-center cursor-default {{getClassNameByCell(cell)}}"
                                 cdkDrag [cdkDragData]="cell.tile"
