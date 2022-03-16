@@ -7,3 +7,7 @@
     width: auto;
     height: 10vh;    
 }
+
+.nav-link {
+    font-size: 1rem;
+}
