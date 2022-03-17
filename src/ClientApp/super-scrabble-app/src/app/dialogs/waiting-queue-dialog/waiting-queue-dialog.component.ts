@@ -18,6 +18,10 @@ export class WaitingQueueDialogComponent implements OnInit {
     private remoteConfig: AngularFireRemoteConfig,
     private signalrService: SignalrService) {
     this.loadRemoteConfigTexts();
+    this.dialog.afterAllClosed.subscribe(() => {
+      console.log("SEARCHING CLOSED")
+      this.stopSearching();
+    })
   }
 
   ngOnInit(): void {

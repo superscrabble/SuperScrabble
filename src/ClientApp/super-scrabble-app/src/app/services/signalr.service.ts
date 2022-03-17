@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import * as signalR from "@microsoft/signalr";
 import { Utilities } from 'src/app/common/utilities';
@@ -33,7 +34,8 @@ class CustomLogger implements signalR.ILogger {
 })
 export class SignalrService {
 
-  constructor(private utilities: Utilities, private router: Router, private errorHandler: ErrorHandler, private loadingScreenService: LoadingScreenService) { }
+  constructor(private utilities: Utilities, private router: Router, private errorHandler: ErrorHandler,
+              private loadingScreenService: LoadingScreenService, private dialog: MatDialog) { }
 
   //FIXME: change the access modifier
   public hubConnection?: signalR.HubConnection;
@@ -75,6 +77,7 @@ export class SignalrService {
   public addStartGameListeners = () => {
     this.hubConnection?.on('StartGame', (data) => {
       this.router.navigateByUrl("/games/" + data);
+      this.dialog.closeAll();
     });
 
     this.hubConnection?.on('WaitingForMorePlayers', (data) =>   {
