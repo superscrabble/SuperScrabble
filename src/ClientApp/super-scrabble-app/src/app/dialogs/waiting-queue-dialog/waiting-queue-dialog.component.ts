@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AngularFireRemoteConfig } from '@angular/fire/compat/remote-config';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { SignalrService } from 'src/app/services/signalr.service';
 
 @Component({
@@ -15,12 +15,13 @@ export class WaitingQueueDialogComponent implements OnInit {
 
   constructor(
     private dialog: MatDialog,
+    private dialogRef: MatDialogRef<WaitingQueueDialogComponent>,
     private remoteConfig: AngularFireRemoteConfig,
     private signalrService: SignalrService) {
     this.loadRemoteConfigTexts();
     this.dialog.afterAllClosed.subscribe(() => {
       console.log("SEARCHING CLOSED")
-      this.stopSearching();
+      //this.stopSearching();
     })
   }
 
@@ -38,6 +39,6 @@ export class WaitingQueueDialogComponent implements OnInit {
 
   stopSearching() {
     this.signalrService.stopSearching();
-    this.dialog.closeAll();
+    this.dialogRef.close(true);
   }
 }

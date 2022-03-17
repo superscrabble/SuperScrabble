@@ -249,7 +249,12 @@ export class HomeComponent implements OnInit {
 
     this.signalrService.hubConnection?.on("WaitingQueueJoined", data => {
       console.log("Searching...")
-      this.dialog.open(WaitingQueueDialogComponent);
+      this.dialog.open(WaitingQueueDialogComponent).afterClosed().subscribe((data) => {
+        console.log("DATA AFTER CLOSING " + data);
+        if(data != true) {
+          this.signalrService.stopSearching();
+        }
+      });
     });
   }
 

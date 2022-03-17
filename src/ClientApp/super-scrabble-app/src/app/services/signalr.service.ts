@@ -76,6 +76,7 @@ export class SignalrService {
   //TODO: find a way to unsubscribe a listener
   public addStartGameListeners = () => {
     this.hubConnection?.on('StartGame', (data) => {
+      console.log("GAME START")
       this.router.navigateByUrl("/games/" + data);
       this.dialog.closeAll();
     });
