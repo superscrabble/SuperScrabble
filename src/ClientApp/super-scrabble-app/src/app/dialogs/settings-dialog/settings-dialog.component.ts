@@ -16,7 +16,7 @@ export class SettingsDialogComponent implements OnInit {
   openLeaveGameDialog: Function;
   
   settingsTitle: string = "";
-  leavePopupText: string = "";
+  leaveGameBtnLabel: string = "";
 
 
   //TODO: think how to remove MatDialog so that openLeaveGameDialog will work
@@ -35,7 +35,7 @@ export class SettingsDialogComponent implements OnInit {
       this.remoteConfig.getAll().then(all => {
         //AppConfig.isRemoteConfigFetched = true;
         this.settingsTitle = all["SettingsTitle"].asString()!;
-        this.leavePopupText = all["LeavePopupText"].asString()!;
+        this.leaveGameBtnLabel = all["LeaveGameBtnLabel"].asString()!;
       })
     })
   }

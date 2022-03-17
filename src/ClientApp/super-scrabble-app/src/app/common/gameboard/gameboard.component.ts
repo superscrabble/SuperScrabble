@@ -30,26 +30,30 @@ export class GameboardComponent implements OnInit {
   
   cellViewDataByType: Map<number, CellViewData> = new Map();
   selectedBoardCell: Cell | null = null;
-  
-  //TODO: check whether this is ok
-  private readonly viewportChange = this.viewportRuler
-    .change(200)
-    .subscribe(() => this.ngZone.run(() => this.onSizeChange()));
 
   constructor(private viewportRuler: ViewportRuler, private ngZone: NgZone,
               private elementRef: ElementRef, private renderer: Renderer2,
               private changeDetect: ChangeDetectorRef, private remoteConfig: AngularFireRemoteConfig) {
       this.loadCellViewDataByType();
-      this.onSizeChange();
+
+      window.setTimeout(() => {
+        this.onSizeChange();
+      }, 2000);
   }
 
-  onSizeChange() : void {      
+  //TODO: check whether this is ok
+  private readonly viewportChange = this.viewportRuler
+    .change(200)
+    .subscribe(() => this.ngZone.run(() => this.onSizeChange()));
+
+  onSizeChange() : void {
       let verticalCellsCount = this.board.length;
       let horizontalCellsCount = 0;
       
       //Finding the longest row
       for(let i = 0; i < verticalCellsCount; i++) {
-          if(horizontalCellsCount > this.board[i].length) {
+        console.log("HEIGHT: " + horizontalCellsCount + " " + this.board[i].length)
+          if(horizontalCellsCount < this.board[i].length) {
               horizontalCellsCount = this.board[i].length;
           }
       }
@@ -57,20 +61,23 @@ export class GameboardComponent implements OnInit {
       let minNeededBoardWidth = AppConfig.BoardCellMinWidth * horizontalCellsCount;
       let minNeededBoardHeight = AppConfig.BoardCellMinHeight * verticalCellsCount;
 
-      //this.changeDetect.detectChanges();
-
-      const screenWidth = this.elementRef.nativeElement.offsetWidth;
-      const screenHeight = this.elementRef.nativeElement.offsetHeight;
+      //const screenWidth = this.elementRef.nativeElement.offsetWidth;
+      //const screenHeight = this.elementRef.nativeElement.offsetHeight;
 
       //TODO: move this into variable
       let cellWidth = '2.2rem';
 
-      console.log("Screen height: " + screenHeight + " and min: " + minNeededBoardHeight);
-      console.log("Screen width: " + screenWidth + " and min: " + minNeededBoardWidth);
+      const { width, height } = this.viewportRuler.getViewportSize();
 
-      if(screenHeight == 0 || screenWidth == 0) {
+      const screenWidth = width;
+      const screenHeight = height;
+
+      //console.log("Screen height: " + screenHeight + " and min: " + minNeededBoardHeight);
+      //console.log("Screen width: " + screenWidth + " and min: " + minNeededBoardWidth);
+
+      /*if(screenHeight == 0 || screenWidth == 0) {
         
-      }
+      }*/
 
       if((screenHeight > minNeededBoardHeight)
             && (screenWidth > minNeededBoardWidth)) {
