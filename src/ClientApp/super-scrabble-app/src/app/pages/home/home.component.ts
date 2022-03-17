@@ -111,7 +111,7 @@ export class HomeComponent implements OnInit {
           {
             name: all["DuoGamemodeLabel"].asString()!,
             description: all["DuoGamemodeDesc"].asString()!,
-            buttons: [
+            buttons: []/*[
               {
                 text: all["PlayWithRandomBtnText"].asString()!,
                 action: () => {
@@ -130,7 +130,7 @@ export class HomeComponent implements OnInit {
                   this.matchmakingService.createParty(PartyType.Duo);
                 }
               }
-            ]
+            ]*/
           },
           {
             name: all["FriendlyGamemodeLabel"].asString()!,
