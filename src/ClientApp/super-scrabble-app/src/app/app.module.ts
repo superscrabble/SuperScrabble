@@ -50,6 +50,7 @@ import { filter, first, map, last, } from 'rxjs/operators';
 import { AngularFireRemoteConfig, AngularFireRemoteConfigModule, budget, DEFAULTS, filterFresh, scanToObject, SETTINGS } from '@angular/fire/compat/remote-config';
 import { AngularFireModule } from '@angular/fire/compat';
 import { GameTimerComponent } from './common/game-timer/game-timer.component';
+import { WaitingQueueDialogComponent } from './dialogs/waiting-queue-dialog/waiting-queue-dialog.component';
 
 @NgModule({
   declarations: [
@@ -79,6 +80,7 @@ import { GameTimerComponent } from './common/game-timer/game-timer.component';
     MatchComponent,
     LoadingScreenComponent,
     GameTimerComponent,
+    WaitingQueueDialogComponent,
   ],
   imports: [
     CommonModule,

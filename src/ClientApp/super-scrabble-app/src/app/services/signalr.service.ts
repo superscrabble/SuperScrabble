@@ -89,6 +89,10 @@ export class SignalrService {
     });
   }
 
+  public stopSearching() {
+    this.hubConnection?.invoke("StopSearching");
+  }
+
   public joinRoom(gameMode: GameMode) {
     console.log(this.hubConnection?.state)
     console.log("Join Room")

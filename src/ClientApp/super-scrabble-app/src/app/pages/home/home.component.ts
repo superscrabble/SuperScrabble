@@ -5,6 +5,7 @@ import { HubConnectionState } from '@microsoft/signalr';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { JoinPartyWithCodeDialogComponent } from '../../dialogs/join-party-with-code-dialog/join-party-with-code-dialog.component';
+import { WaitingQueueDialogComponent } from '../../dialogs/waiting-queue-dialog/waiting-queue-dialog.component';
 import { MatchmakingService } from 'src/app/services/matchmaking.service';
 import { PartyType } from 'src/app/models/enums/party-type';
 import { GameMode } from 'src/app/models/enums/game-mode';
@@ -244,6 +245,11 @@ export class HomeComponent implements OnInit {
     
     this.signalrService.hubConnection?.on("EnableFriendlyGameStart", () => {
       this.isStartGameButtonEnabled = true;
+    });
+
+    this.signalrService.hubConnection?.on("WaitingQueueJoined", data => {
+      console.log("Searching...")
+      this.dialog.open(WaitingQueueDialogComponent);
     });
   }
 
