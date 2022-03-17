@@ -225,6 +225,12 @@ export class GameboardComponent implements OnInit {
 
       //swap board tiles
       if(this.isNewPlacedTile(inputTile)) {
+        if(boardCell.tile) {
+          if(this.isNewPlacedTile(boardCell.tile)) {
+            this.swapTilesOnBoard(boardCell, this.updatedBoardCells.find(x => x.cell.tile == inputTile)!.cell);    
+          }
+          return;
+        }
         this.swapTilesOnBoard(boardCell, this.updatedBoardCells.find(x => x.cell.tile == inputTile)!.cell);
         console.log("Swapping")
         console.log(this.updatedBoardCells);
