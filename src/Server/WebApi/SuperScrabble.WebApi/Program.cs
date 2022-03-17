@@ -122,11 +122,6 @@ app.UseEndpoints(endpoints =>
     endpoints.MapHub<GameHub>("/gamehub");
 });
 
-//if (!app.Environment.IsDevelopment())
-//{
-
-//}
-
 app.UseSpa(options =>
 {
     options.Options.SourcePath = "ClientApp";
