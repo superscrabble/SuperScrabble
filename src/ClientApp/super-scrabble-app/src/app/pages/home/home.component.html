@@ -1,9 +1,9 @@
 <div class="d-flex flex-column justify-content-center align-items-center my-4 text-center">
-    <h1 class="m-4">{{welcomeMessageText}}</h1>
-    <h2 class="text-center">{{chooseGamemodeMessageText}}</h2>
+    <h1 style="color: white;" class="m-4">{{welcomeMessageText}}</h1>
+    <h2 style="color: white;" class="text-center">{{chooseGamemodeMessageText}}</h2>
 </div>
 <div class="d-flex align-items-center justify-content-center my-3" *ngIf="currentGameGroupName">
-    <button class="btn btn-danger py-2" (click)="redirectToCurrentGame()">{{continueYourGameText}}</button>
+    <button style="color: white;" class="btn btn-danger py-2" (click)="redirectToCurrentGame()">{{continueYourGameText}}</button>
 </div>
 <div class="card-columns wrapped my-4">
     <div *ngFor="let gameMode of gameModes; let cardIndex = index"
@@ -11,16 +11,16 @@
         (click)="flip('card' + cardIndex)"
         id="card{{cardIndex}}">
         <div class="flip-card-inner">
-            <div class="flip-card-front d-flex align-items-center justify-content-center rounded">
+            <div style="color: white;" class="flip-card-front d-flex align-items-center justify-content-center rounded">
                 {{gameMode.name}}
             </div>
             <div class="flip-card-back d-flex flex-column align-items-center justify-content-center rounded">
-                <div class="mb-2">
+                <div style="color: white;" class="mb-2">
                     {{gameMode.description}}
                 </div>
                 <div *ngFor="let button of gameMode.buttons"
                     class="mb-2">
-                    <button style="font-size: 1.2rem;" class="btn btn-danger mt-3" (click)="button.action()">
+                    <button style="font-size: 1.2rem; color: white;" class="btn btn-danger mt-3" (click)="button.action()">
                         {{button.text}}
                     </button>
                 </div>

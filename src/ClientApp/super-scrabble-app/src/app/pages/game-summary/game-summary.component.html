@@ -16,14 +16,14 @@
         <div class="border border-dark rounded scoreboard mt-4">
             <table class="table table-sm">
                 <thead>
-                    <tr>
+                    <tr style="color: white;">
                         <th>#</th>
                         <th>{{summaryScoreboardPlayerLabel}}</th>
                         <th>{{summaryScoreboardPointsLabel}}</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let pointsByUserName of pointsByUserNames; let i = index">
+                    <tr style="color: white;" *ngFor="let pointsByUserName of pointsByUserNames; let i = index">
                         <td>{{i + 1}}</td>
                         <td>{{pointsByUserName.key}}</td>
                         <td>{{pointsByUserName.value}}</td>
