@@ -68,7 +68,6 @@ export class GameSummaryComponent implements OnInit {
 
   handleLoadGameSummaryResponse(res: HttpResponse<any>): void {
     let summaryModel = JSON.parse(res.body);
-    console.log(summaryModel);
     this.loadScoreBoard(summaryModel.pointsByUserNames);
     this.gameOutcomeNumber = summaryModel.gameOutcomeNumber;
     this.gameOutcomeMessage = summaryModel.gameOutcomeMessage;

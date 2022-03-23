@@ -37,7 +37,6 @@ export class PartyPageComponent implements OnInit {
   
   partyData: PartyData = new PartyData();
   isPartyReady: boolean = false;
-  //matchProps: ConfigSetting[] = [];
   selectedMatchProps: Map<string, number> = new Map();
   partyTypeString: string = "";
   partyId: string = "";
@@ -45,60 +44,8 @@ export class PartyPageComponent implements OnInit {
   constructor(private signalrService: SignalrService, private matchmakingService: MatchmakingService,
               private router: Router, private loadingScreenService: LoadingScreenService,
               private remoteConfig: AngularFireRemoteConfig) {
-    //this.partyData.invitationCode = "DSDS121"
-    //this.partyData.members = ["Denis", "Gosho", "Misho", "Pesho"]
     this.loadRemoteConfigTexts();
-    
-    //this.partyData.invitationCode = "DSDS121"
-    //this.partyData.members = ["Denis", "Gosho", "Misho", "Pesho"]
-    this.partyData.members = ["Denis"]
-    this.partyData.owner = "Denis";
 
-    /*this.matchProps = [
-      {
-        name: "TimerType",
-        values: [
-          {
-            key: "Standard",
-            value: 1
-          },
-          {
-            key: "Chess",
-            value: 2
-          }
-        ]
-      },
-      {
-        name: "TimerDifficulty",
-        values: [
-          {
-            key: "Slow",
-            value: 1
-          },
-          {
-            key: "Standard",
-            value: 2
-          },
-          {
-            key: "Fast",
-            value: 3
-          }
-        ]
-      },
-      {
-        name: "BoardType",
-        values: [
-          {
-            key: "Standard",
-            value: 1
-          },
-          {
-            key: "Circle",
-            value: 2
-          }
-        ]
-      }
-    ]*/
   }
 
   partyTypeText: string = "";
@@ -187,8 +134,6 @@ export class PartyPageComponent implements OnInit {
     //TODO: Handle error, especially on LoadParty error
 
     this.signalrService.hubConnection?.on("ReceivePartyData", data => {
-      console.log("Receive Party DatA")
-      console.log(data);
       this.parsePartyData(data);
       this.loadingScreenService.stopShowingLoadingScreen();
     })
@@ -219,8 +164,6 @@ export class PartyPageComponent implements OnInit {
     })
 
     this.signalrService.hubConnection?.on("UpdateFriendPartyConfigSettings", data => {
-      console.log("UpdateFriendPartyConfigSettings")
-      console.log(data);
       this.partyData.configSettings = data;
     })
 
@@ -265,7 +208,6 @@ export class PartyPageComponent implements OnInit {
   }
 
   startGame() {
-    console.log(this.selectedMatchProps);
     this.matchmakingService.startGameFromParty(this.partyId);
   }
 

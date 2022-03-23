@@ -48,42 +48,7 @@ export class HomeComponent implements OnInit {
   constructor(private signalrService: SignalrService, private utilities: Utilities,
               private router: Router, private dialog: MatDialog, private matchmakingService: MatchmakingService,
               private loadingScreenService: LoadingScreenService,
-              private remoteConfig: AngularFireRemoteConfig) {
-      /*this.gameModes = [
-        {
-          name: "Дуел",
-          description: "Играй стандартен Скрабъл срещу друг играч!",
-          buttons: [
-            {
-              text: "Играй",
-              action: () => {
-                this.joinRoom(GameMode.Duel);
-              }
-            }
-          ]
-        },
-        {
-          name: "Двама на двама",
-          description: "Играй в отбор с твой приятел или случаен играч срещу друг отбор!",
-          buttons: [
-            {
-              text: "Играй със случаен играч",
-              action: () => {
-                this.matchmakingService.joinRandomDuoGame();
-              }
-            },
-            {
-              text: "Влез с код",
-              action: () => {
-                this.dialog.open(JoinPartyWithCodeDialogComponent);
-              }
-            },
-            {
-              text: "Създай отбор",
-              action: () => {
-                this.matchmakingService.createParty(PartyType.Duo);
-      */
-              
+              private remoteConfig: AngularFireRemoteConfig) {         
       this.loadRemoteConfigTexts();
   }
 
@@ -250,7 +215,6 @@ export class HomeComponent implements OnInit {
     this.signalrService.hubConnection?.on("WaitingQueueJoined", data => {
       console.log("Searching...")
       this.dialog.open(WaitingQueueDialogComponent).afterClosed().subscribe((data) => {
-        console.log("DATA AFTER CLOSING " + data);
         if(data != true) {
           this.signalrService.stopSearching();
         }
