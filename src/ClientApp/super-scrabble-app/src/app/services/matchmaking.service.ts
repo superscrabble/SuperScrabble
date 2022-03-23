@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import { GameMode } from '../models/enums/game-mode';
 import { PartyType } from '../models/enums/party-type';
 import { SignalrService } from './signalr.service';
