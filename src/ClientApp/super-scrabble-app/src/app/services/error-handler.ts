@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { AngularFireRemoteConfig } from '@angular/fire/compat/remote-config';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { LoadingScreenService } from './loading-screen.service';
@@ -8,7 +9,13 @@ import { LoadingScreenService } from './loading-screen.service';
 })
 export class ErrorHandler {
 
-    constructor(private router: Router, private toastr: ToastrService, private loadingScreenService: LoadingScreenService) {}
+    unauthorizedErrorMessage: string = "";
+
+    constructor(private router: Router, private toastr: ToastrService,
+                private loadingScreenService: LoadingScreenService,
+                private remoteConfig: AngularFireRemoteConfig) {
+        this.loadRemoteConfigTexts();
+    }
 
     handle(error: number) {
         if(error == 401) {
@@ -16,7 +23,7 @@ export class ErrorHandler {
             //TODO: get his message from Remote Config
             //TODO: clear the accessToken
             //Show toast
-            this.toastr.error('Трябва да влезнете в акаунта си или да си направите такъв, за да ползвате тази функционалност!', '', {
+            this.toastr.error(this.unauthorizedErrorMessage, '', {
                 progressBar: true,
                 closeButton: true,
                 progressAnimation: 'increasing',
@@ -31,5 +38,13 @@ export class ErrorHandler {
         else if(error == 500) {
             this.router.navigateByUrl("/servererror");
         }
+    }
+
+    private loadRemoteConfigTexts() {
+        this.remoteConfig.fetchAndActivate().then(hasActivatedTheFetch => {
+            this.remoteConfig.getAll().then(all => {
+                this.unauthorizedErrorMessage = all["UnauthorizedErrorMessage"].asString()!;
+            })
+        })
     }
 }
