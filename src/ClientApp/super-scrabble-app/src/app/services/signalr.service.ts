@@ -105,14 +105,6 @@ export class SignalrService {
     }
   }
 
-  /*public joinRoomWithProps(props: MatchProps) {
-    if(this.hubConnection?.state == signalR.HubConnectionState.Connected) {
-      console.log("Join room with props")
-      console.log(props)
-      this.hubConnection?.invoke("JoinRoom", props);
-    }
-  }*/
-
   public leaveQueue() {
     console.log("Leave Room")
     if(this.hubConnection?.state == signalR.HubConnectionState.Connected) {
