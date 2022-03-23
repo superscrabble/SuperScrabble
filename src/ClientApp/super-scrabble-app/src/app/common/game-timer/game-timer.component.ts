@@ -39,7 +39,6 @@ export class GameTimerComponent implements OnInit, OnChanges {
     }
   };
   
-  //TIME_LIMIT = 20;
   timePassed = 0;
   timerInterval: number = 0;
   remainingPathColor = this.COLOR_CODES.info.color;
@@ -55,21 +54,6 @@ export class GameTimerComponent implements OnInit, OnChanges {
   constructor() { }
 
   ngOnChanges(changes: SimpleChanges): void {
-    //console.log("CHANGED: " + changes['time'].currentValue)
-
-    if(changes['isNewGame']) {
-      if(changes['isNewGame'].currentValue) {
-        //this.timerMaxSeconds = changes['time'].currentValue;
-      }
-    }
-
-    if(changes['time'].isFirstChange()) {
-      //console.log("First Change " + changes['time'].currentValue + " " + changes['time'].previousValue)
-      //this.timePassed = 0;
-      //this.timeLeft = changes['time'].currentValue;
-      //this.timerMaxSeconds = changes['time'].currentValue;
-    }
-
     if(Math.abs(changes['time'].currentValue - changes['time'].previousValue) > 1) {
       if(this.timerMaxSeconds == changes['time'].currentValue) {
         this.timePassed = 0;
@@ -85,66 +69,29 @@ export class GameTimerComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.startTimer()
-    /*this.setTimer.subscribe(() => {
-      console.log("Set TIMER called in GAME TIMER")
-    })*/
   }
-
-
-// startTimer();
-
-// function onTimesUp() {
-//   clearInterval(timerInterval);
-//}
 
   startTimer() {
 
     this.timerInterval = window.setInterval(() => {
-      //console.log("Tick " + this.timeLeft + " " + this.timePassed);
-      //this.setTimer.emit();
       this.timePassed = this.timePassed += 1;
       this.timeLeft = this.timerMaxSeconds - this.timePassed;
-      //this.document.getElementById("base-timer-label").innerHTML = formatTime(
-      //  timeLeft
-      //);
+
       this.setCircleDasharray();
       this.setRemainingPathColor(this.timeLeft);
 
       if (this.timeLeft === 0) {
-        //this.onTimesUp();
+        //Time's up
       }
     }, 1000);
   }
 
-// formatTime(time) {
-//   const minutes = Math.floor(time / 60);
-//   let seconds: string = time % 60;
-
-//   if (seconds < 10) {
-//     seconds = `0${seconds}`;
-//   }
-
-//   return `${minutes}:${seconds}`;
-//  }
-
   setRemainingPathColor(timeLeft: number) {
     const { alert, warning, info } = this.COLOR_CODES;
     if (timeLeft <= alert.threshold) {
-      // document
-      //   .getElementById("base-timer-path-remaining")
-      //   .classList.remove(warning.color);
-      // document
-      //   .getElementById("base-timer-path-remaining")
-      //   .classList.add(alert.color);
       this.remainingPathColor = alert.color;
     } else if (timeLeft <= warning.threshold) {
       this.remainingPathColor = warning.color;
-      // document
-      //   .getElementById("base-timer-path-remaining")
-      //   .classList.remove(info.color);
-      // document
-      //   .getElementById("base-timer-path-remaining")
-      //   .classList.add(warning.color);
     } else {
       this.remainingPathColor = info.color;
     }
@@ -158,11 +105,7 @@ export class GameTimerComponent implements OnInit, OnChanges {
   setCircleDasharray() {
     this.circleDasharray = `${(
       this.calculateTimeFraction() * this.FULL_DASH_ARRAY
-    ).toFixed(0)} 283`; //{{this.TIME_LIMIT}}
-    
-    // document
-    //   .getElementById("base-timer-path-remaining")
-    //   .setAttribute("stroke-dasharray", circleDasharray);
+    ).toFixed(0)} 283`;
   }
 
 }

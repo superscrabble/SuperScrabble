@@ -23,12 +23,19 @@ export class ErrorHandler {
             //TODO: get his message from Remote Config
             //TODO: clear the accessToken
             //Show toast
-            this.toastr.error(this.unauthorizedErrorMessage, '', {
-                progressBar: true,
-                closeButton: true,
-                progressAnimation: 'increasing',
-                tapToDismiss: true,
-            });
+            this.remoteConfig.fetchAndActivate().then(hasActivatedTheFetch => {
+                this.remoteConfig.getAll().then(all => {
+                    this.unauthorizedErrorMessage = all["UnauthorizedErrorMessage"].asString()!;
+                    this.toastr.error(this.unauthorizedErrorMessage, '', {
+                        progressBar: true,
+                        closeButton: true,
+                        progressAnimation: 'increasing',
+                        tapToDismiss: true,
+                    });
+                })
+            })
+
+            
             this.router.navigateByUrl("/login");
             this.loadingScreenService.stopShowingLoadingScreen();
         }
