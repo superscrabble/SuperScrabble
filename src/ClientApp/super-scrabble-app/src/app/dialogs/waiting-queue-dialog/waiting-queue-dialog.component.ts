@@ -20,7 +20,7 @@ export class WaitingQueueDialogComponent implements OnInit {
     private signalrService: SignalrService) {
     this.loadRemoteConfigTexts();
     this.dialog.afterAllClosed.subscribe(() => {
-      console.log("SEARCHING CLOSED")
+      console.log("Searching stopped")
       //this.stopSearching();
     })
   }

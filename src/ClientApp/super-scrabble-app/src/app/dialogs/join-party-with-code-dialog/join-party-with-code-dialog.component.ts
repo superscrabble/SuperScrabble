@@ -39,7 +39,6 @@ export class JoinPartyWithCodeDialogComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log("ConnectING")
     this.signalrService.startConnection();
 
     if(this.signalrService.hubConnection

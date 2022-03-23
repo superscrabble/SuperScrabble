@@ -74,8 +74,7 @@ export class ChangeWildcardDialogComponent implements OnInit {
                   this.signalrService.writeWord(this.data.writeWordInput);
               }
               catch (ex) {
-                  console.log("ERROR");
-                  console.log(ex);
+                  console.log("Error on write word");
               } 
           }
       }
