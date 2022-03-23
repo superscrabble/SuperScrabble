@@ -93,15 +93,10 @@ export class RegisterFormComponent implements OnInit {
   }
 
   handleError(error: any): void {
-    console.log("ERRORS IN REGIS")
-    console.log(error);
+    console.log("Error on register")
+    console.log(error.status);
 
     if (error.status == 400) {
-      console.log(error.error);
-      //let re = /\"/gi;
-      //this.errors = error.error.replace('\[', '').replace('\]', '').trim().replace(re, '').split(',');
-      
-      console.log(JSON.parse(error.error));
       this.errors = JSON.parse(error.error)
       this.remoteConfig.fetchAndActivate().then(hasActivatedTheFetch => {
         this.remoteConfig.getAll().then(all => {
@@ -110,13 +105,6 @@ export class RegisterFormComponent implements OnInit {
           }
         })
       })
-
-      /*const errors = JSON.parse(error.error);
-      for (let i = 0; i < errors.length; i++) {
-        let propertyName = errors[i].propertyName;
-        let errorMessages = errors[i].errorMessages;
-        this.propertyErrorMessages.set(propertyName, errorMessages);
-      }*/
     }
     else {
       this.errorHandler.handle(error.status);

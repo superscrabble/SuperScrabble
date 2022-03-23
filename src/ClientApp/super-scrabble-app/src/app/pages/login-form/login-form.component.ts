@@ -51,7 +51,6 @@ export class LoginFormComponent implements OnInit {
     })
   }
 
-
   userNameErrorMessages(): string[] {
     return this.propertyErrorMessages.get("UserName");
   }
@@ -84,21 +83,11 @@ export class LoginFormComponent implements OnInit {
   }
 
   handleError(error: any): void {
-    //console.log("LOGIN ERROR")
-    //console.log(error);
+    console.log("Error on login")
+    console.log(error.status);
 
     if (error.status == 400 || error.status == 404) {
       this.showError = true;
-      
-      /*const errors = JSON.parse(error.error);
-      for (let i = 0; i < errors.length; i++) {
-        let propertyName = errors[i].key;
-        let errorMessages = errors[i].value;
-
-        console.log(propertyName)
-        console.log(errorMessages);
-        this.propertyErrorMessages.set(propertyName, errorMessages);
-      }*/
     }
     else {
       //this.errorHandler.handle(error.status);
