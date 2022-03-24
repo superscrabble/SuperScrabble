@@ -32,6 +32,8 @@
 
         bool IsUserInsideAnyGame(string userName);
 
+        bool GameExists(string gameId);
+
         bool IsUserInsideGame(string userName, string gameId);
 
         void RemoveUserFromGame(string userName);

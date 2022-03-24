@@ -298,6 +298,11 @@ public class MatchmakingService : IMatchmakingService
         return gameIdsByUserNames.ContainsKey(userName);
     }
 
+    public bool GameExists(string gameId)
+    {
+        return gameStatesByGameIds.ContainsKey(gameId);
+    }
+
     public bool IsUserInsideGame(string userName, string gameId)
     {
         if (!gameIdsByUserNames.ContainsKey(userName))

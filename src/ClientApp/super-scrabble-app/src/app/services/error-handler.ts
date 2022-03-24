@@ -34,7 +34,6 @@ export class ErrorHandler {
                     });
                 })
             })
-
             
             this.router.navigateByUrl("/login");
             this.loadingScreenService.stopShowingLoadingScreen();

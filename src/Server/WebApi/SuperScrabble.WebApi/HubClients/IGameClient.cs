@@ -48,4 +48,6 @@ public interface IGameClient
     Task WaitingQueueJoined();
 
     Task SearchingStopped();
+    
+    Task NoSuchGame();
 }

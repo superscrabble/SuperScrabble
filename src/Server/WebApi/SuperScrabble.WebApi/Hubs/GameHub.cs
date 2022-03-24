@@ -450,6 +450,11 @@ public class GameHub : Hub<IGameClient>
 
     public async Task LoadGame(string gameId) 
     {
+        if(!_matchmakingService.GameExists(gameId))
+        {
+            await Clients.Client(this.ConnectionId).NoSuchGame();
+        }
+
         if (!_matchmakingService.IsUserInsideGame(UserName, gameId))
         {
             //TODO: add and remove spectators
