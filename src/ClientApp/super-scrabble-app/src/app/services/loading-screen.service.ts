@@ -3,7 +3,7 @@ import { Injectable, OnChanges, SimpleChanges } from '@angular/core';
 @Injectable({
   providedIn: 'root'
 })
-export class LoadingScreenService implements OnChanges {
+export class LoadingScreenService {
 
   isShowingLoading: boolean = false;
 
@@ -12,13 +12,7 @@ export class LoadingScreenService implements OnChanges {
 
   constructor() {}
 
-  ngOnChanges(changes: SimpleChanges): void {
-    console.log("ON CHANGES " + this.isShowingLoading);
-    console.log(changes)
-  }
-
   showLoadingScreen() {
-    console.log("Show" + " " + Date.now())
     if(this.isShowingLoading) return;
 
     setTimeout(() => {
@@ -29,7 +23,6 @@ export class LoadingScreenService implements OnChanges {
   }
 
   stopShowingLoadingScreen() {
-    console.log("Don't Show" + " " + Date.now())
     if(!this.isShowingLoading) return;
 
     setTimeout(() => {
@@ -40,14 +33,7 @@ export class LoadingScreenService implements OnChanges {
   }
 
   isShowingLoadingScreen() : boolean {
-    //console.log("IS SHOWING CALLED " + this.isShowingLoading + " " + Date.now());
-    //if(this.lastLoadingDontShowTime >= this.lastLoadingShowTime) {
-      //console.log("FALSE" + this.lastLoadingDontShowTime + " " + this.lastLoadingShowTime);
-      return false;
-    //}
-    //console.log("TRUE" + this.lastLoadingDontShowTime + " " + this.lastLoadingShowTime);
-    //return true;
-
-    //return this.isShowingLoading;
+    //For now loading screen is stopped
+    return false;
   }
 }

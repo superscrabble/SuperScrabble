@@ -52,7 +52,6 @@ export class GameboardComponent implements OnInit {
       
       //Finding the longest row
       for(let i = 0; i < verticalCellsCount; i++) {
-        console.log("HEIGHT: " + horizontalCellsCount + " " + this.board[i].length)
           if(horizontalCellsCount < this.board[i].length) {
               horizontalCellsCount = this.board[i].length;
           }
@@ -61,33 +60,25 @@ export class GameboardComponent implements OnInit {
       let minNeededBoardWidth = AppConfig.BoardCellMinWidth * horizontalCellsCount;
       let minNeededBoardHeight = AppConfig.BoardCellMinHeight * verticalCellsCount;
 
-      //const screenWidth = this.elementRef.nativeElement.offsetWidth;
-      //const screenHeight = this.elementRef.nativeElement.offsetHeight;
-
       //TODO: move this into variable
       let cellWidth = '2.2rem';
+      let cellHeight = '2.2rem';
 
       const { width, height } = this.viewportRuler.getViewportSize();
 
       const screenWidth = width;
       const screenHeight = height;
 
-      //console.log("Screen height: " + screenHeight + " and min: " + minNeededBoardHeight);
-      //console.log("Screen width: " + screenWidth + " and min: " + minNeededBoardWidth);
-
-      /*if(screenHeight == 0 || screenWidth == 0) {
-        
-      }*/
-
       if((screenHeight > minNeededBoardHeight)
             && (screenWidth > minNeededBoardWidth)) {
           //TODO: move this into variable
           cellWidth = "1fr";
+          cellHeight = "1fr";
       }
       
       //TODO: maybe change this to [style.]=""
       this.renderer.setStyle(this.elementRef.nativeElement, '--cell-width', cellWidth, 2);
-      this.renderer.setStyle(this.elementRef.nativeElement, '--cell-height', cellWidth, 2);
+      this.renderer.setStyle(this.elementRef.nativeElement, '--cell-height', cellHeight, 2);
   }
 
   ngOnInit(): void {
@@ -124,8 +115,6 @@ export class GameboardComponent implements OnInit {
   currentMouseOverPosition: any = {};
 
   setCurrentMouseOverPosition(rowIndex: number, colIndex: number) {
-    //console.log("Current Mouse Over Position")
-    //console.log(rowIndex + " " + colIndex)
     this.currentMouseOverPosition.row = rowIndex;
     this.currentMouseOverPosition.column = colIndex;
   }
@@ -155,10 +144,6 @@ export class GameboardComponent implements OnInit {
 
   cellTileDropped(dropped: CdkDragDrop<Tile>) {
     //For now this is the way to detect when out of the board
-    console.log("On cell dropped");
-    console.log(dropped.container);
-    console.log(dropped.container.id);
-
     if(dropped.container.id == "playerTiles") {
       this.removeTileFromBoard(dropped.item.data);
       return;
@@ -182,10 +167,6 @@ export class GameboardComponent implements OnInit {
     cell.tile = otherCell.tile;
     otherCell.tile = tempTile;
 
-    console.log("SWAPPING: ");
-    console.log(cell);
-    console.log(otherCell);
-
     if(cell.tile == null) {
       this.removeCellFromUpdatedBoardCells(cell);  
       this.addCellToUpdatedBoardCells(otherCell);
@@ -196,13 +177,9 @@ export class GameboardComponent implements OnInit {
       this.removeCellFromUpdatedBoardCells(otherCell);
       this.addCellToUpdatedBoardCells(cell);
     }
-
-    console.log("After swapping");
-    console.log(this.updatedBoardCells);
   }
 
   drop(event: CdkDragDrop<Tile[]>) {
-      console.log("Drop in GAMEBOARD")
       let row = this.currentMouseOverPosition.row;
       let column = this.currentMouseOverPosition.column;
       let inputTile = event.item.data;
@@ -219,10 +196,6 @@ export class GameboardComponent implements OnInit {
         return;
       }
 
-      console.log("BEFORE SWAPPING")
-      console.log(inputTile);
-      console.log(this.updatedBoardCells)
-
       //swap board tiles
       if(this.isNewPlacedTile(inputTile)) {
         if(boardCell.tile) {
@@ -232,12 +205,8 @@ export class GameboardComponent implements OnInit {
           return;
         }
         this.swapTilesOnBoard(boardCell, this.updatedBoardCells.find(x => x.cell.tile == inputTile)!.cell);
-        console.log("Swapping")
-        console.log(this.updatedBoardCells);
         return;
       }
-
-      console.log("AFTER SWAPPING")
 
       //swap the tile and the board tile
       if(boardCell.tile) {
@@ -249,8 +218,6 @@ export class GameboardComponent implements OnInit {
         this.placeTileOnBoard(inputTile, row, column);
         return;
       }
-
-      console.log("FINAL PART")
 
       this.removeTileFromPlayerTiles.emit(inputTile);
       this.placeTileOnBoard(inputTile, row, column);
@@ -292,9 +259,6 @@ export class GameboardComponent implements OnInit {
     if(!cell) {
         return;
     }
-
-    console.log("CLICK ON BOARD CELL")
-    console.log(this.updatedBoardCells);
 
     //swap the selected player tile and the selected board cell
     if(cell.tile && this.selectedPlayerTile) {
@@ -351,19 +315,12 @@ export class GameboardComponent implements OnInit {
         this.removeCellFromUpdatedBoardCells(this.selectedBoardCell);
         this.addCellToUpdatedBoardCells(cell);
         this.selectedBoardCell = null;
-
-        console.log("UPDATED BOARD CELLS: ");
-        console.log(this.updatedBoardCells);
         return;
     }
   }
 
   removeCellFromUpdatedBoardCells(cell: Cell) {
       if(cell) {
-        console.trace("HERE");
-        console.log("REMOVE CELL FROM UPDATED BOARD CELLS: ");
-        console.log(this.updatedBoardCells);
-        console.log(cell);
         this.updatedBoardCells = this.updatedBoardCells.filter(item => item.cell !== cell);
         this.updatedBoardCellsChange.next(this.updatedBoardCells);
       }
