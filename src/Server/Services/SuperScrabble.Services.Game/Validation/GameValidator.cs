@@ -79,7 +79,10 @@
                     throw new InvalidWildcardValueException();
                 }
 
-                playerTilesCopy.Remove(submittedTile);
+                // Remove the matched rack tile, not the submitted one: a wildcard play submits
+                // e.g. ('A', 0) while the rack holds (WildcardValue, 0), so removing the submitted
+                // tile silently fails and lets one wildcard be consumed multiple times per move.
+                playerTilesCopy.Remove(actualTile);
             }
         }
 

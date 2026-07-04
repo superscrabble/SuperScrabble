@@ -90,6 +90,15 @@ public class GameState
 
     public void NextTeam()
     {
+        // Without a playable team the loop below has no reachable break condition.
+        bool anyTeamCanPlay = _teams.Any(team =>
+            !team.HasSurrendered && HasPlayerTime(team.CurrentPlayer.UserName));
+
+        if (!anyTeamCanPlay)
+        {
+            return;
+        }
+
         while (_teams.Count > 1)
         {
             TeamIndex++;
