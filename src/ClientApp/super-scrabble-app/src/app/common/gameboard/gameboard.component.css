@@ -11,7 +11,6 @@
 
 .grid-row {
     display: grid !important;
-    
     grid-template-columns: repeat(15, var(--cell-width, 2.2rem));
 }
 
@@ -25,6 +24,12 @@
 .grid-col {
     display: flex;
     align-items: center;
+    border-color: rgba(10, 34, 30, 0.55) !important;
+    transition: filter 0.1s ease;
+}
+
+.grid-col:hover {
+    filter: brightness(1.08);
 }
 
 .board-sizing {
@@ -36,6 +41,9 @@
     display: grid;
     cursor: grab;
     grid-template-rows: repeat(15, var(--cell-height, 2.2rem));
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.45), 0 0 0 6px rgba(10, 34, 30, 0.55);
 }
 
 .board-cell {
@@ -51,48 +59,44 @@
 }
 
 .tile {
-    background-color: #E3CFAA;
-    box-shadow: 2px 2px 2px black;
-    color: black;
+    background: var(--ss-tile-face, #E3CFAA);
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.55);
+    color: var(--ss-tile-text, #4a3213);
 }
 
 .basic-cell {
-    /* background-color: #009688; */
-    background-color: #52B788; /*#52B788;*/
+    background-color: #4aa885;
 }
 
 .center-cell {
-    background-color: #FA9789; /*#FA9789;*/
+    background-color: #f4b942;
 }
 
 .x2-letter-cell {
-    /* background-color: #B3E5FC; #61C7FA; */
-    background-color: #61C7FA;
+    background-color: #6fc0ec;
 }
 
 .x3-letter-cell {
     color: white;
-    /* background-color: #0288D1; #0D6896; */
-    background-color: #0D6896;
+    background-color: #1565a8;
 }
 
 .x2-word-cell {
-    /* background-color: #FFCDD2; #FA9789; */
-    background-color: #FA9789;
+    background-color: #f0937e;
 }
 
 .x3-word-cell {
-    /* background-color: #D32F2F; #F97362; */
-    background-color: #F97362;  
+    background-color: #e05a4a;
     color: white;
 }
 
 .selected-tile {
-    background-color: #F97362;
+    background: #ffd166;
 }
 
 .selected-cell {
-    background-color: #F97362; /*#f5c453;*/
+    background-color: #ffd166;
 }
 
 .cursor-default {
@@ -100,8 +104,11 @@
 }
 
 .tile-on-cell {
-    background-color: #E3CFAA;
-    color: black;
+    background: var(--ss-tile-face, #E3CFAA);
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    color: var(--ss-tile-text, #4a3213);
+    font-family: ADYS-Bold, sans-serif !important;
 }
 
 .cdk-drag-placeholder {

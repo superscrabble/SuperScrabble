@@ -1,12 +1,33 @@
 .page {
-    background-color: #1B4A4B;
+    background: transparent;
     overflow-x: clip;
     height: 100vh;
-    color: white;
+    color: var(--ss-text);
 }
 
 .scoreboard {
-    background-color: #52B788;
+    background: var(--ss-surface);
+    border: 1px solid var(--ss-border) !important;
+    border-radius: var(--ss-radius) !important;
+    box-shadow: var(--ss-shadow);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
     font-size: 1.4rem;
-    color: white;
+    color: var(--ss-text);
+    overflow: hidden;
+}
+
+.scoreboard table {
+    margin-bottom: 0;
+    color: var(--ss-text);
+}
+
+.scoreboard thead tr {
+    color: var(--ss-gold) !important;
+    background: rgba(0, 0, 0, 0.3);
+    font-family: ADYS-Bold, sans-serif !important;
+}
+
+.scoreboard tbody tr:nth-of-type(odd) {
+    background: rgba(255, 255, 255, 0.09);
 }

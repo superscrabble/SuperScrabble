@@ -1,13 +1,85 @@
 .nav {
     max-width: 100vw;
     min-height: 10vh;
+    background: rgba(8, 26, 24, 0.65) !important;
+    border-bottom: 1px solid var(--ss-border);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    padding: 0.4rem 1.25rem;
 }
 
 .logo {
     width: auto;
-    height: 10vh;    
+    height: 8vh;
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.4));
+    transition: transform 0.2s ease;
+}
+
+.logo:hover {
+    transform: scale(1.06) rotate(-3deg);
+}
+
+.navbar-brand {
+    font-family: ADYS-Bold, sans-serif !important;
+    font-size: 1.35rem;
+    letter-spacing: 0.03em;
+    color: var(--ss-gold) !important;
 }
 
 .nav-link {
-    font-size: 1rem;
+    font-size: 1.05rem;
+    color: var(--ss-text-dim) !important;
+    position: relative;
+    margin: 0 0.35rem;
+    transition: color 0.15s ease;
+}
+
+.nav-link::after {
+    content: "";
+    position: absolute;
+    left: 0.5rem;
+    right: 0.5rem;
+    bottom: 0.25rem;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--ss-gold);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.2s ease;
+}
+
+.nav-link:hover {
+    color: var(--ss-text) !important;
+}
+
+.nav-link:hover::after {
+    transform: scaleX(1);
+}
+
+.navbar-toggler {
+    border: 1px solid var(--ss-border);
+    border-radius: 10px;
+    color: var(--ss-text);
+}
+
+.lang-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: var(--ss-surface);
+    border: 1px solid var(--ss-border);
+    border-radius: 999px;
+    color: var(--ss-text);
+    padding: 0.35rem 1rem;
+    font-family: ADYS-Bold, sans-serif !important;
+    transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.lang-btn:hover {
+    background: var(--ss-surface-strong);
+    transform: translateY(-1px);
+}
+
+.lang-btn .material-icons {
+    font-size: 1.1rem;
 }

@@ -1,10 +1,28 @@
 .member-card {
-    background-color: grey;
     height: 100px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #8BC34A;
+    background: var(--ss-surface);
+    border: 1px solid var(--ss-border);
+    border-radius: var(--ss-radius);
+    box-shadow: var(--ss-shadow);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    color: var(--ss-text);
+    transition: transform 0.15s ease;
+
+    .material-icons {
+        color: var(--ss-gold);
+    }
+
+    h2 {
+        margin-bottom: 0;
+    }
+}
+
+.member-card:hover {
+    transform: translateY(-3px);
 }
 
 .member-cards {
@@ -27,12 +45,28 @@
 
 .copy-code-icon {
     cursor: pointer;
+    border-radius: 50%;
+    transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.copy-code-icon:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+    transform: scale(1.1);
+}
+
+// Unselected options render as quiet ghost buttons; the checked one lights up gold.
+.btn-check + .btn-warning {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--ss-border);
+    color: var(--ss-text-dim);
+    box-shadow: none;
 }
 
 .btn-check:checked + .btn-warning {
-    background-color: green;
-    border-color: green;
-    color: white;
+    background: linear-gradient(135deg, #fbbf24, #d97706);
+    border-color: transparent;
+    color: #3b2a06;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
 }
 
 .buttons {

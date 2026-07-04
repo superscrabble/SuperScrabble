@@ -2,24 +2,13 @@
 // Custom Theming for Angular Material
 // For more information: https://material.angular.io/guide/theming
 @use '@angular/material' as mat;
-// Plus imports for other components in your app.
 
-// Include the common styles for Angular Material. We include this here so that you only
-// have to load a single css file for Angular Material in your app.
-// Be sure that you only ever include this mixin once!
 @include mat.core();
 
-// Define the palettes for your theme using the Material Design palettes available in palette.scss
-// (imported above). For each palette, you can optionally specify a default, lighter, and darker
-// hue. Available color palettes: https://material.io/design/color/
-$super-scrabble-app-primary: mat.define-palette(mat.$indigo-palette);
-$super-scrabble-app-accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);
-
-// The warn palette is optional (defaults to red).
+$super-scrabble-app-primary: mat.define-palette(mat.$teal-palette);
+$super-scrabble-app-accent: mat.define-palette(mat.$amber-palette, A400, A200, A700);
 $super-scrabble-app-warn: mat.define-palette(mat.$red-palette);
 
-// Create the theme object. A theme consists of configurations for individual
-// theming systems such as "color" or "typography".
 $super-scrabble-app-theme: mat.define-light-theme((
   color: (
     primary: $super-scrabble-app-primary,
@@ -28,13 +17,7 @@ $super-scrabble-app-theme: mat.define-light-theme((
   )
 ));
 
-// Include theme styles for core and each component used in your app.
-// Alternatively, you can import and @include the theme mixins for each component
-// that you are using.
 @include mat.all-component-themes($super-scrabble-app-theme);
-
-//@import 'https://fonts.googleapis.com/icon?family=Material+Icons';
-//@import url("https://fonts.googleapis.com/icon?family=Material+Icons");
 
 @font-face {
     font-family: ADYS-Regular;
@@ -44,6 +27,38 @@ $super-scrabble-app-theme: mat.define-light-theme((
 @font-face {
     font-family: ADYS-Bold;
     src: url("./assets/fonts/static/ADYS-Bold-V5-4.ttf");
+}
+
+// ---------------------------------------------------------------------------
+// Design tokens
+// ---------------------------------------------------------------------------
+:root {
+    // Backdrop
+    --ss-bg-deep: #0c211f;
+    --ss-bg-mid: #12403a;
+    --ss-bg-soft: #175248;
+
+    // Text
+    --ss-text: #eaf6f1;
+    --ss-text-dim: #b7d4cb;
+
+    // Brand
+    --ss-teal: #2dd4bf;
+    --ss-teal-deep: #0f766e;
+    --ss-gold: #f4b942;
+    --ss-gold-deep: #d99a1f;
+
+    // Glass surfaces
+    --ss-surface: rgba(255, 255, 255, 0.07);
+    --ss-surface-strong: rgba(255, 255, 255, 0.12);
+    --ss-border: rgba(255, 255, 255, 0.14);
+    --ss-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+    --ss-radius: 18px;
+    --ss-radius-sm: 12px;
+
+    // Tiles
+    --ss-tile-face: linear-gradient(150deg, #f7e6c4 0%, #ecd6a8 55%, #e0c186 100%);
+    --ss-tile-text: #4a3213;
 }
 
 * {
@@ -65,16 +80,193 @@ h2 {
     font-size: calc(1.325rem + 0.9vw) !important;
 }
 
+html, body {
+    height: 100%;
+}
 
+body {
+    margin: 0;
+    color: var(--ss-text);
+    background-color: var(--ss-bg-deep);
+    background-image:
+        radial-gradient(1100px 700px at 15% -10%, rgba(45, 212, 191, 0.16), transparent 60%),
+        radial-gradient(900px 650px at 95% 5%, rgba(244, 185, 66, 0.10), transparent 55%),
+        linear-gradient(165deg, var(--ss-bg-deep) 0%, var(--ss-bg-mid) 55%, var(--ss-bg-soft) 100%);
+    background-attachment: fixed;
+}
+
+// ---------------------------------------------------------------------------
+// Buttons — modern pill buttons on top of Bootstrap
+// ---------------------------------------------------------------------------
+.btn {
+    border: none;
+    border-radius: 999px;
+    padding: 0.55rem 1.5rem;
+    font-family: ADYS-Bold, sans-serif !important;
+    letter-spacing: 0.02em;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+}
+
+.btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.32);
+    filter: brightness(1.06);
+}
+
+.btn:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.btn:disabled {
+    opacity: 0.45;
+    box-shadow: none;
+}
+
+.btn-primary,
+.normal-btn {
+    background-image: linear-gradient(135deg, #14b8a6, #0f766e);
+    color: white;
+}
+
+.normal-btn {
+    color: white !important;
+}
+
+.btn-success {
+    background-image: linear-gradient(135deg, #34d399, #059669);
+}
+
+.btn-danger {
+    background-image: linear-gradient(135deg, #fb7185, #dc2626);
+}
+
+.btn-warning {
+    background-image: linear-gradient(135deg, #fbbf24, #d97706);
+    color: #3b2a06;
+}
+
+// ---------------------------------------------------------------------------
+// Forms
+// ---------------------------------------------------------------------------
+.form-control {
+    background-color: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--ss-border);
+    border-radius: var(--ss-radius-sm);
+    color: var(--ss-text);
+    padding: 0.6rem 0.9rem;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.form-control:focus {
+    background-color: rgba(255, 255, 255, 0.12);
+    border-color: var(--ss-gold);
+    box-shadow: 0 0 0 0.2rem rgba(244, 185, 66, 0.25);
+    color: var(--ss-text);
+}
+
+.identity-form label {
+    color: var(--ss-text-dim);
+    font-size: 0.95rem;
+}
+
+.identity-form .text-danger {
+    color: #fda4af !important;
+    font-size: 0.9rem;
+}
+
+// Login / register card
 .identity-form {
-    background-color: #F2F2F2;
+    background: var(--ss-surface);
+    border: 1px solid var(--ss-border);
+    border-radius: var(--ss-radius) !important;
+    box-shadow: var(--ss-shadow);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    color: var(--ss-text);
     font-size: 1.1rem;
 }
-html, body { height: 100%; }
-//body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
-html, body { height: 100%; }
-//body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+// ---------------------------------------------------------------------------
+// Shared surfaces
+// ---------------------------------------------------------------------------
+.ss-glass {
+    background: var(--ss-surface);
+    border: 1px solid var(--ss-border);
+    border-radius: var(--ss-radius);
+    box-shadow: var(--ss-shadow);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+}
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+// Chips like "remaining letters" / invitation code (were Bootstrap alerts)
+.alert-warning {
+    background: var(--ss-surface-strong);
+    border: 1px solid var(--ss-border);
+    border-radius: 999px;
+    color: var(--ss-text);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.22);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+mark {
+    background: transparent;
+    color: inherit;
+    padding: 0;
+}
+
+// ---------------------------------------------------------------------------
+// CDK drag & drop
+// ---------------------------------------------------------------------------
+// The board hides drag placeholders (display: none), so CDK's drop animation
+// would animate the dropped tile toward a zero-sized rect at the viewport
+// origin — the "tile flies to the top-left corner" glitch. Disable the
+// settle transition so tiles snap directly onto their cell.
+.cdk-drag-animating {
+    transition: none !important;
+}
+
+// The element being dragged (appended to <body> during the drag).
+.cdk-drag-preview {
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.45) !important;
+    border-radius: 6px;
+    opacity: 0.95;
+    z-index: 2000 !important;
+}
+
+// ---------------------------------------------------------------------------
+// Material dialogs
+// ---------------------------------------------------------------------------
+.mat-dialog-container {
+    border-radius: var(--ss-radius) !important;
+    background: #fbf7ee;
+    color: #23312d;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45) !important;
+}
+
+.cdk-overlay-dark-backdrop {
+    background: rgba(5, 20, 18, 0.6);
+    backdrop-filter: blur(3px);
+}
+
+// ---------------------------------------------------------------------------
+// Scrollbars
+// ---------------------------------------------------------------------------
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.25);
+    border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.4);
+}

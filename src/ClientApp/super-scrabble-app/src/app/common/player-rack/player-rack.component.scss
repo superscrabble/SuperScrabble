@@ -1,8 +1,17 @@
 .tile {
-    background-color: #E3CFAA; /*#D3EEDC;*/
-    box-shadow: 2px 2px 2px black;
-    color: black;
-    font-weight: bold;
+    background: var(--ss-tile-face, #E3CFAA);
+    border: none !important;
+    border-radius: 6px !important;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.55);
+    color: var(--ss-tile-text, #4a3213);
+    font-family: ADYS-Bold, sans-serif !important;
+    min-width: 2.4rem;
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.tile:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 14px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.55);
 }
 
 .cursor-pointer {

@@ -1,13 +1,7 @@
 .page {
-    /*background-color: #1B4A4B;*/
     overflow-x: clip;
-    /* background-image: linear-gradient(#795548, #5D4037); */
-    /* background-image: linear-gradient(#00796B, #5D4037); */
-    /* background-image: linear-gradient(#009688, #388E3C); */
-    /* background-image: linear-gradient(#795548, #5D4037); */
-    /* background-image: linear-gradient(#009688, #61be65); */
-    /* background-image: repeating-linear-gradient(90deg, #795548, #795548 75px, #5D4037 75px, #5D4037 150px); */
-    background-image: repeating-linear-gradient(90deg, #795548, #795548 50px, #5D4037 50px, #5D4037 100px);
+    /* The global felt-and-glow backdrop (body) shows through. */
+    background: transparent;
 }
 
 .board-cell {
@@ -23,43 +17,46 @@
 }
 
 .tile {
-    background-color: #E3CFAA; /*#D3EEDC;*/
-    box-shadow: 2px 2px 2px black;
-    color: black;
+    background: var(--ss-tile-face);
+    border: none !important;
+    border-radius: 6px !important;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.55);
+    color: var(--ss-tile-text);
+    font-family: ADYS-Bold, sans-serif !important;
 }
 
 .basic-cell {
-    background-color: #52B788;
+    background-color: #4aa885;
 }
 
 .center-cell {
-    background-color: #FA9789;
+    background-color: #f4b942;
 }
 
 .x2-letter-cell {
-    background-color: #61C7FA;
+    background-color: #6fc0ec;
 }
 
 .x3-letter-cell {
     color: white;
-    background-color: #0D6896;
+    background-color: #1565a8;
 }
 
 .x2-word-cell {
-    background-color: #FA9789;
+    background-color: #f0937e;
 }
 
 .x3-word-cell {
-    background-color: #F97362;
+    background-color: #e05a4a;
 }
 
-/*TODO: This should go into a global css or something*/
 .selected-tile {
-    background-color: #F97362;
+    background: #ffd166;
+    box-shadow: 0 0 0 2px rgba(255, 209, 102, 0.65), 0 3px 6px rgba(0, 0, 0, 0.35);
 }
 
 .selected-cell {
-    background-color: #F97362; /*#f5c453;*/
+    background-color: #ffd166;
 }
 
 .cursor-default {
@@ -67,17 +64,34 @@
 }
 
 .tile-on-cell {
-    background-color: #E3CFAA;
-    color: black;
+    background: var(--ss-tile-face);
+    color: var(--ss-tile-text);
 }
 
 .player-on-turn {
-    background-color: #E3CFAA;
+    background: var(--ss-tile-face);
 }
 
 .normal-btn {
-    background-color: #0D6896;
+    background-image: linear-gradient(135deg, #14b8a6, #0f766e);
     color: white;
+}
+
+.icon-btn {
+    background: var(--ss-surface);
+    border: 1px solid var(--ss-border);
+    border-radius: 50%;
+    color: var(--ss-text);
+    width: 2.6rem;
+    height: 2.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.15s ease;
+}
+
+.icon-btn:hover {
+    background: var(--ss-surface-strong);
 }
 
 .fill {
@@ -86,40 +100,6 @@
     max-width: 100vw;
     max-height: 90vh;
     overflow-x: hidden;
-    /*overflow-y: hidden;
-    /*
-    top: auto;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    position: absolute;
-    width: auto;
-    height: auto;
-    */
-}
-
-.word-info {
-    background-color: #52B788;
-}
-
-.word-meanings-group {
-    background-color: #52B788;
-}
-
-.word-meaning {
-    background-color: #52B788;
-}
-
-.logs {
-    background-color: #52B788;
-}
-
-.logs-title {
-    background-color: #52B788;
-}
-
-.card-body {
-    background-color: #52B788;
 }
 
 .logs-history-group {
@@ -127,16 +107,6 @@
     overflow-y: scroll;
     -webkit-overflow-scrolling: touch;
 }
-
-.log {
-    background-color: #52B788;
-}
-
-/*
-TODO: implement this one
-.basic-cell-disabled {
-}
-*/
 
 .left-column {
     display: flex;
@@ -150,10 +120,10 @@ TODO: implement this one
     justify-content: space-around;
 }
 
-.square:before{
+.square:before {
     content: "";
     display: block;
-    padding-top: 100%;  /* initial ratio of 1:1*/
+    padding-top: 100%; /* initial ratio of 1:1 */
 }
 
 .grid {
@@ -169,25 +139,24 @@ TODO: implement this one
 @media only screen and (min-width: 992px) {
     .board-size {
         width: 78%;
-    }   
+    }
 }
 
-/*Special case for ipad landscape*/
+/* Special case for ipad landscape */
 @media only screen and (min-device-width: 768px) and (max-device-width: 1080px) and (orientation:landscape) {
     .board-size {
         width: 100%;
-    }   
+    }
 }
 
-/*Special case for ipad portrait*/
+/* Special case for ipad portrait */
 @media only screen and (min-device-width: 768px) and (max-device-width: 1080px) and (orientation:portrait) {
     .board-size {
         width: 100%;
-    }   
+    }
 }
 
 .grid-row {
-    /*grid-template-rows: repeat(15, 40px);*/
     display: grid;
     grid-template-columns: repeat(15, 2.2rem);
 }
@@ -208,17 +177,15 @@ TODO: implement this one
 }
 
 .on-turn-message {
-    /* color: #D9EFFC; */
-    color: black;
-    font-size: 2rem;
+    color: var(--ss-text);
+    font-size: 1.7rem;
     text-align: center;
     overflow-wrap: break-word;
-    line-height: 2.2rem;
+    line-height: 2rem;
 }
 
 .remaining-time {
-    /* color: #D9EFFC; */
-    color: black;
+    color: var(--ss-text);
     font-size: 2rem;
     text-align: center;
     overflow-wrap: break-word;
@@ -226,15 +193,25 @@ TODO: implement this one
 }
 
 .turn-info {
-    background-color: #A9DBC6;
-    color: black;
+    background: var(--ss-surface);
+    border: 1px solid var(--ss-border);
+    border-radius: var(--ss-radius) !important;
+    box-shadow: var(--ss-shadow);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    color: var(--ss-text);
     padding-top: 1rem;
     padding-bottom: 1rem;
 }
 
 .remaining-tiles {
-    background-color: #A9DBC6;
-    color: black;
+    background: var(--ss-surface);
+    border: 1px solid var(--ss-border);
+    border-radius: var(--ss-radius) !important;
+    box-shadow: var(--ss-shadow);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    color: var(--ss-text);
     padding-top: 1rem;
     padding-bottom: 1rem;
     font-size: 1rem;

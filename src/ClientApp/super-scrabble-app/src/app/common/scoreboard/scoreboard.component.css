@@ -1,27 +1,32 @@
 .scoreboard {
-    /* background-color: #A9DBC6; #52B788; */
-    color: #245642;
-    border: none;
+    color: var(--ss-text);
+    border: 1px solid var(--ss-border);
+    border-radius: var(--ss-radius) !important;
+    background: var(--ss-surface);
+    box-shadow: var(--ss-shadow);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
     font-size: 1.2rem;
+    overflow: hidden;
 }
 
-/*table {
-    margin-bottom: 0px;
+.scoreboard table {
+    margin-bottom: 0;
+    color: var(--ss-text);
 }
 
-/*
-.custom-row {
-    background-color: #A9DBC6;
+.scoreboard-header {
+    color: var(--ss-gold);
+    background: rgba(0, 0, 0, 0.3);
+    font-family: ADYS-Bold, sans-serif !important;
 }
-
-.custom-row:nth-child(odd) {background-color: #A9DBC6;}*/
 
 .odd-row {
-    background-color: #7EC9AB;
-    color: #245642;
+    background-color: rgba(255, 255, 255, 0.05);
+    color: var(--ss-text);
 }
 
 .even-row {
-    background-color: #A9DBC6;
-    color: #245642;
+    background-color: rgba(255, 255, 255, 0.11);
+    color: var(--ss-text);
 }

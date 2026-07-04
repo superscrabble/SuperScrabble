@@ -1,15 +1,26 @@
 .logs {
     width: 100%;
     height: 100%;
-    /* background-color: #52B788; */
 }
 
-/* .logs-title {
-    background-color: #52B788;
-} */
+.logs-card {
+    background: var(--ss-surface);
+    border: 1px solid var(--ss-border);
+    border-radius: var(--ss-radius);
+    box-shadow: var(--ss-shadow);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    overflow: hidden;
+}
 
-.card-body {
-    background-color: #52B788;
+.logs-header {
+    color: var(--ss-gold);
+    background: rgba(0, 0, 0, 0.3);
+    padding-top: 1rem;
+}
+
+.logs-title {
+    font-size: 1.5rem !important;
 }
 
 .logs-history-group {
@@ -19,13 +30,18 @@
 }
 
 .log {
-    /* background-color: #52B788; */
-    background-color: #7EC9AB;
-    font-size: 1.1rem;
+    background-color: rgba(255, 255, 255, 0.05);
+    border: none;
+    color: var(--ss-text);
+    font-size: 1.05rem;
+}
+
+.log p {
+    margin-bottom: 0.25rem;
 }
 
 ul.striped-list > li:nth-of-type(odd) {
-    background-color: #A9DBC6 ;
+    background-color: rgba(255, 255, 255, 0.11);
 }
 
 /* width */
@@ -35,15 +51,16 @@ ul.striped-list > li:nth-of-type(odd) {
 
 /* Track */
 ::-webkit-scrollbar-track {
-    background: #f1f1f1; 
+    background: transparent;
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-    background: #888; 
+    background: rgba(255, 255, 255, 0.25);
+    border-radius: 999px;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-    background: #555; 
+    background: rgba(255, 255, 255, 0.4);
 }
