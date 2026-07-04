@@ -563,7 +563,13 @@ public class GameHub : Hub<IGameClient>
 
         if (player.ConnectionId != ConnectionId)
         {
-            await Clients.Client(player.ConnectionId!).UserEnteredGameFromAnotherConnectionId();
+            // ConnectionId is null when the previous connection dropped (reconnect flow);
+            // only notify when another live connection is actually being replaced.
+            if (player.ConnectionId != null)
+            {
+                await Clients.Client(player.ConnectionId).UserEnteredGameFromAnotherConnectionId();
+            }
+
             player.ConnectionId = ConnectionId;
         }
 

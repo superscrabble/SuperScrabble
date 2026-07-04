@@ -133,10 +133,16 @@ const LOCAL_TEXTS: { [lang in AppLanguage]: { [key: string]: string } } = {
   bg: {
     TeammateTilesLabel: 'Плочки на',
     TotalPointsLabel: 'Общо точки',
+    ReconnectingText: 'Връзката прекъсна. Опитваме да се свържем отново…',
+    ReconnectedText: 'Връзката е възстановена.',
+    ConnectionLostText: 'Връзката е загубена. Моля, презаредете страницата.',
   },
   en: {
     TeammateTilesLabel: 'Tiles of',
     TotalPointsLabel: 'Team points',
+    ReconnectingText: 'Connection lost. Reconnecting…',
+    ReconnectedText: 'Connection restored.',
+    ConnectionLostText: 'Connection lost. Please refresh the page.',
   },
 };
 

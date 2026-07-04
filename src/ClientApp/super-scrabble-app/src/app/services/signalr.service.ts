@@ -10,7 +10,9 @@ import { PartyType } from '../models/enums/party-type';
 //import { MatchProps } from '../models/game-configuaration/match-props';
 import { Tile } from '../models/tile';
 import { ErrorHandler } from './error-handler'
+import { LanguageService } from './language.service';
 import { LoadingScreenService } from './loading-screen.service';
+import { ActiveToast, ToastrService } from 'ngx-toastr';
 
 class CustomLogger implements signalR.ILogger {
   constructor(private errorHandler: ErrorHandler) {}
@@ -35,11 +37,14 @@ class CustomLogger implements signalR.ILogger {
 export class SignalrService {
 
   constructor(private utilities: Utilities, private router: Router, private errorHandler: ErrorHandler,
-              private loadingScreenService: LoadingScreenService, private dialog: MatDialog) { }
+              private loadingScreenService: LoadingScreenService, private dialog: MatDialog,
+              private toastr: ToastrService, private languageService: LanguageService) { }
 
   //FIXME: change the access modifier
   public hubConnection?: signalR.HubConnection;
   public hubConnectionStartPromise: Promise<void> | null = null;
+
+  private reconnectingToast: ActiveToast<any> | null = null;
 
   public startConnection = () => {
     if(this.hubConnection?.state == signalR.HubConnectionState.Connected) {
@@ -49,9 +54,12 @@ export class SignalrService {
     this.hubConnection = new signalR.HubConnectionBuilder()
                             .withUrl(environment.serverUrl + '/gamehub',
                             { accessTokenFactory: () => this.utilities.getAccessToken()})
+                            .withAutomaticReconnect([0, 2000, 5000, 10000, 15000, 30000])
                             .configureLogging(signalR.LogLevel.Critical)
                             .configureLogging(new CustomLogger(this.errorHandler))
                             .build();
+
+    this.addReconnectionListeners(this.hubConnection);
 
     this.hubConnectionStartPromise = this.hubConnection.start().then(() => {
       this.loadingScreenService.stopShowingLoadingScreen();
@@ -71,6 +79,55 @@ export class SignalrService {
       })
       .catch(err => console.log('Error while starting connection: ' + err))*/
     console.log("After start connection")
+  }
+
+  private addReconnectionListeners(hubConnection: signalR.HubConnection) {
+    hubConnection.onreconnecting(() => {
+      this.reconnectingToast = this.toastr.warning(
+        this.languageService.getLocalText("ReconnectingText"), '',
+        { disableTimeOut: true, closeButton: false });
+    });
+
+    hubConnection.onreconnected(() => {
+      this.clearReconnectingToast();
+      this.toastr.success(this.languageService.getLocalText("ReconnectedText"));
+      this.rejoinAfterReconnect();
+    });
+
+    // Fires when the automatic retries are exhausted (or the connection
+    // closed without reconnect); at this point only a page reload helps.
+    hubConnection.onclose(() => {
+      this.clearReconnectingToast();
+      this.loadingScreenService.stopShowingLoadingScreen();
+      this.toastr.error(
+        this.languageService.getLocalText("ConnectionLostText"), '',
+        { disableTimeOut: true });
+    });
+  }
+
+  private clearReconnectingToast() {
+    if (this.reconnectingToast != null) {
+      this.toastr.clear(this.reconnectingToast.toastId);
+      this.reconnectingToast = null;
+    }
+  }
+
+  // Reconnecting creates a new connection id, so the server must re-associate
+  // this player/member with it. LoadGame/LoadParty do that and push fresh state.
+  private rejoinAfterReconnect() {
+    const url = this.router.url;
+
+    if (url.startsWith("/games/")) {
+      const gameId = url.split("/")[2];
+      if (gameId) {
+        this.loadGame(gameId);
+      }
+    } else if (url.startsWith("/party/")) {
+      const partyId = url.split("/")[2];
+      if (partyId) {
+        this.loadParty(partyId);
+      }
+    }
   }
 
   //TODO: find a way to unsubscribe a listener
