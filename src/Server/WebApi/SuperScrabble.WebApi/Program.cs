@@ -1,5 +1,4 @@
 using System.Text;
-using Microsoft.AspNetCore.Authentication.Certificate;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -27,7 +26,15 @@ using SuperScrabble.WebApi.Timers;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContext<AppDbContext>();
+string connectionString =
+    builder.Configuration.GetConnectionString("DefaultConnection") ?? DatabaseConfig.ConnectionString;
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseLazyLoadingProxies().UseSqlServer(connectionString));
+
+// Fails fast when the signing key is missing or too short.
+string jwtSigningKey = builder.Configuration["Jwt:SigningKey"]!;
+var encryptionKeyProvider = new ConfigurationEncryptionKeyProvider(jwtSigningKey);
 
 AddCors(builder.Services);
 
@@ -38,7 +45,7 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
     options.SuppressModelStateInvalidFilter = true;
 });
 
-AddJsonWebTokenBearerAuthentication(builder.Services);
+AddJsonWebTokenBearerAuthentication(builder.Services, encryptionKeyProvider.GetEncryptionKey());
 
 builder.Services.AddControllers();
 builder.Services.AddSignalR();
@@ -48,17 +55,13 @@ builder.Services.AddSwaggerGen();
 
 // builder.Services.AddHostedService<GameBackgroundService>();
 
-builder.Services
-        .AddAuthentication(CertificateAuthenticationDefaults.AuthenticationScheme)
-        .AddCertificate();
-
 // Data
 builder.Services.AddScoped(typeof(IRepository<>), typeof(EFRepository<>));
 
 // Services.Common
 builder.Services.AddTransient<IShuffleService, ShuffleService>();
 builder.Services.AddTransient<IJsonWebTokenGenerator, JsonWebTokenGenerator>();
-builder.Services.AddTransient<IEncryptionKeyProvider, InMemoryEncryptionKeyProvider>();
+builder.Services.AddSingleton<IEncryptionKeyProvider>(encryptionKeyProvider);
 builder.Services.AddTransient<IInvitationCodeGenerator, InvitationCodeGenerator>();
 
 // Services.Data
@@ -66,7 +69,7 @@ builder.Services.AddScoped<IUsersService, UsersService>();
 builder.Services.AddScoped<IWordsService, WordsService>();
 
 // Services.Game
-builder.Services.AddScoped<TimerManager>();
+builder.Services.AddSingleton<TimerManager>();
 builder.Services.AddScoped<IGameValidator, GameValidator>();
 builder.Services.AddScoped<IGameplayConstantsProvider, GameplayConstantsProvider>();
 builder.Services.AddScoped<ITilesProvider, StandardTilesProvider>();
@@ -87,10 +90,17 @@ using (var serviceScope = app.Services.CreateScope())
 {
     AppDbContext dbContext = serviceScope.ServiceProvider.GetRequiredService<AppDbContext>();
     dbContext.Database.Migrate();
-    if (!dbContext.Words.Any())
-    {
-        new AppSeeder().SeedAsync(dbContext, serviceScope.ServiceProvider).GetAwaiter().GetResult();
-    }
+
+    // The word files live in the WebApi project's "all" folder; resolve them relative to the
+    // content root so seeding works regardless of the process working directory.
+    string wordsDirectory = builder.Configuration["Seeding:WordsDirectory"] is { Length: > 0 } configured
+        ? configured
+        : Path.Combine(app.Environment.ContentRootPath, "all");
+
+    new AppSeeder(wordsDirectory)
+        .SeedAsync(dbContext, serviceScope.ServiceProvider)
+        .GetAwaiter()
+        .GetResult();
 }
 
 if (app.Environment.IsDevelopment())
@@ -169,9 +179,8 @@ static void AddCors(IServiceCollection services)
     });
 }
 
-static void AddJsonWebTokenBearerAuthentication(IServiceCollection services)
+static void AddJsonWebTokenBearerAuthentication(IServiceCollection services, string encryptionKey)
 {
-    string encryptionKey = new InMemoryEncryptionKeyProvider().GetEncryptionKey();
     var keyBytes = Encoding.UTF8.GetBytes(encryptionKey);
 
     services.AddAuthentication(options =>
@@ -197,19 +206,24 @@ static void AddJsonWebTokenBearerAuthentication(IServiceCollection services)
 
                 return Task.CompletedTask;
             },
-            OnTokenValidated = context =>
+            OnTokenValidated = async context =>
             {
                 var userManager = context.HttpContext
                     .RequestServices.GetRequiredService<UserManager<AppUser>>();
 
-                var user = userManager.GetUserAsync(context.HttpContext.User);
+                // The token carries only a name claim (no user id), so the user must be
+                // looked up by name — and from the token's principal, not HttpContext.User,
+                // which is not populated yet at this point in the pipeline.
+                string? userName = context.Principal?.Identity?.Name;
+
+                AppUser? user = userName is null
+                    ? null
+                    : await userManager.FindByNameAsync(userName);
 
                 if (user == null)
                 {
                     context.Fail("Unauthorized");
                 }
-
-                return Task.CompletedTask;
             }
         };
 
