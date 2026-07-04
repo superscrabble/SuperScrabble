@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.SignalR;
+using Microsoft.AspNetCore.SignalR;
 using SuperScrabble.Services.Data.Games;
 using SuperScrabble.Services.Game;
 using SuperScrabble.Services.Game.Matchmaking;
@@ -13,26 +13,23 @@ namespace SuperScrabble.WebApi.Timers;
 public class ChessTimer : GameTimer
 {
     private readonly GameState _gameState;
-    private readonly IGameService _gameService;
     private readonly IHubContext<GameHub, IGameClient> _hubContext;
-    private readonly IMatchmakingService _matchmakingService;
-    private readonly IGamesService _gamesService;
+    private readonly IServiceScopeFactory _serviceScopeFactory;
+    private readonly ILogger<ChessTimer> _logger;
 
     public ChessTimer(
         GameState gameState,
-        IGamesService gamesService,
-        IGameService gameService,
         IHubContext<GameHub, IGameClient> hubContext,
-        IMatchmakingService matchmakingService)
+        IServiceScopeFactory serviceScopeFactory,
+        ILogger<ChessTimer> logger)
     {
         _gameState = gameState;
-        _gameService = gameService;
         _hubContext = hubContext;
-        _matchmakingService = matchmakingService;
-        _gamesService = gamesService;
+        _serviceScopeFactory = serviceScopeFactory;
+        _logger = logger;
         Reset();
 
-        _timer.Elapsed += async (sender, args) => await OnTimedEvent(sender, args);
+        _timer.Elapsed += async (sender, args) => await OnTimedEventSafeAsync();
     }
 
     public int SecondsRemaining { get; private set; }
@@ -44,22 +41,45 @@ public class ChessTimer : GameTimer
         base.Reset();
     }
 
-    // BackgroundService
-
-    private async Task OnTimedEvent(object? sender, ElapsedEventArgs args)
+    private async Task OnTimedEventSafeAsync()
     {
+        // Timer callbacks run on threadpool threads concurrently with hub invocations,
+        // so game-state mutation happens under the same per-game lock the hub uses.
+        // Exceptions must not escape: an unobserved exception in a Timer.Elapsed
+        // handler would be silently lost (or crash the process).
+        SemaphoreSlim gameLock = GameLocks.Get(_gameState.GameId);
+        await gameLock.WaitAsync();
+
+        try
+        {
+            await OnTimedEventAsync();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "ChessTimer tick failed for game {GameId}.", _gameState.GameId);
+        }
+        finally
+        {
+            gameLock.Release();
+        }
+    }
+
+    private async Task OnTimedEventAsync()
+    {
+        if (_gameState.IsGameOver)
+        {
+            return;
+        }
+
         if (SecondsRemaining >= 0)
         {
             string currentPlayerUserName = _gameState.CurrentTeam.CurrentPlayer.UserName;
             _gameState.RemainingSecondsByUserNames[currentPlayerUserName] = SecondsRemaining;
 
-            int minutes = SecondsRemaining / 60;
-            int seconds = SecondsRemaining % 60;
-
             var viewModel = new UpdateGameTimerViewModel
             {
-                Minutes = minutes,
-                Seconds = seconds,
+                Minutes = SecondsRemaining / 60,
+                Seconds = SecondsRemaining % 60,
             };
 
             foreach (Player player in _gameState.Players)
@@ -87,9 +107,15 @@ public class ChessTimer : GameTimer
             _gameState.NextTeam();
         }
 
+        // Scoped services (game service, DbContext-backed persistence) must be resolved
+        // from a fresh scope: the timer outlives the hub invocation that created it.
+        using var scope = _serviceScopeFactory.CreateScope();
+        var gameService = scope.ServiceProvider.GetRequiredService<IGameService>();
+        var matchmakingService = scope.ServiceProvider.GetRequiredService<IMatchmakingService>();
+
         foreach (Player player in _gameState.Players)
         {
-            _gameService.FillPlayerTiles(_gameState, player);
+            gameService.FillPlayerTiles(_gameState, player);
         }
 
         foreach (Player player in _gameState.Players)
@@ -99,7 +125,7 @@ public class ChessTimer : GameTimer
                 continue;
             }
 
-            var viewModel = _gameService.MapFromGameState(_gameState, player.UserName);
+            var viewModel = gameService.MapFromGameState(_gameState, player.UserName);
 
             await _hubContext.Clients
                 .Client(player.ConnectionId)
@@ -107,28 +133,28 @@ public class ChessTimer : GameTimer
 
             if (_gameState.IsGameOver)
             {
-                _matchmakingService.RemoveUserFromGame(player.UserName);
+                matchmakingService.RemoveUserFromGame(player.UserName);
 
                 await _hubContext.Groups
-                    .RemoveFromGroupAsync(
-                        player.ConnectionId, _gameState.GameId);
+                    .RemoveFromGroupAsync(player.ConnectionId, _gameState.GameId);
             }
         }
 
         if (_gameState.IsGameOver)
         {
-            _matchmakingService.RemoveGameState(_gameState.GameId);
+            matchmakingService.RemoveGameState(_gameState.GameId);
 
-            // UserManager is Disposed
-            // Database service
+            var gamesService = scope.ServiceProvider.GetRequiredService<IGamesService>();
 
-            // await _gamesService!.SaveGameAsync(new SaveGameInputModel
-            // {
-            //     GameId = _gameState.GameId,
-            //     Players = _gameState.Players
-            // });
+            await gamesService.SaveGameAsync(new SaveGameInputModel
+            {
+                GameId = _gameState.GameId,
+                Players = _gameState.Players,
+            });
 
+            GameLocks.Remove(_gameState.GameId);
             Dispose();
+            return;
         }
 
         Reset();

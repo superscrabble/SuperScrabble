@@ -21,6 +21,13 @@ namespace SuperScrabble.WebApi.Hubs;
 [Authorize]
 public class GameHub : Hub<IGameClient>
 {
+    public const string UserNotInsideAGameErrorCode = "UserNotInsideAGame";
+
+    // The waiting queues and parties are global state, so matchmaking operations are
+    // serialized; game commands are serialized per game via GameLocks (shared with timers).
+    // Static because hubs are instantiated per invocation.
+    private static readonly SemaphoreSlim MatchmakingLock = new(1, 1);
+
     private readonly IMatchmakingService _matchmakingService;
     private readonly IGameService _gameService;
     private readonly ITilesProvider _tilesProvider;
@@ -98,74 +105,115 @@ public class GameHub : Hub<IGameClient>
 
     public async Task WriteWord(WriteWordInputModel input)
     {
-        var gameState = _matchmakingService.GetGameState(UserName);
-        var result = _gameService.WriteWord(gameState, input, UserName);
-
-        if (!result.IsSucceeded)
+        await ExecuteGameActionAsync(async gameState =>
         {
-            await Clients.Caller.InvalidWriteWordInput(result);
-            return;
-        }
+            var result = _gameService.WriteWord(gameState, input, UserName);
 
-        await SaveGameIfTheGameIsOverAsync();
-        await UpdateGameStateAsync(gameState);
+            if (!result.IsSucceeded)
+            {
+                await Clients.Caller.InvalidWriteWordInput(result);
+                return;
+            }
+
+            await SaveGameIfTheGameIsOverAsync(gameState);
+            await UpdateGameStateAsync(gameState);
+        });
     }
 
     public async Task LeaveGame()
     {
-        var gameState = _matchmakingService.GetGameState(UserName);
-
-        if (gameState == null)
+        await ExecuteGameActionAsync(async gameState =>
         {
-            return;
-        }
+            gameState.GetPlayer(UserName)!.LeaveGame();
+            gameState.AddHistoryLog(new GameHistoryLog
+            {
+                Status = HistoryLogStatus.Leave,
+                UserName = UserName,
+            });
 
-        gameState.GetPlayer(UserName)!.LeaveGame();
-        gameState.AddHistoryLog(new GameHistoryLog
-        {
-            Status = HistoryLogStatus.WriteWord,
-            UserName = UserName,
-        });
+            gameState.EndGameIfRoomIsEmptyOrAllPlayersHaveRunOutOfTime();
+            gameState.CurrentTeam.NextPlayer();
 
-        gameState.EndGameIfRoomIsEmptyOrAllPlayersHaveRunOutOfTime();
-        gameState.CurrentTeam.NextPlayer();
+            if (gameState.CurrentTeam.IsTurnFinished)
+            {
+                gameState.NextTeam();
+            }
 
-        if (gameState.CurrentTeam.IsTurnFinished)
-        {
-            gameState.NextTeam();
-        }
-
-        await SaveGameIfTheGameIsOverAsync();
-        await UpdateGameStateAsync(gameState);
+            await SaveGameIfTheGameIsOverAsync(gameState);
+            await UpdateGameStateAsync(gameState);
+        },
+        notifyWhenNotInsideAGame: false);
     }
 
     public async Task ExchangeTiles(ExchangeTilesInputModel input)
     {
-        var gameState = _matchmakingService.GetGameState(UserName);
-        var result = _gameService.ExchangeTiles(gameState, input, UserName);
-
-        if (!result.IsSucceeded)
+        await ExecuteGameActionAsync(async gameState =>
         {
-            await Clients.Caller.InvalidExchangeTilesInput(result);
-            return;
-        }
+            var result = _gameService.ExchangeTiles(gameState, input, UserName);
 
-        await UpdateGameStateAsync(gameState);
+            if (!result.IsSucceeded)
+            {
+                await Clients.Caller.InvalidExchangeTilesInput(result);
+                return;
+            }
+
+            await UpdateGameStateAsync(gameState);
+        });
     }
 
     public async Task SkipTurn()
     {
-        var gameState = _matchmakingService.GetGameState(UserName);
-        var result = _gameService.SkipTurn(gameState, UserName);
-
-        if (!result.IsSucceeded)
+        await ExecuteGameActionAsync(async gameState =>
         {
-            await Clients.Caller.ImpossibleToSkipTurn(result);
+            var result = _gameService.SkipTurn(gameState, UserName);
+
+            if (!result.IsSucceeded)
+            {
+                await Clients.Caller.ImpossibleToSkipTurn(result);
+                return;
+            }
+
+            await SaveGameIfTheGameIsOverAsync(gameState);
+            await UpdateGameStateAsync(gameState);
+        });
+    }
+
+    private async Task ExecuteGameActionAsync(
+        Func<GameState, Task> gameAction, bool notifyWhenNotInsideAGame = true)
+    {
+        if (!_matchmakingService.IsUserInsideAnyGame(UserName))
+        {
+            if (notifyWhenNotInsideAGame)
+            {
+                await Clients.Caller.Error(UserNotInsideAGameErrorCode);
+            }
+
             return;
         }
 
-        await SaveGameIfTheGameIsOverAsync();
-        await UpdateGameStateAsync(gameState);
+        GameState gameState = _matchmakingService.GetGameState(UserName);
+        SemaphoreSlim gameLock = GameLocks.Get(gameState.GameId);
+        await gameLock.WaitAsync();
+
+        try
+        {
+            // Re-check after acquiring the lock: the game may have ended meanwhile.
+            if (!_matchmakingService.GameExists(gameState.GameId))
+            {
+                if (notifyWhenNotInsideAGame)
+                {
+                    await Clients.Caller.Error(UserNotInsideAGameErrorCode);
+                }
+
+                return;
+            }
+
+            await gameAction(gameState);
+        }
+        finally
+        {
+            gameLock.Release();
+        }
     }
 
     public async Task GetAllWildcardOptions()
@@ -176,6 +224,8 @@ public class GameHub : Hub<IGameClient>
 
     public async Task JoinRoom(GameMode gameMode)
     {
+        await MatchmakingLock.WaitAsync();
+
         try
         {
             if (_matchmakingService.IsUserInsideAnyGame(UserName))
@@ -188,7 +238,7 @@ public class GameHub : Hub<IGameClient>
                 return;
             }
 
-            await StopSearching();
+            await StopSearchingCore();
 
             _matchmakingService.JoinRoom(
                 UserName, ConnectionId, gameMode, out bool hasGameStarted);
@@ -206,9 +256,27 @@ public class GameHub : Hub<IGameClient>
         {
             await SendErrorAsync(ex.ErrorCode);
         }
+        finally
+        {
+            MatchmakingLock.Release();
+        }
     }
 
     public async Task StopSearching()
+    {
+        await MatchmakingLock.WaitAsync();
+
+        try
+        {
+            await StopSearchingCore();
+        }
+        finally
+        {
+            MatchmakingLock.Release();
+        }
+    }
+
+    private async Task StopSearchingCore()
     {
         var connectionIds = _matchmakingService.LeaveRoom(UserName);
         await Clients.Clients(connectionIds).SearchingStopped();
@@ -216,6 +284,8 @@ public class GameHub : Hub<IGameClient>
 
     public async Task JoinRandomDuo()
     {
+        await MatchmakingLock.WaitAsync();
+
         try
         {
             if (_matchmakingService.IsUserInsideAnyGame(UserName))
@@ -240,14 +310,18 @@ public class GameHub : Hub<IGameClient>
         {
             await SendErrorAsync(ex.ErrorCode);
         }
-        
+        finally
+        {
+            MatchmakingLock.Release();
+        }
     }
 
     public async Task CreateParty(PartyType partyType)
     {
+        await MatchmakingLock.WaitAsync();
+
         try
         {
-
             if (_matchmakingService.IsUserInsideAnyGame(UserName))
             {
                 return;
@@ -266,6 +340,10 @@ public class GameHub : Hub<IGameClient>
         catch (MatchmakingFailedException ex)
         {
             await SendErrorAsync(ex.ErrorCode);
+        }
+        finally
+        {
+            MatchmakingLock.Release();
         }
     }
 
@@ -314,6 +392,8 @@ public class GameHub : Hub<IGameClient>
 
     public async Task JoinParty(string invitationCode)
     {
+        await MatchmakingLock.WaitAsync();
+
         try
         {
             _matchmakingService.JoinParty(UserName, ConnectionId,
@@ -348,10 +428,16 @@ public class GameHub : Hub<IGameClient>
         {
             await SendErrorAsync(ex.ErrorCode);
         }
+        finally
+        {
+            MatchmakingLock.Release();
+        }
     }
 
     public async Task LeaveParty(string partyId)
     {
+        await MatchmakingLock.WaitAsync();
+
         try
         {
             _matchmakingService.LeaveParty(
@@ -387,10 +473,16 @@ public class GameHub : Hub<IGameClient>
         {
             await SendErrorAsync(ex.ErrorCode);
         }
+        finally
+        {
+            MatchmakingLock.Release();
+        }
     }
 
     public async Task StartGameFromParty(string partyId)
     {
+        await MatchmakingLock.WaitAsync();
+
         try
         {
             Party party = _matchmakingService.GetPartyById(partyId);
@@ -410,6 +502,10 @@ public class GameHub : Hub<IGameClient>
         catch (MatchmakingFailedException ex)
         {
             await SendErrorAsync(ex.ErrorCode);
+        }
+        finally
+        {
+            MatchmakingLock.Release();
         }
     }
 
@@ -448,11 +544,12 @@ public class GameHub : Hub<IGameClient>
         }
     }
 
-    public async Task LoadGame(string gameId) 
+    public async Task LoadGame(string gameId)
     {
-        if(!_matchmakingService.GameExists(gameId))
+        if (!_matchmakingService.GameExists(gameId))
         {
             await Clients.Client(this.ConnectionId).NoSuchGame();
+            return;
         }
 
         if (!_matchmakingService.IsUserInsideGame(UserName, gameId))
@@ -471,14 +568,11 @@ public class GameHub : Hub<IGameClient>
         }
 
         var viewModel = _gameService.MapFromGameState(gameState, UserName);
-        Console.WriteLine("LoadGame");
         await Clients.Client(player.ConnectionId).UpdateGameState(viewModel);
     }
 
-    private async Task SaveGameIfTheGameIsOverAsync()
+    private async Task SaveGameIfTheGameIsOverAsync(GameState gameState)
     {
-        var gameState = _matchmakingService.GetGameState(UserName);
-
         if (gameState.IsGameOver)
         {
             var saveGameInput = new SaveGameInputModel
@@ -487,8 +581,7 @@ public class GameHub : Hub<IGameClient>
                 GameId = gameState.GameId
             };
 
-            var timer = _timerManager.GetTimer(gameState.GameId);
-            timer!.Dispose();
+            _timerManager.GetTimer(gameState.GameId)?.Dispose();
             await _gamesService.SaveGameAsync(saveGameInput);
         }
     }
@@ -509,7 +602,6 @@ public class GameHub : Hub<IGameClient>
         }
 
         var timer = _timerManager.CreateTimer(gameState);
-        Console.WriteLine(timer.GetType().Name);
         _timerManager.AttachTimerToGameState(timer, gameId);
 
         await Clients.Group(gameId).StartGame(gameId);
@@ -545,6 +637,8 @@ public class GameHub : Hub<IGameClient>
         if (gameState.IsGameOver)
         {
             _matchmakingService.RemoveGameState(gameId);
+            _timerManager.RemoveTimer(gameId);
+            GameLocks.Remove(gameId);
         }
     }
 
