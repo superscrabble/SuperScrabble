@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { AngularFireRemoteConfig } from '@angular/fire/compat/remote-config';
+import { LanguageService } from 'src/app/services/language.service';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ErrorDialogComponent } from '../error-dialog/error-dialog.component';
 
@@ -15,7 +15,7 @@ export class LeaveGameDialogComponent implements OnInit {
   leaveDenyBtnLabel: string = "";
 
   constructor(public dialogRef: MatDialogRef<ErrorDialogComponent>,
-              private remoteConfig: AngularFireRemoteConfig) {
+              private remoteConfig: LanguageService) {
     this.loadRemoteConfigTexts();
   }
 

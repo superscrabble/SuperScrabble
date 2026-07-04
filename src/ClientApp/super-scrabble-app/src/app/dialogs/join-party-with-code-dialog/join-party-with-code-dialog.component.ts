@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AngularFireRemoteConfig } from '@angular/fire/compat/remote-config';
+import { LanguageService } from 'src/app/services/language.service';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { HubConnectionState } from '@microsoft/signalr';
@@ -22,7 +22,7 @@ export class JoinPartyWithCodeDialogComponent implements OnInit {
   constructor(public dialogRef: MatDialogRef<JoinPartyWithCodeDialogComponent>,
               private matchmakingService: MatchmakingService,
               private signalrService: SignalrService,
-              private router: Router, private remoteConfig: AngularFireRemoteConfig) {
+              private router: Router, private remoteConfig: LanguageService) {
     this.loadRemoteConfigTexts();
   }
 

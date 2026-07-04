@@ -1,12 +1,12 @@
 <div class="d-flex rounded scoreboard">
     <table class="table table-borderless">
         <!--Posible way to show player's times-->
-        <tr style="color: white; background-color: black;" class="py-2 text-center">
+        <tr class="scoreboard-header py-2 text-center">
             <!--<th class="py-3 px-4">Място</th>-->
             <th *ngIf="doAllPlayersHaveTimer()" class="py-3 px-4">{{scoreboardTimeLabel}}</th>
             <th class="py-3 px-4">{{scoreboardPlayerLabel}}</th>
             <th class="py-3 px-4">{{scoreboardPointsLabel}}</th>
-            <th *ngIf="isDuoGame">Общо точки</th> <!--For now this does not need a translation-->
+            <th *ngIf="isDuoGame">{{totalPointsLabel}}</th>
         </tr>
         <ng-container class="custom-row" *ngFor="let team of teams; let i = index">
             <!--<th class="{{getClassByRowIndex(i)}}" [attr.rowspan]="team.players.length + 1" class="text-center ps-3 py-3">{{i + 1}}</th>-->
@@ -18,7 +18,7 @@
                 <td [attr.rowspan]="team.players.length + 1" *ngIf="isDuoGame && first" class="text-center ps-3 py-4"><strong>{{team.points}}</strong></td>
             </tr>
         </ng-container>
-        <tfoot style="background-color: #7EC9AB;">
+        <tfoot>
 
         </tfoot>
     </table>

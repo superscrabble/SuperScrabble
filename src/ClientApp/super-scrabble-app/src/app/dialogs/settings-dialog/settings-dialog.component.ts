@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Inject, OnInit, Output } from '@angular/core';
-import { AngularFireRemoteConfig } from '@angular/fire/compat/remote-config';
+import { LanguageService } from 'src/app/services/language.service';
 import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 export interface SettingsDialogData {
@@ -21,7 +21,7 @@ export class SettingsDialogComponent implements OnInit {
 
   //TODO: think how to remove MatDialog so that openLeaveGameDialog will work
   constructor(@Inject(MAT_DIALOG_DATA) public data: SettingsDialogData, private dialog: MatDialog,
-              private remoteConfig: AngularFireRemoteConfig) {
+              private remoteConfig: LanguageService) {
     this.openLeaveGameDialog = data.openLeaveGameDialog;
     this.loadRemoteConfigTexts();
   }

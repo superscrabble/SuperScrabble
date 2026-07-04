@@ -4,7 +4,7 @@ import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorHandler } from 'src/app/services/error-handler';
 import { WebRequestsService } from 'src/app/services/web-requests.service';
-import { AngularFireRemoteConfig } from '@angular/fire/compat/remote-config';
+import { LanguageService } from 'src/app/services/language.service';
 
 @Component({
   selector: 'app-register-form',
@@ -32,7 +32,7 @@ export class RegisterFormComponent implements OnInit {
   registerBtnText: string = "";
 
   constructor(private webRequestsService: WebRequestsService, private router: Router, private errorHandler: ErrorHandler,
-      private remoteConfig: AngularFireRemoteConfig) {
+      private remoteConfig: LanguageService) {
     this.loadRemoteConfigTexts();
   }
 

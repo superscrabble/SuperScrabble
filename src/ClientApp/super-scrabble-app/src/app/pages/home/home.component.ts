@@ -10,7 +10,7 @@ import { MatchmakingService } from 'src/app/services/matchmaking.service';
 import { PartyType } from 'src/app/models/enums/party-type';
 import { GameMode } from 'src/app/models/enums/game-mode';
 import { LoadingScreenService } from 'src/app/services/loading-screen.service';
-import { AngularFireRemoteConfig } from '@angular/fire/compat/remote-config';
+import { LanguageService } from 'src/app/services/language.service';
 
 class GameModeButton {
   text: string = "";
@@ -48,7 +48,7 @@ export class HomeComponent implements OnInit {
   constructor(private signalrService: SignalrService, private utilities: Utilities,
               private router: Router, private dialog: MatDialog, private matchmakingService: MatchmakingService,
               private loadingScreenService: LoadingScreenService,
-              private remoteConfig: AngularFireRemoteConfig) {         
+              private remoteConfig: LanguageService) {         
       this.loadRemoteConfigTexts();
   }
 

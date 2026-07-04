@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { AngularFireRemoteConfig } from '@angular/fire/compat/remote-config';
+import { LanguageService } from 'src/app/services/language.service';
 import { Tile } from 'src/app/models/tile';
 
 @Component({
@@ -14,7 +14,7 @@ export class ExchangeTilesComponent implements OnInit {
   selectedExchangeTiles: Tile[] = new Array();
   changeLetterSecondBtnLabel: string = "";
 
-  constructor(private remoteConfig: AngularFireRemoteConfig) {
+  constructor(private remoteConfig: LanguageService) {
     this.loadRemoteConfigTexts();
   }
 

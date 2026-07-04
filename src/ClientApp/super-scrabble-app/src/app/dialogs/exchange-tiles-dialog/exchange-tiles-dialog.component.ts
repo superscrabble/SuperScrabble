@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { AngularFireRemoteConfig } from '@angular/fire/compat/remote-config';
+import { LanguageService } from 'src/app/services/language.service';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Tile } from 'src/app/models/tile';
 
@@ -17,7 +17,7 @@ export class ExchangeTilesDialogComponent implements OnInit {
   exchangeTilesTitle: string = "";
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: ExchangeTileDialogData,
-              private remoteConfig: AngularFireRemoteConfig) {
+              private remoteConfig: LanguageService) {
     this.loadRemoteConfigTexts();
   }
 

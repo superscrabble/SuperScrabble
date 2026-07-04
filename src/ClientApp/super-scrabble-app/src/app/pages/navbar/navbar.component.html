@@ -23,5 +23,9 @@
             <a class="nav-item nav-link active" *ngIf="utilities.hasAccessToken()"  href="/" (click)="logout()">{{navLogOutLabel}}</a>
         </li>
       </ul>
+      <button type="button" class="lang-btn ms-lg-auto my-2 my-lg-0" (click)="switchLanguage()">
+        <span class="material-icons">language</span>
+        <span>{{languageToggleLabel}}</span>
+      </button>
     </div>
 </nav>

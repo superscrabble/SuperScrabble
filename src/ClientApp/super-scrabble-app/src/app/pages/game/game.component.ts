@@ -19,7 +19,7 @@ import { CdkDragDrop, CdkDragEnter, moveItemInArray, transferArrayItem } from "@
 import { Team } from 'src/app/models/team';
 import { Player } from 'src/app/models/player';
 import { LoadingScreenService } from 'src/app/services/loading-screen.service';
-import { AngularFireRemoteConfig } from '@angular/fire/compat/remote-config';
+import { LanguageService } from 'src/app/services/language.service';
 import { Log } from 'src/app/models/enums/log';
 import { ToastrService } from 'ngx-toastr';
 
@@ -80,6 +80,7 @@ export class GameComponent implements OnInit {
     timerMaxSeconds: number = 90;
 
     leaveGameBtnLabel: string = "";
+    teammateTilesLabel: string = "";
     skipTurnBtnLabel: string = "";
     changeLetterBtnLabel: string = "";
     changeLetterSecondBtnLabel: string = "";
@@ -96,7 +97,7 @@ export class GameComponent implements OnInit {
         public dialog: MatDialog,
         private elementRef: ElementRef,
         private loadingScreenService: LoadingScreenService,
-        private remoteConfig: AngularFireRemoteConfig,
+        private remoteConfig: LanguageService,
         private toastr: ToastrService) {
         this.loadRemoteConfigTexts();
     }
@@ -117,6 +118,7 @@ export class GameComponent implements OnInit {
                 this.noSuchGameText = all["NoSuchGameText"].asString()!;
             })
         })
+        this.teammateTilesLabel = this.remoteConfig.getLocalText("TeammateTilesLabel");
     }
 
     ngOnInit(): void {

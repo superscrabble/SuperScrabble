@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, Pipe, PipeTransform } from '@angular/core';
-import { AngularFireRemoteConfig } from '@angular/fire/compat/remote-config';
+import { LanguageService } from 'src/app/services/language.service';
 import { Player } from 'src/app/models/player';
 import { Team } from 'src/app/models/team';
 
@@ -34,9 +34,11 @@ export class ScoreboardComponent implements OnInit {
   scoreboardPointsAbreviation: string = "";
   scoreboardLeftPlayerText: string = "";
   scoreboardCurrentPlayerText: string = "";
+  totalPointsLabel: string = "";
 
-  constructor(private remoteConfig: AngularFireRemoteConfig) {
+  constructor(private remoteConfig: LanguageService) {
     this.loadRemoteConfigTexts();
+    this.totalPointsLabel = this.remoteConfig.getLocalText("TotalPointsLabel");
   }
 
   private loadRemoteConfigTexts() {

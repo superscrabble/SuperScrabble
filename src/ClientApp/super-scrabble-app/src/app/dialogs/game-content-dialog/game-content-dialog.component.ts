@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Inject, Input, OnInit, Output } from '@angular/core';
-import { AngularFireRemoteConfig } from '@angular/fire/compat/remote-config';
+import { LanguageService } from 'src/app/services/language.service';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Log } from 'src/app/models/enums/log';
 import { Action } from 'src/app/models/action';
@@ -37,7 +37,7 @@ export class GameContentDialogComponent implements OnInit {
   wordInfoLabel: string = "";
 
   constructor(@Inject(MAT_DIALOG_DATA) public _data: GameContentDialogData,
-              private remoteConfig: AngularFireRemoteConfig) {
+              private remoteConfig: LanguageService) {
     this.data = _data;
 
     this.loadRemoteConfigTexts();

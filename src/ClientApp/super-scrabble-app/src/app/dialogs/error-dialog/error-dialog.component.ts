@@ -1,6 +1,6 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { AngularFireRemoteConfig } from '@angular/fire/compat/remote-config';
+import { LanguageService } from 'src/app/services/language.service';
 
 export interface ErrorDialogData {
   message: string;
@@ -20,7 +20,7 @@ export class ErrorDialogComponent implements OnInit {
   errors: Map<string, string> = new Map();
 
   constructor(public dialogRef: MatDialogRef<ErrorDialogComponent>, 
-    @Inject(MAT_DIALOG_DATA) public data: ErrorDialogData, private remoteConfig: AngularFireRemoteConfig) {
+    @Inject(MAT_DIALOG_DATA) public data: ErrorDialogData, private remoteConfig: LanguageService) {
     this.loadRemoteConfigTexts();
   }
 

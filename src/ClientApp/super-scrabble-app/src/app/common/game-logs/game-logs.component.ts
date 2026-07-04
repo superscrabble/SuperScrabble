@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { AngularFireRemoteConfig } from '@angular/fire/compat/remote-config';
+import { LanguageService } from 'src/app/services/language.service';
 import { Log } from 'src/app/models/enums/log';
 import { LogStatus } from 'src/app/models/enums/log-status';
 import { Action } from 'src/app/models/action';
@@ -21,7 +21,7 @@ export class GameLogsComponent implements OnInit {
   gameLogsChangeTilesText: string = "";
   gameLogsNoLogsText: string = "";
 
-  constructor(private remoteConfig: AngularFireRemoteConfig) {
+  constructor(private remoteConfig: LanguageService) {
     this.loadRemoteConfigTexts();
   }
 

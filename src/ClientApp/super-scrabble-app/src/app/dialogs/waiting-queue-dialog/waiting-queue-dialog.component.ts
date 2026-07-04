@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AngularFireRemoteConfig } from '@angular/fire/compat/remote-config';
+import { LanguageService } from 'src/app/services/language.service';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { SignalrService } from 'src/app/services/signalr.service';
 
@@ -16,7 +16,7 @@ export class WaitingQueueDialogComponent implements OnInit {
   constructor(
     private dialog: MatDialog,
     private dialogRef: MatDialogRef<WaitingQueueDialogComponent>,
-    private remoteConfig: AngularFireRemoteConfig,
+    private remoteConfig: LanguageService,
     private signalrService: SignalrService) {
     this.loadRemoteConfigTexts();
     this.dialog.afterAllClosed.subscribe(() => {

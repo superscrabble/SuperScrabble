@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { AngularFireRemoteConfig } from '@angular/fire/compat/remote-config';
+import { LanguageService } from 'src/app/services/language.service';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { AppConfig } from 'src/app/app-config';
 import { Tile } from 'src/app/models/tile';
@@ -26,7 +26,7 @@ export class ChangeWildcardDialogComponent implements OnInit {
 
   constructor(public dialogRef: MatDialogRef<ChangeWildcardDialogComponent>, 
               @Inject(MAT_DIALOG_DATA) public data: ChangeWildcardDialogData,
-              public signalrService: SignalrService, private remoteConfig: AngularFireRemoteConfig) {
+              public signalrService: SignalrService, private remoteConfig: LanguageService) {
     this.tiles = data.tiles;
     this.loadRemoteConfigTexts();
   }

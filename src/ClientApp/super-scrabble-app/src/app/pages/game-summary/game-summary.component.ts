@@ -4,7 +4,7 @@ import { HttpClient, HttpResponse } from '@angular/common/http';
 import { WebRequestsService } from 'src/app/services/web-requests.service';
 import { ErrorHandler } from 'src/app/services/error-handler';
 import { LoadingScreenService } from 'src/app/services/loading-screen.service';
-import { AngularFireRemoteConfig } from '@angular/fire/compat/remote-config';
+import { LanguageService } from 'src/app/services/language.service';
 
 @Component({
   selector: 'app-game-summary',
@@ -26,7 +26,7 @@ export class GameSummaryComponent implements OnInit {
 
   constructor(private router: Router, private webRequestsService: WebRequestsService,
               private errorHandler: ErrorHandler, private loadingScreenService: LoadingScreenService,
-              private remoteConfig: AngularFireRemoteConfig) { 
+              private remoteConfig: LanguageService) { 
     this.loadRemoteConfigTexts();
   }
   

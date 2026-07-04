@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AngularFireRemoteConfig } from '@angular/fire/compat/remote-config';
+import { LanguageService } from 'src/app/services/language.service';
 import { Router } from '@angular/router';
 import { HubConnectionState } from '@microsoft/signalr';
 import { PartyType } from 'src/app/models/enums/party-type';
@@ -43,7 +43,7 @@ export class PartyPageComponent implements OnInit {
 
   constructor(private signalrService: SignalrService, private matchmakingService: MatchmakingService,
               private router: Router, private loadingScreenService: LoadingScreenService,
-              private remoteConfig: AngularFireRemoteConfig) {
+              private remoteConfig: LanguageService) {
     this.loadRemoteConfigTexts();
 
   }

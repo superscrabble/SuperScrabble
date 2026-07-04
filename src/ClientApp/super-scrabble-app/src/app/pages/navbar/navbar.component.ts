@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AngularFireRemoteConfig } from '@angular/fire/compat/remote-config';
+import { LanguageService } from 'src/app/services/language.service';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { AppConfig } from 'src/app/app-config';
@@ -20,7 +20,7 @@ export class NavbarComponent implements OnInit {
   navLogOutLabel: string = "";
   
   constructor(public utilities: Utilities, private router: Router, 
-              public remoteConfig: AngularFireRemoteConfig) { 
+              public remoteConfig: LanguageService) { 
                 this.loadRemoteConfigTexts();
   }
 
@@ -45,5 +45,13 @@ export class NavbarComponent implements OnInit {
     this.utilities.deleteAccessToken();
     this.router.navigateByUrl('/');
     console.log("Logout");
+  }
+
+  get languageToggleLabel(): string {
+    return this.remoteConfig.language === 'bg' ? 'EN' : 'БГ';
+  }
+
+  switchLanguage(): void {
+    this.remoteConfig.toggleLanguage();
   }
 }

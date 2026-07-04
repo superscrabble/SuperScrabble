@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AngularFireRemoteConfig } from '@angular/fire/compat/remote-config';
+import { LanguageService } from 'src/app/services/language.service';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { LoadingScreenService } from './loading-screen.service';
@@ -13,7 +13,7 @@ export class ErrorHandler {
 
     constructor(private router: Router, private toastr: ToastrService,
                 private loadingScreenService: LoadingScreenService,
-                private remoteConfig: AngularFireRemoteConfig) {
+                private remoteConfig: LanguageService) {
         this.loadRemoteConfigTexts();
     }
 

@@ -5,7 +5,7 @@ import { Tile } from 'src/app/models/tile';
 import { AppConfig } from 'src/app/app-config';
 import { ViewportRuler } from '@angular/cdk/scrolling';
 import { CdkDragDrop, CdkDragEnter } from '@angular/cdk/drag-drop';
-import { AngularFireRemoteConfig } from '@angular/fire/compat/remote-config';
+import { LanguageService } from 'src/app/services/language.service';
 
 @Component({
   selector: 'app-gameboard',
@@ -33,7 +33,7 @@ export class GameboardComponent implements OnInit {
 
   constructor(private viewportRuler: ViewportRuler, private ngZone: NgZone,
               private elementRef: ElementRef, private renderer: Renderer2,
-              private changeDetect: ChangeDetectorRef, private remoteConfig: AngularFireRemoteConfig) {
+              private changeDetect: ChangeDetectorRef, private remoteConfig: LanguageService) {
       this.loadCellViewDataByType();
 
       window.setTimeout(() => {
