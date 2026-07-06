@@ -1,0 +1,59 @@
+# Initial CI: backend build+test and frontend install+build.
+# Commands mirror the verified ones in CLAUDE.md / HOW_TO_RUN.md.
+# npm test is intentionally NOT run yet — unverified as a reliable headless CI command.
+
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    name: Backend build & test (.NET 8, Release)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up .NET 8 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      # Restore happens implicitly as part of build.
+      - name: Build server solution (Release)
+        run: dotnet build src/Server/SuperScrabble.sln -c Release
+
+      - name: Run backend tests (Release)
+        working-directory: src/Server
+        run: dotnet test -c Release
+
+  frontend:
+    name: Frontend install & build (Angular 13, Node 24)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: src/ClientApp/super-scrabble-app
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      # Node 24: no engines/.nvmrc in the repo; HOW_TO_RUN.md documents
+      # "verified working on v24" and the local verified build used v24.11.1.
+      - name: Set up Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: src/ClientApp/super-scrabble-app/package-lock.json
+
+      # .npmrc (legacy-peer-deps=true) is honored by npm ci; lockfile is never modified.
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build production bundle
+        run: npm run build
