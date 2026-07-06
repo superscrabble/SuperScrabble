@@ -48,13 +48,13 @@ baseline, never looser. If a skill instruction and this baseline conflict, the s
 
 ## Environment facts (verified 2026-07-06)
 
-- Active solution: `src/Server/SuperScrabble.sln`. **Ignore** the stale untracked
-  `src/SuperScrabble.sln` — it references projects that do not exist on this branch.
+- Active solution: `src/Server/SuperScrabble.sln` (17 projects).
 - Backend tests **must run with `-c Release`** on this machine: Windows Smart App Control
   intermittently blocks freshly built Debug DLLs (error `0x800711C7`). This is machine policy,
   not a code problem.
-- The folders `src/Common`, `src/Data`, `src/Services`, `src/Tests`, `src/WebApi` contain only
-  orphaned `bin`/`obj` from an old branch layout — never read or edit anything under them.
+- The stale `src/SuperScrabble.sln` and orphaned `src/{Common,Data,Services,Tests,WebApi}`
+  folders from the old branch layout were deleted 2026-07-06; only `ClientApp` and `Server`
+  remain under `src/`.
 
 ## Verified commands (working directory matters)
 
@@ -62,8 +62,8 @@ baseline, never looser. If a skill instruction and this baseline conflict, the s
 |---|---|---|---|
 | Backend build | repo root | `dotnet build src/Server/SuperScrabble.sln` | Verified: 0 errors, 9 warnings |
 | Backend tests (full) | `src/Server` | `dotnet test -c Release` | Verified: 42/42 pass |
-| Frontend build | `src/ClientApp/super-scrabble-app` | `npm run build` | Verified: succeeds; known non-fatal budget warning (initial bundle 1.09 MB > 500 kB budget) |
-| Frontend unit tests | `src/ClientApp/super-scrabble-app` | `npm test` | **Unverified** — pass status unknown; do not gate on it, report if you run it |
+| Frontend build | `src/ClientApp/super-scrabble-app` | `npm run build` | Verified: succeeds; known non-fatal budget warning (initial bundle 1.10 MB > 500 kB budget) |
+| Frontend unit tests | `src/ClientApp/super-scrabble-app` | `npm test -- --watch=false --browsers=ChromeHeadless` | Verified 2026-07-06: runs; baseline 7/33 pass, 26 pre-existing scaffold-spec failures (missing test providers). **Not a gate** — flag only new failures beyond this baseline |
 | Backend run | `src/Server/WebApi/SuperScrabble.WebApi` | `dotnet run` | Documented in `HOW_TO_RUN.md`; needs SQL LocalDB; not re-verified this session |
 | Frontend dev server | `src/ClientApp/super-scrabble-app` | `npm start` | Documented in `HOW_TO_RUN.md`; not re-verified this session |
 

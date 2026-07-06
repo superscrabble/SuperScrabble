@@ -38,7 +38,7 @@ resources/, Docs/, Diagrams/        ← data & presentation assets; do not modif
 | Backend build | repo root | `dotnet build src/Server/SuperScrabble.sln` | 0 errors, 9 known warnings |
 | Backend tests | `src/Server` | `dotnet test -c Release` | 42/42 pass. **Release is mandatory** — Smart App Control on this machine blocks Debug DLLs (`0x800711C7`) |
 | Frontend build | `src/ClientApp/super-scrabble-app` | `npm run build` | Succeeds with known budget warning (initial bundle 1.10 MB > 500 kB) — flag only growth |
-| Frontend tests | `src/ClientApp/super-scrabble-app` | `npm test` | **Broken** (verified 2026-07-06) — fails at startup: the `angular.json` test target references `src/styles.css`, which does not exist (app uses `styles.scss`). Not a gate; fixing it means editing protected `angular.json` |
+| Frontend tests | `src/ClientApp/super-scrabble-app` | `npm test -- --watch=false --browsers=ChromeHeadless` | Runs (verified 2026-07-06): baseline 7/33 pass, 26 pre-existing scaffold-spec failures. **Not a gate** — flag only new failures beyond this baseline |
 | Run backend | `src/Server/WebApi/SuperScrabble.WebApi` | `dotnet run` | Needs SQL LocalDB; first boot seeds ~866k words. See `HOW_TO_RUN.md` |
 | Run frontend | `src/ClientApp/super-scrabble-app` | `npm start` | Dev server on :4200 → API on :7168 |
 
@@ -70,7 +70,8 @@ Project skills live in `.claude/skills/<name>/SKILL.md`; all inherit `_baseline.
 
 No autonomous/recurring agent loops are approved in this repository. CI now exists
 (`.github/workflows/ci.yml`, backend build+test and frontend build, first run green 2026-07-06),
-but there is still no working frontend test gate (`npm test` is broken — see table above), so
+but there is still no green frontend test gate (`npm test` runs with 26 pre-existing failures —
+see table above), so
 loop output cannot be fully independently verified. Until green test gates exist on both sides,
 all work is single-task, human-reviewed. The audit (`AUDIT_REPORT.md` follow-up, §9) sketches three future
 candidates — backend test-green loop, frontend build-and-style loop, documentation-verification
