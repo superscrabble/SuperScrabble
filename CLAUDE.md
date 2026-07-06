@@ -10,7 +10,7 @@ rules that apply even when no specific skill is invoked.
 ## Project map
 
 ```
-src/Server/SuperScrabble.sln        ← the ONLY valid solution (15 projects, net8.0)
+src/Server/SuperScrabble.sln        ← the ONLY valid solution (17 projects, net8.0)
 ├── WebApi/SuperScrabble.WebApi     ← entry point: Program.cs, Controllers/ (Users, Games),
 │                                      Hubs/GameHub.cs (SignalR, /gamehub), Timers/, GameLocks.cs,
 │                                      all/ (word-list seed data), appsettings*.json
@@ -31,18 +31,14 @@ tools/WordScrapers                  ← separate scraper solution; not part of t
 resources/, Docs/, Diagrams/        ← data & presentation assets; do not modify
 ```
 
-⚠️ Stale artifacts: `src/SuperScrabble.sln` (untracked) references a dead project layout, and
-`src/Common`, `src/Data`, `src/Services`, `src/Tests`, `src/WebApi` hold only orphaned `bin/obj`.
-Ignore all of them.
-
 ## Verified commands (verified 2026-07-06; working directory matters)
 
 | Task | Working directory | Command | Notes |
 |---|---|---|---|
 | Backend build | repo root | `dotnet build src/Server/SuperScrabble.sln` | 0 errors, 9 known warnings |
 | Backend tests | `src/Server` | `dotnet test -c Release` | 42/42 pass. **Release is mandatory** — Smart App Control on this machine blocks Debug DLLs (`0x800711C7`) |
-| Frontend build | `src/ClientApp/super-scrabble-app` | `npm run build` | Succeeds with known budget warning (initial bundle 1.09 MB > 500 kB) — flag only growth |
-| Frontend tests | `src/ClientApp/super-scrabble-app` | `npm test` | **Unverified** — pass status unknown; not a gate yet |
+| Frontend build | `src/ClientApp/super-scrabble-app` | `npm run build` | Succeeds with known budget warning (initial bundle 1.10 MB > 500 kB) — flag only growth |
+| Frontend tests | `src/ClientApp/super-scrabble-app` | `npm test` | **Broken** (verified 2026-07-06) — fails at startup: the `angular.json` test target references `src/styles.css`, which does not exist (app uses `styles.scss`). Not a gate; fixing it means editing protected `angular.json` |
 | Run backend | `src/Server/WebApi/SuperScrabble.WebApi` | `dotnet run` | Needs SQL LocalDB; first boot seeds ~866k words. See `HOW_TO_RUN.md` |
 | Run frontend | `src/ClientApp/super-scrabble-app` | `npm start` | Dev server on :4200 → API on :7168 |
 
@@ -72,9 +68,10 @@ Project skills live in `.claude/skills/<name>/SKILL.md`; all inherit `_baseline.
 
 ## Agent loops — DISABLED
 
-No autonomous/recurring agent loops are approved in this repository. Preconditions missing:
-there is no CI (`.github/workflows/` is empty) and no reliable frontend test gate, so loop
-output cannot be independently verified. Until CI plus green test gates exist, all work is
-single-task, human-reviewed. The audit (`AUDIT_REPORT.md` follow-up, §9) sketches three future
+No autonomous/recurring agent loops are approved in this repository. CI now exists
+(`.github/workflows/ci.yml`, backend build+test and frontend build, first run green 2026-07-06),
+but there is still no working frontend test gate (`npm test` is broken — see table above), so
+loop output cannot be fully independently verified. Until green test gates exist on both sides,
+all work is single-task, human-reviewed. The audit (`AUDIT_REPORT.md` follow-up, §9) sketches three future
 candidates — backend test-green loop, frontend build-and-style loop, documentation-verification
 loop — as **proposals only, not approved to run**.
